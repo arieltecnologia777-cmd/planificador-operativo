@@ -15,51 +15,49 @@
 
     <aside class="sidebar">
 
-       <div class="logo-box">
+        <div class="logo-box">
+            <img
+                src="assets/dominion_logo.png"
+                class="logo-img"
+                alt="Dominion">
 
-    <img
-        src="assets/dominion_logo.png"
-        class="logo-img">
-
-    <div class="logo-text">
-
-        <h3>
-            Planificador
-        </h3>
-
-        <span>
-            Planeación y Gestión Operativa
-        </span>
-
-    </div>
-
-</div>
+            <div class="logo-text">
+                <h3>Planificador</h3>
+                <span>Planeación y Gestión Operativa</span>
+            </div>
+        </div>
 
         <nav class="sidebar-nav">
 
+            <a href="#" class="active">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+
             <a href="#">
-📊 Dashboard
-</a>
+                <span class="nav-icon">📅</span>
+                Planeación
+            </a>
 
-<a href="#">
-📅 Planeación
-</a>
+            <a href="#">
+                <span class="nav-icon">📋</span>
+                Seguimiento
+            </a>
 
-<a href="#">
-📋 Seguimiento
-</a>
+            <a href="#">
+                <span class="nav-icon">📡</span>
+                Centros Digitales
+            </a>
 
-<a href="#">
-📡 Centros Digitales
-</a>
+            <a href="#">
+                <span class="nav-icon">🗺️</span>
+                Mapa
+            </a>
 
-<a href="#">
-🗺️ Mapa
-</a>
-
-<a href="#">
-📈 Reportes
-</a>
+            <a href="#">
+                <span class="nav-icon">📈</span>
+                Reportes
+            </a>
 
         </nav>
 
@@ -67,60 +65,383 @@
 
     <main class="main-content">
 
-        <header class="hero">
+        <div class="dashboard-shell">
 
-            <h1>Planificador Operativo</h1>
+            <div class="dashboard-main">
 
-            <p>
-                Sistema de seguimiento, programación y control operativo de actividades Backlog.
-            </p>
+                <header class="hero">
 
-        </header>
+                    <div class="hero-content">
 
-        <section id="kpis">
+                        <div class="hero-badge">
+                            <span></span>
+                            CENTROS DIGITALES
+                        </div>
 
-            <div class="card">
-                <h3>OTs Abiertas</h3>
-                <span>0</span>
+                        <h1>Planificador Operativo</h1>
+
+                        <p>
+                            Sistema de seguimiento, programación y control operativo de actividades Backlog.
+                        </p>
+
+                        <div class="hero-update">
+                            <span class="clock-icon">◷</span>
+                            <strong>Última actualización:</strong>
+                            <span>29/09/2026&nbsp;&nbsp;10:45 a. m.</span>
+                        </div>
+
+                    </div>
+
+                    <div class="hero-network" aria-hidden="true">
+                        <div class="network-glow"></div>
+                        <div class="network-map">
+                            <span class="node n1"></span>
+                            <span class="node n2"></span>
+                            <span class="node n3"></span>
+                            <span class="node n4"></span>
+                            <span class="node n5"></span>
+                            <span class="node n6"></span>
+                            <span class="node n7"></span>
+                            <span class="node n8"></span>
+                            <i class="line l1"></i>
+                            <i class="line l2"></i>
+                            <i class="line l3"></i>
+                            <i class="line l4"></i>
+                            <i class="line l5"></i>
+                        </div>
+                        <div class="hero-slogan">
+                            Conectando territorios,<br>
+                            impulsando el futuro
+                        </div>
+                    </div>
+
+                </header>
+
+                <section id="kpis">
+
+                    <div class="card kpi-card kpi-purple">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">⌛</span>
+                            <h3>OTs Abiertas</h3>
+                        </div>
+                        <span class="kpi-value">23</span>
+                        <div class="kpi-trend down">↓ 35% <small>vs. semana anterior</small></div>
+                    </div>
+
+                    <div class="card kpi-card kpi-blue">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">☷</span>
+                            <h3>IDs Afectados</h3>
+                        </div>
+                        <span class="kpi-value">1.248</span>
+                        <div class="kpi-trend down">↓ 22% <small>vs. semana anterior</small></div>
+                    </div>
+
+                    <div class="card kpi-card kpi-red">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">!</span>
+                            <h3>Alto Impacto</h3>
+                        </div>
+                        <span class="kpi-value">7</span>
+                        <div class="kpi-trend down">↓ 50% <small>vs. semana anterior</small></div>
+                    </div>
+
+                    <div class="card kpi-card kpi-green">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">✓</span>
+                            <h3>Operativas</h3>
+                        </div>
+                        <span class="kpi-value">312</span>
+                        <div class="kpi-trend up">↑ 12% <small>vs. semana anterior</small></div>
+                    </div>
+
+                    <div class="card kpi-card kpi-orange">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">⚙</span>
+                            <h3>Gestionables</h3>
+                        </div>
+                        <span class="kpi-value">86</span>
+                        <div class="kpi-trend down">↓ 28% <small>vs. semana anterior</small></div>
+                    </div>
+
+                    <div class="card kpi-card kpi-cyan">
+                        <div class="kpi-top">
+                            <span class="kpi-icon">▣</span>
+                            <h3>Programadas Hoy</h3>
+                        </div>
+                        <span class="kpi-value">48</span>
+                        <div class="kpi-trend up">↑ 20% <small>vs. ayer</small></div>
+                    </div>
+
+                </section>
+
+                <section class="dashboard-row">
+
+                    <div class="panel department-panel">
+                        <div class="panel-header">
+                            <h2>OTs por Departamento</h2>
+                            <button class="panel-action">Ver detalle →</button>
+                        </div>
+
+                        <div class="bar-chart">
+
+                            <div class="bar-row">
+                                <span>Antioquia</span>
+                                <div class="bar-track"><div class="bar-fill blue" style="width:80%"></div></div>
+                                <strong>8</strong>
+                            </div>
+
+                            <div class="bar-row">
+                                <span>Cesar</span>
+                                <div class="bar-track"><div class="bar-fill purple" style="width:60%"></div></div>
+                                <strong>6</strong>
+                            </div>
+
+                            <div class="bar-row">
+                                <span>La Guajira</span>
+                                <div class="bar-track"><div class="bar-fill cyan" style="width:40%"></div></div>
+                                <strong>4</strong>
+                            </div>
+
+                            <div class="bar-row">
+                                <span>SAI</span>
+                                <div class="bar-track"><div class="bar-fill orange" style="width:20%"></div></div>
+                                <strong>2</strong>
+                            </div>
+
+                            <div class="bar-row">
+                                <span>Otros</span>
+                                <div class="bar-track"><div class="bar-fill gray" style="width:30%"></div></div>
+                                <strong>3</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="chart-scale">
+                            <span>0</span>
+                            <span>2</span>
+                            <span>4</span>
+                            <span>6</span>
+                            <span>8</span>
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <div class="panel critical-panel">
+                        <div class="panel-header">
+                            <h2>Top IDs Críticos</h2>
+                            <button class="panel-action">Ver todos los IDs →</button>
+                        </div>
+
+                        <div class="data-table">
+                            <div class="table-head">
+                                <span>ID</span>
+                                <span>Departamento</span>
+                                <span>Municipio</span>
+                                <span>Tipo de afectación</span>
+                                <span>Prioridad</span>
+                            </div>
+
+                            <div class="table-row">
+                                <span>19221</span>
+                                <span>Antioquia</span>
+                                <span>Briceño</span>
+                                <span>Parcial</span>
+                                <b class="priority high">Alta</b>
+                            </div>
+
+                            <div class="table-row">
+                                <span>22444</span>
+                                <span>Antioquia</span>
+                                <span>Zaragoza</span>
+                                <span>PQR</span>
+                                <b class="priority high">Alta</b>
+                            </div>
+
+                            <div class="table-row">
+                                <span>18667</span>
+                                <span>Antioquia</span>
+                                <span>Amalfi</span>
+                                <span>Afectación total</span>
+                                <b class="priority high">Alta</b>
+                            </div>
+
+                            <div class="table-row">
+                                <span>21624</span>
+                                <span>Antioquia</span>
+                                <span>Segovia</span>
+                                <span>Afectación total</span>
+                                <b class="priority high">Alta</b>
+                            </div>
+
+                            <div class="table-row">
+                                <span>20116</span>
+                                <span>Antioquia</span>
+                                <span>Gómez Plata</span>
+                                <span>Afectación total</span>
+                                <b class="priority medium">Media</b>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <section class="dashboard-row bottom-row">
+
+                    <div class="panel map-panel">
+                        <div class="panel-header">
+                            <h2>Mapa de Centros Digitales</h2>
+                            <button class="panel-action">Ver mapa completo →</button>
+                        </div>
+
+                        <div class="map-content">
+                            <div class="colombia-map" aria-label="Mapa ilustrativo de Colombia">
+                                <div class="map-shape"></div>
+                                <span class="map-dot dot-green d1"></span>
+                                <span class="map-dot dot-orange d2"></span>
+                                <span class="map-dot dot-blue d3"></span>
+                                <span class="map-dot dot-green d4"></span>
+                                <span class="map-dot dot-orange d5"></span>
+                                <span class="map-dot dot-red d6"></span>
+                                <span class="map-dot dot-blue d7"></span>
+                            </div>
+
+                            <div class="map-legend">
+                                <div><i class="legend-dot green"></i><span>Operativos</span><strong>312</strong></div>
+                                <div><i class="legend-dot orange"></i><span>Gestionables</span><strong>86</strong></div>
+                                <div><i class="legend-dot blue"></i><span>En intervención</span><strong>42</strong></div>
+                                <div><i class="legend-dot red"></i><span>Críticos</span><strong>7</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel state-panel">
+                        <div class="panel-header">
+                            <h2>Distribución por Estado Real</h2>
+                        </div>
+
+                        <div class="state-content">
+
+                            <div class="donut">
+                                <div class="donut-center">
+                                    <strong>447</strong>
+                                    <span>Total Centros</span>
+                                </div>
+                            </div>
+
+                            <div class="state-list">
+                                <div><i class="legend-dot red"></i><span>Offline</span><strong>118</strong><em>26%</em></div>
+                                <div><i class="legend-dot orange"></i><span>Parcial</span><strong>92</strong><em>21%</em></div>
+                                <div><i class="legend-dot blue"></i><span>Velocidad</span><strong>76</strong><em>17%</em></div>
+                                <div><i class="legend-dot purple"></i><span>PQR</span><strong>45</strong><em>10%</em></div>
+                                <div><i class="legend-dot cyan"></i><span>P3</span><strong>64</strong><em>14%</em></div>
+                                <div><i class="legend-dot green"></i><span>Operativo</span><strong>52</strong><em>12%</em></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </section>
+
             </div>
 
-            <div class="card">
-                <h3>IDs Afectados</h3>
-                <span>0</span>
-            </div>
+            <aside class="right-rail">
 
-            <div class="card">
-                <h3>Alto Impacto</h3>
-                <span>0</span>
-            </div>
+                <section class="rail-card general-status">
 
-            <div class="card">
-                <h3>Operativas</h3>
-                <span>0</span>
-            </div>
+                    <div class="rail-title">
+                        <div class="rail-title-left">
+                            <span class="rail-icon purple-icon">◉</span>
+                            <h2>Estado General</h2>
+                        </div>
+                        <span class="status-pill"><i></i> Operativo</span>
+                    </div>
 
-            <div class="card">
-                <h3>Gestionables</h3>
-                <span>0</span>
-            </div>
+                    <div class="status-body">
 
-            <div class="card">
-                <h3>Programadas Hoy</h3>
-                <span>0</span>
-            </div>
+                        <div class="progress-ring">
+                            <div class="progress-inner">
+                                <strong>78%</strong>
+                                <span>Centros Digitales<br>Operativos</span>
+                            </div>
+                        </div>
 
-        </section>
-        <section class="dashboard-row">
+                        <div class="status-values">
+                            <div><i class="legend-dot cyan"></i><span>Operativos</span><strong>312</strong></div>
+                            <div><i class="legend-dot orange"></i><span>Gestionables</span><strong>86</strong></div>
+                            <div><i class="legend-dot blue"></i><span>En intervención</span><strong>42</strong></div>
+                            <div><i class="legend-dot red"></i><span>Críticos</span><strong>7</strong></div>
+                            <div><i class="legend-dot gray-dot"></i><span>Total Centros</span><strong>447</strong></div>
+                        </div>
 
-    <div class="panel">
-        <h2>OTs por Departamento</h2>
-    </div>
+                    </div>
 
-    <div class="panel">
-        <h2>Top IDs Críticos</h2>
-    </div>
+                </section>
 
-</section>
+                <section class="rail-card activity-card">
+
+                    <div class="rail-title">
+                        <div class="rail-title-left">
+                            <span class="rail-icon blue-icon">◷</span>
+                            <h2>Actividad Reciente</h2>
+                        </div>
+                        <button class="see-more">Ver más →</button>
+                    </div>
+
+                    <div class="activity-list">
+
+                        <div class="activity-item">
+                            <span class="activity-marker red">!</span>
+                            <div>
+                                <strong>OT #19221 — Briceño (Antioquia)</strong>
+                                <p>Cambio de UPS en sitio</p>
+                            </div>
+                            <time>Hace 12 min</time>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-marker orange">⚙</span>
+                            <div>
+                                <strong>OT #22444 — Zaragoza (Antioquia)</strong>
+                                <p>Requiere desplazamiento técnico</p>
+                            </div>
+                            <time>Hace 28 min</time>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-marker green">✓</span>
+                            <div>
+                                <strong>Centro Digital Segovia</strong>
+                                <p>En operación normal</p>
+                            </div>
+                            <time>Hace 1 h</time>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-marker blue">✓</span>
+                            <div>
+                                <strong>OT #21624 — Amalfi (Antioquia)</strong>
+                                <p>Sin novedad</p>
+                            </div>
+                            <time>Hace 2 h</time>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-marker purple">⌛</span>
+                            <div>
+                                <strong>Centro Digital La Guajira</strong>
+                                <p>Mantenimiento programado</p>
+                            </div>
+                            <time>Hace 3 h</time>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </aside>
+
+        </div>
 
     </main>
 
@@ -129,5 +450,4 @@
 <script src="js/app.js"></script>
 
 </body>
-
 </html>
