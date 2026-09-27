@@ -453,10 +453,8 @@ button{
     border-radius:18px;
     padding:17px 18px;
     box-shadow:var(--shadow);
-    min-height:300px;
+    min-height:258px;
     overflow:hidden;
-    display:flex;
-    flex-direction:column;
 }
 .panel-header{
     display:flex;
@@ -491,9 +489,9 @@ button{
 .bar-chart{
     display:flex;
     flex-direction:column;
-    justify-content:space-around;
-    flex:1;
-    margin-top:10px;
+    justify-content:space-between;
+    height:180px;
+    margin-top:12px;
 }
 
 .bar-row{
