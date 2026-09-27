@@ -279,4 +279,55 @@ button{
 
     header{
         padding-top:30px;
+.layout{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    min-height:100vh;
+}
 
+.sidebar{
+    background:#ffffff;
+    border-right:1px solid #e5e7eb;
+
+    display:flex;
+    flex-direction:column;
+
+    padding:20px;
+
+    position:sticky;
+    top:0;
+
+    height:100vh;
+}
+
+.logo-box{
+    width:100%;
+    margin:0;
+    padding-bottom:20px;
+}
+
+.logo-box h2{
+    font-size:2rem;
+    font-weight:900;
+}
+
+.logo-box span{
+    color:var(--muted);
+}
+
+.sidebar-nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    width:100%;
+    margin:0;
+}
+
+.main-content{
+    width:100%;
+}
+
+.hero{
+    padding:40px;
+}
