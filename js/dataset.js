@@ -108,55 +108,7 @@ const altoImpacto =
 
         });
 
-        document.getElementById("depAntioquia").textContent =
-            deptos.ANTIOQUIA;
-
-        document.getElementById("depCesar").textContent =
-            deptos.CESAR;
-
-        document.getElementById("depGuajira").textContent =
-            deptos["LA GUAJIRA"];
-
-        document.getElementById("depSAI").textContent =
-            deptos.SAI;
-
-        const maxDepto = Math.max(
-            deptos.ANTIOQUIA,
-            deptos.CESAR,
-            deptos["LA GUAJIRA"],
-            deptos.SAI
-        );
-
-        document.getElementById("barAntioquia").style.width =
-            ((deptos.ANTIOQUIA / maxDepto) * 100) + "%";
-
-        document.getElementById("barCesar").style.width =
-            ((deptos.CESAR / maxDepto) * 100) + "%";
-
-        document.getElementById("barGuajira").style.width =
-            ((deptos["LA GUAJIRA"] / maxDepto) * 100) + "%";
-
-        document.getElementById("barSAI").style.width =
-            ((deptos.SAI / maxDepto) * 100) + "%";
-
-        const barrasDepto = [
-    { id:"barAntioquia", valor:deptos.ANTIOQUIA },
-    { id:"barCesar", valor:deptos.CESAR },
-    { id:"barGuajira", valor:deptos["LA GUAJIRA"] },
-    { id:"barSAI", valor:deptos.SAI }
-];
-
-barrasDepto
-.sort((a,b) => b.valor - a.valor)
-.forEach((item,index) => {
-
-    document
-        .getElementById(item.id)
-        .classList
-        .add(`rank${index + 1}`);
-
-});
-
+        
         const afectaciones = {
             "OFFLINE": 0,
             "PARCIAL": 0,
@@ -209,23 +161,47 @@ barrasDepto
 
 });
 
-        document.getElementById("afOffline").textContent =
-            afectaciones.OFFLINE || 0;
+const departamentosOrdenados = [
+    {
+        nombre: "Antioquia",
+        valor: deptos.ANTIOQUIA
+    },
+    {
+        nombre: "La Guajira",
+        valor: deptos["LA GUAJIRA"]
+    },
+    {
+        nombre: "Cesar",
+        valor: deptos.CESAR
+    },
+    {
+        nombre: "SAI",
+        valor: deptos.SAI
+    }
+]
+.sort((a,b) => b.valor - a.valor);
 
-        document.getElementById("afParcial").textContent =
-            afectaciones.PARCIAL || 0;
+const maxDepto = Math.max(
+    ...departamentosOrdenados.map(d => d.valor),
+    1
+);
 
-        document.getElementById("afVelocidad").textContent =
-            afectaciones.VELOCIDAD || 0;
-
-        document.getElementById("afPQR").textContent =
-            afectaciones.PQR || 0;
-
-        document.getElementById("afP3").textContent =
-            afectaciones.P3 || 0;
-
-        document.getElementById("afOperativo").textContent =
-    afectaciones.OPERATIVO || 0;
+document.getElementById(
+    "departamentosContainer"
+).innerHTML = departamentosOrdenados
+.map((item,index) => `
+    <div class="bar-row">
+        <span>${item.nombre}</span>
+        <div class="bar-track">
+            <div
+                class="bar-fill rank${index + 1}"
+                style="width:${(item.valor/maxDepto)*100}%">
+            </div>
+        </div>
+        <strong>${item.valor}</strong>
+    </div>
+`)
+.join("");
 
 const maxAfectacion = Math.max(
     afectaciones.OFFLINE,
@@ -237,53 +213,50 @@ const maxAfectacion = Math.max(
     1
 );
 
-        console.log(afectaciones);
-console.log("maxAfectacion", maxAfectacion);
+const afectacionesOrdenadas = [
+    {
+        nombre: "Offline",
+        valor: afectaciones.OFFLINE
+    },
+    {
+        nombre: "Parcial",
+        valor: afectaciones.PARCIAL
+    },
+    {
+        nombre: "Velocidad",
+        valor: afectaciones.VELOCIDAD
+    },
+    {
+        nombre: "PQR",
+        valor: afectaciones.PQR
+    },
+    {
+        nombre: "P3",
+        valor: afectaciones.P3
+    },
+    {
+        nombre: "Operativo",
+        valor: afectaciones.OPERATIVO
+    }
+]
+.sort((a,b) => b.valor - a.valor);
 
-        document.getElementById("barOffline").style.width =
-            ((afectaciones.OFFLINE / maxAfectacion) * 100) + "%";
-
-        document.getElementById("barParcial").style.width =
-            ((afectaciones.PARCIAL / maxAfectacion) * 100) + "%";
-
-        document.getElementById("barVelocidad").style.width =
-            ((afectaciones.VELOCIDAD / maxAfectacion) * 100) + "%";
-
-        document.getElementById("barPQR").style.width =
-            ((afectaciones.PQR / maxAfectacion) * 100) + "%";
-
-        document.getElementById("barP3").style.width =
-            ((afectaciones.P3 / maxAfectacion) * 100) + "%";
-        console.log(
-  "P3",
-  afectaciones.P3,
-  maxAfectacion,
-  ((afectaciones.P3 / maxAfectacion) * 100)
-);
-
-        document.getElementById("barOperativo").style.width =
-            ((afectaciones.OPERATIVO / maxAfectacion) * 100) + "%";
-
-        const barrasAfectacion = [
-    { id:"barOffline", valor:afectaciones.OFFLINE },
-    { id:"barParcial", valor:afectaciones.PARCIAL },
-    { id:"barVelocidad", valor:afectaciones.VELOCIDAD },
-    { id:"barPQR", valor:afectaciones.PQR },
-    { id:"barP3", valor:afectaciones.P3 },
-    { id:"barOperativo", valor:afectaciones.OPERATIVO }
-];
-
-barrasAfectacion
-.sort((a,b) => b.valor - a.valor)
-.forEach((item,index) => {
-
-    document
-        .getElementById(item.id)
-        .classList
-        .add(`rank${index + 1}`);
-
-});
-
+document.getElementById(
+    "afectacionesContainer"
+).innerHTML = afectacionesOrdenadas
+.map((item,index) => `
+    <div class="bar-row">
+        <span>${item.nombre}</span>
+        <div class="bar-track">
+            <div
+                class="bar-fill rank${index + 1}"
+                style="width:${(item.valor/maxAfectacion)*100}%">
+            </div>
+        </div>
+        <strong>${item.valor}</strong>
+    </div>
+`)
+.join("");       
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
