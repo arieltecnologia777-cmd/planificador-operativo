@@ -167,15 +167,33 @@ button{
     margin-bottom:16px;
     overflow:hidden;
     isolation:isolate;
-    background:
-        radial-gradient(circle at 78% 35%,rgba(47,197,255,.26),transparent 22%),
-        radial-gradient(circle at 58% 100%,rgba(76,88,255,.35),transparent 35%),
-        linear-gradient(112deg,#0b4e91 0%,#155db5 48%,#1d66c4 100%);
+
+    background-image:url("../assets/banner.jpg");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
     border:1px solid #d4e3f6;
     border-radius:18px;
     padding:25px 28px;
     box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+    linear-gradient(
+        90deg,
+        rgba(4,37,95,.72),
+        rgba(4,37,95,.35),
+        rgba(4,37,95,.10)
+    );
+
+    z-index:1;
 }
 
 .hero-content{
