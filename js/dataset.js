@@ -233,6 +233,12 @@ const maxAfectacion = Math.max(
 
         document.getElementById("barP3").style.width =
             ((afectaciones.P3 / maxAfectacion) * 100) + "%";
+        console.log(
+  "P3",
+  afectaciones.P3,
+  maxAfectacion,
+  ((afectaciones.P3 / maxAfectacion) * 100)
+);
 
         document.getElementById("barOperativo").style.width =
             ((afectaciones.OPERATIVO / maxAfectacion) * 100) + "%";
