@@ -186,46 +186,41 @@ const maxDepto = Math.max(
     1
 );
 
-document.getElementById(
-    "d*partamentosContainer"
-).innerHTML * departamentosOrdenados
-.map(item *> {
+document.getElementById("departamentosContainer").innerHTML =
+departamentosOrdenados.map(item => {
 
     const porcentaje =
-      * (item.valor / maxDepto) * 100;
+        (item.valor / maxDepto) * 100;
 
- *  let color = "#e5e7eb";
+    let color = "#e5e7eb";
 
-    if (*orcentaje >= 80) {
-        color =*"#ff4d6d";
-    }
-    else if (porc*ntaje >= 60) {
-        color = "#f*8b4d";
-    }
-    else if (porcenta*e >= 40) {
-        color = "#ffcf3*";
-    }
-    else if (porcentaje >* 20) {
+    if (porcentaje >= 80) {
+        color = "#ff4d6d";
+    } else if (porcentaje >= 60) {
+        color = "#ff8b4d";
+    } else if (porcentaje >= 40) {
+        color = "#ffcf33";
+    } else if (porcentaje >= 20) {
         color = "#ffe680";
-*   }
+    }
 
     return `
-        <div cl*ss="bar-row">
-            <span>${*tem.nombre}</span>
-            <di* class="bar-track">
-              * <div
-                    class="b*r-fill"
-                    style=*
-                        width:${p*rcentaje}%;
-                      * background:${color};
-            *       ">
+        <div class="bar-row">
+            <span>${item.nombre}</span>
+            <div class="bar-track">
+                <div
+                    class="bar-fill"
+                    style="
+                        width:${porcentaje}%;
+                        background:${color};
+                    ">
                 </div>
- *          </div>
-            <stro*g>${item.valor}</strong>
-        <*div>
+            </div>
+            <strong>${item.valor}</strong>
+        </div>
     `;
-})
-.join("");
+
+}).join("");
 
 const maxAfectacion = Math.max(
     afectaciones.OFFLINE,
@@ -265,25 +260,21 @@ const afectacionesOrdenadas = [
 ]
 .sort((a,b) => b.valor - a.valor);
 
-document.getElementById(
-    "a*ectacionesContainer"
-).innerHTML =*afectacionesOrdenadas
-.map(item =>*{
+document.getElementById("afectacionesContainer").innerHTML =
+afectacionesOrdenadas.map(item => {
 
     const porcentaje =
-        *item.valor / maxAfectacion) * 100;*
+        (item.valor / maxAfectacion) * 100;
+
     let color = "#e5e7eb";
 
-    i* (porcentaje >= 80) {
-        colo* = "#ff4d6d";
-    }
-    else if (p*rcentaje >= 60) {
-        color = *#ff8b4d";
-    }
-    else if (porce*taje >= 40) {
+    if (porcentaje >= 80) {
+        color = "#ff4d6d";
+    } else if (porcentaje >= 60) {
+        color = "#ff8b4d";
+    } else if (porcentaje >= 40) {
         color = "#ffcf33";
-    }
-    else if (porcentaje >= 20) {
+    } else if (porcentaje >= 20) {
         color = "#ffe680";
     }
 
@@ -302,8 +293,8 @@ document.getElementById(
             <strong>${item.valor}</strong>
         </div>
     `;
-})
-.join("");    
+
+}).join("");    
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
