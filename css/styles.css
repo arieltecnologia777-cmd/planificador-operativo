@@ -544,6 +544,22 @@ button{
     background:#20b779;
 }
 
+.bar-fill.blue{
+    background:#3a8dff;
+}
+
+.bar-fill.purple{
+    background:#9a5cff;
+}
+
+.bar-fill.cyan{
+    background:#25c7e8;
+}
+
+.bar-fill.orange{
+    background:#ff9b2f;
+}
+
 .chart-scale{
     display:flex;
     justify-content:space-between;
