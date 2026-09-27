@@ -16,21 +16,38 @@ async function cargarDataset() {
         const encabezados = filas[0];
         const datos = filas.slice(1);
 
-        const idxOT = encabezados.indexOf("OT");
-        const idxID = encabezados.indexOf("ID");
-        const idxPrioridad = encabezados.indexOf("Tipo de prioridad");
+        const idxOT =
+            encabezados.indexOf("OT");
 
-        const otsUnicas = new Set(
-            datos.map(f => f[idxOT])
-        );
+        const idxID =
+            encabezados.indexOf("ID");
 
-        const idsUnicos = new Set(
-            datos.map(f => f[idxID])
-        );
+        const idxDepto =
+            encabezados.indexOf("Departamento");
 
-        const altoImpacto = datos.filter(
-            f => (f[idxPrioridad] || "").trim() === "Alta"
-        ).length;
+        const idxPrioridad =
+            encabezados.indexOf("Tipo de prioridad");
+
+        const idxAfectacion =
+            encabezados.indexOf("Tipo de afectación");
+
+        const otsUnicas =
+            new Set(
+                datos.map(f => f[idxOT])
+            );
+
+        const idsUnicos =
+            new Set(
+                datos.map(f => f[idxID])
+            );
+
+        const altoImpacto =
+            datos.filter(
+                f =>
+                (f[idxPrioridad] || "")
+                    .trim()
+                    .toUpperCase() === "ALTA"
+            ).length;
 
         document.getElementById("kpiOTs").textContent =
             otsUnicas.size.toLocaleString("es-CO");
@@ -44,23 +61,103 @@ async function cargarDataset() {
         document.getElementById("ultimaActualizacion").textContent =
             new Date().toLocaleString("es-CO");
 
-        console.log("Dataset cargado");
-        console.log("OTs únicas:", otsUnicas.size);
-        console.log("IDs únicos:", idsUnicos.size);
-        console.log("Alta prioridad:", altoImpacto);
+        const deptos = {
+            ANTIOQUIA: 0,
+            CESAR: 0,
+            "LA GUAJIRA": 0,
+            SAI: 0
+        };
 
-    } catch (error) {
+        datos.forEach(fila => {
 
-        console.error(error);
+            const depto =
+                (fila[idxDepto] || "")
+                    .trim()
+                    .toUpperCase();
 
-        document.getElementById("kpiOTs").textContent = "ERR";
-        document.getElementById("kpiIds").textContent = "ERR";
-        document.getElementById("kpiImpacto").textContent = "ERR";
-    }
+            if (deptos[depto] !== undefined) {
+                deptos[depto]++;
+            }
 
-}
+        });
 
-document.addEventListener(
-    "DOMContentLoaded",
-    cargarDataset
-);
+        document.getElementById("depAntioquia").textContent =
+            deptos.ANTIOQUIA;
+
+        document.getElementById("depCesar").textContent =
+            deptos.CESAR;
+
+        document.getElementById("depGuajira").textContent =
+            deptos["LA GUAJIRA"];
+
+        document.getElementById("depSAI").textContent =
+            deptos.SAI;
+
+        const maxDepto = Math.max(
+            deptos.ANTIOQUIA,
+            deptos.CESAR,
+            deptos["LA GUAJIRA"],
+            deptos.SAI
+        );
+
+        document.getElementById("barAntioquia").style.width =
+            ((deptos.ANTIOQUIA / maxDepto) * 100) + "%";
+
+        document.getElementById("barCesar").style.width =
+            ((deptos.CESAR / maxDepto) * 100) + "%";
+
+        document.getElementById("barGuajira").style.width =
+            ((deptos["LA GUAJIRA"] / maxDepto) * 100) + "%";
+
+        document.getElementById("barSAI").style.width =
+            ((deptos.SAI / maxDepto) * 100) + "%";
+
+        const afectaciones = {
+            "OFFLINE": 0,
+            "PARCIAL": 0,
+            "VELOCIDAD": 0,
+            "PQR": 0,
+            "P3": 0,
+            "OPERATIVO": 0
+        };
+
+        datos.forEach(fila => {
+
+            const afectacion =
+                (fila[idxAfectacion] || "")
+                    .trim()
+                    .toUpperCase();
+
+            if (afectaciones[afectacion] !== undefined) {
+
+                afectaciones[afectacion]++;
+
+            }
+
+        });
+
+        document.getElementById("afOffline").textContent =
+            afectaciones.OFFLINE || 0;
+
+        document.getElementById("afParcial").textContent =
+            afectaciones.PARCIAL || 0;
+
+        document.getElementById("afVelocidad").textContent =
+            afectaciones.VELOCIDAD || 0;
+
+        document.getElementById("afPQR").textContent =
+            afectaciones.PQR || 0;
+
+        document.getElementById("afP3").textContent =
+            afectaciones.P3 || 0;
+
+        document.getElementById("afOperativo").textContent =
+            afectaciones.OPERATIVO || 0;
+
+        const maxAfectacion = Math.max(
+            afectaciones.OFFLINE,
+            afectaciones.PARCIAL,
+            afectaciones.VELOCIDAD,
+            afectaciones.PQR,
+            afectaciones.P3,
+         
