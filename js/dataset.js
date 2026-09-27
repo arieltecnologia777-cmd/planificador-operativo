@@ -139,6 +139,24 @@ const altoImpacto =
         document.getElementById("barSAI").style.width =
             ((deptos.SAI / maxDepto) * 100) + "%";
 
+        const barrasDepto = [
+    { id:"barAntioquia", valor:deptos.ANTIOQUIA },
+    { id:"barCesar", valor:deptos.CESAR },
+    { id:"barGuajira", valor:deptos["LA GUAJIRA"] },
+    { id:"barSAI", valor:deptos.SAI }
+];
+
+barrasDepto
+.sort((a,b) => b.valor - a.valor)
+.forEach((item,index) => {
+
+    document
+        .getElementById(item.id)
+        .classList
+        .add(`rank${index + 1}`);
+
+});
+
         const afectaciones = {
             "OFFLINE": 0,
             "PARCIAL": 0,
@@ -245,6 +263,26 @@ console.log("maxAfectacion", maxAfectacion);
 
         document.getElementById("barOperativo").style.width =
             ((afectaciones.OPERATIVO / maxAfectacion) * 100) + "%";
+
+        const barrasAfectacion = [
+    { id:"barOffline", valor:afectaciones.OFFLINE },
+    { id:"barParcial", valor:afectaciones.PARCIAL },
+    { id:"barVelocidad", valor:afectaciones.VELOCIDAD },
+    { id:"barPQR", valor:afectaciones.PQR },
+    { id:"barP3", valor:afectaciones.P3 },
+    { id:"barOperativo", valor:afectaciones.OPERATIVO }
+];
+
+barrasAfectacion
+.sort((a,b) => b.valor - a.valor)
+.forEach((item,index) => {
+
+    document
+        .getElementById(item.id)
+        .classList
+        .add(`rank${index + 1}`);
+
+});
 
         console.log("Dataset cargado correctamente");
 
