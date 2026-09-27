@@ -85,11 +85,10 @@
                         </p>
 
                         <div class="hero-update">
-                            <span class="clock-icon">◷</span>
-                            <strong>Última actualización:</strong>
-                            <span>29/09/2026&nbsp;&nbsp;10:45 a. m.</span>
-                        </div>
-
+    <span class="clock-icon">◷</span>
+    <strong>Última actualización:</strong>
+    <span id="ultimaActualizacion">--</span>
+</div>
                     </div>
 
                     
@@ -132,31 +131,37 @@
 </div>
 
                     <div class="card kpi-card kpi-green">
-                        <div class="kpi-top">
-                            <span class="kpi-icon">✓</span>
-                            <h3>Operativas</h3>
-                        </div>
-                        <span class="kpi-value">312</span>
-                        <div class="kpi-trend up">↑ 12% <small>vs. semana anterior</small></div>
-                    </div>
+    <div class="kpi-top">
+        <span class="kpi-icon">✓</span>
+        <h3>Operativas</h3>
+    </div>
+    <span class="kpi-value" id="kpiOperativas">--</span>
+    <div class="kpi-trend" id="trendOperativas">
+        --
+    </div>
+</div>
 
                     <div class="card kpi-card kpi-orange">
-                        <div class="kpi-top">
-                            <span class="kpi-icon">⚙</span>
-                            <h3>Gestionables</h3>
-                        </div>
-                        <span class="kpi-value">86</span>
-                        <div class="kpi-trend down">↓ 28% <small>vs. semana anterior</small></div>
-                    </div>
+    <div class="kpi-top">
+        <span class="kpi-icon">⚙</span>
+        <h3>Gestionables</h3>
+    </div>
+    <span class="kpi-value" id="kpiGestionables">--</span>
+    <div class="kpi-trend" id="trendGestionables">
+        --
+    </div>
+</div>
 
                     <div class="card kpi-card kpi-cyan">
-                        <div class="kpi-top">
-                            <span class="kpi-icon">▣</span>
-                            <h3>Programadas Hoy</h3>
-                        </div>
-                        <span class="kpi-value">48</span>
-                        <div class="kpi-trend up">↑ 20% <small>vs. ayer</small></div>
-                    </div>
+    <div class="kpi-top">
+        <span class="kpi-icon">▣</span>
+        <h3>Programadas Hoy</h3>
+    </div>
+    <span class="kpi-value" id="kpiProgramadas">--</span>
+    <div class="kpi-trend" id="trendProgramadas">
+        --
+    </div>
+</div>
 
                 </section>
 
@@ -173,32 +178,28 @@
                             <div class="bar-row">
                                 <span>Antioquia</span>
                                 <div class="bar-track"><div class="bar-fill blue" style="width:80%"></div></div>
-                                <strong>8</strong>
+                               <strong id="depAntioquia">--</strong>
                             </div>
 
                             <div class="bar-row">
                                 <span>Cesar</span>
                                 <div class="bar-track"><div class="bar-fill purple" style="width:60%"></div></div>
-                                <strong>6</strong>
+                               <strong id="depCesar">--</strong>
                             </div>
 
                             <div class="bar-row">
                                 <span>La Guajira</span>
                                 <div class="bar-track"><div class="bar-fill cyan" style="width:40%"></div></div>
-                                <strong>4</strong>
+                                <strong id="depGuajira">--</strong>
                             </div>
 
                             <div class="bar-row">
                                 <span>SAI</span>
                                 <div class="bar-track"><div class="bar-fill orange" style="width:20%"></div></div>
-                                <strong>2</strong>
+                                <strong id="depSAI">--</strong>
                             </div>
 
-                            <div class="bar-row">
-                                <span>Otros</span>
-                                <div class="bar-track"><div class="bar-fill gray" style="width:30%"></div></div>
-                                <strong>3</strong>
-                            </div>
+                    
 
                         </div>
 
@@ -219,56 +220,22 @@
                         </div>
 
                         <div class="data-table">
-                            <div class="table-head">
-                                <span>ID</span>
-                                <span>Departamento</span>
-                                <span>Municipio</span>
-                                <span>Tipo de afectación</span>
-                                <span>Prioridad</span>
-                            </div>
 
-                            <div class="table-row">
-                                <span>19221</span>
-                                <span>Antioquia</span>
-                                <span>Briceño</span>
-                                <span>Parcial</span>
-                                <b class="priority high">Alta</b>
-                            </div>
+    <div class="table-head">
+        <span>ID</span>
+        <span>Departamento</span>
+        <span>Municipio</span>
+        <span>Tipo de afectación</span>
+        <span>Prioridad</span>
+    </div>
 
-                            <div class="table-row">
-                                <span>22444</span>
-                                <span>Antioquia</span>
-                                <span>Zaragoza</span>
-                                <span>PQR</span>
-                                <b class="priority high">Alta</b>
-                            </div>
+    <div id="topIdsContainer">
 
-                            <div class="table-row">
-                                <span>18667</span>
-                                <span>Antioquia</span>
-                                <span>Amalfi</span>
-                                <span>Afectación total</span>
-                                <b class="priority high">Alta</b>
-                            </div>
+    </div>
 
-                            <div class="table-row">
-                                <span>21624</span>
-                                <span>Antioquia</span>
-                                <span>Segovia</span>
-                                <span>Afectación total</span>
-                                <b class="priority high">Alta</b>
-                            </div>
+</div>
 
-                            <div class="table-row">
-                                <span>20116</span>
-                                <span>Antioquia</span>
-                                <span>Gómez Plata</span>
-                                <span>Afectación total</span>
-                                <b class="priority medium">Media</b>
-                            </div>
-                        </div>
-                    </div>
-
+                        
                 </section>
 
                 <section class="dashboard-row bottom-row">
@@ -373,54 +340,9 @@
                         <button class="see-more">Ver más →</button>
                     </div>
 
-                    <div class="activity-list">
+                    <div class="activity-list" id="actividadReciente">
 
-                        <div class="activity-item">
-                            <span class="activity-marker red">!</span>
-                            <div>
-                                <strong>OT #19221 — Briceño (Antioquia)</strong>
-                                <p>Cambio de UPS en sitio</p>
-                            </div>
-                            <time>Hace 12 min</time>
-                        </div>
-
-                        <div class="activity-item">
-                            <span class="activity-marker orange">⚙</span>
-                            <div>
-                                <strong>OT #22444 — Zaragoza (Antioquia)</strong>
-                                <p>Requiere desplazamiento técnico</p>
-                            </div>
-                            <time>Hace 28 min</time>
-                        </div>
-
-                        <div class="activity-item">
-                            <span class="activity-marker green">✓</span>
-                            <div>
-                                <strong>Centro Digital Segovia</strong>
-                                <p>En operación normal</p>
-                            </div>
-                            <time>Hace 1 h</time>
-                        </div>
-
-                        <div class="activity-item">
-                            <span class="activity-marker blue">✓</span>
-                            <div>
-                                <strong>OT #21624 — Amalfi (Antioquia)</strong>
-                                <p>Sin novedad</p>
-                            </div>
-                            <time>Hace 2 h</time>
-                        </div>
-
-                        <div class="activity-item">
-                            <span class="activity-marker purple">⌛</span>
-                            <div>
-                                <strong>Centro Digital La Guajira</strong>
-                                <p>Mantenimiento programado</p>
-                            </div>
-                            <time>Hace 3 h</time>
-                        </div>
-
-                    </div>
+</div>
 
                 </section>
 
