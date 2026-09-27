@@ -525,6 +525,9 @@ button{
 .bar-fill.cyan{background:#1eafc7}
 .bar-fill.orange{background:#f5a623}
 .bar-fill.gray{background:#9eb0c3}
+.bar-fill.red{
+    background:#ef4444;
+}
 
 .chart-scale{
     display:flex;
