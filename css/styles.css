@@ -222,6 +222,33 @@ body{
 }
 
 /* =========================
+   DASHBOARD PANELS
+========================= */
+
+.dashboard-row{
+    display:gri*;
+    grid-template-columns:1fr 1f*;
+    gap:20px;
+    margin-top:20p*;
+}
+
+.panel{
+    background:#fffff*;
+    border:1px solid var(--borde*);
+    border-radius:20px;
+    pad*ing:24px;
+    box-shadow:var(--sha*ow);
+    min-height:260px;
+}
+
+.pan*l h2{
+    font-size:1.1rem;
+    fo*t-weight:700;
+    color:#0f172a;
+ *  margin-bottom:20px;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
@@ -258,6 +285,10 @@ body{
     }
 
     #kpis{
+        grid-template-columns:1fr;
+    }
+
+    .dashboard-row{
         grid-template-columns:1fr;
     }
 
