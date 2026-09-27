@@ -18,6 +18,7 @@ async function cargarDataset() {
 
         const idxOT = encabezados.indexOf("OT");
         const idxID = encabezados.indexOf("ID");
+        const idxPrioridad = encabezados.indexOf("Tipo de prioridad");
 
         const otsUnicas = new Set(
             datos.map(f => f[idxOT])
@@ -27,11 +28,18 @@ async function cargarDataset() {
             datos.map(f => f[idxID])
         );
 
+        const altoImpacto = datos.filter(
+            f => (f[idxPrioridad] || "").trim() === "Alta"
+        ).length;
+
         document.getElementById("kpiOTs").textContent =
             otsUnicas.size.toLocaleString("es-CO");
 
         document.getElementById("kpiIds").textContent =
             idsUnicos.size.toLocaleString("es-CO");
+
+        document.getElementById("kpiImpacto").textContent =
+            altoImpacto.toLocaleString("es-CO");
 
         document.getElementById("ultimaActualizacion").textContent =
             new Date().toLocaleString("es-CO");
@@ -39,6 +47,7 @@ async function cargarDataset() {
         console.log("Dataset cargado");
         console.log("OTs únicas:", otsUnicas.size);
         console.log("IDs únicos:", idsUnicos.size);
+        console.log("Alta prioridad:", altoImpacto);
 
     } catch (error) {
 
@@ -46,6 +55,7 @@ async function cargarDataset() {
 
         document.getElementById("kpiOTs").textContent = "ERR";
         document.getElementById("kpiIds").textContent = "ERR";
+        document.getElementById("kpiImpacto").textContent = "ERR";
     }
 
 }
