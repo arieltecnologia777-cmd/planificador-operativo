@@ -685,14 +685,7 @@ button{
     width:142px;
     height:142px;
     border-radius:50%;
-    background:conic-gradient(
-        #ef4444 0 26%,
-        #f5a623 26% 47%,
-        #347de8 47% 64%,
-        #8051e8 64% 74%,
-        #1eb8c9 74% 88%,
-        #20b779 88% 100%
-    );
+    background:#edf2f8;
     display:grid;
     place-items:center;
     position:relative;
