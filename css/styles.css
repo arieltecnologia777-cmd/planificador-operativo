@@ -982,6 +982,30 @@ button{
     font-size:.59rem;
 }
 
+
+.rank1{
+    background:#ff4d6d !important;
+}
+
+.rank2{
+    background:#ff9b2f !important;
+}
+
+.rank3{
+    background:#ffd029 !important;
+}
+
+.rank4{
+    background:#3a8dff !important;
+}
+
+.rank5{
+    background:#9a5cff !important;
+}
+
+.rank6{
+    background:#cbd5e1 !important;
+}
 /* =========================
    RESPONSIVE
 ========================= */
