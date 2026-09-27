@@ -461,7 +461,7 @@ button{
     align-items:center;
     justify-content:space-between;
     gap:12px;
-    margin-bottom:18px;
+    margin-bottom:8px;
 }
 
 .panel h2{
@@ -490,7 +490,7 @@ button{
     display:flex;
     flex-direction:column;
     justify-content:space-evenly;
-    height:220px;
+    height:250px;
 }
 
 .bar-row{
