@@ -150,18 +150,46 @@ const altoImpacto =
 
         datos.forEach(fila => {
 
-            const afectacion =
-                (fila[idxAfectacion] || "")
-                    .trim()
-                    .toUpperCase();
+    const afectacion =
+        (fila[idxAfectacion] || "")
+            .trim()
+            .toUpperCase();
 
-            if (afectaciones[afectacion] !== undefined) {
+    if (
+        afectacion === "AFECTACIÓN TOTAL" ||
+        afectacion === "AFECTACION TOTAL" ||
+        afectacion === "MASIVA"
+    ) {
 
-                afectaciones[afectacion]++;
+        afectaciones.OFFLINE++;
 
-            }
+    } else if (
+        afectacion === "PARCIAL"
+    ) {
 
-        });
+        afectaciones.PARCIAL++;
+
+    } else if (
+        afectacion === "VELOCIDAD"
+    ) {
+
+        afectaciones.VELOCIDAD++;
+
+    } else if (
+        afectacion === "PQR"
+    ) {
+
+        afectaciones.PQR++;
+
+    } else if (
+        afectacion === "P3"
+    ) {
+
+        afectaciones.P3++;
+
+    }
+
+});
 
         document.getElementById("afOffline").textContent =
             afectaciones.OFFLINE || 0;
