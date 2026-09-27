@@ -54,13 +54,27 @@ console.log(datos[0]);
                 datos.map(f => f[idxID])
             );
 
-        const altoImpacto =
-            datos.filter(
-                f =>
-                (f[idxPrioridad] || "")
-                    .trim()
-                    .toUpperCase() === "ALTA"
-            ).length;
+        const otsAlta = new Set();
+
+datos.forEach(fila => {
+
+    const prioridad =
+        (fila[idxPrioridad] || "")
+        .trim()
+        .toUpperCase();
+
+    if (prioridad === "ALTA") {
+
+        otsAlta.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
+
+const altoImpacto =
+    otsAlta.size;
 
         document.getElementById("kpiOTs").textContent =
             otsUnicas.size.toLocaleString("es-CO");
