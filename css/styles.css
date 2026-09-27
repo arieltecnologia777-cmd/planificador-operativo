@@ -496,18 +496,19 @@ button{
 
 .bar-row{
     display:grid;
-    grid-template-columns:72px minmax(0,1fr) 20px;
-    gap:9px;
+    grid-template-columns:110px minmax(0,1fr) 45px;
+    gap:10px;
     align-items:center;
-    font-size:.69rem;
+    font-size:.85rem;
     color:#37567e;
+}r:#37567e;
 }
 
 .bar-row strong{
     color:#173a6d;
-    font-size:.72rem;
+    font-size:.9rem;
+    font-weight:700;
 }
-
 .bar-track{
     height:14px;
     background:#edf2f8;
