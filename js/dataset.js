@@ -21,20 +21,29 @@ console.log(encabezados);
 console.log(datos[0]);
 
         const idxOT =
-            encabezados.indexOf("OT");
+    encabezados.findIndex(
+        h => h.trim() === "OT"
+    );
 
-        const idxID =
-            encabezados.indexOf("ID");
+       const idxID =
+    encabezados.findIndex(
+        h => h.trim() === "ID"
+    );
 
         const idxDepto =
-            encabezados.indexOf("Departamento");
+    encabezados.findIndex(
+        h => h.trim() === "Departamento"
+    );
 
         const idxPrioridad =
-            encabezados.indexOf("Tipo de prioridad");
+    encabezados.findIndex(
+        h => h.trim() === "Tipo de prioridad"
+    );
 
         const idxAfectacion =
-            encabezados.indexOf("Tipo de afectación");
-
+    encabezados.findIndex(
+        h => h.trim() === "Tipo de afectación"
+    );
         const otsUnicas =
             new Set(
                 datos.map(f => f[idxOT])
