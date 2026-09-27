@@ -219,6 +219,9 @@ const maxAfectacion = Math.max(
     1
 );
 
+        console.log(afectaciones);
+console.log("maxAfectacion", maxAfectacion);
+
         document.getElementById("barOffline").style.width =
             ((afectaciones.OFFLINE / maxAfectacion) * 100) + "%";
 
