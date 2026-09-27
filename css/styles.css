@@ -451,9 +451,9 @@ button{
     background:#fff;
     border:1px solid var(--border);
     border-radius:18px;
-    padding:17px 18px;
+    padding:22px 22px;
     box-shadow:var(--shadow);
-    min-height:258px;
+    min-height:330px;
     overflow:hidden;
 }
 
@@ -490,27 +490,26 @@ button{
 .bar-chart{
     display:flex;
     flex-direction:column;
-    gap:13px;
-    padding-top:2px;
+    gap:22px;
+    margin-top:20px;
 }
 
 .bar-row{
     display:grid;
-    grid-template-columns:110px minmax(0,1fr) 45px;
-    gap:10px;
+    grid-template-columns:140px minmax(0,1fr) 60px;
+    gap:14px;
     align-items:center;
-    font-size:.85rem;
+    font-size:1.05rem;
     color:#37567e;
-}r:#37567e;
 }
 
 .bar-row strong{
     color:#173a6d;
-    font-size:.9rem;
-    font-weight:700;
+    font-size:1.1rem;
+    font-weight:800;
 }
 .bar-track{
-    height:14px;
+    height:24px;
     background:#edf2f8;
     border-radius:10px;
     overflow:hidden;
