@@ -158,10 +158,42 @@ console.log(datos[0]);
         document.getElementById("afOperativo").textContent =
             afectaciones.OPERATIVO || 0;
 
-        const maxAfectacion = Math.max(
-            afectaciones.OFFLINE,
-            afectaciones.PARCIAL,
-            afectaciones.VELOCIDAD,
-            afectaciones.PQR,
-            afectaciones.P3,
-         
+                   afectaciones.OPERATIVO,
+            1
+        );
+
+        document.getElementById("barOffline").style.width =
+            ((afectaciones.OFFLINE / maxAfectacion) * 100) + "%";
+
+        document.getElementById("barParcial").style.width =
+            ((afectaciones.PARCIAL / maxAfectacion) * 100) + "%";
+
+        document.getElementById("barVelocidad").style.width =
+            ((afectaciones.VELOCIDAD / maxAfectacion) * 100) + "%";
+
+        document.getElementById("barPQR").style.width =
+            ((afectaciones.PQR / maxAfectacion) * 100) + "%";
+
+        document.getElementById("barP3").style.width =
+            ((afectaciones.P3 / maxAfectacion) * 100) + "%";
+
+        document.getElementById("barOperativo").style.width =
+            ((afectaciones.OPERATIVO / maxAfectacion) * 100) + "%";
+
+        console.log("Dataset cargado correctamente");
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("kpiOTs").textContent = "ERR";
+        document.getElementById("kpiIds").textContent = "ERR";
+        document.getElementById("kpiImpacto").textContent = "ERR";
+    }
+
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    cargarDataset
+);
