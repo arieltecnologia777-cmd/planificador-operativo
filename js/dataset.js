@@ -14,7 +14,11 @@ async function cargarDataset() {
             .map(fila => fila.split(","));
 
         const encabezados = filas[0];
+        console.log("ENCABEZADOS:");
+console.log(encabezados);
         const datos = filas.slice(1);
+        console.log("PRIMER REGISTRO:");
+console.log(datos[0]);
 
         const idxOT =
             encabezados.indexOf("OT");
