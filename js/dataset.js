@@ -194,13 +194,17 @@ departamentosOrdenados.map(item => {
 
     let color = "#e5e7eb";
 
-    if (porcentaje >= 80) {
+    if (porcentaje >= 90) {
         color = "#ff4d6d";
+    } else if (porcentaje >= 75) {
+        color = "#ff6b5f";
     } else if (porcentaje >= 60) {
         color = "#ff8b4d";
-    } else if (porcentaje >= 40) {
-        color = "#ffcf33";
-    } else if (porcentaje >= 20) {
+    } else if (porcentaje >= 45) {
+        color = "#ffb020";
+    } else if (porcentaje >= 25) {
+        color = "#ffd029";
+    } else {
         color = "#ffe680";
     }
 
@@ -268,13 +272,17 @@ afectacionesOrdenadas.map(item => {
 
     let color = "#e5e7eb";
 
-    if (porcentaje >= 80) {
+    if (porcentaje >= 90) {
         color = "#ff4d6d";
+    } else if (porcentaje >= 75) {
+        color = "#ff6b5f";
     } else if (porcentaje >= 60) {
         color = "#ff8b4d";
-    } else if (porcentaje >= 40) {
-        color = "#ffcf33";
-    } else if (porcentaje >= 20) {
+    } else if (porcentaje >= 45) {
+        color = "#ffb020";
+    } else if (porcentaje >= 25) {
+        color = "#ffd029";
+    } else {
         color = "#ffe680";
     }
 
