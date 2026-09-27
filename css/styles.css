@@ -520,13 +520,28 @@ button{
     border-radius:10px;
 }
 
-.bar-fill.blue{background:#2d76e9}
-.bar-fill.purple{background:#8051e8}
-.bar-fill.cyan{background:#1eafc7}
-.bar-fill.orange{background:#f5a623}
-.bar-fill.gray{background:#9eb0c3}
-.bar-fill.red{
-    background:#ef4444;
+.bar-fill.offline{
+    background:#ff4d6d;
+}
+
+.bar-fill.p3{
+    background:#9a5cff;
+}
+
+.bar-fill.parcial{
+    background:#ff9b2f;
+}
+
+.bar-fill.pqr{
+    background:#3a8dff;
+}
+
+.bar-fill.velocidad{
+    background:#ffd029;
+}
+
+.bar-fill.operativo{
+    background:#20b779;
 }
 
 .chart-scale{
