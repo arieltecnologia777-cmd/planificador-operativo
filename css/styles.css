@@ -491,9 +491,9 @@ button{
 .bar-chart{
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    height:calc(100% - 40px);
-    padding-top:10px;
+    justify-content:space-around;
+    flex:1;
+    margin-top:10px;
 }
 
 .bar-row{
