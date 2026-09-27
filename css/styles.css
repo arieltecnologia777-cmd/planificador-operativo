@@ -489,9 +489,8 @@ button{
 .bar-chart{
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    height:180px;
-    margin-top:12px;
+    gap:22px;
+    padding-top:10px;
 }
 
 .bar-row{
@@ -501,6 +500,8 @@ button{
     align-items:center;
     font-size:.95rem;
     color:#37567e;
+
+    padding:10px 0;
 }
 
 .bar-row strong{
