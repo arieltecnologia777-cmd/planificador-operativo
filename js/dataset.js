@@ -156,11 +156,17 @@ console.log(datos[0]);
             afectaciones.P3 || 0;
 
         document.getElementById("afOperativo").textContent =
-            afectaciones.OPERATIVO || 0;
+    afectaciones.OPERATIVO || 0;
 
-                   afectaciones.OPERATIVO,
-            1
-        );
+const maxAfectacion = Math.max(
+    afectaciones.OFFLINE,
+    afectaciones.PARCIAL,
+    afectaciones.VELOCIDAD,
+    afectaciones.PQR,
+    afectaciones.P3,
+    afectaciones.OPERATIVO,
+    1
+);
 
         document.getElementById("barOffline").style.width =
             ((afectaciones.OFFLINE / maxAfectacion) * 100) + "%";
