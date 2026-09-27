@@ -847,10 +847,9 @@ button{
     border-radius:50%;
     display:grid;
     place-items:center;
-    background:conic-gradient(#22b77a 0 78%,#edf1f5 78% 100%);
+    background:#edf1f5;
     position:relative;
 }
-
 .progress-ring:after{
     content:"";
     position:absolute;
