@@ -586,19 +586,19 @@ button{
 }
 
 .table-head{
-    padding:10px 10px;
+    padding:8px 8px;
     color:#7186a3;
     background:#f8fafc;
     border-radius:8px;
-    font-size:.72rem;
+    font-size:.65rem;
     font-weight:700;
 }
 
 .table-row{
-    padding:11px 10px;
+    padding:9px 8px;
     border-bottom:1px solid #edf1f5;
     color:#395777;
-    font-size:.78rem;
+    font-size:.70rem;
 }
 .table-row:last-child{
     border-bottom:0;
@@ -607,9 +607,8 @@ button{
 .table-row span:first-child{
     color:#193d72;
     font-weight:800;
-    font-size:.82rem;
+    font-size:.74rem;
 }
-
 .priority{
     justify-self:start;
     padding:5px 10px;
