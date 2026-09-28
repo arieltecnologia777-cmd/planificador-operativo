@@ -1069,6 +1069,15 @@ button{
     display:flex;
     gap:12px;
     margin-bottom:18px;
+
+    position:sticky;
+    top:0;
+
+    z-index:30;
+
+    background:#fff;
+
+    padding:12px 0;
 }
 
 .planeacion-filtros input,
@@ -1097,8 +1106,15 @@ button{
     font-weight:800;
     text-align:left;
     padding:12px;
+
+    position:sticky;
+    top:64px;
+
+    z-index:20;
+
     border-bottom:1px solid var(--border);
 }
+
 
 .planeacion-table td{
     padding:10px 12px;
