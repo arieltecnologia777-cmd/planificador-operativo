@@ -199,6 +199,8 @@ button{
 .hero-content{
     position:relative;
     z-index:3;
+    width:42%;
+    margin-left:8px;
 }
 
 .hero-badge{
@@ -223,7 +225,7 @@ button{
 }
 
 .hero h1{
-    font-size:2.35rem;
+    font-size:2rem;
     font-weight:850;
     color:#fff;
     line-height:1.05;
