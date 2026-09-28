@@ -586,21 +586,20 @@ button{
 }
 
 .table-head{
-    padding:8px 8px;
-    color:#334155;
+    padding:10px 10px;
+    color:#7186a3;
     background:#f8fafc;
     border-radius:8px;
-    font-size:.70rem;
-    font-weight:800;
+    font-size:.72rem;
+    font-weight:700;
 }
 
 .table-row{
-    padding:10px 8px;
+    padding:11px 10px;
     border-bottom:1px solid #edf1f5;
     color:#395777;
-    font-size:.62rem;
+    font-size:.78rem;
 }
-
 .table-row:last-child{
     border-bottom:0;
 }
@@ -608,13 +607,14 @@ button{
 .table-row span:first-child{
     color:#193d72;
     font-weight:800;
+    font-size:.82rem;
 }
 
 .priority{
     justify-self:start;
-    padding:4px 9px;
+    padding:5px 10px;
     border-radius:12px;
-    font-size:.57rem;
+    font-size:.7rem;
     font-weight:800;
 }
 
