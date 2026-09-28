@@ -360,7 +360,7 @@ datos.forEach(fila => {
 
 const topIds = Object.values(idsCriticos)
     .sort((a,b) => b.diasOT - a.diasOT)
-    .slice(0,6);
+    .slice(0,5);
 
 document.getElementById("topIdsContainer").innerHTML =
 topIds.map(item => `
