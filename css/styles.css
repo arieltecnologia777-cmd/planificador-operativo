@@ -777,29 +777,32 @@ button{
 
 .state-list div{
     display:grid;
-    grid-template-columns:10px 1fr 28px 27px;
-    gap:7px;
+    grid-template-columns:14px 1fr 45px 45px;
+    gap:10px;
     align-items:center;
-    font-size:.62rem;
+    font-size:.82rem;
     color:#536f8e;
 }
 
 .state-list strong{
     color:#173e73;
     text-align:right;
+    font-size:.95rem;
+    font-weight:700;
 }
 
 .state-list em{
     color:#8195ad;
     font-style:normal;
     text-align:right;
-    font-size:.58rem;
+    font-size:.8rem;
+    font-weight:600;
 }
 
 .legend-dot{
     display:block;
-    width:9px;
-    height:9px;
+    width:12px;
+    height:12px;
     border-radius:50%;
 }
 
