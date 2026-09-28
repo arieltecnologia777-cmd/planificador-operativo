@@ -44,6 +44,17 @@ async function cargarPlaneacion(){
             h => h.trim() === "Tipo de prioridad"
         );
 
+    const altaPrioridad =
+    datos.filter(
+        fila =>
+            (fila[idxPrioridad] || "").trim() === "Alta"
+    ).length;
+
+document.getElementById(
+    "kpiAltaPlaneacion"
+).textContent = altaPrioridad;
+    
+
     document.getElementById(
         "planeacionBody"
     ).innerHTML = datos.slice(0,100).map(fila => `
