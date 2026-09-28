@@ -1100,21 +1100,20 @@ button{
 }
 
 .planeacion-table th{
-    background:#f8fafc;
-    color:#173a6d;
-    font-size:.75rem;
-    font-weight:800;
-    text-align:left;
-    padding:12px;
-
-    position:sticky;
-    top:64px;
-
-    z-index:20;
-
-    border-bottom:1px solid var(--border);
+background:#f8fafc;
+color:#173a6d;
+font-size:.75rem;
+font-weight:800;
+text-align:left;
+padding:12px;
+ 
+position:sticky;
+top:130px;
+ 
+z-index:20;
+ 
+border-bottom:1px solid var(--border);
 }
-
 
 .planeacion-table td{
     padding:10px 12px;
@@ -1148,25 +1147,19 @@ button{
 }
 
 .planeacion-header{
-    position:sticky;
-    top:0;
-    z-index:40;
-
-    background:#fff;
-
-    padding-bottom:10px;
+position:sticky;
+top:0;
+z-index:40;
+background:#fff;
+padding-bottom:10px;
 }
 
 .planeacion-filtros-sticky{
-    position:sticky;
-
-    top:58px;
-
-    z-index:39;
-
-    background:#fff;
-
-    padding-bottom:12px;
+position:sticky;
+top:58px;
+z-index:39;
+background:#fff;
+padding-bottom:12px;
 }
 /* =========================
    RESPONSIVE
