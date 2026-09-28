@@ -1146,6 +1146,16 @@ button{
     border-radius:10px;
     padding:8px;
 }
+
+.planeacion-header{
+    position:sticky;
+    top:0;
+    z-index:40;
+
+    background:#fff;
+
+    padding-bottom:10px;
+}
 /* =========================
    RESPONSIVE
 ========================= */
