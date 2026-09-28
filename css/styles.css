@@ -199,8 +199,9 @@ button{
 .hero-content{
     position:relative;
     z-index:3;
-    width:42%;
-    margin-left:8px;
+    height:100%;
+    display:flex;
+    flex-direction:column;
 }
 
 .hero-badge{
@@ -242,11 +243,13 @@ button{
 }
 
 .hero-update{
+    position:absolute;
+    left:0;
+    bottom:0;
+
     display:flex;
     align-items:center;
     gap:7px;
-
-    margin-top:55px;
 
     font-size:.69rem;
     color:rgba(255,255,255,.9);
