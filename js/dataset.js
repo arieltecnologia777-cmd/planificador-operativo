@@ -475,7 +475,41 @@ document.getElementById("pctP3").textContent =
     porcentaje(afectaciones.P3,totalEstados);
 
 document.getElementById("pctOperativo").textContent =
-    porcentaje(totalOperativos,totalCentros);       
+    porcentaje(totalOperativos,totalCentros);
+
+        const donutEstado = document.querySelector(".donut");
+
+if (donutEstado) {
+
+    const pOffline =
+        (afectaciones.OFFLINE / totalEstados) * 100;
+
+    const pParcial =
+        (afectaciones.PARCIAL / totalEstados) * 100;
+
+    const pVelocidad =
+        (afectaciones.VELOCIDAD / totalEstados) * 100;
+
+    const pPQR =
+        (afectaciones.PQR / totalEstados) * 100;
+
+    const pP3 =
+        (afectaciones.P3 / totalEstados) * 100;
+
+    const pOperativo =
+        (totalOperativos / totalCentros) * 100;
+
+    donutEstado.style.background = `
+        conic-gradient(
+            #ff4d6d 0 ${pOffline}%,
+            #ff9b2f ${pOffline}% ${pOffline + pParcial}%,
+            #ffd029 ${pOffline + pParcial}% ${pOffline + pParcial + pVelocidad}%,
+            #3a8dff ${pOffline + pParcial + pVelocidad}% ${pOffline + pParcial + pVelocidad + pPQR}%,
+            #9a5cff ${pOffline + pParcial + pVelocidad + pPQR}% ${pOffline + pParcial + pVelocidad + pPQR + pP3}%,
+            #20b779 ${pOffline + pParcial + pVelocidad + pPQR + pP3}% 100%
+        )
+    `;
+}
         
         console.log("Dataset cargado correctamente");
 
