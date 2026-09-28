@@ -304,34 +304,63 @@ afectacionesOrdenadas.map(item => {
 
 }).join(""); 
 
-        const idsCriticos = {};
+        const idxMunicipio =
+    encabezados.findIndex(
+        h => h.trim() === "Municipio"
+    );
+
+const idxDiasOT =
+    encabezados.findIndex(
+        h => h.trim() === "Días OT"
+    );
+
+const idsCriticos = {};
 
 datos.forEach(fila => {
 
-    const id = (fila[idxID] || "").trim();
+    const prioridad =
+        (fila[idxPrioridad] || "")
+        .trim()
+        .toUpperCase();
 
-    if (!id) return;
+    if (prioridad !== "ALTA") return;
 
-    if (!idsCriticos[id]) {
+    const id =
+        (fila[idxID] || "")
+        .trim();
+
+    const diasOT =
+        Number(fila[idxDiasOT] || 0);
+
+    if (
+        !idsCriticos[id] ||
+        diasOT > idsCriticos[id].diasOT
+    ) {
+
         idsCriticos[id] = {
-            id: id,
-            departamento: fila[idxDepto] || "",
-            municipio: fila[encabezados.findIndex(
-                h => h.trim() === "Municipio"
-            )] || "",
-            afectacion: fila[idxAfectacion] || "",
-            prioridad: fila[idxPrioridad] || "",
-            cantidad: 0
-        };
-    }
 
-    idsCriticos[id].cantidad++;
+            id: id,
+
+            departamento:
+                fila[idxDepto] || "",
+
+            municipio:
+                fila[idxMunicipio] || "",
+
+            afectacion:
+                fila[idxAfectacion] || "",
+
+            diasOT: diasOT
+
+        };
+
+    }
 
 });
 
 const topIds = Object.values(idsCriticos)
-    .sort((a,b) => b.cantidad - a.cantidad)
-    .slice(0,10);
+    .sort((a,b) => b.diasOT - a.diasOT)
+    .slice(0,6);
 
 document.getElementById("topIdsContainer").innerHTML =
 topIds.map(item => `
@@ -340,15 +369,10 @@ topIds.map(item => `
         <span>${item.departamento}</span>
         <span>${item.municipio}</span>
         <span>${item.afectacion}</span>
-        <b class="priority ${
-            item.prioridad === "Alta"
-                ? "high"
-                : "medium"
-        }">
-            ${item.prioridad}
-        </b>
+        <strong>${item.diasOT}</strong>
     </div>
 `).join("");
+
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
