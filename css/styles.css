@@ -1156,6 +1156,18 @@ button{
 
     padding-bottom:10px;
 }
+
+.planeacion-filtros-sticky{
+    position:sticky;
+
+    top:58px;
+
+    z-index:39;
+
+    background:#fff;
+
+    padding-bottom:12px;
+}
 /* =========================
    RESPONSIVE
 ========================= */
