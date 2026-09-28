@@ -422,6 +422,49 @@ document.getElementById("estadoTotal").textContent =
 document.getElementById("porcentajeOperativo").textContent =
     pctOperativo + "%";
 
+        const donaGeneral =
+document.querySelector(".progress-ring");
+
+if (donaGeneral) {
+
+    const pOperativos =
+        totalCentros > 0
+        ? (totalOperativos / totalCentros) * 100
+        : 0;
+
+    const pGestionables =
+        totalCentros > 0
+        ? (totalGestionables / totalCentros) * 100
+        : 0;
+
+    const pIntervencion =
+        totalCentros > 0
+        ? (totalIntervencion / totalCentros) * 100
+        : 0;
+
+    const pCriticos =
+        totalCentros > 0
+        ? (totalCriticos / totalCentros) * 100
+        : 0;
+
+    const finOperativos =
+        pOperativos;
+
+    const finGestionables =
+        finOperativos + pGestionables;
+
+    const finIntervencion =
+        finGestionables + pIntervencion;
+
+    donaGeneral.style.background =
+    `conic-gradient(
+        #20b779 0% ${finOperativos}%,
+        #f59e0b ${finOperativos}% ${finGestionables}%,
+        #347de8 ${finGestionables}% ${finIntervencion}%,
+        #ef4444 ${finIntervencion}% 100%
+    )`;
+}
+
 const totalEstados =
     afectaciones.OFFLINE +
     afectaciones.PARCIAL +
