@@ -373,6 +373,110 @@ topIds.map(item => `
     </div>
 `).join("");
 
+
+ const totalCentros =
+    idsUnicos.size;
+
+const totalCriticos =
+    afectaciones.OFFLINE;
+
+const totalIntervencion =
+    afectaciones.VELOCIDAD +
+    afectaciones.P3 +
+    afectaciones.PQR;
+
+const totalGestionables =
+    afectaciones.PARCIAL;
+
+const totalOperativos =
+    Math.max(
+        0,
+        totalCentros -
+        totalCriticos -
+        totalIntervencion -
+        totalGestionables
+    );
+
+const pctOperativo =
+    totalCentros > 0
+    ? Math.round(
+        (totalOperativos / totalCentros) * 100
+      )
+    : 0;
+
+document.getElementById("estadoOperativos").textContent =
+    totalOperativos;
+
+document.getElementById("estadoGestionables").textContent =
+    totalGestionables;
+
+document.getElementById("estadoIntervencion").textContent =
+    totalIntervencion;
+
+document.getElementById("estadoCriticos").textContent =
+    totalCriticos;
+
+document.getElementById("estadoTotal").textContent =
+    totalCentros;
+
+document.getElementById("porcentajeOperativo").textContent =
+    pctOperativo + "%";
+
+const totalEstados =
+    afectaciones.OFFLINE +
+    afectaciones.PARCIAL +
+    afectaciones.VELOCIDAD +
+    afectaciones.PQR +
+    afectaciones.P3;
+
+document.getElementById("donutTotal").textContent =
+    totalEstados;
+
+document.getElementById("estadoOffline").textContent =
+    afectaciones.OFFLINE;
+
+document.getElementById("estadoParcial").textContent =
+    afectaciones.PARCIAL;
+
+document.getElementById("estadoVelocidad").textContent =
+    afectaciones.VELOCIDAD;
+
+document.getElementById("estadoPQR").textContent =
+    afectaciones.PQR;
+
+document.getElementById("estadoP3").textContent =
+    afectaciones.P3;
+
+document.getElementById("estadoOperativoReal").textContent =
+    totalOperativos;
+
+function porcentaje(valor,total){
+
+    if(total === 0) return "0%";
+
+    return Math.round(
+        (valor / total) * 100
+    ) + "%";
+}
+
+document.getElementById("pctOffline").textContent =
+    porcentaje(afectaciones.OFFLINE,totalEstados);
+
+document.getElementById("pctParcial").textContent =
+    porcentaje(afectaciones.PARCIAL,totalEstados);
+
+document.getElementById("pctVelocidad").textContent =
+    porcentaje(afectaciones.VELOCIDAD,totalEstados);
+
+document.getElementById("pctPQR").textContent =
+    porcentaje(afectaciones.PQR,totalEstados);
+
+document.getElementById("pctP3").textContent =
+    porcentaje(afectaciones.P3,totalEstados);
+
+document.getElementById("pctOperativo").textContent =
+    porcentaje(totalOperativos,totalCentros);       
+        
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
