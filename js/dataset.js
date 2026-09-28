@@ -553,7 +553,54 @@ if (donutEstado) {
         )
     `;
 }
+
+        function actualizarKPI(idValor,idTexto,valor){
+
+    const elValor =
+        document.getElementById(idValor);
+
+    const elTexto =
+        document.getElementById(idTexto);
+
+    if(valor > 0){
+
+        elValor.textContent =
+            valor.toLocaleString("es-CO");
+
+        elTexto.style.display =
+            "none";
+
+    } else {
+
+        elValor.textContent =
+            "--";
+
+        elTexto.style.display =
+            "block";
+
+    }
+
+}
+
+        actualizarKPI(
+    "kpiOperativas",
+    "trendOperativas",
+    0
+);
+
+actualizarKPI(
+    "kpiGestionables",
+    "trendGestionables",
+    0
+);
+
+actualizarKPI(
+    "kpiProgramadas",
+    "trendProgramadas",
+    0
+);
         
+
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
