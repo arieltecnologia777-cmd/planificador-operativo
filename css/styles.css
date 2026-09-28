@@ -499,8 +499,9 @@ button{
     gap:12px;
     align-items:center;
     font-size:.95rem;
-    color:#37567e;
+    color:#173a6d;
     padding:2px 0;
+    font-weight:700;
 }
 
 .bar-row strong{
