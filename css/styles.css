@@ -242,10 +242,14 @@ button{
 }
 
 .hero-update{
+    position:absolute;
+    left:28px;
+    bottom:16px;
+
     display:flex;
     align-items:center;
     gap:7px;
-    margin-top:32px;
+
     font-size:.69rem;
     color:rgba(255,255,255,.9);
 }
