@@ -163,14 +163,14 @@ button{
 
 .hero{
     position:relative;
-    min-height:164px;
+    min-height:190px;
     margin-bottom:16px;
     overflow:hidden;
     isolation:isolate;
 
     background-image:url("../assets/banner.jpg");
-    background-size:contain;
-    background-position:right center;
+    background-size:cover;
+    background-position:center;
     background-repeat:no-repeat;
 
     border:1px solid #d4e3f6;
