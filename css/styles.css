@@ -1006,6 +1006,13 @@ button{
 .rank6{
     background:#e5e7eb !important;
 }
+
+#departamentosContainer{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-evenly;
+    height:180px;
+}
 /* =========================
    RESPONSIVE
 ========================= */
