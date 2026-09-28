@@ -169,7 +169,7 @@ button{
     isolation:isolate;
 
     background-image:url("../assets/banner.jpg");
-    background-size:90% auto;
+    background-size:100% auto;
     background-position:center center;
     background-repeat:no-repeat;
 
