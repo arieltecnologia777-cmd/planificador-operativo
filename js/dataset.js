@@ -302,7 +302,53 @@ afectacionesOrdenadas.map(item => {
         </div>
     `;
 
-}).join("");    
+}).join(""); 
+
+        const idsCriticos = {};
+
+datos.forEach(fila => {
+
+    const id = (fila[idxID] || "").trim();
+
+    if (!id) return;
+
+    if (!idsCriticos[id]) {
+        idsCriticos[id] = {
+            id: id,
+            departamento: fila[idxDepto] || "",
+            municipio: fila[encabezados.findIndex(
+                h => h.trim() === "Municipio"
+            )] || "",
+            afectacion: fila[idxAfectacion] || "",
+            prioridad: fila[idxPrioridad] || "",
+            cantidad: 0
+        };
+    }
+
+    idsCriticos[id].cantidad++;
+
+});
+
+const topIds = Object.values(idsCriticos)
+    .sort((a,b) => b.cantidad - a.cantidad)
+    .slice(0,10);
+
+document.getElementById("topIdsContainer").innerHTML =
+topIds.map(item => `
+    <div class="table-row">
+        <span>${item.id}</span>
+        <span>${item.departamento}</span>
+        <span>${item.municipio}</span>
+        <span>${item.afectacion}</span>
+        <b class="priority ${
+            item.prioridad === "Alta"
+                ? "high"
+                : "medium"
+        }">
+            ${item.prioridad}
+        </b>
+    </div>
+`).join("");
         console.log("Dataset cargado correctamente");
 
     } catch (error) {
