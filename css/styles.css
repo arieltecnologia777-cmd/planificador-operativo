@@ -1008,10 +1008,7 @@ button{
 }
 
 #departamentosContainer{
-    display:flex;
-    flex-direction:column;
-    justify-content:space-evenly;
-    height:180px;
+    margin-top:35px;
 }
 /* =========================
    RESPONSIVE
