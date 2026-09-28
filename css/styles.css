@@ -268,6 +268,23 @@ background-position:90% center;
     font-size:1rem;
 }
 
+.hero-slogan-text{
+    position:absolute;
+
+    right:28px;
+    bottom:18px;
+
+    color:rgba(255,255,255,.92);
+
+    font-size:.86rem;
+
+    font-weight:500;
+
+    text-align:right;
+
+    z-index:5;
+}
+
 .hero-network{
     position:absolute;
     right:0;
