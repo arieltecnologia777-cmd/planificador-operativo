@@ -1068,7 +1068,8 @@ button{
 .planeacion-filtros{
     display:flex;
     gap:12px;
-    margin-bottom:18px;
+
+    margin-bottom:6px;
 
     position:sticky;
     top:0;
@@ -1077,8 +1078,9 @@ button{
 
     background:#fff;
 
-    padding:12px 0;
+    padding:4px 0;
 }
+
 
 .planeacion-filtros input,
 .planeacion-filtros select{
@@ -1173,26 +1175,21 @@ button{
 
 .planeacion-header{
     position:sticky;
-
     top:0;
-
     z-index:300;
-
     background:#fff;
-
-    padding-bottom:10px;
+    padding-bottom:2px;
 }
 
 .planeacion-filtros-sticky{
     position:sticky;
-
     top:45px;
 
     z-index:250;
 
     background:#fff;
 
-    padding-bottom:12px;
+    padding-bottom:0;
 }
 
 /* =========================
