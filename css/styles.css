@@ -199,7 +199,10 @@ background-position:90% center;
 .hero-content{
     position:relative;
     z-index:3;
-    width:420px;
+    display:flex;
+    flex-direction:column;
+
+    height:150px;
 }
 
 .hero-badge{
@@ -252,10 +255,7 @@ background-position:90% center;
 }
 
 .hero-update{
-    position:absolute;
-
-    left:0;
-    bottom:-55px;
+    margin-top:auto;
 
     display:flex;
     align-items:center;
@@ -271,8 +271,8 @@ background-position:90% center;
 .hero-slogan-text{
     position:absolute;
 
-    right:25px;
-    bottom:12px;
+    right:7px;
+    bottom:1px;
 
     color:rgba(255,255,255,.92);
 
@@ -284,6 +284,7 @@ background-position:90% center;
 
     z-index:5;
 }
+
 .hero-network{
     position:absolute;
     right:0;
