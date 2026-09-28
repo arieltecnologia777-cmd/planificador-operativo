@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planeación Operativa</title>
+
+    ../css/styles.css
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="logo-box">
+
+            <img
+                src="../assets/dominion_logo.png"
+                class="logo-img"
+                alt="Dominion">
+
+            <div class="logo-text">
+                  </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            ../index.html
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+
+            <a href="#" class="active">
+                <span class="nav-icon">📅</span>
+                Planeación
+            </a>
+
+            <a href="#">
+                <span class="nav-icon">📋</span>
+                Seguimiento
+            </a>
+
+            <a href="#">
+                <span class="nav-icon">📡</span>
+                Centros Digitales
+            </a>
+
+            <a href="#">
+                <span class="nav-icon">🗺️</span>
+                Mapa
+            </a>
+
+            <a href="#">
+                <span class="nav-icon">📈</span>
+                Reportes
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="hero">
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+                    <span></span>
+                    PLANEACIÓN
+                </div>
+
+                <h1>Planeación Operativa</h1>
+
+                <p>
+                    Programación, seguimiento y gestión de órdenes de trabajo.
+                </p>
+
+            </div>
+
+        </header>
+
+        <section id="kpis">
+
+            <div class="card kpi-card kpi-purple">
+                <div class="kpi-top">
+                    <span class="kpi-icon">📅</span>
+                    <h3>Pendientes de Programar</h3>
+                </div>
+
+                <span class="kpi-value" id="kpiPendientes">--</span>
+
+                <div class="kpi-trend">
+                    Revisar OTs
+                </div>
+            </div>
+
+            <div class="card kpi-card kpi-green">
+                <div class="kpi-top">
+                    <span class="kpi-icon">✓</span>
+                    <h3>Gestionables</h3>
+                </div>
+
+                <span class="kpi-value" id="kpiGestionablesPlaneacion">--</span>
+
+                <div class="kpi-trend">
+                    Clasificar
+                </div>
+            </div>
+
+            <div class="card kpi-card kpi-cyan">
+                <div class="kpi-top">
+                    <span class="kpi-icon">⚙</span>
+                    <h3>Programadas</h3>
+                </div>
+
+                <span class="kpi-value" id="kpiProgramadasPlaneacion">--</span>
+
+                <div class="kpi-trend">
+                    Agenda activa
+                </div>
+            </div>
+
+            <div class="card kpi-card kpi-red">
+                <div class="kpi-top">
+                    <span class="kpi-icon">!</span>
+                    <h3>Alta Prioridad</h3>
+                </div>
+
+                <span class="kpi-value" id="kpiAltaPlaneacion">--</span>
+
+                <div class="kpi-trend">
+                    Atención inmediata
+                </div>
+            </div>
+
+        </section>
+
+        <section class="panel">
+
+            <div class="panel-header">
+                <h2>Planeación Operativa</h2>
+            </div>
+
+            <div class="planeacion-filtros">
+
+                <input
+                    type="text"
+                    placeholder="Buscar ID, OT o Municipio">
+
+                <select>
+                    <option>Departamento</option>
+                </select>
+
+                <select>
+                    <option>Estado Gestión</option>
+                </select>
+
+            </div>
+
+            <div id="tablaPlaneacion">
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+../js/app.jsscript>
+../js/planeacion.jsscript>
+
+</body>
+</html>
