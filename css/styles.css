@@ -199,7 +199,6 @@ button{
 .hero-content{
     position:relative;
     z-index:3;
-    height:100%;
     display:flex;
     flex-direction:column;
 }
@@ -254,15 +253,18 @@ button{
 }
 
 .hero-update{
+    position:absolute;
+    left:28px;
+    bottom:18px;
+
     display:flex;
     align-items:center;
     gap:7px;
 
-    margin-top:auto;
-    padding-bottom:4px;
-
     font-size:.69rem;
     color:rgba(255,255,255,.9);
+
+    z-index:5;
 }
 .clock-icon{
     font-size:1rem;
