@@ -169,8 +169,8 @@ button{
     isolation:isolate;
 
     background-image:url("../assets/banner.jpg");
-    background-size:cover;
-    background-position:center;
+    background-size:contain;
+    background-position:right center;
     background-repeat:no-repeat;
 
     border:1px solid #d4e3f6;
