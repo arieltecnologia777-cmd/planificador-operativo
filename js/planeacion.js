@@ -47,7 +47,12 @@ function pintarTabla(datos){
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
-
+console.log(
+    datos.filter(
+        fila =>
+        (fila[idxDepto] || "").trim() === "ANTIOQUIA"
+    )
+);
     document.getElementById(
         "planeacionBody"
     ).innerHTML = datos.map(fila => `
@@ -99,10 +104,44 @@ async function cargarPlaneacion(){
     const resp = await fetch(DATASET_URL);
     const texto = await resp.text();
 
-    const filas = texto
-        .trim()
-        .split("\n")
-        .map(f => f.split(","));
+   const filas = texto
+    .trim()
+    .split(/\r?\n/)
+    .map(fila => {
+
+        const valores = [];
+        let actual = "";
+        let dentroComillas = false;
+
+        for(let i=0;i<fila.length;i++){
+
+            const caracter = fila[i];
+
+            if(caracter === '"'){
+
+                dentroComillas = !dentroComillas;
+
+            }else if(
+                caracter === "," &&
+                !dentroComillas
+            ){
+
+                valores.push(actual);
+                actual = "";
+
+            }else{
+
+                actual += caracter;
+
+            }
+
+        }
+
+        valores.push(actual);
+
+        return valores;
+
+    });
 
     encabezadosGlobal = filas[0];
 datosGlobal = filas.slice(1);
