@@ -9,9 +9,43 @@ async function cargarDataset() {
         const texto = await resp.text();
 
         const filas = texto
-            .trim()
-            .split("\n")
-            .map(fila => fila.split(","));
+    .trim()
+    .split(/\r?\n/)
+    .map(fila => {
+
+        const valores = [];
+        let actual = "";
+        let dentroComillas = false;
+
+        for(let i = 0; i < fila.length; i++){
+
+            const caracter = fila[i];
+
+            if(caracter === '"'){
+
+                dentroComillas = !dentroComillas;
+
+            }else if(
+                caracter === "," &&
+                !dentroComillas
+            ){
+
+                valores.push(actual);
+                actual = "";
+
+            }else{
+
+                actual += caracter;
+
+            }
+
+        }
+
+        valores.push(actual);
+
+        return valores;
+
+    });
 
         const encabezados = filas[0];
         console.log("ENCABEZADOS:");
