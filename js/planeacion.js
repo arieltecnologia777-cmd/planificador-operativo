@@ -235,11 +235,12 @@ function actualizarKPIs(datos){
         );
 
     const alta =
-        datos.filter(
-            fila =>
-                (fila[idxPrioridad] || "")
-                    .trim() === "Alta"
-        ).length;
+    datos.filter(
+        fila =>
+            (fila[idxPrioridad] || "")
+                .trim()
+                .toUpperCase() === "ALTA"
+    ).length;
 
     const media =
         datos.filter(
