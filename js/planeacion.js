@@ -153,7 +153,15 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
+console.log(
+    "idxPrioridad:",
+    idxPrioridad
+);
 
+console.log(
+    "Encabezado encontrado:",
+    encabezados[idxPrioridad]
+);
     const altaPrioridad =
     datos.filter(
         fila =>
