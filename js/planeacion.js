@@ -80,9 +80,10 @@ console.log(
 </td>
 
 <td>
+    <td>
     <input
-        class="edit-input"
-        placeholder="Fecha programación">
+        class="edit-input fecha-input"
+        type="date">
 </td>
 
             <td>
