@@ -339,6 +339,11 @@ function actualizarKPIs(datos){
 
     const encabezados = encabezadosGlobal;
 
+    const idxOT =
+        encabezados.findIndex(
+            h => h.trim() === "OT"
+        );
+
     const idxPrioridad =
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
@@ -349,70 +354,70 @@ function actualizarKPIs(datos){
             h => h.trim() === "Indicador backlog"
         );
 
-    const alta =
-    datos.filter(fila => {
+    const otsAlta = new Set();
+    const otsMedia = new Set();
+    const otsBaja = new Set();
 
-        const valor =
+    const otsCumple = new Set();
+    const otsNoCumple = new Set();
+
+    datos.forEach(fila => {
+
+        const ot =
+            (fila[idxOT] || "")
+            .trim();
+
+        const prioridad =
             (fila[idxPrioridad] || "")
             .trim()
             .toUpperCase();
 
-        return valor.includes("ALTA");
+        const backlog =
+            (fila[idxBacklog] || "")
+            .trim()
+            .toUpperCase();
 
-    }).length;
+        if (prioridad === "ALTA") {
+            otsAlta.add(ot);
+        }
 
-    console.log(
-    "Filas recibidas para KPI:",
-    datos.length
-);
+        if (prioridad === "MEDIA") {
+            otsMedia.add(ot);
+        }
 
-    const media =
-        datos.filter(
-            fila =>
-                (fila[idxPrioridad] || "")
-                    .trim() === "Media"
-        ).length;
+        if (prioridad === "BAJA") {
+            otsBaja.add(ot);
+        }
 
-    const baja =
-        datos.filter(
-            fila =>
-                (fila[idxPrioridad] || "")
-                    .trim() === "Baja"
-        ).length;
+        if (backlog === "CUMPLE") {
+            otsCumple.add(ot);
+        }
 
-    const cumple =
-        datos.filter(
-            fila =>
-                (fila[idxBacklog] || "")
-                    .trim() === "Cumple"
-        ).length;
+        if (backlog === "NO CUMPLE") {
+            otsNoCumple.add(ot);
+        }
 
-    const noCumple =
-        datos.filter(
-            fila =>
-                (fila[idxBacklog] || "")
-                    .trim() === "No cumple"
-        ).length;
+    });
 
     document.getElementById(
         "kpiAltaPlaneacion"
-    ).textContent = alta;
+    ).textContent = otsAlta.size;
 
     document.getElementById(
         "kpiMediaPlaneacion"
-    ).textContent = media;
+    ).textContent = otsMedia.size;
 
     document.getElementById(
         "kpiBajaPlaneacion"
-    ).textContent = baja;
+    ).textContent = otsBaja.size;
 
     document.getElementById(
         "kpiCumpleBacklog"
-    ).textContent = cumple;
+    ).textContent = otsCumple.size;
 
     document.getElementById(
         "kpiNoCumpleBacklog"
-    ).textContent = noCumple;
+    ).textContent = otsNoCumple.size;
 
 }
 
