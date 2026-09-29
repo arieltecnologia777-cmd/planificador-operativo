@@ -235,12 +235,21 @@ function actualizarKPIs(datos){
         );
 
     const alta =
-    datos.filter(
-        fila =>
+    datos.filter(fila => {
+
+        const valor =
             (fila[idxPrioridad] || "")
-                .trim()
-                .toUpperCase() === "ALTA"
-    ).length;
+            .trim()
+            .toUpperCase();
+
+        return valor.includes("ALTA");
+
+    }).length;
+
+    console.log(
+    "Filas recibidas para KPI:",
+    datos.length
+);
 
     const media =
         datos.filter(
