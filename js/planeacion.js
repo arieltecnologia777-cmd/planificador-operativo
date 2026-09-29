@@ -192,76 +192,120 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
-console.log(
-    "idxPrioridad:",
-    idxPrioridad
-);
 
-console.log(
-    "Encabezado encontrado:",
-    encabezados[idxPrioridad]
-);
-    const altaPrioridad =
-    datos.filter(
-        fila =>
-            (fila[idxPrioridad] || "").trim().toUpperCase() === "ALTA"
-    ).length;
+    const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );
+    const otsAlta = new Set();
 
-    console.log(
-    "Altas encontradas:",
-    datos.filter(
-        fila =>
-            (fila[idxPrioridad] || "")
-            .trim()
-            .toUpperCase() === "ALTA"
-    ).length
-);
+datos.forEach(fila => {
 
-    console.log(
-    "Valores prioridad:",
-    [...new Set(
-        datos.map(
-            fila => fila[idxPrioridad]
-        )
-    )]
-);
-console.log(
-    datos
-        .map(fila => fila[idxPrioridad])
-        .filter(v => v)
-);
+    const prioridad =
+        (fila[idxPrioridad] || "")
+        .trim()
+        .toUpperCase();
 
-    const mediaPrioridad =
-datos.filter(
-    fila =>
-    (fila[idxPrioridad] || "").trim() === "Media"
-).length;
+    if(prioridad === "ALTA"){
+
+        otsAlta.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
+
+const altaPrioridad =
+    otsAlta.size;
+    
+    const otsMedia = new Set();
+
+datos.forEach(fila => {
+
+    const prioridad =
+        (fila[idxPrioridad] || "")
+        .trim()
+        .toUpperCase();
+
+    if(prioridad === "MEDIA"){
+
+        otsMedia.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
+
+const mediaPrioridad =
+    otsMedia.size;
+
+const otsBaja = new Set();
+
+datos.forEach(fila => {
+
+    const prioridad =
+        (fila[idxPrioridad] || "")
+        .trim()
+        .toUpperCase();
+
+    if(prioridad === "BAJA"){
+
+        otsBaja.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
 
 const bajaPrioridad =
-datos.filter(
-    fila =>
-    (fila[idxPrioridad] || "").trim() === "Baja"
-).length;
+    otsBaja.size;
+
+const otsCumple = new Set();
+
+datos.forEach(fila => {
+
+    const backlog =
+        (fila[idxBacklog] || "")
+        .trim()
+        .toUpperCase();
+
+    if(backlog === "CUMPLE"){
+
+        otsCumple.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
 
 const cumpleBacklog =
-datos.filter(
-    fila =>
-    (fila[
-        encabezados.findIndex(
-            h => h.trim() === "Indicador backlog"
-        )
-    ] || "").trim() === "Cumple"
-).length;
+    otsCumple.size;
+
+const otsNoCumple = new Set();
+
+datos.forEach(fila => {
+
+    const backlog =
+        (fila[idxBacklog] || "")
+        .trim()
+        .toUpperCase();
+
+    if(backlog === "NO CUMPLE"){
+
+        otsNoCumple.add(
+            fila[idxOT]
+        );
+
+    }
+
+});
 
 const noCumpleBacklog =
-datos.filter(
-    fila =>
-    (fila[
-        encabezados.findIndex(
-            h => h.trim() === "Indicador backlog"
-        )
-    ] || "").trim() === "No cumple"
-).length;
+    otsNoCumple.size;
     
 document.getElementById(
     "kpiAltaPlaneacion"
