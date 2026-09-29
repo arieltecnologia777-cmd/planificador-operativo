@@ -157,7 +157,7 @@ document.getElementById(
     const altaPrioridad =
     datos.filter(
         fila =>
-            (fila[idxPrioridad] || "").trim() === "Alta"
+            (fila[idxPrioridad] || "").trim().toUpperCase() === "ALTA"
     ).length;
 
     const mediaPrioridad =
