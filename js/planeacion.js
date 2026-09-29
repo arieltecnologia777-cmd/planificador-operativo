@@ -75,9 +75,11 @@ document.getElementById(
 ).textContent = altaPrioridad;
     
 
+    function pintarTabla(datos){
+
     document.getElementById(
         "planeacionBody"
-    ).innerHTML = datos.slice(0,100).map(fila => `
+    ).innerHTML = datos.map(fila => `
 
         <tr>
 
@@ -117,6 +119,10 @@ document.getElementById(
         </tr>
 
     `).join("");
+
+}
+
+pintarTabla(datos);
 
 }
 
