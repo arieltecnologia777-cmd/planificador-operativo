@@ -6,6 +6,48 @@ let encabezadosGlobal = [];
 
 function pintarTabla(datos){
 
+    const encabezados = encabezadosGlobal;
+
+    const idxID =
+        encabezados.findIndex(
+            h => h.trim() === "ID"
+        );
+
+    const idxDepto =
+        encabezados.findIndex(
+            h => h.trim() === "Departamento"
+        );
+
+    const idxMunicipio =
+        encabezados.findIndex(
+            h => h.trim() === "Municipio"
+        );
+
+    const idxOT =
+        encabezados.findIndex(
+            h => h.trim() === "OT"
+        );
+
+    const idxIM =
+        encabezados.findIndex(
+            h => h.trim() === "IM"
+        );
+
+    const idxAfectacion =
+        encabezados.findIndex(
+            h => h.trim() === "Tipo de afectación"
+        );
+
+    const idxDias =
+        encabezados.findIndex(
+            h => h.trim() === "Días OT"
+        );
+
+    const idxPrioridad =
+        encabezados.findIndex(
+            h => h.trim() === "Tipo de prioridad"
+        );
+
     document.getElementById(
         "planeacionBody"
     ).innerHTML = datos.map(fila => `
