@@ -4,6 +4,54 @@ const DATASET_URL =
 let datosGlobal = [];
 let encabezadosGlobal = [];
 
+function pintarTabla(datos){
+
+    document.getElementById(
+        "planeacionBody"
+    ).innerHTML = datos.map(fila => `
+
+        <tr>
+
+            <td>${fila[idxID]}</td>
+            <td>${fila[idxDepto]}</td>
+            <td>${fila[idxMunicipio]}</td>
+            <td>${fila[idxOT]}</td>
+            <td>${fila[idxIM]}</td>
+            <td>${fila[idxAfectacion]}</td>
+            <td>${fila[idxDias]}</td>
+            <td>${fila[idxPrioridad]}</td>
+
+            <td>
+                <input
+                    class="edit-input"
+                    type="date">
+            </td>
+
+            <td>
+                <input
+                    class="edit-input"
+                    placeholder="Observación">
+            </td>
+
+            <td>
+                <select class="edit-select">
+                    <option></option>
+                    <option>Gestionable</option>
+                    <option>Operativa</option>
+                    <option>Abastecimiento</option>
+                    <option>Escalar abastecimiento</option>
+                    <option>FM / Traslado</option>
+                    <option>Cancelada</option>
+                </select>
+            </td>
+
+        </tr>
+
+    `).join("");
+
+}
+
+
 async function cargarPlaneacion(){
 
     const resp = await fetch(DATASET_URL);
@@ -75,53 +123,7 @@ document.getElementById(
 ).textContent = altaPrioridad;
     
 
-    function pintarTabla(datos){
-
-    document.getElementById(
-        "planeacionBody"
-    ).innerHTML = datos.map(fila => `
-
-        <tr>
-
-            <td>${fila[idxID]}</td>
-            <td>${fila[idxDepto]}</td>
-            <td>${fila[idxMunicipio]}</td>
-            <td>${fila[idxOT]}</td>
-            <td>${fila[idxIM]}</td>
-            <td>${fila[idxAfectacion]}</td>
-            <td>${fila[idxDias]}</td>
-            <td>${fila[idxPrioridad]}</td>
-
-            <td>
-                <input
-                    class="edit-input"
-                    type="date">
-            </td>
-
-            <td>
-                <input
-                    class="edit-input"
-                    placeholder="Observación">
-            </td>
-
-            <td>
-                <select class="edit-select">
-                    <option></option>
-                    <option>Gestionable</option>
-                    <option>Operativa</option>
-                    <option>Abastecimiento</option>
-                    <option>Escalar abastecimiento</option>
-                    <option>FM / Traslado</option>
-                    <option>Cancelada</option>
-                </select>
-            </td>
-
-        </tr>
-
-    `).join("");
-
-}
-
+    
 pintarTabla(datos);
 
 }
