@@ -80,7 +80,6 @@ console.log(
 </td>
 
 <td>
-    <td>
     <input
         class="edit-input fecha-input"
         type="date">
