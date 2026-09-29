@@ -160,10 +160,57 @@ document.getElementById(
             (fila[idxPrioridad] || "").trim() === "Alta"
     ).length;
 
+    const mediaPrioridad =
+datos.filter(
+    fila =>
+    (fila[idxPrioridad] || "").trim() === "Media"
+).length;
+
+const bajaPrioridad =
+datos.filter(
+    fila =>
+    (fila[idxPrioridad] || "").trim() === "Baja"
+).length;
+
+const cumpleBacklog =
+datos.filter(
+    fila =>
+    (fila[
+        encabezados.findIndex(
+            h => h.trim() === "Indicador backlog"
+        )
+    ] || "").trim() === "Cumple"
+).length;
+
+const noCumpleBacklog =
+datos.filter(
+    fila =>
+    (fila[
+        encabezados.findIndex(
+            h => h.trim() === "Indicador backlog"
+        )
+    ] || "").trim() === "No cumple"
+).length;
+    
 document.getElementById(
     "kpiAltaPlaneacion"
 ).textContent = altaPrioridad;
-    
+
+    document.getElementById(
+    "kpiMediaPlaneacion"
+).textContent = mediaPrioridad;
+
+document.getElementById(
+    "kpiBajaPlaneacion"
+).textContent = bajaPrioridad;
+
+document.getElementById(
+    "kpiCumpleBacklog"
+).textContent = cumpleBacklog;
+
+document.getElementById(
+    "kpiNoCumpleBacklog"
+).textContent = noCumpleBacklog;
 
     
 pintarTabla(datos);
