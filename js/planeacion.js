@@ -214,9 +214,35 @@ document.getElementById(
 
     
 pintarTabla(datos);
+actualizarKPIs(datos);
 
 }
 
+function actualizarKPIs(datos){
+
+    const encabezados = encabezadosGlobal;
+
+    const idxPrioridad =
+        encabezados.findIndex(
+            h => h.trim() === "Tipo de prioridad"
+        );
+
+    document.getElementById(
+        "kpiPendientes"
+    ).textContent = datos.length;
+
+    const altas =
+        datos.filter(
+            fila =>
+                (fila[idxPrioridad] || "")
+                    .trim() === "Alta"
+        ).length;
+
+    document.getElementById(
+        "kpiAltaPlaneacion"
+    ).textContent = altas;
+
+}
 document.addEventListener(
     "DOMContentLoaded",
     cargarPlaneacion
@@ -287,6 +313,7 @@ function aplicarFiltros(){
         });
 
     pintarTabla(resultado);
+    actualizarKPIs(resultado);
 
 }
 
