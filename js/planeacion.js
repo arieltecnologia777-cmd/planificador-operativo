@@ -178,6 +178,20 @@ console.log(
     ).length
 );
 
+    console.log(
+    "Valores prioridad:",
+    [...new Set(
+        datos.map(
+            fila => fila[idxPrioridad]
+        )
+    )]
+);
+console.log(
+    datos
+        .map(fila => fila[idxPrioridad])
+        .filter(v => v)
+);
+
     const mediaPrioridad =
 datos.filter(
     fila =>
