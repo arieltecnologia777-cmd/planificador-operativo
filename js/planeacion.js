@@ -168,6 +168,16 @@ console.log(
             (fila[idxPrioridad] || "").trim().toUpperCase() === "ALTA"
     ).length;
 
+    console.log(
+    "Altas encontradas:",
+    datos.filter(
+        fila =>
+            (fila[idxPrioridad] || "")
+            .trim()
+            .toUpperCase() === "ALTA"
+    ).length
+);
+
     const mediaPrioridad =
 datos.filter(
     fila =>
