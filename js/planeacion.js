@@ -218,6 +218,8 @@ actualizarKPIs(datos);
 
 }
 
+
+
 function actualizarKPIs(datos){
 
     const encabezados = encabezadosGlobal;
@@ -227,22 +229,68 @@ function actualizarKPIs(datos){
             h => h.trim() === "Tipo de prioridad"
         );
 
-    document.getElementById(
-        "kpiPendientes"
-    ).textContent = datos.length;
+    const idxBacklog =
+        encabezados.findIndex(
+            h => h.trim() === "Indicador backlog"
+        );
 
-    const altas =
+    const alta =
         datos.filter(
             fila =>
                 (fila[idxPrioridad] || "")
                     .trim() === "Alta"
         ).length;
 
+    const media =
+        datos.filter(
+            fila =>
+                (fila[idxPrioridad] || "")
+                    .trim() === "Media"
+        ).length;
+
+    const baja =
+        datos.filter(
+            fila =>
+                (fila[idxPrioridad] || "")
+                    .trim() === "Baja"
+        ).length;
+
+    const cumple =
+        datos.filter(
+            fila =>
+                (fila[idxBacklog] || "")
+                    .trim() === "Cumple"
+        ).length;
+
+    const noCumple =
+        datos.filter(
+            fila =>
+                (fila[idxBacklog] || "")
+                    .trim() === "No cumple"
+        ).length;
+
     document.getElementById(
         "kpiAltaPlaneacion"
-    ).textContent = altas;
+    ).textContent = alta;
+
+    document.getElementById(
+        "kpiMediaPlaneacion"
+    ).textContent = media;
+
+    document.getElementById(
+        "kpiBajaPlaneacion"
+    ).textContent = baja;
+
+    document.getElementById(
+        "kpiCumpleBacklog"
+    ).textContent = cumple;
+
+    document.getElementById(
+        "kpiNoCumpleBacklog"
+    ).textContent = noCumple;
 
 }
+
 document.addEventListener(
     "DOMContentLoaded",
     cargarPlaneacion
