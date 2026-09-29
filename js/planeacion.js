@@ -69,10 +69,21 @@ console.log(
             <td>${fila[idxPrioridad]}</td>
 
             <td>
-                <input
-                    class="edit-input"
-                    type="date">
-            </td>
+    <select class="edit-select">
+        <option></option>
+        <option>Pendiente</option>
+        <option>N/A</option>
+        <option>Validando FM</option>
+        <option>Requiere visita</option>
+        <option>Programada</option>
+    </select>
+</td>
+
+<td>
+    <input
+        class="edit-input"
+        placeholder="Fecha programación">
+</td>
 
             <td>
                 <input
