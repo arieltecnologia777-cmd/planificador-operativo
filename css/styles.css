@@ -468,6 +468,10 @@ button{
 .kpi-green .kpi-icon{background:#22b573}
 .kpi-orange .kpi-icon{background:#f59e0b}
 .kpi-cyan .kpi-icon{background:#13b8ca}
+.kpi-indigo .kpi-icon{
+    background:#4f46e5;
+}
+
 
 /* =========================
    PANELS
