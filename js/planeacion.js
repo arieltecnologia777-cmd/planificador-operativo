@@ -227,7 +227,9 @@ const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
     const respD1 =
-    await fetch(API_URL);
+    await fetch(
+        "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion"
+    );
 
 const registrosD1 =
     await respD1.json();
