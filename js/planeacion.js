@@ -574,11 +574,3 @@ document.addEventListener("change",(e)=>{
     }
 
 });
-
-    if(
-        e.target.id === "filtroDepartamento"
-    ){
-        aplicarFiltros();
-    }
-
-});
