@@ -636,13 +636,30 @@ document.addEventListener("change",(e)=>{
             fecha.value = "En validación";
 
         }
-        else{
+        else if(valor === "N/A"){
 
-            fecha.type = "text";
-            fecha.disabled = true;
-            fecha.value = "No aplica";
+    fecha.type = "text";
+    fecha.disabled = true;
+    fecha.value = "No aplica";
 
-        }
+}
+else if(
+    valor === "Postular FM" ||
+    valor === "Postular abast."
+){
+
+    fecha.type = "text";
+    fecha.disabled = true;
+    fecha.value = "No aplica";
+
+}
+else if(valor === ""){
+
+    fecha.type = "text";
+    fecha.disabled = true;
+    fecha.value = "⟵ Definir estado";
+
+}
 
         return;
     }
