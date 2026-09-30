@@ -60,6 +60,10 @@ console.log(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
 
+        const d1 =
+    window.registrosD1?.[
+        fila[idxOT]
+    ] || {};
 
     return `
 
@@ -78,15 +82,39 @@ console.log(
    <select
     class="edit-select estado-programacion">
 
-        <option></option>
-        <option>Programada</option>
-        <option>Pendiente</option>
-        <option>N/A</option>
-        <option>Postular FM</option>
-        <option>Postular abast.</option>
-        <option>Cancelada</option>
+    <option value=""></option>
 
-    </select>
+    <option value="Programada"
+        ${d1.estadoProgramacion === "Programada" ? "selected" : ""}>
+        Programada
+    </option>
+
+    <option value="Pendiente"
+        ${d1.estadoProgramacion === "Pendiente" ? "selected" : ""}>
+        Pendiente
+    </option>
+
+    <option value="N/A"
+        ${d1.estadoProgramacion === "N/A" ? "selected" : ""}>
+        N/A
+    </option>
+
+    <option value="Postular FM"
+        ${d1.estadoProgramacion === "Postular FM" ? "selected" : ""}>
+        Postular FM
+    </option>
+
+    <option value="Postular abast."
+        ${d1.estadoProgramacion === "Postular abast." ? "selected" : ""}>
+        Postular abast.
+    </option>
+
+    <option value="Cancelada"
+        ${d1.estadoProgramacion === "Cancelada" ? "selected" : ""}>
+        Cancelada
+    </option>
+
+</select>
 </td>
 
 <td>
@@ -106,13 +134,36 @@ console.log(
             </td>
 
             <td>
-                <select class="edit-select">
-    <option></option>
-    <option>Gestionable</option>
-    <option>Operativa</option>
-    <option>FM/traslado/reubicación</option>
-    <option>Abastecimiento</option>
-    <option>Falla Tx</option>
+                <select class="edit-select estado-gestion">
+
+    <option value=""></option>
+
+    <option value="Gestionable"
+        ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>
+        Gestionable
+    </option>
+
+    <option value="Operativa"
+        ${d1.estadoGestion === "Operativa" ? "selected" : ""}>
+        Operativa
+    </option>
+
+    <option value="FM/traslado/reubicación"
+        ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>
+        FM/traslado/reubicación
+    </option>
+
+    <option value="Abastecimiento"
+        ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>
+        Abastecimiento
+    </option>
+
+    <option value="Falla Tx"
+        ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>
+        Falla Tx
+    </option>
+
+</select>ption>
 </select>
 
             </td>
@@ -591,6 +642,27 @@ document.addEventListener("change",(e)=>{
     }
 
 });
+
+document.addEventListener(
+    "blur",
+    async e => {
+
+        if(
+            !e.target.classList.contains(
+                "observacion"
+            )
+        ) return;
+
+        const fila =
+            e.target.closest("tr");
+
+        if(!fila) return;
+
+        await guardarOT(fila);
+
+    },
+    true
+);
 async function guardarOT(fila){
 
     const ot =
