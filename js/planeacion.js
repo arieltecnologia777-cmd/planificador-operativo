@@ -94,11 +94,12 @@ console.log(
             <td>
                 <select class="edit-select">
     <option></option>
-    <option>Programada</option>
-    <option>Pendiente</option>
-    <option>N/A</option>
-    <option>Postular FM</option>
-    <option>Postular abastecimiento</option>
+    <option>Gestionable</option>
+    <option>Operativa</option>
+    <option>Cancelada</option>
+    <option>FM/traslado/reubicación</option>
+    <option>Abastecimiento</option>
+    <option>Falla Tx</option>
 </select>
 
             </td>
