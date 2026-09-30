@@ -61,7 +61,7 @@ console.log(
 ).innerHTML = datos.map(fila => {
 
         const d1 =
-    window.registrosD1?.[
+    (window.registrosD1 || {})[
         fila[idxOT]
     ] || {};
 
@@ -225,11 +225,24 @@ datosGlobal = filas.slice(1);
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
-    const respD1 = await fetch(API_URL);
+    try {
 
-const registrosD1 = await respD1.json();
+    const respD1 =
+        await fetch(API_URL);
 
-window.registrosD1 = registrosD1;
+    const registrosD1 =
+        await respD1.json();
+
+    window.registrosD1 =
+        registrosD1;
+
+} catch (error) {
+
+    console.error(error);
+
+    window.registrosD1 = {};
+
+}
 
 window.registrosD1 =
     registrosD1;
