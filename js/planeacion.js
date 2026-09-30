@@ -84,10 +84,11 @@ console.log(
 
 <td>
     <input
-        class="edit-input fecha-input"
-        type="text"
-        placeholder="dd/mm/aaaa"
-        disabled>
+    class="edit-input fecha-input"
+    type="text"
+    value="Revisar estado programación"
+    disabled>
+
 </td>
 
             <td>
@@ -523,7 +524,6 @@ document.addEventListener("input",(e)=>{
 });
 
 document.addEventListener("change",(e)=>{
-    document.addEventListener("change",(e)=>{
 
     if(
         e.target.classList.contains(
@@ -544,33 +544,34 @@ document.addEventListener("change",(e)=>{
 
         if(valor === "Programada"){
 
-    fecha.type = "date";
+            fecha.type = "date";
+            fecha.disabled = false;
+            fecha.value = "";
 
-    fecha.disabled = false;
+        }
+        else if(valor === "Pendiente"){
 
-    fecha.value = "";
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "En validación";
 
-    fecha.removeAttribute("value");
+        }
+        else{
 
-}
-else if(valor === "Pendiente"){
- 
-fecha.disabled = true;
- 
-fecha.type = "text";
- 
-fecha.value = "En validación";
- 
-}
-else{
- 
-fecha.disabled = true;
- 
-fecha.type = "text";
- 
-fecha.value = "No aplica";
- 
-}    }
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "No aplica";
+
+        }
+
+        return;
+    }
+
+    if(
+        e.target.id === "filtroDepartamento"
+    ){
+        aplicarFiltros();
+    }
 
 });
 
