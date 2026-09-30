@@ -163,7 +163,6 @@ console.log(
         Falla Tx
     </option>
 
-</select>ption>
 </select>
 
             </td>
