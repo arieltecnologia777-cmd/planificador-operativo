@@ -67,10 +67,6 @@ console.log(
 
     return `
 
-const d1 =
-    window.registrosD1?.[
-        fila[idxOT]
-    ] || {};
         <tr>
 
             <td>${fila[idxID]}</td>
