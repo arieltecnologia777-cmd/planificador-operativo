@@ -85,9 +85,11 @@ console.log(
 <td>
     <input
         class="edit-input fecha-input"
-        type="date"
+        type="text"
+        placeholder="dd/mm/aaaa"
         disabled>
 </td>
+
             <td>
                 <input
                     class="edit-input"
@@ -542,47 +544,35 @@ document.addEventListener("change",(e)=>{
 
         if(valor === "Programada"){
 
-            fecha.disabled = false;
-            fecha.value = "";
+    fecha.disabled = false;
+    fecha.value = "";
+    fecha.placeholder = "dd/mm/aaaa";
 
-        }
-        else if(valor === "Pendiente"){
+}
+else if(valor === "Pendiente"){
 
-            fecha.disabled = true;
-            fecha.value = "";
+    fecha.disabled = true;
+    fecha.value = "En validación";
 
-            fecha.placeholder =
-                "En validación";
+}
+else if(valor === "N/A"){
 
-        }
-        else if(valor === "N/A"){
+    fecha.disabled = true;
+    fecha.value = "N/A";
 
-            fecha.disabled = true;
-            fecha.value = "";
+}
+else if(valor === "Postular FM"){
 
-            fecha.placeholder =
-                "No aplica";
+    fecha.disabled = true;
+    fecha.value = "Postular FM";
 
-        }
-        else if(valor === "Postular FM"){
+}
+else if(valor === "Postular abastecimiento"){
 
-            fecha.disabled = true;
-            fecha.value = "";
+    fecha.disabled = true;
+    fecha.value = "Postular abastecimiento";
 
-            fecha.placeholder =
-                "Pendiente FM";
-
-        }
-        else if(valor === "Postular abastecimiento"){
-
-            fecha.disabled = true;
-            fecha.value = "";
-
-            fecha.placeholder =
-                "Pendiente abastecimiento";
-
-        }
-
+}
     }
 
 });
