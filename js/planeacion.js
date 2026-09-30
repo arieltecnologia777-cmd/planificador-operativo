@@ -1,6 +1,9 @@
 const DATASET_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUdWw76b-hysCr5vGj2sS6PsMR2a7IuV_7fOL1HO_gaq5Bq-Aa5dqjhGKogvgXR3uH_HHb8oEYqfY_/pub?output=csv";
 
+const API_URL =
+"https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
+
 let datosGlobal = [];
 let encabezadosGlobal = [];
 
@@ -54,9 +57,20 @@ console.log(
     )
 );
     document.getElementById(
-        "planeacionBody"
-    ).innerHTML = datos.map(fila => `
+    "planeacionBody"
+).innerHTML = datos.map(fila => {
 
+    const d1 =
+        window.registrosD1?.[
+            fila[idxOT]
+        ] || {};
+
+    return `
+
+const d1 =
+    window.registrosD1?.[
+        fila[idxOT]
+    ] || {};
         <tr>
 
             <td>${fila[idxID]}</td>
@@ -69,8 +83,8 @@ console.log(
             <td>${fila[idxPrioridad]}</td>
 
             <td>
-    <select
-        class="edit-select estado-programacion">
+   <select
+    class="edit-select estado-programacion">
 
         <option></option>
         <option>Programada</option>
@@ -87,15 +101,16 @@ console.log(
     <input
     class="edit-input fecha-input"
     type="text"
-    value="⟵ Definir estado"
+    value="${d1.fechaProgramacion || '⟵ Definir estado'}"
     disabled>
 
 </td>
 
             <td>
                 <input
-                    class="edit-input"
-                    placeholder="Observación">
+    class="edit-input observacion"
+    value="${d1.observacion || ""}"
+    placeholder="Observación">
             </td>
 
             <td>
@@ -112,7 +127,8 @@ console.log(
 
         </tr>
 
-    `).join("");
+       `;
+}).join("");
 
 }
 
@@ -166,6 +182,15 @@ datosGlobal = filas.slice(1);
 
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
+
+    const respD1 =
+    await fetch(API_URL);
+
+const registrosD1 =
+    await respD1.json();
+
+window.registrosD1 =
+    registrosD1;
 
     const idxID =
         encabezados.findIndex(h => h.trim() === "ID");
@@ -574,3 +599,58 @@ document.addEventListener("change",(e)=>{
     }
 
 });
+async function guardarOT(fila){
+
+    const ot =
+        fila.children[3]
+            .textContent
+            .trim();
+
+    const payload = {
+
+        ot,
+
+        estadoProgramacion:
+            fila.querySelector(
+                ".estado-programacion"
+            )?.value || "",
+
+        fechaProgramacion:
+            fila.querySelector(
+                ".fecha-input"
+            )?.value || "",
+
+        observacion:
+            fila.querySelector(
+                ".observacion"
+            )?.value || "",
+
+        estadoGestion:
+            fila.querySelectorAll(
+                ".edit-select"
+            )[1]?.value || ""
+
+    };
+
+    await fetch(API_URL,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+    });
+
+}
+document.addEventListener(
+    "change",
+    async e => {
+
+        const fila =
+            e.target.closest("tr");
+
+        if(!fila) return;
+
+        await guardarOT(fila);
+
+    }
+);
