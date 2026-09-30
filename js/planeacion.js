@@ -558,19 +558,19 @@ else if(valor === "Pendiente"){
 else if(valor === "N/A"){
 
     fecha.disabled = true;
-    fecha.value = "N/A";
+    fecha.value = "No aplica";
 
 }
 else if(valor === "Postular FM"){
 
     fecha.disabled = true;
-    fecha.value = "Postular FM";
+    fecha.value = "No aplica";
 
 }
 else if(valor === "Postular abastecimiento"){
 
     fecha.disabled = true;
-    fecha.value = "Postular abastecimiento";
+    fecha.value = "No aplica";
 
 }
     }
