@@ -84,9 +84,10 @@ console.log(
 
 <td>
     <input
-    class="edit-input fecha-input"
-    type="date"
-    disabled>
+        class="edit-input fecha-input"
+        type="text"
+        placeholder="dd/mm/aaaa"
+        disabled>
 </td>
 
             <td>
@@ -543,11 +544,13 @@ document.addEventListener("change",(e)=>{
 
         if(valor === "Programada"){
 
-    fecha.disabled = false;
-
     fecha.type = "date";
 
+    fecha.disabled = false;
+
     fecha.value = "";
+
+    fecha.removeAttribute("value");
 
 }
 else if(valor === "Pendiente"){
