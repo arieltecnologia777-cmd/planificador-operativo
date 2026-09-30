@@ -231,10 +231,6 @@ const registrosD1 = await respD1.json();
 
 window.registrosD1 = registrosD1;
 
-    
-const registrosD1 =
-    await respD1.json();
-
 window.registrosD1 =
     registrosD1;
 
