@@ -77,7 +77,7 @@ console.log(
         <option>Pendiente</option>
         <option>N/A</option>
         <option>Postular FM</option>
-        <option>Postular abastecimiento</option>
+        <option>Postular abast.</option>
 
     </select>
 </td>
