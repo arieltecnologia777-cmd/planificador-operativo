@@ -225,11 +225,13 @@ datosGlobal = filas.slice(1);
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
-    const respD1 =
-    await fetch(
-        "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion"
-    );
+    const respD1 = await fetch(API_URL);
 
+const registrosD1 = await respD1.json();
+
+window.registrosD1 = registrosD1;
+
+    
 const registrosD1 =
     await respD1.json();
 
