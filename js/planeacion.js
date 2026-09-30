@@ -636,7 +636,7 @@ document.addEventListener("change",(e)=>{
             fecha.value = "En validación";
 
         }
-        else if(valor === "N/A"){
+else if(valor === "N/A"){
 
     fecha.type = "text";
     fecha.disabled = true;
@@ -651,6 +651,13 @@ else if(
     fecha.type = "text";
     fecha.disabled = true;
     fecha.value = "No aplica";
+
+}
+else if(valor === "Cancelada"){
+
+    fecha.type = "date";
+    fecha.disabled = false;
+    fecha.value = "";
 
 }
 else if(valor === ""){
