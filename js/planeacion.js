@@ -60,10 +60,6 @@ console.log(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
 
-    const d1 =
-        window.registrosD1?.[
-            fila[idxOT]
-        ] || {};
 
     return `
 
