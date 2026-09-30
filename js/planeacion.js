@@ -69,22 +69,25 @@ console.log(
             <td>${fila[idxPrioridad]}</td>
 
             <td>
-    <select class="edit-select">
-    <option></option>
-    <option>Programada</option>
-    <option>Pendiente</option>
-    <option>N/A</option>
-    <option>Postular FM</option>
-    <option>Postular abastecimiento</option>
-</select>
+    <select
+        class="edit-select estado-programacion">
+
+        <option></option>
+        <option>Programada</option>
+        <option>Pendiente</option>
+        <option>N/A</option>
+        <option>Postular FM</option>
+        <option>Postular abastecimiento</option>
+
+    </select>
 </td>
 
 <td>
     <input
         class="edit-input fecha-input"
-        type="date">
+        type="date"
+        disabled>
 </td>
-
             <td>
                 <input
                     class="edit-input"
@@ -518,6 +521,71 @@ document.addEventListener("input",(e)=>{
 });
 
 document.addEventListener("change",(e)=>{
+    document.addEventListener("change",(e)=>{
+
+    if(
+        e.target.classList.contains(
+            "estado-programacion"
+        )
+    ){
+
+        const fila =
+            e.target.closest("tr");
+
+        const fecha =
+            fila.querySelector(
+                ".fecha-input"
+            );
+
+        const valor =
+            e.target.value;
+
+        if(valor === "Programada"){
+
+            fecha.disabled = false;
+            fecha.value = "";
+
+        }
+        else if(valor === "Pendiente"){
+
+            fecha.disabled = true;
+            fecha.value = "";
+
+            fecha.placeholder =
+                "En validación";
+
+        }
+        else if(valor === "N/A"){
+
+            fecha.disabled = true;
+            fecha.value = "";
+
+            fecha.placeholder =
+                "No aplica";
+
+        }
+        else if(valor === "Postular FM"){
+
+            fecha.disabled = true;
+            fecha.value = "";
+
+            fecha.placeholder =
+                "Pendiente FM";
+
+        }
+        else if(valor === "Postular abastecimiento"){
+
+            fecha.disabled = true;
+            fecha.value = "";
+
+            fecha.placeholder =
+                "Pendiente abastecimiento";
+
+        }
+
+    }
+
+});
 
     if(
         e.target.id === "filtroDepartamento"
