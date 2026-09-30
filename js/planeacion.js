@@ -86,7 +86,7 @@ console.log(
     <input
     class="edit-input fecha-input"
     type="text"
-    value="Definir estado"
+    value="⟵ Definir estado"
     disabled>
 
 </td>
