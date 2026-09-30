@@ -78,6 +78,7 @@ console.log(
         <option>N/A</option>
         <option>Postular FM</option>
         <option>Postular abast.</option>
+        <option>Cancelada</option>
 
     </select>
 </td>
@@ -102,7 +103,6 @@ console.log(
     <option></option>
     <option>Gestionable</option>
     <option>Operativa</option>
-    <option>Cancelada</option>
     <option>FM/traslado/reubicación</option>
     <option>Abastecimiento</option>
     <option>Falla Tx</option>
