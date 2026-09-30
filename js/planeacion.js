@@ -86,7 +86,7 @@ console.log(
     <input
     class="edit-input fecha-input"
     type="text"
-    value="Revisar estado programación"
+    value="Definir estado"
     disabled>
 
 </td>
