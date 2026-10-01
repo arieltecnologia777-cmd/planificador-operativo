@@ -1145,31 +1145,38 @@ button{
 .planeacion-table td:nth-child(1){
     position:sticky;
     left:0;
-    z-index:30;
+    width:90px;
+    min-width:90px;
     background:#fff;
-    box-shadow:4px 0 0 #fff;
+    z-index:30;
 }
 
 /* COLUMNA DEPARTAMENTO */
 .planeacion-table th:nth-child(2),
 .planeacion-table td:nth-child(2){
     position:sticky;
-    left:70px;
-    z-index:29;
+    left:90px;
+    width:180px;
+    min-width:180px;
     background:#fff;
-    box-shadow:4px 0 0 #fff;
+    z-index:29;
 }
 
 /* COLUMNA MUNICIPIO */
 .planeacion-table th:nth-child(3),
 .planeacion-table td:nth-child(3){
     position:sticky;
-    left:230px;
-    z-index:28;
+    left:270px;
+    width:260px;
+    min-width:260px;
     background:#fff;
-    box-shadow:4px 0 0 #fff;
+    z-index:28;
 }
-
+.planeacion-table th:nth-child(1),
+.planeacion-table th:nth-child(2),
+.planeacion-table th:nth-child(3){
+    box-shadow: 4px 0 0 #fff;
+}
 .planeacion-table td{
     background:#fff;
 }
