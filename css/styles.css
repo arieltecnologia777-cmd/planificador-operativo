@@ -1231,8 +1231,7 @@ z-index:201;
 }
 
 .planeacion-header{
-    position:sticky;
-    top:0;
+    position:relative;
     z-index:300;
     background:#fff;
     padding-bottom:2px;
