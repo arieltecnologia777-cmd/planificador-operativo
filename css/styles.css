@@ -27,7 +27,7 @@ body{
     color:var(--text);
     min-height:100vh;
     overflow-x:hidden;
-    zoom:0.95;
+    zoom:1;
 }
 
 button{
