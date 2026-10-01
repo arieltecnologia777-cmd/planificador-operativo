@@ -1095,6 +1095,22 @@ button{
     border:1px solid #edf1f5;
     border-radius:14px;
 }
+
+.planeacion-table-wrapper::after{
+content:"";
+position:absolute;
+top:0;
+right:0;
+width:40px;
+height:100%;
+pointer-events:none;
+background:linear-gradient(
+to left,
+rgba(243,246,251,1),
+rgba(243,246,251,0)
+);
+}
+
 .planeacion-table-wrapper::-webkit-scrollbar{
     height:8px;
     width:8px;
@@ -1256,6 +1272,44 @@ button{
     width:1800px;
     height:1px;
 }
+
+.scroll-hint{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:1200;
+
+    background:#2563eb;
+    color:#fff;
+
+    font-size:.7rem;
+    font-weight:700;
+
+    padding:6px 10px;
+    border-radius:999px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+
+    pointer-events:none;
+
+    animation:fadeHint 5s forwards;
+}
+
+@keyframes fadeHint{
+    0%{
+        opacity:1;
+    }
+
+    80%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+        visibility:hidden;
+    }
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
