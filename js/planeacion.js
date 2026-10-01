@@ -786,3 +786,29 @@ document.addEventListener(
 
     }
 );
+const wrapper = document.querySelector('.planeacion-table-wrapper');
+
+let scrollTimer;
+
+wrapper.addEventListener('scroll', () => {
+
+    clearTimeout(scrollTimer);
+
+    scrollTimer = setTimeout(() => {
+
+        const firstRow = wrapper.querySelector('tbody tr');
+        if (!firstRow) return;
+
+        const rowHeight = firstRow.offsetHeight;
+
+        const target =
+            Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
+
+        wrapper.scrollTo({
+            top: target,
+            behavior: 'smooth'
+        });
+
+    }, 80);
+
+});
