@@ -1131,11 +1131,10 @@ button{
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:0;
-    z-index:200;
+    top:45px;
+    z-index:2000;
     white-space:nowrap;
 }
-
 /* COLUMNA ID */
 .planeacion-table th:nth-child(1),
 .planeacion-table td:nth-child(1){
