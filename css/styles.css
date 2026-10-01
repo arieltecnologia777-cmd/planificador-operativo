@@ -1072,16 +1072,11 @@ button{
 .planeacion-filtros{
     display:flex;
     gap:12px;
-
     margin-bottom:6px;
-
     position:sticky;
-    top:0;
-
-    z-index:30;
-
+    top:45px;
+    z-index:1001;
     background:#fff;
-
     padding:4px 0;
 }
 
