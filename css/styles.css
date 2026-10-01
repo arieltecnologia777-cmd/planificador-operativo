@@ -1230,10 +1230,10 @@ button{
     z-index:1;
 }
 
-..planeacion-header{
+.planeacion-header{
     position:sticky;
     top:0;
-    z-index:300;
+    z-index:1000;
     background:#fff;
     padding-bottom:2px;
 }
