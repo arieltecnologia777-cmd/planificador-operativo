@@ -1096,19 +1096,23 @@ button{
 }
 
 .planeacion-table-wrapper{
-    max-height:650px;
-
-    overflow-y:auto;
+    width:100%;
 
     overflow-x:auto;
+    overflow-y:auto;
 
+    max-height:650px;
+
+    border:1px solid #edf1f5;
     border-radius:14px;
 }
 
 
 .planeacion-table{
-    width:100%;
+    min-width:1800px;
+
     border-collapse:collapse;
+
     white-space:nowrap;
 }
 
