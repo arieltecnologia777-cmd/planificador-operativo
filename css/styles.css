@@ -1259,21 +1259,6 @@ rgba(243,246,251,0)
     padding-bottom:0;
 }
 
-
-.scroll-top{
-    overflow-x:auto;
-    overflow-y:hidden;
-
-    height:16px;
-
-    margin-bottom:6px;
-}
-
-.scroll-top-inner{
-    width:1800px;
-    height:1px;
-}
-
 .scroll-hint{
     position:absolute;
     top:10px;
