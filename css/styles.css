@@ -1073,9 +1073,6 @@ button{
     display:flex;
     gap:12px;
     margin-bottom:6px;
-    position:sticky;
-    top:45px;
-    z-index:1001;
     background:#fff;
     padding:4px 0;
 }
@@ -1093,10 +1090,11 @@ button{
 .planeacion-table-wrapper{
     width:100%;
     overflow-x:auto;
+    overflow-y:auto;
+    max-height:650px;
     border:1px solid #edf1f5;
     border-radius:14px;
 }
-
 .planeacion-table-wrapper::-webkit-scrollbar{
     height:8px;
     width:8px;
@@ -1133,8 +1131,8 @@ button{
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:45px;
-    z-index:999;
+    top:0;
+    z-index:200;
     white-space:nowrap;
 }
 
@@ -1231,7 +1229,6 @@ button{
     top:0;
     z-index:1000;
     background:#fff;
-    padding-bottom:2px;
 }
 
 .planeacion-filtros-sticky{
