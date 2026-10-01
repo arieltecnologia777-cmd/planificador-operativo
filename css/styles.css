@@ -383,7 +383,7 @@ button{
     background:#fff;
     border:1px solid var(--border);
     border-radius:16px;
-    padding:15px 17px;
+    padding:12px 15px;
     box-shadow:var(--shadow);
     transition:.2s ease;
 }
@@ -394,7 +394,7 @@ button{
 }
 
 .kpi-card{
-    min-height:110px;
+    min-height:105px;
     position:relative;
     overflow:hidden;
 }
