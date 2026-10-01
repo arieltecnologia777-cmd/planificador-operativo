@@ -837,3 +837,24 @@ window.addEventListener("load", () => {
     });
 
 });
+function actualizarStickyTabla() {
+
+    const header =
+        document.querySelector('.planeacion-header');
+
+    const filtros =
+        document.querySelector('.planeacion-filtros-sticky');
+
+    if (!header || !filtros) return;
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFiltros = filtros.offsetHeight;
+
+    document.documentElement.style.setProperty(
+        '--sticky-table-top',
+        `${alturaHeader + alturaFiltros}px`
+    );
+}
+
+window.addEventListener('load', actualizarStickyTabla);
+window.addEventListener('resize', actualizarStickyTabla);
