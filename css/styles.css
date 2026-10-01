@@ -1273,6 +1273,35 @@ rgba(243,246,251,0)
         visibility:hidden;
     }
 }
+.planeacion-scroll-top{
+    width:150px;
+    margin-left:auto;
+    margin-right:12px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    height:18px;
+    margin-bottom:8px;
+}
+
+.planeacion-scroll-top-inner{
+    width:2500px;
+    height:1px;
+}
+
+.planeacion-scroll-top::-webkit-scrollbar{
+    height:10px;
+}
+
+.planeacion-scroll-top::-webkit-scrollbar-track{
+    background:#e5e7eb;
+    border-radius:20px;
+}
+
+.planeacion-scroll-top::-webkit-scrollbar-thumb{
+    background:#94a3b8;
+    border-radius:20px;
+}
+
 
 /* =========================
    RESPONSIVE
