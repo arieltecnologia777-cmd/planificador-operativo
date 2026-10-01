@@ -1247,6 +1247,20 @@ button{
     padding-bottom:0;
 }
 
+
+.scroll-top{
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    height:16px;
+
+    margin-bottom:6px;
+}
+
+.scroll-top-inner{
+    width:1800px;
+    height:1px;
+}
 /* =========================
    RESPONSIVE
 ========================= */
