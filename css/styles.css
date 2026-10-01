@@ -1145,8 +1145,9 @@ button{
 .planeacion-table td:nth-child(1){
     position:sticky;
     left:0;
-    background:#fff;
     z-index:30;
+    background:#fff;
+    box-shadow:4px 0 0 #fff;
 }
 
 /* COLUMNA DEPARTAMENTO */
@@ -1154,8 +1155,9 @@ button{
 .planeacion-table td:nth-child(2){
     position:sticky;
     left:70px;
-    background:#fff;
     z-index:29;
+    background:#fff;
+    box-shadow:4px 0 0 #fff;
 }
 
 /* COLUMNA MUNICIPIO */
@@ -1163,8 +1165,13 @@ button{
 .planeacion-table td:nth-child(3){
     position:sticky;
     left:230px;
-    background:#fff;
     z-index:28;
+    background:#fff;
+    box-shadow:4px 0 0 #fff;
+}
+
+.planeacion-table td{
+    background:#fff;
 }
 
 /* ENCABEZADOS */
