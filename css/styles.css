@@ -1099,17 +1099,6 @@ button{
     width:100%;
 
     overflow-x:auto;
-    overflow-y:auto;
-
-    border:1px solid #edf1f5;
-    border-radius:14px;
-}
-
-.planeacion-table-wrapper{
-    width:100%;
-
-    overflow-x:auto;
-    overflow-y:auto;
 
     border:1px solid #edf1f5;
     border-radius:14px;
@@ -1133,24 +1122,6 @@ button{
 .planeacion-table-wrapper::-webkit-scrollbar-thumb:hover{
     background:#94a3b8;
 }
-.planeacion-table-wrapper::-webkit-scrollbar{
-    height:14px;
-}
-
-.planeacion-table-wrapper::-webkit-scrollbar-track{
-    background:#edf2f8;
-    border-radius:10px;
-}
-
-.planeacion-table-wrapper::-webkit-scrollbar-thumb{
-    background:#94a3b8;
-    border-radius:10px;
-}
-
-.planeacion-table-wrapper::-webkit-scrollbar-thumb:hover{
-    background:#64748b;
-}
-
 
 .planeacion-table{
     min-width:1500px;
