@@ -812,3 +812,28 @@ wrapper.addEventListener('scroll', () => {
     }, 80);
 
 });
+
+window.addEventListener("load", () => {
+
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+
+    if (!topScroll || !tableWrapper) return;
+
+    let syncing = false;
+
+    topScroll.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        tableWrapper.scrollLeft = topScroll.scrollLeft;
+        syncing = false;
+    });
+
+    tableWrapper.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        topScroll.scrollLeft = tableWrapper.scrollLeft;
+        syncing = false;
+    });
+
+});
