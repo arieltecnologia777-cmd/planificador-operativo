@@ -1140,8 +1140,8 @@ button{
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:95px;
-    z-index:299;
+    top:0;
+    z-index:200;
     white-space:nowrap;
 }
 
@@ -1205,8 +1205,8 @@ button{
 .editable-col{
     background:#e8fff1 !important;
     position:sticky;
-    top:95px;
-    z-index:300;
+    top:0;
+    z-index:201;
 }
 
 .edit-input{
