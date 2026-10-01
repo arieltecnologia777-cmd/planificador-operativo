@@ -1109,7 +1109,7 @@ button{
 
 
 .planeacion-table{
-    min-width:1800px;
+    min-width:1500px;
 
     border-collapse:collapse;
 
@@ -1141,33 +1141,33 @@ button{
 }
 
 /* COLUMNA ID */
-.planeacion-table th:nth-child(1*,
-.planeacion-table td:nth-child(1*{
+.planeacion-table th:nth-child(1),
+.planeacion-table td:nth-child(1){
     position:sticky;
-    left:0*
+    left:0;
     background:#fff;
-    z-index:190;
+    z-index:30;
 }
 
 /* COLUMNA DEPARTAMENTO */
 .planeacion-table th:nth-child(2),
 .planeacion-table td:nth-child(2){
     position:sticky;
-    left:90px;
+    left:70px;
     background:#fff;
-    z-index:189;
+    z-index:29;
 }
 
 /* COLUMNA MUNICIPIO */
 .planeacion-table th:nth-child(3),
 .planeacion-table td:nth-child(3){
     position:sticky;
-    left:240px;
+    left:230px;
     background:#fff;
-    z-index:188;
+    z-index:28;
 }
 
-/* ENCABEZADOS DE LAS COLUMNAS FIJAS */
+/* ENCABEZADOS */
 .planeacion-table th:nth-child(1),
 .planeacion-table th:nth-child(2),
 .planeacion-table th:nth-child(3){
