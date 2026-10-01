@@ -1149,7 +1149,7 @@ button{
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:0;
+    top:var(--sticky-table-top);
     z-index:200;
     white-space:nowrap;
 }
