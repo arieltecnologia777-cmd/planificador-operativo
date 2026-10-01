@@ -1430,3 +1430,37 @@ button{
     }
     
 }
+
+@media (max-width:1400px){
+
+    .planeacion-header{
+        top:0;
+    }
+
+    .planeacion-filtros-sticky{
+        top:45px;
+    }
+
+    .planeacion-table th{
+        top:85px;
+    }
+
+}
+
+@media (max-width:850px){
+
+    .planeacion-header{
+        top:0;
+    }
+
+    .planeacion-filtros-sticky{
+        top:40px;
+    }
+
+    .planeacion-table th{
+        top:80px;
+    }
+
+}
+
+
