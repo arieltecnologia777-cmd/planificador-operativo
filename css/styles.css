@@ -1140,51 +1140,38 @@ button{
     white-space:nowrap;
 }
 
-
-.planeacion-table th{
-    background:#f8fafc;
-
-    color:#173a6d;
-
-    font-size:.75rem;
-
-    font-weight:800;
-
-    text-align:left;
-
-    padding:12px;
-
-    border-bottom:1px solid var(--border);
-
+/* COLUMNA ID */
+.planeacion-table th:nth-child(1*,
+.planeacion-table td:nth-child(1*{
     position:sticky;
-
-    top:0;
-
-    z-index:200;
-
-    white-space:nowrap;
+    left:0*
+    background:#fff;
+    z-index:190;
 }
 
-/* ID */
-.planeacion-table th:nth-child(1),
-.planeacion-table td:nth-child(1){
-    ...
-}
-
-/* Departamento */
+/* COLUMNA DEPARTAMENTO */
 .planeacion-table th:nth-child(2),
 .planeacion-table td:nth-child(2){
-    ...
+    position:sticky;
+    left:90px;
+    background:#fff;
+    z-index:189;
 }
 
-/* Municipio */
+/* COLUMNA MUNICIPIO */
 .planeacion-table th:nth-child(3),
 .planeacion-table td:nth-child(3){
-    ...
+    position:sticky;
+    left:240px;
+    background:#fff;
+    z-index:188;
 }
 
-.planeacion-table td{
-    ...
+/* ENCABEZADOS DE LAS COLUMNAS FIJAS */
+.planeacion-table th:nth-child(1),
+.planeacion-table th:nth-child(2),
+.planeacion-table th:nth-child(3){
+    z-index:220;
 }
 .planeacion-table td{
     padding:10px 12px;
