@@ -1149,8 +1149,8 @@ button{
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:var(--sticky-table-top);
-    z-index:200;
+    top:0;
+    z-index:999;
     white-space:nowrap;
 }
 
