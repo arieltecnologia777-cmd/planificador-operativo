@@ -1117,8 +1117,8 @@ button{
 .planeacion-table{
     min-width:1500px;
 
-    border-collapse:separate;
-border-spacing:0;
+    border-collapse:collapse;
+
     white-space:nowrap;
 }
 
@@ -1131,10 +1131,11 @@ border-spacing:0;
     padding:12px;
     border-bottom:1px solid var(--border);
     position:sticky;
-    top:45px;
-    z-index:2000;
+    top:0;
+    z-index:200;
     white-space:nowrap;
 }
+
 /* COLUMNA ID */
 .planeacion-table th:nth-child(1),
 .planeacion-table td:nth-child(1){
@@ -1194,6 +1195,12 @@ border-spacing:0;
 
 .editable-col{
     background:#e8fff1 !important;
+
+    position:sticky;
+
+    top:45px;
+
+    z-index:1000;
 }
 
 .edit-input{
