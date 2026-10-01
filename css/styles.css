@@ -1194,9 +1194,6 @@ border-spacing:0;
 
 .editable-col{
     background:#e8fff1 !important;
-    position:sticky;
-    top:0;
-    z-index:201;
 }
 
 .edit-input{
