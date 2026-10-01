@@ -1230,8 +1230,9 @@ z-index:201;
     z-index:1;
 }
 
-.planeacion-header{
-    position:relative;
+..planeacion-header{
+    position:sticky;
+    top:0;
     z-index:300;
     background:#fff;
     padding-bottom:2px;
