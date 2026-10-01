@@ -65,6 +65,38 @@ console.log(
         fila[idxOT]
     ] || {};
 
+        let fechaTipo = "text";
+let fechaDisabled = "disabled";
+let fechaValor = d1.fechaProgramacion || "⟵ Definir estado";
+
+if (
+    d1.estadoProgramacion === "Programada" ||
+    d1.estadoProgramacion === "Cancelada"
+) {
+
+    fechaTipo = "date";
+    fechaDisabled = "";
+
+    fechaValor =
+        d1.fechaProgramacion || "";
+
+}
+else if (
+    d1.estadoProgramacion === "Pendiente"
+) {
+
+    fechaValor = "En validación";
+
+}
+else if (
+    d1.estadoProgramacion === "N/A" ||
+    d1.estadoProgramacion === "Postular FM" ||
+    d1.estadoProgramacion === "Postular abast."
+) {
+
+    fechaValor = "No aplica";
+
+}
     return `
 
         <tr>
@@ -120,9 +152,9 @@ console.log(
 <td>
     <input
     class="edit-input fecha-input"
-    type="text"
-    value="${d1.fechaProgramacion || '⟵ Definir estado'}"
-    disabled>
+    type="${fechaTipo}"
+    value="${fechaValor}"
+    ${fechaDisabled}>
 
 </td>
 
