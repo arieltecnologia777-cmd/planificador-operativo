@@ -1098,18 +1098,20 @@ button{
     position:relative;
 }
 .planeacion-table-wrapper::after{
-content:"";
-position:absolute;
-top:0;
-right:0;
-width:40px;
-height:100%;
-pointer-events:none;
-background:linear-gradient(
-to left,
-rgba(243,246,251,1),
-rgba(243,246,251,0)
-);
+    content:"";
+    position:absolute;
+    top:0;
+    right:0;
+    width:50px;
+    height:42px;
+    pointer-events:none;
+    z-index:500;
+
+    background:linear-gradient(
+        to left,
+        #f8fafc,
+        transparent
+    );
 }
 
 .planeacion-table-wrapper::-webkit-scrollbar{
