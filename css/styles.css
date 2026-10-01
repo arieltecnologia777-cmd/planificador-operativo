@@ -1117,8 +1117,8 @@ button{
 .planeacion-table{
     min-width:1500px;
 
-    border-collapse:collapse;
-
+    border-collapse:separate;
+border-spacing:0;
     white-space:nowrap;
 }
 
