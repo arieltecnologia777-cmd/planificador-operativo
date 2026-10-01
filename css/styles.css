@@ -162,8 +162,8 @@ button{
 
 .hero{
     position:relative;
-    min-height:190px;
-    margin-bottom:16px;
+    min-height:145px;
+    margin-bottom:10px;
     overflow:hidden;
     isolation:isolate;
 
@@ -174,7 +174,7 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding:25px 28px;
+    padding:18px 24px;
     box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
 }
