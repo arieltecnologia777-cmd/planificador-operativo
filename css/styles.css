@@ -1425,3 +1425,6 @@ button{
     }
     
 }
+.zoom-alto .planeacion-filtros-sticky{
+    top:35px;
+}
