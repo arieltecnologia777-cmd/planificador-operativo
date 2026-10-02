@@ -919,7 +919,6 @@ else if(valor === ""){
 ){
     aplicarFiltros();
 }
-}
 
 });
 
