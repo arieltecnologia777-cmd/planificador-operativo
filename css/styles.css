@@ -1250,12 +1250,9 @@ button{
 
 .planeacion-filtros-sticky{
     position:sticky;
-    top:45px;
-
+    top:22px;
     z-index:250;
-
     background:#fff;
-
     padding-bottom:0;
 }
 
