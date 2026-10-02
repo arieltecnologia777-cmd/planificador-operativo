@@ -50,6 +50,48 @@ function pintarTabla(datos){
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
+
+    const idxIdsAfectados =
+    encabezados.findIndex(
+        h => h.trim() === "IDs afectados"
+    );
+
+const idxRangoAfectacion =
+    encabezados.findIndex(
+        h => h.trim() === "Rango de afectación"
+    );
+
+const idxStoppersDominion =
+    encabezados.findIndex(
+        h => h.trim() === "Stoppers Dominion"
+    );
+
+const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );
+
+const idxStopperP3 =
+    encabezados.findIndex(
+        h => h.trim() === "Stopper P3"
+    );
+
+const idxTipoFacturacion =
+    encabezados.findIndex(
+        h => h.trim() === "Tipo facturación"
+    );
+
+const idxFechaFM =
+    encabezados.findIndex(
+        h => h.trim() === "Fecha vencimiento FM"
+    );
+
+const idxAlertaFM =
+    encabezados.findIndex(
+        h => h.trim() === "Alerta vencimiento FM"
+    );
+`
+
 console.log(
     datos.filter(
         fila =>
