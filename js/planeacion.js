@@ -837,7 +837,7 @@ document.addEventListener("input",(e)=>{
         e.target.id === "filtroBusqueda"
     ){
         aplicarFiltros();
-    }
+
 
 });
 
