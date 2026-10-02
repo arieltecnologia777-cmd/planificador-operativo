@@ -991,7 +991,8 @@ async function guardarOT(fila){
 
     };
 console.log("GUARDANDO", payload);
-    const resp = await fetch(API_URL,{
+
+const resp = await fetch(API_URL,{
     method:"POST",
     headers:{
         "Content-Type":"application/json"
@@ -999,7 +1000,11 @@ console.log("GUARDANDO", payload);
     body:JSON.stringify(payload)
 });
 
+console.log("STATUS", resp.status);
+
 const resultado = await resp.json();
+
+console.log("RESPUESTA", resultado);
 
 if (resultado.ok) {
 
