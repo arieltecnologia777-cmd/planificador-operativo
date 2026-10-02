@@ -162,8 +162,8 @@ button{
 
 .hero{
     position:relative;
-    min-height:150px;
-    margin-bottom:10px;
+    min-height:110px;
+    margin-bottom:8px;
     overflow:hidden;
     isolation:isolate;
 
@@ -174,7 +174,7 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding:18px 24px;
+    padding:12px 20px;
     box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
 }
@@ -227,7 +227,7 @@ button{
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top:-12px;
+    margin-top:-4px;
 }
 
 .hero-badge span{
@@ -238,7 +238,7 @@ button{
 }
 
 .hero h1{
-    font-size:2rem;
+    font-size:1.7rem;
     font-weight:850;
     color:#fff;
     line-height:1.05;
@@ -376,7 +376,7 @@ button{
     display:grid;
     grid-template-columns:repeat(6,minmax(0,1fr));
     gap:12px;
-    margin-bottom:16px;
+    margin-bottom:6px;
 }
 
 .card{
@@ -394,7 +394,7 @@ button{
 }
 
 .kpi-card{
-    min-height:100px;
+    min-height:85px;
     position:relative;
     overflow:hidden;
 }
