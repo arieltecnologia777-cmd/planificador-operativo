@@ -51,11 +51,6 @@ function pintarTabla(datos){
             h => h.trim() === "Tipo de prioridad"
         );
 
-    const idxIdsAfectados =
-    encabezados.findIndex(
-        h => h.trim() === "IDs afectados"
-    );
-
 const idxRangoAfectacion =
     encabezados.findIndex(
         h => h.trim() === "Rango de afectación"
@@ -148,7 +143,6 @@ else if (
 <td>${fila[idxIM]}</td>
 <td>${fila[idxOT]}</td>
 <td>${fila[idxAfectacion]}</td>
-<td>${fila[idxIdsAfectados]}</td>
 <td>${fila[idxDias]}</td>
 <td>${fila[idxRangoAfectacion]}</td>
 <td>${fila[idxPrioridad]}</td>
