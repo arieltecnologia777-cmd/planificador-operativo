@@ -366,6 +366,7 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
+
 const prioridades = Array.from(
     new Set(
         datos.map(fila => fila[idxPrioridad])
