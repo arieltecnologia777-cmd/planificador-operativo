@@ -991,14 +991,54 @@ async function guardarOT(fila){
 
     };
 
-    await fetch(API_URL,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(payload)
-    });
+    const resp = await fetch(API_URL,{
+    method:"POST",
+    headers:{
+        "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+});
 
+const resultado = await resp.json();
+
+if (resultado.ok) {
+
+    window.registrosD1 =
+        window.registrosD1 || {};
+
+    window.registrosD1[payload.ot] = {
+        ot: payload.ot,
+        estadoProgramacion:
+            payload.estadoProgramacion,
+
+        fechaProgramacion:
+            payload.fechaProgramacion,
+
+        observacion:
+            payload.observacion,
+
+        estadoGestion:
+            payload.estadoGestion,
+
+        updatedAt:
+            new Date().toISOString()
+    };
+
+}
+
+    setTimeout(async () => {
+
+    try {
+
+        const resp =
+            await fetch(API_URL);
+
+        window.registrosD1 =
+            await resp.json();
+
+    } catch {}
+
+}, 1500);
 }
 document.addEventListener(
     "change",
