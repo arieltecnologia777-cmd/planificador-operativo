@@ -141,8 +141,10 @@ button{
 ========================= */
 
 .main-content{
-    padding:16px 18px 30px;
+    padding:16px 18px 16px;
     min-width:0;
+    height:100vh;
+    overflow:hidden;
 }
 
 .dashboard-shell{
@@ -491,7 +493,7 @@ button{
     padding:17px 18px;
     box-shadow:var(--shadow);
     min-height:258px;
-    overflow:visible;
+    overflow:hidden;
 }
 .panel-header{
     display:flex;
