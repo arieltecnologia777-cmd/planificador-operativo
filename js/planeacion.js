@@ -626,7 +626,11 @@ function aplicarFiltros(){
         document.getElementById(
             "filtroDepartamento"
         ).value;
-
+    
+const prioridad =
+    document.getElementById(
+        "filtroPrioridad"
+    ).value;
     const encabezados =
         encabezadosGlobal;
 
@@ -649,7 +653,11 @@ function aplicarFiltros(){
         encabezados.findIndex(
             h => h.trim() === "Departamento"
         );
-
+const idxPrioridad =
+    encabezados.findIndex(
+        h => h.trim() === "Tipo de prioridad"
+    );
+    
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -676,8 +684,18 @@ function aplicarFiltros(){
                 !depto ||
 
                 fila[idxDepto] === depto;
+            
+            const cumplePrioridad =
 
-            return cumpleTexto && cumpleDepto;
+    !prioridad ||
+
+    fila[idxPrioridad] === prioridad;
+
+           return (
+    cumpleTexto &&
+    cumpleDepto &&
+    cumplePrioridad
+);
         });
 
     pintarTabla(resultado);
@@ -764,10 +782,11 @@ else if(valor === ""){
     }
 
     if(
-        e.target.id === "filtroDepartamento"
-    ){
-        aplicarFiltros();
-    }
+    e.target.id === "filtroDepartamento" ||
+    e.target.id === "filtroPrioridad"
+){
+    aplicarFiltros();
+}
 
 });
 
