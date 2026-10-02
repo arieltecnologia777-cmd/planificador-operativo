@@ -990,7 +990,7 @@ async function guardarOT(fila){
             )[1]?.value || ""
 
     };
-
+console.log("GUARDANDO", payload);
     const resp = await fetch(API_URL,{
     method:"POST",
     headers:{
