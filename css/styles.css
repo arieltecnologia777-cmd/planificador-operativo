@@ -27,10 +27,8 @@ body{
     color:var(--text);
     min-height:100vh;
     overflow-x:hidden;
-    zoom:0.9;
-    width:111.11%;
+    zoom:0.95;
 }
-
 button{
     font-family:inherit;
 }
