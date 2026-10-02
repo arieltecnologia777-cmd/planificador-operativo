@@ -961,7 +961,7 @@ document.addEventListener(
 async function guardarOT(fila){
 
     const ot =
-        fila.children[3]
+        fila.children[4]
             .textContent
             .trim();
 
