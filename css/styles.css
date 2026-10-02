@@ -1143,7 +1143,7 @@ button{
 .planeacion-table th{
     background:#f8fafc;
     color:#173a6d;
-    font-size:.75rem;
+    font-size:.85rem;
     font-weight:800;
     text-align:left;
     padding:12px;
@@ -1203,7 +1203,7 @@ button{
 .planeacion-table td{
     padding:10px 12px;
     border-bottom:1px solid #edf1f5;
-    font-size:.78rem;
+    font-size:.90rem;
 }
 
 .planeacion-table tr:hover{
