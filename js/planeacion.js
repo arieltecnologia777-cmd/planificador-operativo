@@ -382,6 +382,69 @@ document.getElementById(
 ` + prioridades.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
+    const afectaciones = Array.from(
+    new Set(
+        datos.map(fila => fila[idxAfectacion])
+    )
+)
+.filter(Boolean)
+.sort();
+
+document.getElementById(
+    "filtroAfectacion"
+).innerHTML = `
+    <option value="">Todas las afectaciones</option>
+` + afectaciones.map(valor => `
+    <option value="${valor}">${valor}</option>
+`).join("");
+    
+   const stoppers = Array.from(
+    new Set(
+        datos.map(fila => fila[idxStoppersDominion])
+    )
+)
+.filter(Boolean)
+.sort();
+
+document.getElementById(
+    "filtroStoppers"
+).innerHTML = `
+    <option value="">Todos los stoppers</option>
+` + stoppers.map(valor => `
+    <option value="${valor}">${valor}</option>
+`).join("");
+
+ const rangos = Array.from(
+    new Set(
+        datos.map(fila => fila[idxRangoAfectacion])
+    )
+)
+.filter(Boolean)
+.sort();
+
+document.getElementById(
+    "filtroRango"
+).innerHTML = `
+    <option value="">Todos los rangos</option>
+` + rangos.map(valor => `
+    <option value="${valor}">${valor}</option>
+`).join("");
+
+    const backlogs = Array.from(
+    new Set(
+        datos.map(fila => fila[idxBacklog])
+    )
+)
+.filter(Boolean)
+.sort();
+
+document.getElementById(
+    "filtroBacklog"
+).innerHTML = `
+    <option value="">Todo backlog</option>
+` + backlogs.map(valor => `
+    <option value="${valor}">${valor}</option>
+`).join("");
     
     const idxBacklog =
     encabezados.findIndex(
@@ -631,6 +694,25 @@ const prioridad =
     document.getElementById(
         "filtroPrioridad"
     ).value;
+   const afectacion =
+    document.getElementById(
+        "filtroAfectacion"
+    ).value;
+
+const stoppers =
+    document.getElementById(
+        "filtroStoppers"
+    ).value;
+
+const rango =
+    document.getElementById(
+        "filtroRango"
+    ).value;
+
+const backlog =
+    document.getElementById(
+        "filtroBacklog"
+    ).value; 
     const encabezados =
         encabezadosGlobal;
 
@@ -657,7 +739,25 @@ const idxPrioridad =
     encabezados.findIndex(
         h => h.trim() === "Tipo de prioridad"
     );
-    
+  const idxAfectacion =
+    encabezados.findIndex(
+        h => h.trim() === "Tipo de afectación"
+    );
+
+const idxStoppers =
+    encabezados.findIndex(
+        h => h.trim() === "Stoppers Dominion"
+    );
+
+const idxRango =
+    encabezados.findIndex(
+        h => h.trim() === "Rango de afectación"
+    );
+
+const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );  
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -691,10 +791,38 @@ const idxPrioridad =
 
     fila[idxPrioridad] === prioridad;
 
+            const cumpleAfectacion =
+
+    !afectacion ||
+
+    fila[idxAfectacion] === afectacion;
+
+const cumpleStoppers =
+
+    !stoppers ||
+
+    fila[idxStoppers] === stoppers;
+
+const cumpleRango =
+
+    !rango ||
+
+    fila[idxRango] === rango;
+
+const cumpleBacklog =
+
+    !backlog ||
+
+    fila[idxBacklog] === backlog;
+
            return (
     cumpleTexto &&
     cumpleDepto &&
-    cumplePrioridad
+    cumplePrioridad &&
+    cumpleAfectacion &&
+    cumpleStoppers &&
+    cumpleRango &&
+    cumpleBacklog
 );
         });
 
@@ -783,9 +911,14 @@ else if(valor === ""){
 
     if(
     e.target.id === "filtroDepartamento" ||
-    e.target.id === "filtroPrioridad"
+    e.target.id === "filtroPrioridad" ||
+    e.target.id === "filtroAfectacion" ||
+    e.target.id === "filtroStoppers" ||
+    e.target.id === "filtroRango" ||
+    e.target.id === "filtroBacklog"
 ){
     aplicarFiltros();
+}
 }
 
 });
