@@ -90,7 +90,6 @@ const idxAlertaFM =
     encabezados.findIndex(
         h => h.trim() === "Alerta vencimiento FM"
     );
-`
 
 console.log(
     datos.filter(
