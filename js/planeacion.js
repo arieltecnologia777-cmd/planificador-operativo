@@ -367,6 +367,22 @@ document.getElementById(
             h => h.trim() === "Tipo de prioridad"
         );
 
+    const idxRangoAfectacion =
+    encabezados.findIndex(
+        h => h.trim() === "Rango de afectación"
+    );
+
+const idxStoppersDominion =
+    encabezados.findIndex(
+        h => h.trim() === "Stoppers Dominion"
+    );
+
+const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );
+    
+
 const prioridades = Array.from(
     new Set(
         datos.map(fila => fila[idxPrioridad])
@@ -753,11 +769,6 @@ const idxRango =
     encabezados.findIndex(
         h => h.trim() === "Rango de afectación"
     );
-
-const idxBacklog =
-    encabezados.findIndex(
-        h => h.trim() === "Indicador backlog"
-    );  
     const resultado =
         datosGlobal.filter(fila => {
 
