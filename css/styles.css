@@ -162,7 +162,7 @@ button{
 
 .hero{
     position:relative;
-    min-height:145px;
+    min-height:150px;
     margin-bottom:10px;
     overflow:hidden;
     isolation:isolate;
@@ -394,10 +394,11 @@ button{
 }
 
 .kpi-card{
-    min-height:105px;
+    min-height:100px;
     position:relative;
     overflow:hidden;
 }
+
 .kpi-card:after{
     content:"";
     position:absolute;
