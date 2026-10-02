@@ -1069,7 +1069,8 @@ button{
 }
 
 .planeacion-filtros{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(180px,1fr));
     gap:12px;
     margin-bottom:6px;
     background:#fff;
