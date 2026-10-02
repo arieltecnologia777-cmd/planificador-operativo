@@ -462,10 +462,6 @@ document.getElementById(
     <option value="${valor}">${valor}</option>
 `).join("");
     
-    const idxBacklog =
-    encabezados.findIndex(
-        h => h.trim() === "Indicador backlog"
-    );
     const otsAlta = new Set();
 
 datos.forEach(fila => {
