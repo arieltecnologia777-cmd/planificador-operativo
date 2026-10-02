@@ -341,21 +341,7 @@ document.getElementById(
     <option value="${dep}">${dep}</option>
 `).join("");
 
-    const prioridades = Array.from(
-    new Set(
-        datos.map(fila => fila[idxPrioridad])
-    )
-)
-.filter(Boolean)
-.sort();
-
-document.getElementById(
-    "filtroPrioridad"
-).innerHTML = `
-    <option value="">Todas las prioridades</option>
-` + prioridades.map(valor => `
-    <option value="${valor}">${valor}</option>
-`).join("");
+    
     
     const idxMunicipio =
         encabezados.findIndex(h => h.trim() === "Municipio");
@@ -380,7 +366,22 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de prioridad"
         );
+const prioridades = Array.from(
+    new Set(
+        datos.map(fila => fila[idxPrioridad])
+    )
+)
+.filter(Boolean)
+.sort();
 
+document.getElementById(
+    "filtroPrioridad"
+).innerHTML = `
+    <option value="">Todas las prioridades</option>
+` + prioridades.map(valor => `
+    <option value="${valor}">${valor}</option>
+`).join("");
+    
     const idxBacklog =
     encabezados.findIndex(
         h => h.trim() === "Indicador backlog"
