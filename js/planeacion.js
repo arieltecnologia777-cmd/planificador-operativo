@@ -321,9 +321,18 @@ const datos = datosGlobal;
 window.registrosD1 =
     registrosD1;
 
-    const idxID =
-        encabezados.findIndex(h => h.trim() === "ID");
+const programados = Object.values(
+    registrosD1 || {}
+).filter(registro =>
+    registro.estadoProgramacion === "Programada"
+).length;
 
+document.getElementById(
+    "kpiProgramadosD1"
+).textContent = programados;
+
+const idxID =
+    encabezados.findIndex(h => h.trim() === "ID");
     const idxDepto =
         encabezados.findIndex(h => h.trim() === "Departamento");
 
