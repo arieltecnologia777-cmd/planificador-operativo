@@ -858,3 +858,15 @@ function actualizarStickyTabla() {
 
 window.addEventListener('load', actualizarStickyTabla);
 window.addEventListener('resize', actualizarStickyTabla);
+
+function detectarZoom() {
+    const zoom = Math.round(window.devicePixelRatio * 100);
+
+    document.body.classList.toggle(
+        'zoom-alto',
+        zoom > 105
+    );
+}
+
+window.addEventListener('resize', detectarZoom);
+detectarZoom();
