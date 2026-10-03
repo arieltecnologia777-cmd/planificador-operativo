@@ -1544,3 +1544,5 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("show");
 
 });
+
+});
