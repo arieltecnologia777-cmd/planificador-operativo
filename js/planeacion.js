@@ -91,22 +91,10 @@ const idxAlertaFM =
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
 
-        const clave = fila[idxOT];
-
-const d1 =
+        const d1 =
     (window.registrosD1 || {})[
-        clave
+        fila[idxOT]
     ] || {};
-if (
-    d1.estadoProgramacion
-) {
-
-}
-if (
-    fila[idxOT] === "OT5362697"
-) {
-
-}
 
         let fechaTipo = "text";
 let fechaDisabled = "disabled";
@@ -306,50 +294,9 @@ datosGlobal = filas.slice(1);
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
-window.registrosD1 =
-    await leerCacheD1();
-
-    console.log(
-    "CACHE INDEXDB",
-    window.registrosD1
-);
-
-    console.log(
-    "ANTES DE PINTAR",
-    Object.keys(window.registrosD1).length
-);
-    pintarTabla(datos);
-    try {
-
-    const respD1 =
-        await fetch(API_URL);
-
-    const registrosD1 =
-        await respD1.json();
-
-    window.registrosD1 = {
-    ...(window.registrosD1 || {}),
-    ...(registrosD1 || {})
-};
-
-        console.log(
-    "DESPUES DE KV",
-    Object.keys(window.registrosD1).length
-);
-await guardarCacheD1(
-    window.registrosD1
-);
-        
-} catch (error) {
-
-    console.error(error);
-
-    window.registrosD1 = {};
-
-}
-
+    
 const programados = Object.values(
-    registrosD1 || {}
+    window.registrosD1 || {}
 ).filter(registro =>
     registro.estadoProgramacion === "Programada"
 ).length;
@@ -629,9 +576,8 @@ document.getElementById(
 ).textContent = noCumpleBacklog;
 
     
-actualizarKPIs(datos);
-
 pintarTabla(datos);
+actualizarKPIs(datos);
 
 }
 
@@ -802,6 +748,12 @@ const idxRango =
     encabezados.findIndex(
         h => h.trim() === "Rango de afectación"
     );
+
+    const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );
+    
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -1036,7 +988,6 @@ if (resultado.ok) {
 
     window.registrosD1[payload.ot] = {
         ot: payload.ot,
-
         estadoProgramacion:
             payload.estadoProgramacion,
 
@@ -1053,20 +1004,16 @@ if (resultado.ok) {
             new Date().toISOString()
     };
 
-    await guardarCacheD1(
-        window.registrosD1
-    );
-// pintarTabla(datosGlobal);
 }
 
-   /*
+    /*
 setTimeout(async () => {
 
     try {
 
         const resp =
             await fetch(API_URL);
-
+await fetch(API_URL);
         window.registrosD1 =
             await resp.json();
 
@@ -1172,103 +1119,3 @@ function detectarZoom() {
 
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
-
-function abrirDB() {
-
-    return new Promise((resolve, reject) => {
-
-        const request =
-            indexedDB.open(
-                "planeacionDB",
-                1
-            );
-
-        request.onupgradeneeded = (event) => {
-
-            const db =
-                event.target.result;
-
-            if (
-                !db.objectStoreNames.contains(
-                    "registrosD1"
-                )
-            ) {
-
-                db.createObjectStore(
-                    "registrosD1"
-                );
-
-            }
-
-        };
-
-        request.onsuccess = () =>
-            resolve(
-                request.result
-            );
-
-        request.onerror = () =>
-            reject(
-                request.error
-            );
-
-    });
-
-}
-
-async function guardarCacheD1(
-    datos
-) {
-
-    const db =
-        await abrirDB();
-
-    const tx =
-        db.transaction(
-            "registrosD1",
-            "readwrite"
-        );
-
-    tx.objectStore(
-        "registrosD1"
-    ).put(
-        datos,
-        "cache"
-    );
-
-}
-
-async function leerCacheD1() {
-
-    const db =
-        await abrirDB();
-
-    return new Promise(
-        resolve => {
-
-            const tx =
-                db.transaction(
-                    "registrosD1",
-                    "readonly"
-                );
-
-            const request =
-                tx
-                .objectStore(
-                    "registrosD1"
-                )
-                .get("cache");
-
-            request.onsuccess =
-                () => resolve(
-                    request.result || {}
-                );
-
-            request.onerror =
-                () => resolve({});
-
-        }
-    );
-
-}
-
