@@ -37,21 +37,23 @@ button{
     grid-template-columns:260px minmax(0,1fr);
     min-height:100vh;
     zoom:0.82;
+    align-items:stretch;
 }
 
 /* =========================
    SIDEBAR
 ========================= */
 
-.sidebar{
+..sidebar{
     background:var(--sidebar);
     border-right:1px solid var(--border);
     box-shadow:var(--shadow);
-    min-height:calc(100vh / 0.81);
+    min-height:100%;
     position:sticky;
     top:0;
     padding:16px;
     z-index:10;
+    align-self:stretch;
 }
 
 .logo-box{
