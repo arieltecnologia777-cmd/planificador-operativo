@@ -1617,7 +1617,7 @@ filtrosModal.forEach(control => {
 
 });
 
-                const buscadorModal =
+const buscadorModal =
     destino.querySelector(
         "#filtroBusqueda"
     );
@@ -1629,11 +1629,22 @@ if (buscadorModal) {
         () => {
 
             const original =
-         
-            }
-        );
+                document.querySelector(
+                    ".planeacion-filtros-sticky #filtroBusqueda"
+                );
 
-        cerrar.addEventListener(
+            if (!original) return;
+
+            original.value =
+                buscadorModal.value;
+
+            aplicarFiltros();
+
+        }
+    );
+
+}
+                cerrar.addEventListener(
     "click",
     () => {
 
