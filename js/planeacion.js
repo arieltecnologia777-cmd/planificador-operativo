@@ -309,6 +309,11 @@ const datos = datosGlobal;
 window.registrosD1 =
     await leerCacheD1();
 
+    console.log(
+    "CACHE INDEXDB",
+    window.registrosD1
+);
+
     pintarTabla(datos);
     try {
 
