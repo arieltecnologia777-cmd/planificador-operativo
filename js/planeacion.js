@@ -1018,12 +1018,6 @@ async function guardarOT(fila){
             )[1]?.value || ""
 
     };
-console.log("GUARDANDO", payload);
-
-    console.log(
-    "CLAVE KV:",
-    payload.ot
-);
 
 const resp = await fetch(API_URL,{
     method:"POST",
@@ -1033,11 +1027,7 @@ const resp = await fetch(API_URL,{
     body:JSON.stringify(payload)
 });
 
-console.log("STATUS", resp.status);
-
 const resultado = await resp.json();
-
-console.log("RESPUESTA", resultado);
 
 if (resultado.ok) {
 
