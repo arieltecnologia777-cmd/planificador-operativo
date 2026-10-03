@@ -42,7 +42,7 @@ button{
    SIDEBAR
 ========================= */
 
-..sidebar{
+.sidebar{
     background:var(--sidebar);
     border-right:1px solid var(--border);
     box-shadow:var(--shadow);
