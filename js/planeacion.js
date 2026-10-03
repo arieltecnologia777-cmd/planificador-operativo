@@ -41,6 +41,10 @@ function pintarTabla(datos){
         encabezados.findIndex(
             h => h.trim() === "Tipo de afectación"
         );
+    const idxIdsAfectados =
+    encabezados.findIndex(
+        h => h.trim() === "IDs afectados"
+    );
 
     const idxDias =
         encabezados.findIndex(
@@ -358,10 +362,6 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de afectación"
         );
-const idxIdsAfectados =
-    encabezados.findIndex(
-        h => h.trim() === "IDs afectados"
-    );
     
     const idxDias =
         encabezados.findIndex(
