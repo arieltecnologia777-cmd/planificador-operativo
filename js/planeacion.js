@@ -1086,29 +1086,39 @@ async function guardarOT(fila){
 
     const payload = {
 
-        ot,
+    ot,
 
-        estadoProgramacion:
-            fila.querySelector(
-                ".estado-programacion"
-            )?.value || "",
+    estadoProgramacion:
+        fila.querySelector(
+            ".estado-programacion"
+        )?.value || "",
 
-        fechaProgramacion:
-            fila.querySelector(
-                ".fecha-input"
-            )?.value || "",
+    fechaProgramacion:
+        fila.querySelector(
+            ".fecha-input"
+        )?.value || "",
 
-        observacion:
-            fila.querySelector(
-                ".observacion"
-            )?.value || "",
+    observacion:
+        fila.querySelector(
+            ".observacion"
+        )?.value || "",
 
-        estadoGestion:
-            fila.querySelectorAll(
-                ".edit-select"
-            )[1]?.value || ""
+    estadoGestion:
+        fila.querySelector(
+            ".estado-gestion"
+        )?.value || "",
 
-    };
+    tecnicoAsignado:
+        fila.querySelector(
+            ".tecnico-asignado"
+        )?.value || "",
+
+    acompanamiento:
+        fila.querySelector(
+            ".acompanamiento"
+        )?.value || ""
+
+};
 
 
 const resp = await fetch(API_URL,{
@@ -1131,23 +1141,30 @@ if (resultado.ok) {
         window.registrosD1 || {};
 
     window.registrosD1[payload.ot] = {
-        ot: payload.ot,
-        estadoProgramacion:
-            payload.estadoProgramacion,
+    ot: payload.ot,
 
-        fechaProgramacion:
-            payload.fechaProgramacion,
+    estadoProgramacion:
+        payload.estadoProgramacion,
 
-        observacion:
-            payload.observacion,
+    fechaProgramacion:
+        payload.fechaProgramacion,
 
-        estadoGestion:
-            payload.estadoGestion,
+    observacion:
+        payload.observacion,
 
-        updatedAt:
-            new Date().toISOString()
-    };
+    estadoGestion:
+        payload.estadoGestion,
 
+    tecnicoAsignado:
+        payload.tecnicoAsignado,
+
+    acompanamiento:
+        payload.acompanamiento,
+
+    updatedAt:
+        new Date().toISOString()
+};
+    
 }
 
 }
