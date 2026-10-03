@@ -1507,3 +1507,44 @@ document.addEventListener(
 
     }
 );
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const abrir =
+            document.getElementById(
+                "btnExpandirTabla"
+            );
+
+        const cerrar =
+            document.getElementById(
+                "cerrarTablaModal"
+            );
+
+        const modal =
+            document.getElementById(
+                "tablaModal"
+            );
+
+        const destino =
+            document.getElementById(
+                "tablaModalBody"
+            );
+
+        if (
+            !abrir ||
+            !cerrar ||
+            !modal ||
+            !destino
+        ) return;
+
+        abrir.addEventListener(
+            "click",
+            () => {
+
+                const tabla =
+                    document.querySelector(
+                        ".planeacion-table-wrapper"
+                    );
+
+                destino.innerHTML
