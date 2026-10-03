@@ -101,6 +101,12 @@ console.log(
         fila[idxOT]
     ] || {};
 
+        console.log(
+    "PINTANDO",
+    fila[idxOT],
+    d1
+);
+
         let fechaTipo = "text";
 let fechaDisabled = "disabled";
 let fechaValor = d1.fechaProgramacion || "⟵ Definir estado";
