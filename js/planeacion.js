@@ -1529,30 +1529,40 @@ document.addEventListener(
         ".panel"
     );
 
-destino.innerHTML =
-    panel.outerHTML;
-destino
-    .querySelector("#btnExpandirTabla")
-    ?.remove();
-                modal.classList.add(
-                    "show"
-                );
+destino.appendChild(panel);
 
+modal.classList.add(
+    "show"
+);
             }
         );
 
         cerrar.addEventListener(
-            "click",
-            () => {
+    "click",
+    () => {
 
-                modal.classList.remove(
-                    "show"
-                );
+        const main =
+            document.querySelector(
+                ".main-content"
+            );
 
-                destino.innerHTML = "";
+        const panel =
+            destino.querySelector(
+                ".panel"
+            );
 
-            }
+        if (panel) {
+
+            main.appendChild(panel);
+
+        }
+
+        modal.classList.remove(
+            "show"
         );
+
+    }
+);
 
     }
 );
