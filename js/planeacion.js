@@ -96,10 +96,22 @@ console.log(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
 
-        const d1 =
+        const clave = fila[idxOT];
+
+const d1 =
     (window.registrosD1 || {})[
-        fila[idxOT]
+        clave
     ] || {};
+
+if (
+    fila[idxOT] === "OT5362697"
+) {
+    console.log(
+        "REGISTRO ENCONTRADO",
+        clave,
+        d1
+    );
+}
 
         console.log(
     "PINTANDO",
