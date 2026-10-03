@@ -138,6 +138,7 @@ else if (
 <td>${fila[idxIM]}</td>
 <td>${fila[idxOT]}</td>
 <td>${fila[idxAfectacion]}</td>
+<td>${fila[idxIdsAfectados]}</td>
 <td>${fila[idxDias]}</td>
 <td>${fila[idxRangoAfectacion]}</td>
 <td>${fila[idxPrioridad]}</td>
@@ -357,7 +358,11 @@ document.getElementById(
         encabezados.findIndex(
             h => h.trim() === "Tipo de afectación"
         );
-
+const idxIdsAfectados =
+    encabezados.findIndex(
+        h => h.trim() === "IDs afectados"
+    );
+    
     const idxDias =
         encabezados.findIndex(
             h => h.trim() === "Días OT"
