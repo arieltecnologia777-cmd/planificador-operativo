@@ -1510,9 +1510,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
     const destino =
-        document.getElementById(
-            "panelPlaceholder"
-        );
+    document.getElementById(
+        "tablaModalBody"
+    );
 
     destino.appendChild(panel);
 
