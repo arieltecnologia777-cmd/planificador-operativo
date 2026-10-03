@@ -1645,7 +1645,7 @@ if (buscadorModal) {
 
 }
 
-            cerrar.addEventListener(
+         }   cerrar.addEventListener(
     "click",
     () => {
 
