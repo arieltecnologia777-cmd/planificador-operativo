@@ -1489,84 +1489,29 @@ function exportarPlaneacion() {
 
 }
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        const abrir =
-            document.getElementById(
-                "btnExpandirTabla"
-            );
+    const abrir =
+        document.getElementById("btnExpandirTabla");
 
-        const cerrar =
-            document.getElementById(
-                "cerrarTablaModal"
-            );
+    const cerrar =
+        document.getElementById("cerrarTablaModal");
 
-        const modal =
-            document.getElementById(
-                "tablaModal"
-            );
+    const modal =
+        document.getElementById("tablaModal");
 
-        const destino =
-            document.getElementById(
-                "tablaModalBody"
-            );
+    if (!abrir || !cerrar || !modal) return;
 
-        if (
-            !abrir ||
-            !cerrar ||
-            !modal ||
-            !destino
-        ) return;
+    abrir.addEventListener("click", () => {
 
-        abrir.addEventListener(
-            "click",
-            () => {
+        modal.classList.add("show");
 
-                const panel =
-    document.querySelector(
-        ".panel"
-    );
+    });
 
-destino.appendChild(panel);
+    cerrar.addEventListener("click", () => {
 
-modal.classList.add(
-    "show"
-);
-                
-    }
-);
+        modal.classList.remove("show");
 
-cerrar.addEventListener(
-    "click",
-    () => {
+    });
 
-        const placeholder =
-            document.getElementById(
-                "panelPlaceholder"
-            );
-
-        const panel =
-            destino.querySelector(
-                ".panel"
-            );
-
-        if (
-            placeholder &&
-            panel
-        ) {
-
-            placeholder.after(panel);
-
-        }
-
-        modal.classList.remove(
-            "show"
-        );
-
-    }
-);
-
-    }
-);
+});
