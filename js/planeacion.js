@@ -87,12 +87,6 @@ const idxAlertaFM =
         h => h.trim() === "Alerta vencimiento FM"
     );
 
-console.log(
-    datos.filter(
-        fila =>
-        (fila[idxDepto] || "").trim() === "ANTIOQUIA"
-    )
-);
     document.getElementById(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
@@ -320,7 +314,7 @@ window.registrosD1 =
     registrosD1;
 
 const programados = Object.values(
-    registrosD1 || {}
+    window.registrosD1 || {}
 ).filter(registro =>
     registro.estadoProgramacion === "Programada"
 ).length;
