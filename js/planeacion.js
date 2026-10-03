@@ -1529,146 +1529,12 @@ document.addEventListener(
         ".panel"
     );
 
-destino.innerHTML =
-    panel.outerHTML;
-
-destino
-    .querySelector("#btnExpandirTabla")
-    ?.remove();
+destino.appendChild(panel);
 
 modal.classList.add(
     "show"
 );
-                const topScrollModal =
-    destino.querySelector(
-        ".planeacion-scroll-top"
-    );
-
-const tableWrapperModal =
-    destino.querySelector(
-        ".planeacion-table-wrapper"
-    );
-
-if (
-    topScrollModal &&
-    tableWrapperModal
-) {
-
-    let syncing = false;
-
-    topScrollModal.addEventListener(
-        "scroll",
-        () => {
-
-            if (syncing) return;
-
-            syncing = true;
-
-            tableWrapperModal.scrollLeft =
-                topScrollModal.scrollLeft;
-
-            syncing = false;
-
-        }
-    );
-
-    tableWrapperModal.addEventListener(
-        "scroll",
-        () => {
-
-            if (syncing) return;
-
-            syncing = true;
-
-            topScrollModal.scrollLeft =
-                tableWrapperModal.scrollLeft;
-
-            syncing = false;
-
-        }
-    );
-
-}
-                const filtrosModal =
-    destino.querySelectorAll(
-        ".planeacion-filtros select"
-    );
-
-filtrosModal.forEach(control => {
-
-    control.addEventListener(
-        "change",
-        () => {
-
-            const original =
-                document.querySelector(
-                    `.planeacion-filtros-sticky #${control.id}`
-                );
-
-            if (!original) return;
-
-            original.value =
-    control.value;
-
-aplicarFiltros();
-
-const panelOriginal =
-    document.querySelector(
-        ".panel"
-    );
-
-destino.innerHTML =
-    panelOriginal.outerHTML;
-
-destino
-    .querySelector("#btnExpandirTabla")
-    ?.remove();
-
-        }
-    );
-
-});
-
-const buscadorModal =
-    destino.querySelector(
-        "#filtroBusqueda"
-    );
-
-if (buscadorModal) {
-
-    buscadorModal.addEventListener(
-        "input",
-        () => {
-
-            const original =
-                document.querySelector(
-                    ".planeacion-filtros-sticky #filtroBusqueda"
-                );
-
-            if (!original) return;
-
-           original.value =
-    buscadorModal.value;
-
-aplicarFiltros();
-
-const panelOriginal =
-    document.querySelector(
-        ".panel"
-    );
-
-destino.innerHTML =
-    panelOriginal.outerHTML;
-
-destino
-    .querySelector("#btnExpandirTabla")
-    ?.remove();
-
-        }
-    );
-
-}
-
+                
     }
 );
 
@@ -1676,14 +1542,28 @@ cerrar.addEventListener(
     "click",
     () => {
 
+        const placeholder =
+            document.getElementById(
+                "panelPlaceholder"
+            );
+
+        const panel =
+            destino.querySelector(
+                ".panel"
+            );
+
+        if (
+            placeholder &&
+            panel
+        ) {
+
+            placeholder.after(panel);
+
+        }
+
         modal.classList.remove(
             "show"
         );
-
-        destino.innerHTML = "";
-
-    }
-);
 
     }
 );
