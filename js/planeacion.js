@@ -1644,32 +1644,15 @@ if (buscadorModal) {
     );
 
 }
-                cerrar.addEventListener(
+               cerrar.addEventListener(
     "click",
     () => {
-
-        const main =
-            document.querySelector(
-                ".main-content"
-            );
-
-        const panel =
-            destino.querySelector(
-                ".panel"
-            );
-
-        if (panel) {
-
-            main.appendChild(panel);
-
-        }
 
         modal.classList.remove(
             "show"
         );
 
-    }
-);
+        destino.innerHTML = "";
 
     }
 );
