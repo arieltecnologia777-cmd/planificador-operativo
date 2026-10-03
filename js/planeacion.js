@@ -1127,3 +1127,174 @@ function detectarZoom() {
 
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
+
+function exportarPlaneacion() {
+
+    const region =
+        document.getElementById(
+            "exportRegion"
+        ).value;
+
+    let filas = [...datosGlobal];
+
+    const idxDepto =
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Departamento"
+        );
+
+    if (region === "R1") {
+
+        filas = filas.filter(fila =>
+            [
+                "CESAR",
+                "LA GUAJIRA",
+                "SAI"
+            ].includes(
+                (fila[idxDepto] || "").trim()
+            )
+        );
+
+    }
+
+    if (region === "R2") {
+
+        filas = filas.filter(fila =>
+            (fila[idxDepto] || "").trim() ===
+            "ANTIOQUIA"
+        );
+
+    }
+
+    const datosExcel = filas.map(fila => ({
+
+        ID: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "ID"
+            )
+        ],
+
+        Departamento: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Departamento"
+            )
+        ],
+
+        Municipio: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Municipio"
+            )
+        ],
+
+        IM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "IM"
+            )
+        ],
+
+        OT: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "OT"
+            )
+        ],
+
+        Afectacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo de afectación"
+            )
+        ],
+
+        Dias_OT: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Días OT"
+            )
+        ],
+
+        Rango_Afectacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Rango de afectación"
+            )
+        ],
+
+        Prioridad: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo de prioridad"
+            )
+        ],
+
+        Stoppers_Dominion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Stoppers Dominion"
+            )
+        ],
+
+        Indicador_Backlog: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Indicador backlog"
+            )
+        ],
+
+        Stopper_P3: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Stopper P3"
+            )
+        ],
+
+        Tipo_Facturacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo facturación"
+            )
+        ],
+
+        Fecha_Vencimiento_FM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Fecha vencimiento FM"
+            )
+        ],
+
+        Alerta_Vencimiento_FM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Alerta vencimiento FM"
+            )
+        ]
+
+    }));
+
+    const ws =
+        XLSX.utils.json_to_sheet(
+            datosExcel
+        );
+
+    const wb =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Planeacion"
+    );
+
+    XLSX.writeFile(
+        wb,
+        `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
+    );
+
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const btn =
+            document.getElementById(
+                "btnExportarExcel"
+            );
+
+        if (!btn) return;
+
+        btn.addEventListener(
+            "click",
+            exportarPlaneacion
+        );
+
+    }
+);
