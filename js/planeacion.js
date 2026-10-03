@@ -332,9 +332,6 @@ await guardarCacheD1(
 
 }
 
-window.registrosD1 =
-    registrosD1;
-
 const programados = Object.values(
     registrosD1 || {}
 ).filter(registro =>
