@@ -219,11 +219,19 @@ else if (
 
         <tr>
 
-           <td>${fila[idxID]}</td>
+            <td>${fila[idxID]}</td>
 <td>${fila[idxDepto]}</td>
 <td>${fila[idxMunicipio]}</td>
+<td>${fila[idxIM]}</td>
+<td>${fila[idxOT]}</td>
+<td>${fila[idxAfectacion]}</td>
+<td>${fila[idxIdsAfectados]}</td>
+<td>${fila[idxDias]}</td>
+<td>${fila[idxRangoAfectacion]}</td>
+<td>${fila[idxPrioridad]}</td>
+<td>${fila[idxStoppersDominion]}</td>
 
-<td>
+            <td>
    <select
     class="edit-select estado-programacion">
 
@@ -343,14 +351,7 @@ else if (
 
     </select>
 </td>
-<td>${fila[idxIM]}</td>
-<td>${fila[idxOT]}</td>
-<td>${fila[idxAfectacion]}</td>
-<td>${fila[idxIdsAfectados]}</td>
-<td>${fila[idxDias]}</td>
-<td>${fila[idxRangoAfectacion]}</td>
-<td>${fila[idxPrioridad]}</td>
-<td>${fila[idxStoppersDominion]}</td>
+
 <td>${fila[idxBacklog]}</td>
 <td>${fila[idxStopperP3]}</td>
 <td>${fila[idxTipoFacturacion]}</td>
