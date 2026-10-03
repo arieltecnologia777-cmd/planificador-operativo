@@ -1001,6 +1001,11 @@ async function guardarOT(fila){
     };
 console.log("GUARDANDO", payload);
 
+    console.log(
+    "CLAVE KV:",
+    payload.ot
+);
+
 const resp = await fetch(API_URL,{
     method:"POST",
     headers:{
