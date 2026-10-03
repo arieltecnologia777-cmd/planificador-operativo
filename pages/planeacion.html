@@ -198,8 +198,15 @@
             <div class="planeacion-header">
 
     <div class="panel-header">
-        <h2>Planeación Operativa</h2>
-    </div>
+
+    <h2>Planeación Operativa</h2>
+
+    <button id="btnExpandirTabla"
+        class="expand-btn">
+        ⛶
+    </button>
+
+</div>
 
 </div>
 
@@ -307,7 +314,21 @@
     </table>
 
 </div>
+<div id="tablaModal" class="tabla-modal">
 
+    <div class="tabla-modal-content">
+
+        <button
+            id="cerrarTablaModal"
+            class="cerrar-modal">
+            ✕
+        </button>
+
+        <div id="tablaModalBody"></div>
+
+    </div>
+
+</div>
         </section>
 
     </main>
