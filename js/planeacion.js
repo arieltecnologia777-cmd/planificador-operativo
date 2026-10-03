@@ -1237,7 +1237,49 @@ Dias_OT: fila[
                 h => h.trim() === "Stoppers Dominion"
             )
         ],
+Estado_Programacion:
+    (
+        window.registrosD1[
+            fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "OT"
+                )
+            ]
+        ] || {}
+    ).estadoProgramacion || "",
 
+Fecha_Programacion:
+    (
+        window.registrosD1[
+            fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "OT"
+                )
+            ]
+        ] || {}
+    ).fechaProgramacion || "",
+
+Observaciones:
+    (
+        window.registrosD1[
+            fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "OT"
+                )
+            ]
+        ] || {}
+    ).observacion || "",
+
+Estado_Gestion:
+    (
+        window.registrosD1[
+            fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "OT"
+                )
+            ]
+        ] || {}
+    ).estadoGestion || "",
         Indicador_Backlog: fila[
             encabezadosGlobal.findIndex(
                 h => h.trim() === "Indicador backlog"
