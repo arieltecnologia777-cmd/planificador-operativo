@@ -1059,7 +1059,8 @@ if (resultado.ok) {
 // pintarTabla(datosGlobal);
 }
 
-    setTimeout(async () => {
+   /*
+setTimeout(async () => {
 
     try {
 
@@ -1072,6 +1073,7 @@ if (resultado.ok) {
     } catch {}
 
 }, 1500);
+*/
 }
 document.addEventListener(
     "change",
