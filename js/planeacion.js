@@ -318,13 +318,15 @@ window.registrosD1 =
     const registrosD1 =
         await respD1.json();
 
-    window.registrosD1 =
-    registrosD1;
+    window.registrosD1 = {
+    ...(window.registrosD1 || {}),
+    ...(registrosD1 || {})
+};
 
 await guardarCacheD1(
-    registrosD1
+    window.registrosD1
 );
-
+        
 } catch (error) {
 
     console.error(error);
