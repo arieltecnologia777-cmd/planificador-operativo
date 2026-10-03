@@ -42,12 +42,12 @@ button{
    SIDEBAR
 ========================= */
 
-.sidebar{
+..sidebar{
     background:var(--sidebar);
     border-right:1px solid var(--border);
     box-shadow:var(--shadow);
     height:100vh;
-    min-height:122vh;
+    min-height:112vh;
     position:sticky;
     top:0;
     padding:16px;
