@@ -1203,16 +1203,16 @@ function exportarPlaneacion() {
         ],
 
         Afectacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo de afectación"
-            )
-        ],
+    encabezadosGlobal.findIndex(
+        h => h.trim() === "Tipo de afectación"
+    )
+],
 
-        Dias_OT: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Días OT"
-            )
-        ],
+Dias_OT: fila[
+    encabezadosGlobal.findIndex(
+        h => h.trim() === "Días OT"
+    )
+],
 
         Rango_Afectacion: fila[
             encabezadosGlobal.findIndex(
