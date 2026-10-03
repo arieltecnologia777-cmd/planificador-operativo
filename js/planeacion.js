@@ -1493,24 +1493,6 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        const btn =
-            document.getElementById(
-                "btnExportarExcel"
-            );
-
-        if (!btn) return;
-
-        btn.addEventListener(
-            "click",
-            exportarPlaneacion
-        );
-
-    }
-);
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
         const abrir =
             document.getElementById(
                 "btnExpandirTabla"
@@ -1547,4 +1529,28 @@ document.addEventListener(
                         ".planeacion-table-wrapper"
                     );
 
-                destino.innerHTML
+                destino.innerHTML =
+                    tabla.outerHTML;
+
+                modal.classList.add(
+                    "show"
+                );
+
+            }
+        );
+
+        cerrar.addEventListener(
+            "click",
+            () => {
+
+                modal.classList.remove(
+                    "show"
+                );
+
+                destino.innerHTML = "";
+
+            }
+        );
+
+    }
+);
