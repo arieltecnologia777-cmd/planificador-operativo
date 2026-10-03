@@ -1524,14 +1524,16 @@ document.addEventListener(
             "click",
             () => {
 
-                const tabla =
-                    document.querySelector(
-                        ".planeacion-table-wrapper"
-                    );
+                const panel =
+    document.querySelector(
+        ".panel"
+    );
 
-                destino.innerHTML =
-                    tabla.outerHTML;
-
+destino.innerHTML =
+    panel.outerHTML;
+destino
+    .querySelector("#btnExpandirTabla")
+    ?.remove();
                 modal.classList.add(
                     "show"
                 );
