@@ -1608,9 +1608,21 @@ filtrosModal.forEach(control => {
             if (!original) return;
 
             original.value =
-                control.value;
+    control.value;
 
-            aplicarFiltros();
+aplicarFiltros();
+
+const panelOriginal =
+    document.querySelector(
+        ".panel"
+    );
+
+destino.innerHTML =
+    panelOriginal.outerHTML;
+
+destino
+    .querySelector("#btnExpandirTabla")
+    ?.remove();
 
         }
     );
@@ -1635,10 +1647,22 @@ if (buscadorModal) {
 
             if (!original) return;
 
-            original.value =
-                buscadorModal.value;
+           original.value =
+    buscadorModal.value;
 
-            aplicarFiltros();
+aplicarFiltros();
+
+const panelOriginal =
+    document.querySelector(
+        ".panel"
+    );
+
+destino.innerHTML =
+    panelOriginal.outerHTML;
+
+destino
+    .querySelector("#btnExpandirTabla")
+    ?.remove();
 
         }
     );
