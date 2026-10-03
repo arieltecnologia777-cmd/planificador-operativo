@@ -321,17 +321,35 @@ else if (
 </td>
 
 <td>
-    <input
-        class="edit-input tecnico-asignado"
-        value="${d1.tecnicoAsignado || ""}"
-        placeholder="Técnico asignado">
+    <select class="edit-select tecnico-asignado">
+
+        <option value=""></option>
+
+        ${TECNICOS.map(nombre => `
+            <option
+                value="${nombre}"
+                ${d1.tecnicoAsignado === nombre ? "selected" : ""}>
+                ${nombre}
+            </option>
+        `).join("")}
+
+    </select>
 </td>
 
 <td>
-    <input
-        class="edit-input acompanamiento"
-        value="${d1.acompanamiento || ""}"
-        placeholder="Acompañamiento">
+    <select class="edit-select acompanamiento">
+
+        <option value=""></option>
+
+        ${TECNICOS.map(nombre => `
+            <option
+                value="${nombre}"
+                ${d1.acompanamiento === nombre ? "selected" : ""}>
+                ${nombre}
+            </option>
+        `).join("")}
+
+    </select>
 </td>
 
 <td>${fila[idxBacklog]}</td>
