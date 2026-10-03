@@ -1504,14 +1504,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     abrir.addEventListener("click", () => {
 
-        modal.classList.add("show");
+    const panel =
+        document.querySelector(
+            ".panel"
+        );
 
-    });
+    const destino =
+        document.getElementById(
+            "panelPlaceholder"
+        );
+
+    destino.appendChild(panel);
+
+    modal.classList.add("show");
+
+});
+
 
     cerrar.addEventListener("click", () => {
 
-        modal.classList.remove("show");
+    const panel =
+        document.querySelector(
+            "#tablaModal .panel"
+        );
 
-    });
+    const contenedorOriginal =
+        document.querySelector(
+            ".main-content"
+        );
+
+    if (panel) {
+
+        contenedorOriginal.appendChild(
+            panel
+        );
+
+    }
+
+    modal.classList.remove("show");
 
 });
