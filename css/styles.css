@@ -1412,3 +1412,41 @@ min-width:220px;
 .zoom-alto .planeacion-filtros-sticky{
     top:35px;
 }
+
+.export-box{
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.export-box label{
+    font-size:.8rem;
+    font-weight:700;
+    color:#17345f;
+}
+
+.export-box select{
+    height:40px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:0 10px;
+    background:#fff;
+}
+
+#btnExportarExcel{
+    height:42px;
+    border:0;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+}
+
+#btnExportarExcel:hover{
+    background:#1d4ed8;
+}
