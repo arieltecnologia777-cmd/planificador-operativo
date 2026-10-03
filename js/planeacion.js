@@ -458,7 +458,7 @@ const idxID =
 document.getElementById(
     "filtroDepartamento"
 ).innerHTML = `
-    <option value="">Todos los departamentos</option>
+    <option value="">Departamento</option>
 ` + departamentos.map(dep => `
     <option value="${dep}">${dep}</option>
 `).join("");
@@ -516,7 +516,7 @@ const prioridades = Array.from(
 document.getElementById(
     "filtroPrioridad"
 ).innerHTML = `
-    <option value="">Todas las prioridades</option>
+    <option value="">Prioridad</option>
 ` + prioridades.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
@@ -531,7 +531,7 @@ document.getElementById(
 document.getElementById(
     "filtroAfectacion"
 ).innerHTML = `
-    <option value="">Todas las afectaciones</option>
+    <option value="">Afectación</option>
 ` + afectaciones.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
@@ -547,7 +547,7 @@ document.getElementById(
 document.getElementById(
     "filtroStoppers"
 ).innerHTML = `
-    <option value="">Todos los stoppers</option>
+    <option value="">Stoppers</option>
 ` + stoppers.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
@@ -563,7 +563,7 @@ document.getElementById(
 document.getElementById(
     "filtroRango"
 ).innerHTML = `
-    <option value="">Todos los rangos</option>
+    <option value="">Rango</option>
 ` + rangos.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
@@ -579,7 +579,7 @@ document.getElementById(
 document.getElementById(
     "filtroBacklog"
 ).innerHTML = `
-    <option value="">Todo backlog</option>
+    <option value="">IND backlog</option>
 ` + backlogs.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
