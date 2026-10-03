@@ -1539,6 +1539,90 @@ destino
 modal.classList.add(
     "show"
 );
+                const topScrollModal =
+    destino.querySelector(
+        ".planeacion-scroll-top"
+    );
+
+const tableWrapperModal =
+    destino.querySelector(
+        ".planeacion-table-wrapper"
+    );
+
+if (
+    topScrollModal &&
+    tableWrapperModal
+) {
+
+    let syncing = false;
+
+    topScrollModal.addEventListener(
+        "scroll",
+        () => {
+
+            if (syncing) return;
+
+            syncing = true;
+
+            tableWrapperModal.scrollLeft =
+                topScrollModal.scrollLeft;
+
+            syncing = false;
+
+        }
+    );
+
+    tableWrapperModal.addEventListener(
+        "scroll",
+        () => {
+
+            if (syncing) return;
+
+            syncing = true;
+
+            topScrollModal.scrollLeft =
+                tableWrapperModal.scrollLeft;
+
+            syncing = false;
+
+        }
+    );
+
+}
+                const filtrosModal =
+    destino.querySelectorAll(
+        "select, input"
+    );
+
+filtrosModal.forEach(control => {
+
+    control.addEventListener(
+        "change",
+        () => {
+
+            const original =
+                document.getElementById(
+                    control.id
+                );
+
+            if (original) {
+
+                original.value =
+                    control.value;
+
+                original.dispatchEvent(
+                    new Event(
+                        "change",
+                        { bubbles:true }
+                    )
+                );
+
+            }
+
+        }
+    );
+
+});
             }
         );
 
