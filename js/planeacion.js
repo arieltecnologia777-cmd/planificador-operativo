@@ -314,6 +314,10 @@ window.registrosD1 =
     window.registrosD1
 );
 
+    console.log(
+    "ANTES DE PINTAR",
+    Object.keys(window.registrosD1).length
+);
     pintarTabla(datos);
     try {
 
@@ -328,6 +332,10 @@ window.registrosD1 =
     ...(registrosD1 || {})
 };
 
+        console.log(
+    "DESPUES DE KV",
+    Object.keys(window.registrosD1).length
+);
 await guardarCacheD1(
     window.registrosD1
 );
