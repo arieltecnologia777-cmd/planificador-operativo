@@ -1591,7 +1591,7 @@ if (
 }
                 const filtrosModal =
     destino.querySelectorAll(
-        "select, input"
+        ".planeacion-filtros select"
     );
 
 filtrosModal.forEach(control => {
@@ -1601,28 +1601,35 @@ filtrosModal.forEach(control => {
         () => {
 
             const original =
-                document.getElementById(
-                    control.id
+                document.querySelector(
+                    `.planeacion-filtros-sticky #${control.id}`
                 );
 
-            if (original) {
+            if (!original) return;
 
-                original.value =
-                    control.value;
+            original.value =
+                control.value;
 
-                original.dispatchEvent(
-                    new Event(
-                        "change",
-                        { bubbles:true }
-                    )
-                );
-
-            }
+            aplicarFiltros();
 
         }
     );
 
 });
+
+                const buscadorModal =
+    destino.querySelector(
+        "#filtroBusqueda"
+    );
+
+if (buscadorModal) {
+
+    buscadorModal.addEventListener(
+        "input",
+        () => {
+
+            const original =
+         
             }
         );
 
