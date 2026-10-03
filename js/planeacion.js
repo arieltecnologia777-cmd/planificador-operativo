@@ -299,6 +299,10 @@ datosGlobal = filas.slice(1);
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
+window.registrosD1 =
+    await leerCacheD1();
+
+    pintarTabla(datos);
     try {
 
     const respD1 =
@@ -308,7 +312,11 @@ const datos = datosGlobal;
         await respD1.json();
 
     window.registrosD1 =
-        registrosD1;
+    registrosD1;
+
+await guardarCacheD1(
+    registrosD1
+);
 
 } catch (error) {
 
@@ -602,8 +610,9 @@ document.getElementById(
 ).textContent = noCumpleBacklog;
 
     
-pintarTabla(datos);
 actualizarKPIs(datos);
+
+pintarTabla(datos);
 
 }
 
@@ -1013,6 +1022,7 @@ if (resultado.ok) {
 
     window.registrosD1[payload.ot] = {
         ot: payload.ot,
+
         estadoProgramacion:
             payload.estadoProgramacion,
 
@@ -1029,6 +1039,10 @@ if (resultado.ok) {
             new Date().toISOString()
     };
 
+    await guardarCacheD1(
+        window.registrosD1
+    );
+pintarTabla(datosGlobal);
 }
 
     setTimeout(async () => {
@@ -1142,3 +1156,103 @@ function detectarZoom() {
 
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
+
+function abrirDB() {
+
+    return new Promise((resolve, reject) => {
+
+        const request =
+            indexedDB.open(
+                "planeacionDB",
+                1
+            );
+
+        request.onupgradeneeded = (event) => {
+
+            const db =
+                event.target.result;
+
+            if (
+                !db.objectStoreNames.contains(
+                    "registrosD1"
+                )
+            ) {
+
+                db.createObjectStore(
+                    "registrosD1"
+                );
+
+            }
+
+        };
+
+        request.onsuccess = () =>
+            resolve(
+                request.result
+            );
+
+        request.onerror = () =>
+            reject(
+                request.error
+            );
+
+    });
+
+}
+
+async function guardarCacheD1(
+    datos
+) {
+
+    const db =
+        await abrirDB();
+
+    const tx =
+        db.transaction(
+            "registrosD1",
+            "readwrite"
+        );
+
+    tx.objectStore(
+        "registrosD1"
+    ).put(
+        datos,
+        "cache"
+    );
+
+}
+
+async function leerCacheD1() {
+
+    const db =
+        await abrirDB();
+
+    return new Promise(
+        resolve => {
+
+            const tx =
+                db.transaction(
+                    "registrosD1",
+                    "readonly"
+                );
+
+            const request =
+                tx
+                .objectStore(
+                    "registrosD1"
+                )
+                .get("cache");
+
+            request.onsuccess =
+                () => resolve(
+                    request.result || {}
+                );
+
+            request.onerror =
+                () => resolve({});
+
+        }
+    );
+
+}
+
