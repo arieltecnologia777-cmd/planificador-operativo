@@ -6,6 +6,7 @@ const API_URL =
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
+window.registrosD1 = {};
 
 function pintarTabla(datos){
 
@@ -86,7 +87,12 @@ const idxAlertaFM =
         h => h.trim() === "Alerta vencimiento FM"
     );
 
-
+console.log(
+    datos.filter(
+        fila =>
+        (fila[idxDepto] || "").trim() === "ANTIOQUIA"
+    )
+);
     document.getElementById(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
@@ -294,9 +300,27 @@ datosGlobal = filas.slice(1);
 const encabezados = encabezadosGlobal;
 const datos = datosGlobal;
 
-    
+    let registrosD1 = {};
+
+try {
+
+    const respD1 =
+        await fetch(API_URL);
+
+    registrosD1 =
+        await respD1.json();
+
+} catch (error) {
+
+    console.error(error);
+
+}
+
+window.registrosD1 =
+    registrosD1;
+
 const programados = Object.values(
-    window.registrosD1 || {}
+    registrosD1 || {}
 ).filter(registro =>
     registro.estadoProgramacion === "Programada"
 ).length;
@@ -748,12 +772,6 @@ const idxRango =
     encabezados.findIndex(
         h => h.trim() === "Rango de afectación"
     );
-
-    const idxBacklog =
-    encabezados.findIndex(
-        h => h.trim() === "Indicador backlog"
-    );
-    
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -970,6 +988,7 @@ async function guardarOT(fila){
             )[1]?.value || ""
 
     };
+console.log("GUARDANDO", payload);
 
 const resp = await fetch(API_URL,{
     method:"POST",
@@ -979,7 +998,11 @@ const resp = await fetch(API_URL,{
     body:JSON.stringify(payload)
 });
 
+console.log("STATUS", resp.status);
+
 const resultado = await resp.json();
+
+console.log("RESPUESTA", resultado);
 
 if (resultado.ok) {
 
@@ -1006,21 +1029,6 @@ if (resultado.ok) {
 
 }
 
-    /*
-setTimeout(async () => {
-
-    try {
-
-        const resp =
-            await fetch(API_URL);
-await fetch(API_URL);
-        window.registrosD1 =
-            await resp.json();
-
-    } catch {}
-
-}, 1500);
-*/
 }
 document.addEventListener(
     "change",
