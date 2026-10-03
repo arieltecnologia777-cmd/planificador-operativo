@@ -1305,146 +1305,169 @@ function exportarPlaneacion() {
 
     const datosExcel = filas.map(fila => ({
 
-        ID: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "ID"
-            )
-        ],
+    ID: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "ID"
+        )
+    ],
 
-        Departamento: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Departamento"
-            )
-        ],
+    Departamento: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Departamento"
+        )
+    ],
 
-        Municipio: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Municipio"
-            )
-        ],
+    Municipio: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Municipio"
+        )
+    ],
 
-        IM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "IM"
-            )
-        ],
+    IM: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "IM"
+        )
+    ],
 
-        OT: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "OT"
-            )
-        ],
+    OT: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "OT"
+        )
+    ],
 
-        Afectacion: fila[
-    encabezadosGlobal.findIndex(
-        h => h.trim() === "Tipo de afectación"
-    )
-],
+    Afectacion: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Tipo de afectación"
+        )
+    ],
 
-Total_IDs: fila[
-    encabezadosGlobal.findIndex(
-        h => h.trim() === "IDs afectados"
-    )
-],
+    Total_IDs: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "IDs afectados"
+        )
+    ],
 
-Dias_OT: fila[
-    encabezadosGlobal.findIndex(
-        h => h.trim() === "Días OT"
-    )
-],
+    Dias_OT: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Días OT"
+        )
+    ],
 
-        Rango_Afectacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Rango de afectación"
-            )
-        ],
+    Rango_Afectacion: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Rango de afectación"
+        )
+    ],
 
-        Prioridad: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo de prioridad"
-            )
-        ],
+    Prioridad: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Tipo de prioridad"
+        )
+    ],
 
-        Stoppers_Dominion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Stoppers Dominion"
-            )
-        ],
-Estado_Programacion:
-    (
-        window.registrosD1[
-            fila[
-                encabezadosGlobal.findIndex(
-                    h => h.trim() === "OT"
-                )
-            ]
-        ] || {}
-    ).estadoProgramacion || "",
+    Stoppers_Dominion: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Stoppers Dominion"
+        )
+    ],
 
-Fecha_Programacion:
-    (
-        window.registrosD1[
-            fila[
-                encabezadosGlobal.findIndex(
-                    h => h.trim() === "OT"
-                )
-            ]
-        ] || {}
-    ).fechaProgramacion || "",
+    Estado_Programacion:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).estadoProgramacion || "",
 
-Observaciones:
-    (
-        window.registrosD1[
-            fila[
-                encabezadosGlobal.findIndex(
-                    h => h.trim() === "OT"
-                )
-            ]
-        ] || {}
-    ).observacion || "",
+    Fecha_Programacion:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).fechaProgramacion || "",
 
-Estado_Gestion:
-    (
-        window.registrosD1[
-            fila[
-                encabezadosGlobal.findIndex(
-                    h => h.trim() === "OT"
-                )
-            ]
-        ] || {}
-    ).estadoGestion || "",
-        Indicador_Backlog: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Indicador backlog"
-            )
-        ],
+    Observaciones:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).observacion || "",
 
-        Stopper_P3: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Stopper P3"
-            )
-        ],
+    Estado_Gestion:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).estadoGestion || "",
 
-        Tipo_Facturacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo facturación"
-            )
-        ],
+    Tecnico_Asignado:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).tecnicoAsignado || "",
 
-        Fecha_Vencimiento_FM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Fecha vencimiento FM"
-            )
-        ],
+    Acompanamiento:
+        (
+            window.registrosD1[
+                fila[
+                    encabezadosGlobal.findIndex(
+                        h => h.trim() === "OT"
+                    )
+                ]
+            ] || {}
+        ).acompanamiento || "",
 
-        Alerta_Vencimiento_FM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Alerta vencimiento FM"
-            )
-        ]
+    Indicador_Backlog: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Indicador backlog"
+        )
+    ],
 
-    }));
+    Stopper_P3: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Stopper P3"
+        )
+    ],
 
+    Tipo_Facturacion: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Tipo facturación"
+        )
+    ],
+
+    Fecha_Vencimiento_FM: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Fecha vencimiento FM"
+        )
+    ],
+
+    Alerta_Vencimiento_FM: fila[
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Alerta vencimiento FM"
+        )
+    ]
+
+}));
     const ws =
         XLSX.utils.json_to_sheet(
             datosExcel
