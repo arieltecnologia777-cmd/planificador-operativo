@@ -1450,3 +1450,68 @@ min-width:220px;
 #btnExportarExcel:hover{
     background:#1d4ed8;
 }
+.expand-btn{
+    border:0;
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:#edf2f8;
+    cursor:pointer;
+    font-size:1.1rem;
+}
+
+.expand-btn:hover{
+    background:#dbe7f6;
+}
+
+.tabla-modal{
+    display:none;
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(15,23,42,.55);
+    backdrop-filter:blur(3px);
+
+    z-index:9999;
+}
+
+.tabla-modal.show{
+    display:block;
+}
+
+.tabla-modal-content{
+    position:absolute;
+
+    top:2%;
+    left:2%;
+
+    width:96%;
+    height:96%;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    overflow:auto;
+}
+
+.cerrar-modal{
+    position:absolute;
+
+    right:15px;
+    top:15px;
+
+    width:40px;
+    height:40px;
+
+    border:0;
+    border-radius:50%;
+
+    background:#ef4444;
+    color:#fff;
+
+    cursor:pointer;
+}
