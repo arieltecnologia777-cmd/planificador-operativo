@@ -1208,6 +1208,12 @@ function exportarPlaneacion() {
     )
 ],
 
+Total_IDs: fila[
+    encabezadosGlobal.findIndex(
+        h => h.trim() === "IDs afectados"
+    )
+],
+
 Dias_OT: fila[
     encabezadosGlobal.findIndex(
         h => h.trim() === "Días OT"
