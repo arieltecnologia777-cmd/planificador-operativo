@@ -86,12 +86,7 @@ const idxAlertaFM =
         h => h.trim() === "Alerta vencimiento FM"
     );
 
-console.log(
-    datos.filter(
-        fila =>
-        (fila[idxDepto] || "").trim() === "ANTIOQUIA"
-    )
-);
+
     document.getElementById(
     "planeacionBody"
 ).innerHTML = datos.map(fila => {
@@ -106,21 +101,11 @@ if (
     d1.estadoProgramacion
 ) {
 
-    console.log(
-        "ENCONTRADO",
-        clave,
-        d1.estadoProgramacion
-    );
-
 }
 if (
     fila[idxOT] === "OT5362697"
 ) {
-    console.log(
-        "REGISTRO ENCONTRADO",
-        clave,
-        d1
-    );
+
 }
 
         let fechaTipo = "text";
