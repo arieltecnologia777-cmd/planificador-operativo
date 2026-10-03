@@ -102,7 +102,17 @@ const d1 =
     (window.registrosD1 || {})[
         clave
     ] || {};
+if (
+    d1.estadoProgramacion
+) {
 
+    console.log(
+        "ENCONTRADO",
+        clave,
+        d1.estadoProgramacion
+    );
+
+}
 if (
     fila[idxOT] === "OT5362697"
 ) {
