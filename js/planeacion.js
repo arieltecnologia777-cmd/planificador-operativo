@@ -772,6 +772,12 @@ const idxRango =
     encabezados.findIndex(
         h => h.trim() === "Rango de afectación"
     );
+
+    const idxBacklog =
+    encabezados.findIndex(
+        h => h.trim() === "Indicador backlog"
+    );
+    
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -988,7 +994,7 @@ async function guardarOT(fila){
             )[1]?.value || ""
 
     };
-console.log("GUARDANDO", payload);
+
 
 const resp = await fetch(API_URL,{
     method:"POST",
@@ -998,11 +1004,11 @@ const resp = await fetch(API_URL,{
     body:JSON.stringify(payload)
 });
 
-console.log("STATUS", resp.status);
+
 
 const resultado = await resp.json();
 
-console.log("RESPUESTA", resultado);
+
 
 if (resultado.ok) {
 
