@@ -204,38 +204,53 @@ else if (
             </td>
 
             <td>
-                <select class="edit-select estado-gestion">
+    <select class="edit-select estado-gestion">
 
-    <option value=""></option>
+        <option value=""></option>
 
-    <option value="Gestionable"
-        ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>
-        Gestionable
-    </option>
+        <option value="Gestionable"
+            ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>
+            Gestionable
+        </option>
 
-    <option value="Operativa"
-        ${d1.estadoGestion === "Operativa" ? "selected" : ""}>
-        Operativa
-    </option>
+        <option value="Operativa"
+            ${d1.estadoGestion === "Operativa" ? "selected" : ""}>
+            Operativa
+        </option>
 
-    <option value="FM/traslado/reubicación"
-        ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>
-        FM/traslado/reubicación
-    </option>
+        <option value="FM/traslado/reubicación"
+            ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>
+            FM/traslado/reubicación
+        </option>
 
-    <option value="Abastecimiento"
-        ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>
-        Abastecimiento
-    </option>
+        <option value="Abastecimiento"
+            ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>
+            Abastecimiento
+        </option>
 
-    <option value="Falla Tx"
-        ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>
-        Falla Tx
-    </option>
+        <option value="Falla Tx"
+            ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>
+            Falla Tx
+        </option>
 
-</select>
+    </select>
 
-            </td>
+</td>
+
+<td>
+    <input
+        class="edit-input tecnico-asignado"
+        value="${d1.tecnicoAsignado || ""}"
+        placeholder="Técnico asignado">
+</td>
+
+<td>
+    <input
+        class="edit-input acompanamiento"
+        value="${d1.acompanamiento || ""}"
+        placeholder="Acompañamiento">
+</td>
+
 <td>${fila[idxBacklog]}</td>
 <td>${fila[idxStopperP3]}</td>
 <td>${fila[idxTipoFacturacion]}</td>
