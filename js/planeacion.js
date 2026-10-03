@@ -531,7 +531,7 @@ document.getElementById(
 document.getElementById(
     "filtroAfectacion"
 ).innerHTML = `
-    <option value="">Afectación</option>
+    <option value="">Tipo de afectación</option>
 ` + afectaciones.map(valor => `
     <option value="${valor}">${valor}</option>
 `).join("");
