@@ -1066,7 +1066,7 @@ if (resultado.ok) {
     await guardarCacheD1(
         window.registrosD1
     );
-pintarTabla(datosGlobal);
+// pintarTabla(datosGlobal);
 }
 
     setTimeout(async () => {
