@@ -46,12 +46,13 @@ button{
     background:var(--sidebar);
     border-right:1px solid var(--border);
     box-shadow:var(--shadow);
-    height:100vh;
+    height:calc(100vh / 0.9);
     position:sticky;
     top:0;
     padding:16px;
     z-index:10;
 }
+
 
 .logo-box{
     background:#fff;
