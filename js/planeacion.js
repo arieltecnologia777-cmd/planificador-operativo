@@ -1529,7 +1529,12 @@ document.addEventListener(
         ".panel"
     );
 
-destino.appendChild(panel);
+destino.innerHTML =
+    panel.outerHTML;
+
+destino
+    .querySelector("#btnExpandirTabla")
+    ?.remove();
 
 modal.classList.add(
     "show"
