@@ -1553,6 +1553,13 @@ body.modo-ampliado .panel{
     padding:8px 12px;
 
     cursor:pointer;
+
+    font-size:.9rem;
+    font-weight:500;
+}
+.multi-filtro-item input{
+    width:14px;
+    height:14px;
 }
 
 .multi-filtro-item:hover{
