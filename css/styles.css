@@ -1070,13 +1070,10 @@ button{
 
 .planeacion-filtros{
     display:flex;
-    gap:8px;
+    gap:12px;
     margin-bottom:6px;
     background:#fff;
     padding:4px 0;
-
-    flex-wrap:nowrap;
-    overflow-x:auto;
 }
 
 
@@ -1501,9 +1498,7 @@ body.modo-ampliado .panel{
 }
 .multi-filtro{
     position:relative;
-    width:150px;
     min-width:150px;
-    flex:0 0 150px;
 }
 #filtroBusqueda{
 width:220px;
@@ -1527,16 +1522,16 @@ min-width:220px;
 }
 
 .multi-filtro-lista{
-
     display:none;
 
     position:absolute;
 
-    top:46px;
+    top:100%;
     left:0;
 
     width:260px;
-    max-height:260px;
+
+    max-height:320px;
 
     overflow:auto;
 
@@ -1548,7 +1543,7 @@ min-width:220px;
 
     box-shadow:0 10px 20px rgba(0,0,0,.10);
 
-    z-index:5000;
+    z-index:9999;
 }
 
 .multi-filtro-lista.show{
