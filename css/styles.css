@@ -1569,3 +1569,18 @@ body.modo-ampliado .panel{
 
     border-radius:8px;
 }
+
+.limpiar-filtro button{
+    width:100%;
+    border:0;
+    background:#f3f4f6;
+    padding:8px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    color:#374151;
+    font-size:.8rem;
+}
+
+.limpiar-filtro button:hover{
+    background:#e5e7eb;
+}
