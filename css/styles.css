@@ -1528,16 +1528,15 @@ body.modo-ampliado .panel{
 }
 `
 .multi-filtro-lista{
-
     display:none;
 
     position:absolute;
 
-    top:46px;
+    top:calc(100% + 4px);
     left:0;
 
     width:260px;
-    max-height:260px;
+    max-height:320px;
 
     overflow:auto;
 
@@ -1549,9 +1548,12 @@ body.modo-ampliado .panel{
 
     box-shadow:0 10px 20px rgba(0,0,0,.10);
 
-    z-index:5000;
+    z-index:9999;
 }
 
+.multi-filtro-lista.show{
+    display:block;
+}
 .multi-filtro-lista.show{
     display:block;
 }
