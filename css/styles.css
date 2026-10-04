@@ -1463,3 +1463,35 @@ min-width:220px;
 .expand-btn:hover{
     background:#dbe7f6;
 }
+body.modo-ampliado .sidebar,
+body.modo-ampliado .hero,
+body.modo-ampliado #kpis{
+    display:none;
+}
+
+body.modo-ampliado{
+    overflow:hidden;
+}
+
+body.modo-ampliado .main-content{
+    width:100vw;
+    margin:0;
+    padding:0;
+}
+
+body.modo-ampliado .panel{
+    position:fixed;
+    inset:1%;
+    width:98%;
+    height:98%;
+    z-index:9999;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:auto;
+
+    box-shadow:
+        0 0 0 9999px rgba(15,23,42,.55);
+}
