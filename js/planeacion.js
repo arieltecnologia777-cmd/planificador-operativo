@@ -831,35 +831,32 @@ document.addEventListener(
     cargarPlaneacion
 );
 
-function actualizarOpcionesFiltros(datos) {
+function obtenerValoresUnicos(
+    datos,
+    indice
+) {
 
-    const valorPrioridad =
-        document.getElementById(
-            "filtroPrioridad"
-        )?.value || "";
+    return [
+        ...new Set(
+            datos.map(
+                fila => fila[indice]
+            )
+        )
+    ]
+    .filter(Boolean)
+    .sort();
 
-    const valorAfectacion =
-        document.getElementById(
-            "filtroAfectacion"
-        )?.value || "";
+}
 
-    const valorStoppers =
-        document.getElementById(
-            "filtroStoppers"
-        )?.value || "";
-
-    const valorRango =
-        document.getElementById(
-            "filtroRango"
-        )?.value || "";
-
-    const valorBacklog =
-        document.getElementById(
-            "filtroBacklog"
-        )?.value || "";
+function actualizarOpcionesFiltros(datosBase) {
 
     const encabezados =
         encabezadosGlobal;
+
+    const idxDepto =
+        encabezados.findIndex(
+            h => h.trim() === "Departamento"
+        );
 
     const idxPrioridad =
         encabezados.findIndex(
@@ -886,110 +883,186 @@ function actualizarOpcionesFiltros(datos) {
             h => h.trim() === "Indicador backlog"
         );
 
-    const prioridades = [
-        ...new Set(
-            datos.map(
-                fila => fila[idxPrioridad]
-            )
-        )
-    ]
-    .filter(Boolean)
-    .sort();
+    const depto =
+        document.getElementById(
+            "filtroDepartamento"
+        ).value;
 
-    const afectaciones = [
-        ...new Set(
-            datos.map(
-                fila => fila[idxAfectacion]
-            )
-        )
-    ]
-    .filter(Boolean)
-    .sort();
+    const prioridad =
+        document.getElementById(
+            "filtroPrioridad"
+        ).value;
 
-    const stoppers = [
-        ...new Set(
-            datos.map(
-                fila => fila[idxStoppers]
-            )
-        )
-    ]
-    .filter(Boolean)
-    .sort();
+    const afectacion =
+        document.getElementById(
+            "filtroAfectacion"
+        ).value;
 
-    const rangos = [
-        ...new Set(
-            datos.map(
-                fila => fila[idxRango]
-            )
-        )
-    ]
-    .filter(Boolean)
-    .sort();
+    const stoppers =
+        document.getElementById(
+            "filtroStoppers"
+        ).value;
 
-    const backlogs = [
-        ...new Set(
-            datos.map(
-                fila => fila[idxBacklog]
-            )
-        )
-    ]
-    .filter(Boolean)
-    .sort();
+    const rango =
+        document.getElementById(
+            "filtroRango"
+        ).value;
+
+    const backlog =
+        document.getElementById(
+            "filtroBacklog"
+        ).value;
+
+    function filtrar(
+        ignorar
+    ) {
+
+        return datosBase.filter(
+            fila => {
+
+                return (
+                    (
+                        ignorar === "depto" ||
+                        !depto ||
+                        fila[idxDepto] === depto
+                    ) &&
+                    (
+                        ignorar === "prioridad" ||
+                        !prioridad ||
+                        fila[idxPrioridad] === prioridad
+                    ) &&
+                    (
+                        ignorar === "afectacion" ||
+                        !afectacion ||
+                        fila[idxAfectacion] === afectacion
+                    ) &&
+                    (
+                        ignorar === "stoppers" ||
+                        !stoppers ||
+                        fila[idxStoppers] === stoppers
+                    ) &&
+                    (
+                        ignorar === "rango" ||
+                        !rango ||
+                        fila[idxRango] === rango
+                    ) &&
+                    (
+                        ignorar === "backlog" ||
+                        !backlog ||
+                        fila[idxBacklog] === backlog
+                    )
+
+                );
+
+            }
+        );
+
+    }
+
+    const prioridades =
+        obtenerValoresUnicos(
+            filtrar("prioridad"),
+            idxPrioridad
+        );
+
+    const afectaciones =
+        obtenerValoresUnicos(
+            filtrar("afectacion"),
+            idxAfectacion
+        );
+
+    const listaStoppers =
+        obtenerValoresUnicos(
+            filtrar("stoppers"),
+            idxStoppers
+        );
+
+    const rangos =
+        obtenerValoresUnicos(
+            filtrar("rango"),
+            idxRango
+        );
+
+    const backlogs =
+        obtenerValoresUnicos(
+            filtrar("backlog"),
+            idxBacklog
+        );
 
     document.getElementById(
         "filtroPrioridad"
-    ).innerHTML = `
-        <option value="">Prioridad</option>
-    ` + prioridades.map(valor => `
-        <option value="${valor}"
-            ${valorPrioridad === valor ? "selected" : ""}>
-            ${valor}
-        </option>
-    `).join("");
+    ).innerHTML =
+        `<option value="">Prioridad</option>`
+        +
+        prioridades.map(
+            valor => `
+                <option
+                    value="${valor}"
+                    ${prioridad === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `
+        ).join("");
 
     document.getElementById(
         "filtroAfectacion"
-    ).innerHTML = `
-        <option value="">Tipo de afectación</option>
-    ` + afectaciones.map(valor => `
-        <option value="${valor}"
-            ${valorAfectacion === valor ? "selected" : ""}>
-            ${valor}
-        </option>
-    `).join("");
+    ).innerHTML =
+        `<option value="">Tipo de afectación</option>`
+        +
+        afectaciones.map(
+            valor => `
+                <option
+                    value="${valor}"
+                    ${afectacion === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `
+        ).join("");
 
     document.getElementById(
         "filtroStoppers"
-    ).innerHTML = `
-        <option value="">Stoppers</option>
-    ` + stoppers.map(valor => `
-        <option value="${valor}"
-            ${valorStoppers === valor ? "selected" : ""}>
-            ${valor}
-        </option>
-    `).join("");
+    ).innerHTML =
+        `<option value="">Stoppers</option>`
+        +
+        listaStoppers.map(
+            valor => `
+                <option
+                    value="${valor}"
+                    ${stoppers === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `
+        ).join("");
 
     document.getElementById(
         "filtroRango"
-    ).innerHTML = `
-        <option value="">Rango</option>
-    ` + rangos.map(valor => `
-        <option value="${valor}"
-            ${valorRango === valor ? "selected" : ""}>
-            ${valor}
-        </option>
-    `).join("");
+    ).innerHTML =
+        `<option value="">Rango</option>`
+        +
+        rangos.map(
+            valor => `
+                <option
+                    value="${valor}"
+                    ${rango === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `
+        ).join("");
 
     document.getElementById(
         "filtroBacklog"
-    ).innerHTML = `
-        <option value="">IND Backlog</option>
-    ` + backlogs.map(valor => `
-        <option value="${valor}"
-            ${valorBacklog === valor ? "selected" : ""}>
-            ${valor}
-        </option>
-    `).join("");
+    ).innerHTML =
+        `<option value="">IND Backlog</option>`
+        +
+        backlogs.map(
+            valor => `
+                <option
+                    value="${valor}"
+                    ${backlog === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `
+        ).join("");
 
 }
 function aplicarFiltros(){
