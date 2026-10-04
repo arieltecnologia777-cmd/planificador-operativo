@@ -1141,8 +1141,13 @@ const cumpleBacklog =
 );
         });
 datosFiltradosGlobal = resultado;
-    pintarTabla(resultado);
-    actualizarKPIs(resultado);
+
+actualizarOpcionesFiltros(
+    resultado
+);
+
+pintarTabla(resultado);
+actualizarKPIs(resultado);
 
 }
 
