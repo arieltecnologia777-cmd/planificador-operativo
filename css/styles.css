@@ -1069,13 +1069,16 @@ button{
 }
 
 .planeacion-filtros{
-display:flex;
-gap:12px;
-margin-bottom:6px;
-background:#fff;
-padding:4px 0;
-}
+    display:flex;
+    gap:12px;
+    margin-bottom:6px;
+    background:#fff;
+    padding:4px 0;
 
+    align-items:flex-start;
+    overflow:visible;
+    position:relative;
+}
 
 .planeacion-filtros input,
 .planeacion-filtros select{
@@ -1526,7 +1529,7 @@ body.modo-ampliado .panel{
 
     overflow:hidden;
 }
-`
+
 .multi-filtro-lista{
     display:none;
 
