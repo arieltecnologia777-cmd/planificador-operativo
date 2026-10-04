@@ -511,6 +511,20 @@ document.getElementById(
                         item => item.value
                     );
 
+                const boton =
+                    document.getElementById(
+                        "btnDepartamento"
+                    );
+
+                if (boton) {
+
+                    boton.textContent =
+                        departamentosSeleccionados.length
+                        ? `Departamento (${departamentosSeleccionados.length})`
+                        : "Departamento";
+
+                }
+
                 aplicarFiltros();
 
             }
@@ -521,7 +535,42 @@ document.getElementById(
     document.getElementById(
         "chkTodosDeptos"
     );
+const buscarDepto =
+    document.getElementById(
+        "buscarDepartamento"
+    );
 
+if (buscarDepto) {
+
+    buscarDepto.addEventListener(
+        "input",
+        () => {
+
+            const texto =
+                buscarDepto.value
+                .toLowerCase();
+
+            document
+                .querySelectorAll(
+                    ".multi-filtro-item"
+                )
+                .forEach(item => {
+
+                    const contenido =
+                        item.textContent
+                        .toLowerCase();
+
+                    item.style.display =
+                        contenido.includes(texto)
+                        ? ""
+                        : "none";
+
+                });
+
+        }
+    );
+
+}
 if (chkTodos) {
 
     chkTodos.addEventListener(
