@@ -1199,88 +1199,201 @@ function actualizarOpcionesFiltros(datos) {
             h => h.trim() === "Indicador backlog"
         );
 
-    const depto =
-        document.getElementById(
-            "filtroDepartamento"
-        )?.value || "";
+    const deptos =
+        departamentosSeleccionados;
 
-    const prioridad =
-        document.getElementById(
-            "filtroPrioridad"
-        )?.value || "";
+    const prioridadesFiltro =
+        prioridadesSeleccionadas;
 
-    const afectacion =
-        document.getElementById(
-            "filtroAfectacion"
-        )?.value || "";
+    const afectacionesFiltro =
+        afectacionesSeleccionadas;
 
-    const stoppers =
-        document.getElementById(
-            "filtroStoppers"
-        )?.value || "";
+    const stoppersFiltro =
+        stoppersSeleccionados;
 
-    const rango =
-        document.getElementById(
-            "filtroRango"
-        )?.value || "";
+    const rangosFiltro =
+        rangosSeleccionados;
 
-    const backlog =
-        document.getElementById(
-            "filtroBacklog"
-        )?.value || "";
+    const backlogsFiltro =
+        backlogsSeleccionados;
 
     const sinPrioridad =
         datosGlobal.filter(fila =>
 
-            (!depto || fila[idxDepto] === depto) &&
-            (!afectacion || fila[idxAfectacion] === afectacion) &&
-            (!stoppers || fila[idxStoppers] === stoppers) &&
-            (!rango || fila[idxRango] === rango) &&
-            (!backlog || fila[idxBacklog] === backlog)
+            (
+                deptos.length === 0 ||
+                deptos.includes(
+                    fila[idxDepto]
+                )
+            ) &&
+            (
+                afectacionesFiltro.length === 0 ||
+                afectacionesFiltro.includes(
+                    fila[idxAfectacion]
+                )
+            ) &&
+            (
+                stoppersFiltro.length === 0 ||
+                stoppersFiltro.includes(
+                    fila[idxStoppers]
+                )
+            ) &&
+            (
+                rangosFiltro.length === 0 ||
+                rangosFiltro.includes(
+                    fila[idxRango]
+                )
+            ) &&
+            (
+                backlogsFiltro.length === 0 ||
+                backlogsFiltro.includes(
+                    fila[idxBacklog]
+                )
+            )
 
         );
 
     const sinAfectacion =
         datosGlobal.filter(fila =>
 
-            (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
-            (!stoppers || fila[idxStoppers] === stoppers) &&
-            (!rango || fila[idxRango] === rango) &&
-            (!backlog || fila[idxBacklog] === backlog)
+            (
+                deptos.length === 0 ||
+                deptos.includes(
+                    fila[idxDepto]
+                )
+            ) &&
+            (
+                prioridadesFiltro.length === 0 ||
+                prioridadesFiltro.includes(
+                    fila[idxPrioridad]
+                )
+            ) &&
+            (
+                stoppersFiltro.length === 0 ||
+                stoppersFiltro.includes(
+                    fila[idxStoppers]
+                )
+            ) &&
+            (
+                rangosFiltro.length === 0 ||
+                rangosFiltro.includes(
+                    fila[idxRango]
+                )
+            ) &&
+            (
+                backlogsFiltro.length === 0 ||
+                backlogsFiltro.includes(
+                    fila[idxBacklog]
+                )
+            )
 
         );
 
     const sinStoppers =
         datosGlobal.filter(fila =>
 
-            (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
-            (!afectacion || fila[idxAfectacion] === afectacion) &&
-            (!rango || fila[idxRango] === rango) &&
-            (!backlog || fila[idxBacklog] === backlog)
+            (
+                deptos.length === 0 ||
+                deptos.includes(
+                    fila[idxDepto]
+                )
+            ) &&
+            (
+                prioridadesFiltro.length === 0 ||
+                prioridadesFiltro.includes(
+                    fila[idxPrioridad]
+                )
+            ) &&
+            (
+                afectacionesFiltro.length === 0 ||
+                afectacionesFiltro.includes(
+                    fila[idxAfectacion]
+                )
+            ) &&
+            (
+                rangosFiltro.length === 0 ||
+                rangosFiltro.includes(
+                    fila[idxRango]
+                )
+            ) &&
+            (
+                backlogsFiltro.length === 0 ||
+                backlogsFiltro.includes(
+                    fila[idxBacklog]
+                )
+            )
 
         );
 
     const sinRango =
         datosGlobal.filter(fila =>
 
-            (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
-            (!afectacion || fila[idxAfectacion] === afectacion) &&
-            (!stoppers || fila[idxStoppers] === stoppers) &&
-            (!backlog || fila[idxBacklog] === backlog)
+            (
+                deptos.length === 0 ||
+                deptos.includes(
+                    fila[idxDepto]
+                )
+            ) &&
+            (
+                prioridadesFiltro.length === 0 ||
+                prioridadesFiltro.includes(
+                    fila[idxPrioridad]
+                )
+            ) &&
+            (
+                afectacionesFiltro.length === 0 ||
+                afectacionesFiltro.includes(
+                    fila[idxAfectacion]
+                )
+            ) &&
+            (
+                stoppersFiltro.length === 0 ||
+                stoppersFiltro.includes(
+                    fila[idxStoppers]
+                )
+            ) &&
+            (
+                backlogsFiltro.length === 0 ||
+                backlogsFiltro.includes(
+                    fila[idxBacklog]
+                )
+            )
 
         );
 
     const sinBacklog =
         datosGlobal.filter(fila =>
 
-            (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
-            (!afectacion || fila[idxAfectacion] === afectacion) &&
-            (!stoppers || fila[idxStoppers] === stoppers) &&
-            (!rango || fila[idxRango] === rango)
+            (
+                deptos.length === 0 ||
+                deptos.includes(
+                    fila[idxDepto]
+                )
+            ) &&
+            (
+                prioridadesFiltro.length === 0 ||
+                prioridadesFiltro.includes(
+                    fila[idxPrioridad]
+                )
+            ) &&
+            (
+                afectacionesFiltro.length === 0 ||
+                afectacionesFiltro.includes(
+                    fila[idxAfectacion]
+                )
+            ) &&
+            (
+                stoppersFiltro.length === 0 ||
+                stoppersFiltro.includes(
+                    fila[idxStoppers]
+                )
+            ) &&
+            (
+                rangosFiltro.length === 0 ||
+                rangosFiltro.includes(
+                    fila[idxRango]
+                )
+            )
 
         );
 
@@ -1335,64 +1448,45 @@ function actualizarOpcionesFiltros(datos) {
     .sort();
 
     document.getElementById(
-        "filtroPrioridad"
-    ).innerHTML =
-        `<option value="">Prioridad</option>` +
-        prioridades.map(valor => `
-            <option
-                value="${valor}"
-                ${prioridad === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+        "listaPrioridad"
+    ).innerHTML = `
+        <input
+            type="text"
+            id="buscarPrioridad"
+            class="buscar-multifiltro"
+            placeholder="Buscar...">
 
-    document.getElementById(
-        "filtroAfectacion"
-    ).innerHTML =
-        `<option value="">Tipo de afectación</option>` +
-        afectaciones.map(valor => `
-            <option
-                value="${valor}"
-                ${afectacion === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+        <div
+            class="multi-filtro-reset"
+            id="btnLimpiarPrioridad">
 
-    document.getElementById(
-        "filtroStoppers"
-    ).innerHTML =
-        `<option value="">Stoppers</option>` +
-        listaStoppers.map(valor => `
-            <option
-                value="${valor}"
-                ${stoppers === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+            ✖ Borrar filtro
 
-    document.getElementById(
-        "filtroRango"
-    ).innerHTML =
-        `<option value="">Rango</option>` +
-        rangos.map(valor => `
-            <option
-                value="${valor}"
-                ${rango === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+        </div>
 
-    document.getElementById(
-        "filtroBacklog"
-    ).innerHTML =
-        `<option value="">IND Backlog</option>` +
-        backlogs.map(valor => `
-            <option
+        <label class="multi-filtro-item">
+
+            <input
+                type="checkbox"
+                id="chkTodasPrioridades">
+
+            (Seleccionar todo)
+
+        </label>
+
+    ` + prioridades.map(valor => `
+        <label class="multi-filtro-item">
+
+            <input
+                type="checkbox"
                 value="${valor}"
-                ${backlog === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+                class="chkPrioridad"
+                ${prioridadesSeleccionadas.includes(valor) ? "checked" : ""}>
+
+            ${valor}
+
+        </label>
+    `).join("");
 
 }
 function aplicarFiltros(){
