@@ -458,13 +458,20 @@ const idxID =
 ].sort();
 
 document.getElementById(
-    "filtroDepartamento"
-).innerHTML = `
-    <option value="">Departamento</option>
-` + departamentos.map(dep => `
-    <option value="${dep}">${dep}</option>
-`).join("");
+    "listaDepartamento"
+).innerHTML =
+    departamentos.map(dep => `
+        <label class="multi-filtro-item">
 
+            <input
+                type="checkbox"
+                value="${dep}"
+                class="chkDepartamento">
+
+            ${dep}
+
+        </label>
+    `).join("");
     
     
     const idxMunicipio =
