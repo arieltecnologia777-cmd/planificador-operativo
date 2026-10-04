@@ -463,20 +463,28 @@ document.getElementById(
 ).innerHTML = `
 
     <input
-        type="text"
-        id="buscarDepartamento"
-        class="buscar-multifiltro"
-        placeholder="Buscar...">
+    type="text"
+    id="buscarDepartamento"
+    class="buscar-multifiltro"
+    placeholder="Buscar...">
 
-    <label class="multi-filtro-item">
+<div
+    class="multi-filtro-reset"
+    id="btnLimpiarDepartamento">
 
-        <input
-            type="checkbox"
-            id="chkTodosDeptos">
+    ✖ Borrar filtro "Departamento"
 
-        (Seleccionar todo)
+</div>
 
-    </label>
+<label class="multi-filtro-item">
+
+    <input
+        type="checkbox"
+        id="chkTodosDeptos">
+
+    (Seleccionar todo)
+
+</label>
 
 <label class="multi-filtro-item limpiar-filtro">
     <button
