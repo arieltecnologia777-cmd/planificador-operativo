@@ -1536,9 +1536,56 @@ document.addEventListener("DOMContentLoaded", () => {
                 )
                 ?.remove();
 
-            modal.classList.add(
-                "show"
-            );
+           const topScrollModal =
+    destino.querySelector(
+        ".planeacion-scroll-top"
+    );
+
+const tableWrapperModal =
+    destino.querySelector(
+        ".planeacion-table-wrapper"
+    );
+
+if (
+    topScrollModal &&
+    tableWrapperModal
+) {
+
+    let syncing = false;
+
+    topScrollModal.addEventListener(
+        "scroll",
+        () => {
+
+            if (syncing) return;
+
+            syncing = true;
+
+            tableWrapperModal.scrollLeft =
+                topScrollModal.scrollLeft;
+
+            syncing = false;
+
+        }
+    );
+
+    tableWrapperModal.addEventListener(
+        "scroll",
+        () => {
+
+            if (syncing) return;
+
+            syncing = true;
+
+            topScrollModal.scrollLeft =
+                tableWrapperModal.scrollLeft;
+
+            syncing = false;
+
+        }
+    );
+
+}
 
         }
     );
