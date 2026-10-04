@@ -1558,3 +1558,14 @@ body.modo-ampliado .panel{
 .multi-filtro-item:hover{
     background:#f5f8fc;
 }
+.buscar-multifiltro{
+    width:calc(100% - 16px);
+
+    margin:8px;
+
+    padding:8px;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+}
