@@ -1493,7 +1493,7 @@ const idxRango =
         fila[idxDepto]
     );
             
-            const cumplePrioridad =
+           const cumplePrioridad =
 
     prioridadesFiltro.length === 0 ||
 
