@@ -1165,10 +1165,8 @@ function actualizarOpcionesFiltros(datos) {
             "filtroDepartamento"
         )?.value || "";
 
-    const prioridad =
-        document.getElementById(
-            "filtroPrioridad"
-        )?.value || "";
+    const prioridades =
+    prioridadesSeleccionadas;
 
     const afectacion =
         document.getElementById(
@@ -1205,7 +1203,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
+            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1216,7 +1214,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
+            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1227,7 +1225,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
+            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1238,7 +1236,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (!prioridad || fila[idxPrioridad] === prioridad) &&
+            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango)
