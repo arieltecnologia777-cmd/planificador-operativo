@@ -1637,6 +1637,53 @@ if (buscadorModal) {
     );
 
 }
+            const filtrosModal =
+    destino.querySelectorAll(
+        ".planeacion-filtros select"
+    );
+
+filtrosModal.forEach(control => {
+
+    control.addEventListener(
+        "change",
+        () => {
+
+            const original =
+                document.getElementById(
+                    control.id
+                );
+
+            if (!original) return;
+
+            original.value =
+                control.value;
+
+            aplicarFiltros();
+
+            const tablaOriginal =
+                document.querySelector(
+                    ".planeacion-table-wrapper"
+                );
+
+            const tablaModal =
+                destino.querySelector(
+                    ".planeacion-table-wrapper"
+                );
+
+            if (
+                tablaOriginal &&
+                tablaModal
+            ) {
+
+                tablaModal.innerHTML =
+                    tablaOriginal.innerHTML;
+
+            }
+
+        }
+    );
+
+});
         }
     );
 
