@@ -832,38 +832,34 @@ document.addEventListener(
 );
 
 function actualizarOpcionesFiltros(datos) {
+
     const valorPrioridad =
-    document.getElementById(
-        "filtroPrioridad"
-    )?.value || "";
+        document.getElementById(
+            "filtroPrioridad"
+        )?.value || "";
 
-const valorAfectacion =
-    document.getElementById(
-        "filtroAfectacion"
-    )?.value || "";
+    const valorAfectacion =
+        document.getElementById(
+            "filtroAfectacion"
+        )?.value || "";
 
-const valorStoppers =
-    document.getElementById(
-        "filtroStoppers"
-    )?.value || "";
+    const valorStoppers =
+        document.getElementById(
+            "filtroStoppers"
+        )?.value || "";
 
-const valorRango =
-    document.getElementById(
-        "filtroRango"
-    )?.value || "";
+    const valorRango =
+        document.getElementById(
+            "filtroRango"
+        )?.value || "";
 
-const valorBacklog =
-    document.getElementById(
-        "filtroBacklog"
-    )?.value || "";
+    const valorBacklog =
+        document.getElementById(
+            "filtroBacklog"
+        )?.value || "";
 
     const encabezados =
         encabezadosGlobal;
-
-    const idxDepto =
-        encabezados.findIndex(
-            h => h.trim() === "Departamento"
-        );
 
     const idxPrioridad =
         encabezados.findIndex(
@@ -945,7 +941,8 @@ const valorBacklog =
     ).innerHTML = `
         <option value="">Prioridad</option>
     ` + prioridades.map(valor => `
-        <option value="${valor}">
+        <option value="${valor}"
+            ${valorPrioridad === valor ? "selected" : ""}>
             ${valor}
         </option>
     `).join("");
@@ -955,7 +952,8 @@ const valorBacklog =
     ).innerHTML = `
         <option value="">Tipo de afectación</option>
     ` + afectaciones.map(valor => `
-        <option value="${valor}">
+        <option value="${valor}"
+            ${valorAfectacion === valor ? "selected" : ""}>
             ${valor}
         </option>
     `).join("");
@@ -965,7 +963,8 @@ const valorBacklog =
     ).innerHTML = `
         <option value="">Stoppers</option>
     ` + stoppers.map(valor => `
-        <option value="${valor}">
+        <option value="${valor}"
+            ${valorStoppers === valor ? "selected" : ""}>
             ${valor}
         </option>
     `).join("");
@@ -975,7 +974,8 @@ const valorBacklog =
     ).innerHTML = `
         <option value="">Rango</option>
     ` + rangos.map(valor => `
-        <option value="${valor}">
+        <option value="${valor}"
+            ${valorRango === valor ? "selected" : ""}>
             ${valor}
         </option>
     `).join("");
@@ -985,13 +985,13 @@ const valorBacklog =
     ).innerHTML = `
         <option value="">IND Backlog</option>
     ` + backlogs.map(valor => `
-        <option value="${valor}">
+        <option value="${valor}"
+            ${valorBacklog === valor ? "selected" : ""}>
             ${valor}
         </option>
     `).join("");
 
 }
-
 function aplicarFiltros(){
 
     const texto =
