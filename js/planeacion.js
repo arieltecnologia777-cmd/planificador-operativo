@@ -643,18 +643,17 @@ if (btnLimpiarDepartamento) {
 
             departamentosSeleccionados = [];
 
-            const boton =
-                document.getElementById(
-                    "btnDepartamento"
-                );
+            const texto =
+    document.getElementById(
+        "textoDepartamento"
+    );
 
-            if (boton) {
+if (texto) {
 
-                boton.textContent =
-                    "Departamento";
+    texto.textContent =
+        "Departamento";
 
-            }
-
+}
             aplicarFiltros();
 
         }
