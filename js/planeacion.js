@@ -541,6 +541,63 @@ if (textoDepartamento) {
         );
 
     });
+    document
+    .querySelectorAll(
+        ".chkPrioridad"
+    )
+    .forEach(chk => {
+
+        chk.addEventListener(
+            "change",
+            () => {
+
+                prioridadesSeleccionadas =
+                    Array.from(
+                        document.querySelectorAll(
+                            ".chkPrioridad:checked"
+                        )
+                    ).map(
+                        item => item.value
+                    );
+
+                const textoPrioridad =
+                    document.getElementById(
+                        "textoPrioridad"
+                    );
+
+                if (textoPrioridad) {
+
+                    if (
+                        prioridadesSeleccionadas.length === 0
+                    ) {
+
+                        textoPrioridad.textContent =
+                            "Prioridad";
+
+                    }
+                    else if (
+                        prioridadesSeleccionadas.length === 1
+                    ) {
+
+                        textoPrioridad.textContent =
+                            prioridadesSeleccionadas[0];
+
+                    }
+                    else {
+
+                        textoPrioridad.textContent =
+                            `Prioridad (${prioridadesSeleccionadas.length})`;
+
+                    }
+
+                }
+
+                aplicarFiltros();
+
+            }
+        );
+
+    });
     const chkTodos =
     document.getElementById(
         "chkTodosDeptos"
