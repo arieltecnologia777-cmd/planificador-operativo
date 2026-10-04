@@ -1535,7 +1535,7 @@ body.modo-ampliado .panel{
 
     position:absolute;
 
-    top:calc(100% + 4px);
+    top:48px;
     left:0;
 
     width:260px;
@@ -1553,7 +1553,6 @@ body.modo-ampliado .panel{
 
     z-index:9999;
 }
-
 .multi-filtro-lista.show{
     display:block;
 }
