@@ -10,7 +10,12 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
+let estadosSeleccionados = [];
 let prioridadesSeleccionadas = [];
+let afectacionesSeleccionadas = [];
+let stoppersSeleccionados = [];
+let rangosSeleccionados = [];
+let backlogsSeleccionados = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -847,13 +852,47 @@ const rangos = Array.from(
 .sort();
 
 document.getElementById(
-    "filtroRango"
+    "listaRango"
 ).innerHTML = `
-    <option value="">Rango</option>
+
+    <input
+        type="text"
+        id="buscarRango"
+        class="buscar-multifiltro"
+        placeholder="Buscar...">
+
+    <div
+        class="multi-filtro-reset"
+        id="btnLimpiarRango">
+
+        ✖ Borrar filtro
+
+    </div>
+
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            id="chkTodosRangos">
+
+        (Seleccionar todo)
+
+    </label>
+
 ` + rangos.map(valor => `
-    <option value="${valor}">
+
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            value="${valor}"
+            class="chkRango"
+            ${rangosSeleccionados.includes(valor) ? "checked" : ""}>
+
         ${valor}
-    </option>
+
+    </label>
+
 `).join("");
 
 const backlogs = Array.from(
@@ -1370,25 +1409,17 @@ const prioridad =
     document.getElementById(
         "filtroPrioridad"
     ).value;
-   const afectacion =
-    document.getElementById(
-        "filtroAfectacion"
-    ).value;
+const afectacionesFiltro =
+    afectacionesSeleccionadas;
 
-const stoppers =
-    document.getElementById(
-        "filtroStoppers"
-    ).value;
+const stoppersFiltro =
+    stoppersSeleccionados;
 
-const rango =
-    document.getElementById(
-        "filtroRango"
-    ).value;
+const rangosFiltro =
+    rangosSeleccionados;
 
-const backlog =
-    document.getElementById(
-        "filtroBacklog"
-    ).value; 
+const backlogsFiltro =
+    backlogsSeleccionados;
     const encabezados =
         encabezadosGlobal;
 
@@ -1470,29 +1501,37 @@ const idxRango =
 
     fila[idxPrioridad] === prioridad;
 
-            const cumpleAfectacion =
+           const cumpleAfectacion =
 
-    !afectacion ||
+    afectacionesFiltro.length === 0 ||
 
-    fila[idxAfectacion] === afectacion;
+    afectacionesFiltro.includes(
+        fila[idxAfectacion]
+    );
 
 const cumpleStoppers =
 
-    !stoppers ||
+    stoppersFiltro.length === 0 ||
 
-    fila[idxStoppers] === stoppers;
+    stoppersFiltro.includes(
+        fila[idxStoppers]
+    );
 
 const cumpleRango =
 
-    !rango ||
+    rangosFiltro.length === 0 ||
 
-    fila[idxRango] === rango;
+    rangosFiltro.includes(
+        fila[idxRango]
+    );
 
 const cumpleBacklog =
 
-    !backlog ||
+    backlogsFiltro.length === 0 ||
 
-    fila[idxBacklog] === backlog;
+    backlogsFiltro.includes(
+        fila[idxBacklog]
+    );
 
            return (
     cumpleTexto &&
