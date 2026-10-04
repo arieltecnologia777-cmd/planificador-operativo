@@ -520,12 +520,12 @@ document.getElementById(
 ).innerHTML = `
     <option value="">Prioridad</option>
 ` + prioridades.map(valor => `
-    <option value="${valor}"
-        ${valorPrioridad === valor ? "selected" : ""}>
+    <option value="${valor}">
         ${valor}
     </option>
 `).join("");
-    const afectaciones = Array.from(
+
+const afectaciones = Array.from(
     new Set(
         datos.map(fila => fila[idxAfectacion])
     )
@@ -538,13 +538,12 @@ document.getElementById(
 ).innerHTML = `
     <option value="">Tipo de afectación</option>
 ` + afectaciones.map(valor => `
-    <option value="${valor}"
-        ${valorAfectacion === valor ? "selected" : ""}>
+    <option value="${valor}">
         ${valor}
     </option>
 `).join("");
-    
-   const stoppers = Array.from(
+
+const stoppers = Array.from(
     new Set(
         datos.map(fila => fila[idxStoppersDominion])
     )
@@ -557,13 +556,12 @@ document.getElementById(
 ).innerHTML = `
     <option value="">Stoppers</option>
 ` + stoppers.map(valor => `
-    <option value="${valor}"
-        ${valorStoppers === valor ? "selected" : ""}>
+    <option value="${valor}">
         ${valor}
     </option>
 `).join("");
 
- const rangos = Array.from(
+const rangos = Array.from(
     new Set(
         datos.map(fila => fila[idxRangoAfectacion])
     )
@@ -576,12 +574,12 @@ document.getElementById(
 ).innerHTML = `
     <option value="">Rango</option>
 ` + rangos.map(valor => `
-    <option value="${valor}"
-        ${valorRango === valor ? "selected" : ""}>
+    <option value="${valor}">
         ${valor}
     </option>
 `).join("");
-    const backlogs = Array.from(
+
+const backlogs = Array.from(
     new Set(
         datos.map(fila => fila[idxBacklog])
     )
@@ -594,8 +592,7 @@ document.getElementById(
 ).innerHTML = `
     <option value="">IND Backlog</option>
 ` + backlogs.map(valor => `
-    <option value="${valor}"
-        ${valorBacklog === valor ? "selected" : ""}>
+    <option value="${valor}">
         ${valor}
     </option>
 `).join("");
