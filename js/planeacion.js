@@ -2106,3 +2106,44 @@ document.addEventListener(
 
     }
 );
+document.addEventListener(
+    "click",
+    (e) => {
+
+        const lista =
+            document.getElementById(
+                "listaPrioridad"
+            );
+
+        const boton =
+            document.getElementById(
+                "btnPrioridad"
+            );
+
+        if (!lista || !boton) return;
+
+        if (
+            e.target === boton ||
+            boton.contains(e.target)
+        ) {
+
+            lista.classList.toggle(
+                "show"
+            );
+
+            return;
+
+        }
+
+        if (
+            !lista.contains(e.target)
+        ) {
+
+            lista.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
