@@ -10,7 +10,6 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
-let prioridadesSeleccionadas = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -542,64 +541,6 @@ if (textoDepartamento) {
         );
 
     });
-
-    document
-    .querySelectorAll(
-        ".chkPrioridad"
-    )
-    .forEach(chk => {
-
-        chk.addEventListener(
-            "change",
-            () => {
-
-                prioridadesSeleccionadas =
-                    Array.from(
-                        document.querySelectorAll(
-                            ".chkPrioridad:checked"
-                        )
-                    ).map(
-                        item => item.value
-                    );
-
-                const textoPrioridad =
-                    document.getElementById(
-                        "textoPrioridad"
-                    );
-
-                if (textoPrioridad) {
-
-                    if (
-                        prioridadesSeleccionadas.length === 0
-                    ) {
-
-                        textoPrioridad.textContent =
-                            "Prioridad";
-
-                    }
-                    else if (
-                        prioridadesSeleccionadas.length === 1
-                    ) {
-
-                        textoPrioridad.textContent =
-                            prioridadesSeleccionadas[0];
-
-                    }
-                    else {
-
-                        textoPrioridad.textContent =
-                            `Prioridad (${prioridadesSeleccionadas.length})`;
-
-                    }
-
-                }
-
-                aplicarFiltros();
-
-            }
-        );
-
-    });
     const chkTodos =
     document.getElementById(
         "chkTodosDeptos"
@@ -768,38 +709,13 @@ const prioridades = Array.from(
 .sort();
 
 document.getElementById(
-    "listaPrioridad"
+    "filtroPrioridad"
 ).innerHTML = `
-
-<label class="multi-filtro-item">
-    <input
-        type="checkbox"
-        id="chkTodasPrioridades">
-    (Seleccionar todo)
-</label>
-
-<label class="multi-filtro-item">
-    <button
-        type="button"
-        id="btnLimpiarPrioridad"
-        class="multi-filtro-reset">
-        🧹 Borrar filtro
-    </button>
-</label>
-
+    <option value="">Prioridad</option>
 ` + prioridades.map(valor => `
-
-<label class="multi-filtro-item">
-
-    <input
-        type="checkbox"
-        value="${valor}"
-        class="chkPrioridad">
-
-    ${valor}
-
-</label>
-
+    <option value="${valor}">
+        ${valor}
+    </option>
 `).join("");
 
 const afectaciones = Array.from(
@@ -1165,8 +1081,10 @@ function actualizarOpcionesFiltros(datos) {
             "filtroDepartamento"
         )?.value || "";
 
-    const prioridadesFiltro =
-    prioridadesSeleccionadas;
+    const prioridad =
+        document.getElementById(
+            "filtroPrioridad"
+        )?.value || "";
 
     const afectacion =
         document.getElementById(
@@ -1203,7 +1121,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
+            (!prioridad || fila[idxPrioridad] === prioridad) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1214,7 +1132,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
+            (!prioridad || fila[idxPrioridad] === prioridad) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1225,7 +1143,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
+            (!prioridad || fila[idxPrioridad] === prioridad) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1236,7 +1154,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
+            (!prioridad || fila[idxPrioridad] === prioridad) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango)
@@ -1293,47 +1211,18 @@ function actualizarOpcionesFiltros(datos) {
     .filter(Boolean)
     .sort();
 
-   document.getElementById(
-    "listaPrioridad"
-).innerHTML = `
+    document.getElementById(
+        "filtroPrioridad"
+    ).innerHTML =
+        `<option value="">Prioridad</option>` +
+        prioridades.map(valor => `
+            <option
+                value="${valor}"
+                ${prioridad === valor ? "selected" : ""}>
+                ${valor}
+            </option>
+        `).join("");
 
-    <input
-        type="text"
-        id="buscarPrioridad"
-        class="buscar-multifiltro"
-        placeholder="Buscar...">
-
-    <div
-        class="multi-filtro-reset"
-        id="btnLimpiarPrioridad">
-
-        ✖ Borrar filtro
-
-    </div>
-
-    <label class="multi-filtro-item">
-
-        <input
-            type="checkbox"
-            id="chkTodasPrioridades">
-
-        (Seleccionar todo)
-
-    </label>
-
-` + prioridades.map(valor => `
-    <label class="multi-filtro-item">
-
-        <input
-            type="checkbox"
-            value="${valor}"
-            class="chkPrioridad"
-            ${prioridadesSeleccionadas.includes(valor) ? "checked" : ""}>
-
-        ${valor}
-
-    </label>
-`).join("");
     document.getElementById(
         "filtroAfectacion"
     ).innerHTML =
@@ -1393,12 +1282,10 @@ function aplicarFiltros(){
     const deptos =
     departamentosSeleccionados;
     
-const prioridadesFiltro =
-    prioridadesSeleccionadas;
-    console.log(
-    "PRIORIDADES FILTRO",
-    prioridades
-);
+const prioridad =
+    document.getElementById(
+        "filtroPrioridad"
+    ).value;
    const afectacion =
     document.getElementById(
         "filtroAfectacion"
@@ -1493,13 +1380,11 @@ const idxRango =
         fila[idxDepto]
     );
             
-           const cumplePrioridad =
+            const cumplePrioridad =
 
-    prioridadesFiltro.length === 0 ||
+    !prioridad ||
 
-    prioridadesFiltro.includes(
-        fila[idxPrioridad]
-    );
+    fila[idxPrioridad] === prioridad;
 
             const cumpleAfectacion =
 
@@ -1535,10 +1420,6 @@ const cumpleBacklog =
     cumpleBacklog
 );
         });
-    console.log(
-    "RESULTADO FILAS",
-    resultado.length
-);
 datosFiltradosGlobal = resultado;
 
 actualizarOpcionesFiltros(
@@ -2148,47 +2029,6 @@ document.addEventListener(
 
         if (
             e.target === boton
-        ) {
-
-            lista.classList.toggle(
-                "show"
-            );
-
-            return;
-
-        }
-
-        if (
-            !lista.contains(e.target)
-        ) {
-
-            lista.classList.remove(
-                "show"
-            );
-
-        }
-
-    }
-);
-document.addEventListener(
-    "click",
-    (e) => {
-
-        const lista =
-            document.getElementById(
-                "listaPrioridad"
-            );
-
-        const boton =
-            document.getElementById(
-                "btnPrioridad"
-            );
-
-        if (!lista || !boton) return;
-
-        if (
-            e.target === boton ||
-            boton.contains(e.target)
         ) {
 
             lista.classList.toggle(
