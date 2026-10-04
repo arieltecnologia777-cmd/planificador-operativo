@@ -8,6 +8,8 @@ let datosGlobal = [];
 let encabezadosGlobal = [];
 window.registrosD1 = {};
 
+let datosFiltradosGlobal = [];
+
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
     "ALVARO DE JESUS PEÑALOZA CASTILLEJO",
@@ -714,6 +716,7 @@ document.getElementById(
     "kpiNoCumpleBacklog"
 ).textContent = noCumpleBacklog;
 
+    datosFiltradosGlobal = datos;
     
 pintarTabla(datos);
 actualizarKPIs(datos);
@@ -960,7 +963,7 @@ const cumpleBacklog =
     cumpleBacklog
 );
         });
-
+datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
     actualizarKPIs(resultado);
 
@@ -1165,7 +1168,7 @@ if (resultado.ok) {
             new Date().toISOString()
     };
 
-    pintarTabla(datosGlobal);
+    
 
 }
 }
