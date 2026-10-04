@@ -522,15 +522,19 @@ document.getElementById(
                         "btnDepartamento"
                     );
 
-                if (boton) {
+                const textoDepartamento =
+    document.getElementById(
+        "textoDepartamento"
+    );
 
-                    boton.textContent =
-                        departamentosSeleccionados.length
-                        ? `Departamento (${departamentosSeleccionados.length})`
-                        : "Departamento";
+if (textoDepartamento) {
 
-                }
+    textoDepartamento.textContent =
+        departamentosSeleccionados.length
+        ? `Departamento (${departamentosSeleccionados.length})`
+        : "Departamento";
 
+}
                 aplicarFiltros();
 
             }
