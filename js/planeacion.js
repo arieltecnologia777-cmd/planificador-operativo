@@ -1492,26 +1492,68 @@ function exportarPlaneacion() {
 document.addEventListener("DOMContentLoaded", () => {
 
     const abrir =
-        document.getElementById("btnExpandirTabla");
+        document.getElementById(
+            "btnExpandirTabla"
+        );
 
     const cerrar =
-        document.getElementById("cerrarTablaModal");
+        document.getElementById(
+            "cerrarTablaModal"
+        );
 
     const modal =
-        document.getElementById("tablaModal");
+        document.getElementById(
+            "tablaModal"
+        );
 
-    if (!abrir || !cerrar || !modal) return;
+    const destino =
+        document.getElementById(
+            "tablaModalBody"
+        );
 
-    abrir.addEventListener("click", () => {
+    if (
+        !abrir ||
+        !cerrar ||
+        !modal ||
+        !destino
+    ) return;
 
-        modal.classList.add("show");
+    abrir.addEventListener(
+        "click",
+        () => {
 
-    });
+            const panel =
+                document.querySelector(
+                    ".panel"
+                );
 
-    cerrar.addEventListener("click", () => {
+            destino.innerHTML =
+                panel.outerHTML;
 
-        modal.classList.remove("show");
+            destino
+                .querySelector(
+                    "#btnExpandirTabla"
+                )
+                ?.remove();
 
-    });
+            modal.classList.add(
+                "show"
+            );
+
+        }
+    );
+
+    cerrar.addEventListener(
+        "click",
+        () => {
+
+            modal.classList.remove(
+                "show"
+            );
+
+            destino.innerHTML = "";
+
+        }
+    );
 
 });
