@@ -248,9 +248,30 @@
     <option value="">Estado</option>
 </select>
 
-<select id="filtroPrioridad">
-    <option value="">Prioridad</option>
-</select>
+<div class="multi-filtro" id="multiPrioridad">
+
+    <button
+        type="button"
+        id="btnPrioridad"
+        class="multi-filtro-btn">
+
+        <span id="textoPrioridad">
+            Prioridad
+        </span>
+
+        <span class="multi-filtro-arrow">
+            ▼
+        </span>
+
+    </button>
+
+    <div
+        id="listaPrioridad"
+        class="multi-filtro-lista">
+
+    </div>
+
+</div>
 
 <select id="filtroAfectacion">
     <option value="">Tipo de afectación</option>
