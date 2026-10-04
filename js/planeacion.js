@@ -904,13 +904,47 @@ const backlogs = Array.from(
 .sort();
 
 document.getElementById(
-    "filtroBacklog"
+    "listaBacklog"
 ).innerHTML = `
-    <option value="">IND Backlog</option>
+
+<input
+    type="text"
+    id="buscarBacklog"
+    class="buscar-multifiltro"
+    placeholder="Buscar...">
+
+<div
+    class="multi-filtro-reset"
+    id="btnLimpiarBacklog">
+
+    ✖ Borrar filtro
+
+</div>
+
+<label class="multi-filtro-item">
+
+    <input
+        type="checkbox"
+        id="chkTodosBacklog">
+
+    (Seleccionar todo)
+
+</label>
+
 ` + backlogs.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
+
+<label class="multi-filtro-item">
+
+    <input
+        type="checkbox"
+        value="${valor}"
+        class="chkBacklog"
+        ${backlogsSeleccionados.includes(valor) ? "checked" : ""}>
+
+    ${valor}
+
+</label>
+
 `).join("");
     
     const otsAlta = new Set();
