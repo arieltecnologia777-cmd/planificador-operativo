@@ -9,6 +9,7 @@ let encabezadosGlobal = [];
 window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
+let departamentosSeleccionados = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -472,7 +473,32 @@ document.getElementById(
 
         </label>
     `).join("");
-    
+
+    document
+    .querySelectorAll(
+        ".chkDepartamento"
+    )
+    .forEach(chk => {
+
+        chk.addEventListener(
+            "change",
+            () => {
+
+                departamentosSeleccionados =
+                    Array.from(
+                        document.querySelectorAll(
+                            ".chkDepartamento:checked"
+                        )
+                    ).map(
+                        item => item.value
+                    );
+
+                aplicarFiltros();
+
+            }
+        );
+
+    });
     
     const idxMunicipio =
         encabezados.findIndex(h => h.trim() === "Municipio");
@@ -1093,10 +1119,8 @@ function aplicarFiltros(){
             "filtroBusqueda"
         ).value.toLowerCase();
 
-    const depto =
-        document.getElementById(
-            "filtroDepartamento"
-        ).value;
+    const deptos =
+    departamentosSeleccionados;
     
 const prioridad =
     document.getElementById(
@@ -1190,9 +1214,11 @@ const idxRango =
 
             const cumpleDepto =
 
-                !depto ||
+    deptos.length === 0 ||
 
-                fila[idxDepto] === depto;
+    deptos.includes(
+        fila[idxDepto]
+    );
             
             const cumplePrioridad =
 
@@ -1822,6 +1848,46 @@ document.addEventListener(
 
             }
         );
+
+    }
+);
+document.addEventListener(
+    "click",
+    (e) => {
+
+        const lista =
+            document.getElementById(
+                "listaDepartamento"
+            );
+
+        const boton =
+            document.getElementById(
+                "btnDepartamento"
+            );
+
+        if (!lista || !boton) return;
+
+        if (
+            e.target === boton
+        ) {
+
+            lista.classList.toggle(
+                "show"
+            );
+
+            return;
+
+        }
+
+        if (
+            !lista.contains(e.target)
+        ) {
+
+            lista.classList.remove(
+                "show"
+            );
+
+        }
 
     }
 );
