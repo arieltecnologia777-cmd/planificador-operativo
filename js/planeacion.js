@@ -1165,7 +1165,7 @@ function actualizarOpcionesFiltros(datos) {
             "filtroDepartamento"
         )?.value || "";
 
-    const prioridades =
+    const prioridadesFiltro =
     prioridadesSeleccionadas;
 
     const afectacion =
@@ -1203,7 +1203,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
+            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1214,7 +1214,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
+            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!rango || fila[idxRango] === rango) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1225,7 +1225,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
+            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!backlog || fila[idxBacklog] === backlog)
@@ -1236,7 +1236,7 @@ function actualizarOpcionesFiltros(datos) {
         datosGlobal.filter(fila =>
 
             (!depto || fila[idxDepto] === depto) &&
-            (     prioridades.length === 0 ||     prioridades.includes(         fila[idxPrioridad]     ) ) &&
+            (     prioridadesFiltro.length === 0 ||     prioridadesFiltro.includes(         fila[idxPrioridad]     ) ) &&
             (!afectacion || fila[idxAfectacion] === afectacion) &&
             (!stoppers || fila[idxStoppers] === stoppers) &&
             (!rango || fila[idxRango] === rango)
@@ -1393,7 +1393,7 @@ function aplicarFiltros(){
     const deptos =
     departamentosSeleccionados;
     
-const prioridades =
+const prioridadesFiltro =
     prioridadesSeleccionadas;
     console.log(
     "PRIORIDADES FILTRO",
@@ -1495,9 +1495,9 @@ const idxRango =
             
             const cumplePrioridad =
 
-    prioridades.length === 0 ||
+    prioridadesFiltro.length === 0 ||
 
-    prioridades.includes(
+    prioridadesFiltro.includes(
         fila[idxPrioridad]
     );
 
