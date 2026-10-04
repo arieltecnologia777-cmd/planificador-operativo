@@ -1590,7 +1590,53 @@ if (
     );
 
 }
+const buscadorModal =
+    destino.querySelector(
+        "#filtroBusqueda"
+    );
 
+if (buscadorModal) {
+
+    buscadorModal.addEventListener(
+        "input",
+        () => {
+
+            const buscadorReal =
+                document.getElementById(
+                    "filtroBusqueda"
+                );
+
+            if (!buscadorReal) return;
+
+            buscadorReal.value =
+                buscadorModal.value;
+
+            aplicarFiltros();
+
+            const tablaOriginal =
+                document.querySelector(
+                    ".planeacion-table-wrapper"
+                );
+
+            const tablaModal =
+                destino.querySelector(
+                    ".planeacion-table-wrapper"
+                );
+
+            if (
+                tablaOriginal &&
+                tablaModal
+            ) {
+
+                tablaModal.innerHTML =
+                    tablaOriginal.innerHTML;
+
+            }
+
+        }
+    );
+
+}
         }
     );
 
