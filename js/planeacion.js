@@ -1168,7 +1168,39 @@ if (resultado.ok) {
             new Date().toISOString()
     };
 
-    
+   pintarTabla(datosFiltradosGlobal);
+
+const modal =
+    document.getElementById(
+        "tablaModal"
+    );
+
+const destino =
+    document.getElementById(
+        "tablaModalBody"
+    );
+
+if (
+    modal &&
+    modal.classList.contains("show") &&
+    destino
+) {
+
+    const panel =
+        document.querySelector(
+            ".panel"
+        );
+
+    destino.innerHTML =
+        panel.outerHTML;
+
+    destino
+        .querySelector(
+            "#btnExpandirTabla"
+        )
+        ?.remove();
+
+} 
 
 }
 }
