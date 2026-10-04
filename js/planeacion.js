@@ -608,6 +608,54 @@ if (chkTodos) {
     );
 
 }
+
+    const btnLimpiarDepartamento =
+    document.getElementById(
+        "btnLimpiarDepartamento"
+    );
+
+if (btnLimpiarDepartamento) {
+
+    btnLimpiarDepartamento.addEventListener(
+        "click",
+        () => {
+
+            document
+                .querySelectorAll(
+                    ".chkDepartamento"
+                )
+                .forEach(chk => {
+
+                    chk.checked = false;
+
+                });
+
+            if (chkTodos) {
+
+                chkTodos.checked = false;
+
+            }
+
+            departamentosSeleccionados = [];
+
+            const boton =
+                document.getElementById(
+                    "btnDepartamento"
+                );
+
+            if (boton) {
+
+                boton.textContent =
+                    "Departamento";
+
+            }
+
+            aplicarFiltros();
+
+        }
+    );
+
+}
     const idxMunicipio =
         encabezados.findIndex(h => h.trim() === "Municipio");
 
