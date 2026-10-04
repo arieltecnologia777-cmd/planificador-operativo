@@ -1397,6 +1397,10 @@ function aplicarFiltros(){
     
 const prioridades =
     prioridadesSeleccionadas;
+    console.log(
+    "PRIORIDADES FILTRO",
+    prioridades
+);
    const afectacion =
     document.getElementById(
         "filtroAfectacion"
@@ -1533,6 +1537,10 @@ const cumpleBacklog =
     cumpleBacklog
 );
         });
+    console.log(
+    "RESULTADO FILAS",
+    resultado.length
+);
 datosFiltradosGlobal = resultado;
 
 actualizarOpcionesFiltros(
