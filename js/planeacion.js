@@ -1143,7 +1143,7 @@ const cumpleBacklog =
 datosFiltradosGlobal = resultado;
 
 actualizarOpcionesFiltros(
-    resultado
+    datosGlobal
 );
 
 pintarTabla(resultado);
