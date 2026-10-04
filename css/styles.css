@@ -1069,23 +1069,28 @@ button{
 }
 
 .planeacion-filtros{
-display:flex;
-gap:12px;
-margin-bottom:6px;
-background:#fff;
-padding:4px 0;
-}
-
-
-.planeacion-filtros input,
-.planeacion-filtros select{
-    height:42px;
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:0 12px;
+    display:flex;
+    gap:8px;
+    margin-bottom:6px;
     background:#fff;
+    padding:4px 0;
+
+    flex-wrap:nowrap;
+    overflow-x:auto;
 }
 
+.planeacion-filtros input{
+    width:180px;
+}
+
+.planeacion-filtros select{
+    width:150px;
+}
+
+.multi-filtro{
+    width:150px;
+    min-width:150px;
+}
 .planeacion-table-wrapper{
     width:100%;
     overflow-x:auto;
@@ -1501,7 +1506,7 @@ body.modo-ampliado .panel{
 }
 
 .multi-filtro-btn{
-    width:100%;
+    width:150px;
     height:42px;
 
     border:1px solid var(--border);
