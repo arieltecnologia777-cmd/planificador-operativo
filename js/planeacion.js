@@ -460,20 +460,30 @@ const idxID =
 
 document.getElementById(
     "listaDepartamento"
-).innerHTML =
-    departamentos.map(dep => `
-        <label class="multi-filtro-item">
+).innerHTML = `
 
-            <input
-                type="checkbox"
-                value="${dep}"
-                class="chkDepartamento">
+    <label class="multi-filtro-item">
 
-            ${dep}
+        <input
+            type="checkbox"
+            id="chkTodosDeptos">
 
-        </label>
-    `).join("");
+        Seleccionar todo
 
+    </label>
+
+` + departamentos.map(dep => `
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            value="${dep}"
+            class="chkDepartamento">
+
+        ${dep}
+
+    </label>
+`).join("");
     document
     .querySelectorAll(
         ".chkDepartamento"
@@ -499,7 +509,43 @@ document.getElementById(
         );
 
     });
-    
+    const chkTodos =
+    document.getElementById(
+        "chkTodosDeptos"
+    );
+
+if (chkTodos) {
+
+    chkTodos.addEventListener(
+        "change",
+        () => {
+
+            document
+                .querySelectorAll(
+                    ".chkDepartamento"
+                )
+                .forEach(chk => {
+
+                    chk.checked =
+                        chkTodos.checked;
+
+                });
+
+            departamentosSeleccionados =
+                Array.from(
+                    document.querySelectorAll(
+                        ".chkDepartamento:checked"
+                    )
+                ).map(
+                    item => item.value
+                );
+
+            aplicarFiltros();
+
+        }
+    );
+
+}
     const idxMunicipio =
         encabezados.findIndex(h => h.trim() === "Municipio");
 
