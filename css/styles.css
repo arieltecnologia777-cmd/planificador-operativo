@@ -1497,12 +1497,21 @@ body.modo-ampliado .panel{
 }
 .multi-filtro{
     position:relative;
-    min-width:180px;
+
+    width:200px;
+    min-width:200px;
+    max-width:200px;
+
+    flex:0 0 200px;
 }
 
 .multi-filtro-btn{
     width:100%;
     height:42px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
     border:1px solid var(--border);
     border-radius:12px;
@@ -1514,8 +1523,10 @@ body.modo-ampliado .panel{
     text-align:left;
 
     cursor:pointer;
-}
 
+    overflow:hidden;
+}
+`
 .multi-filtro-lista{
 
     display:none;
