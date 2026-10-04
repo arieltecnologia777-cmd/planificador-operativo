@@ -10,6 +10,7 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
+let prioridadesSeleccionadas = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
