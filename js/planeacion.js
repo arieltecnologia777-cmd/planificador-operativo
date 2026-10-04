@@ -462,15 +462,23 @@ document.getElementById(
     "listaDepartamento"
 ).innerHTML = `
 
+    <input
+        type="text"
+        id="buscarDepartamento"
+        class="buscar-multifiltro"
+        placeholder="Buscar...">
+
     <label class="multi-filtro-item">
 
         <input
             type="checkbox"
             id="chkTodosDeptos">
 
-        Seleccionar todo
+        (Seleccionar todo)
 
     </label>
+
+` + departamentos.map(dep => `
 
 ` + departamentos.map(dep => `
     <label class="multi-filtro-item">
