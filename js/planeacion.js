@@ -10,6 +10,7 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
+let prioridadesSeleccionadas = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -1236,18 +1237,47 @@ function actualizarOpcionesFiltros(datos) {
     .filter(Boolean)
     .sort();
 
-    document.getElementById(
-        "filtroPrioridad"
-    ).innerHTML =
-        `<option value="">Prioridad</option>` +
-        prioridades.map(valor => `
-            <option
-                value="${valor}"
-                ${prioridad === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+   document.getElementById(
+    "listaPrioridad"
+).innerHTML = `
 
+    <input
+        type="text"
+        id="buscarPrioridad"
+        class="buscar-multifiltro"
+        placeholder="Buscar...">
+
+    <div
+        class="multi-filtro-reset"
+        id="btnLimpiarPrioridad">
+
+        ✖ Borrar filtro
+
+    </div>
+
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            id="chkTodasPrioridades">
+
+        (Seleccionar todo)
+
+    </label>
+
+` + prioridades.map(valor => `
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            value="${valor}"
+            class="chkPrioridad"
+            ${prioridadesSeleccionadas.includes(valor) ? "checked" : ""}>
+
+        ${valor}
+
+    </label>
+`).join("");
     document.getElementById(
         "filtroAfectacion"
     ).innerHTML =
