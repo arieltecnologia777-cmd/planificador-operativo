@@ -765,7 +765,12 @@ const prioridades = Array.from(
 )
 .filter(Boolean)
 .sort();
-
+console.log(
+    "LISTA PRIORIDAD",
+    document.getElementById(
+        "listaPrioridad"
+    )
+);
 document.getElementById(
     "listaPrioridad"
 ).innerHTML = `
