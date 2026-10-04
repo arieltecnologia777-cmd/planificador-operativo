@@ -1616,10 +1616,8 @@ body.modo-ampliado .panel{
 }
 
 .multi-filtro-arrow{
-    font-size: 1.4rem;
-    font-weight: 400;
+    font-size:.85rem;
+    font-weight:700;
     color:#111827;
     pointer-events:none;
-    display:inline-block;
-    transform: scaleX(1.5);
 }
