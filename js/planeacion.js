@@ -1141,32 +1141,33 @@ if (resultado.ok) {
         window.registrosD1 || {};
 
     window.registrosD1[payload.ot] = {
-    ot: payload.ot,
+        ot: payload.ot,
 
-    estadoProgramacion:
-        payload.estadoProgramacion,
+        estadoProgramacion:
+            payload.estadoProgramacion,
 
-    fechaProgramacion:
-        payload.fechaProgramacion,
+        fechaProgramacion:
+            payload.fechaProgramacion,
 
-    observacion:
-        payload.observacion,
+        observacion:
+            payload.observacion,
 
-    estadoGestion:
-        payload.estadoGestion,
+        estadoGestion:
+            payload.estadoGestion,
 
-    tecnicoAsignado:
-        payload.tecnicoAsignado,
+        tecnicoAsignado:
+            payload.tecnicoAsignado,
 
-    acompanamiento:
-        payload.acompanamiento,
+        acompanamiento:
+            payload.acompanamiento,
 
-    updatedAt:
-        new Date().toISOString()
-};
-    
+        updatedAt:
+            new Date().toISOString()
+    };
+
+    pintarTabla(datosGlobal);
+
 }
-
 }
 document.addEventListener(
     "change",
