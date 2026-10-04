@@ -478,6 +478,13 @@ document.getElementById(
 
     </label>
 
+<label class="multi-filtro-item limpiar-filtro">
+    <button
+        type="button"
+        id="btnLimpiarDepartamento">
+        Limpiar filtro
+    </button>
+</label>
 ` + departamentos.map(dep => `
     <label class="multi-filtro-item">
 
