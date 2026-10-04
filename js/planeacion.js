@@ -709,15 +709,48 @@ const prioridades = Array.from(
 .sort();
 
 document.getElementById(
-    "filtroPrioridad"
+    "listaPrioridad"
 ).innerHTML = `
-    <option value="">Prioridad</option>
-` + prioridades.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
 
+    <input
+        type="text"
+        id="buscarPrioridad"
+        class="buscar-multifiltro"
+        placeholder="Buscar...">
+
+    <div
+        class="multi-filtro-reset"
+        id="btnLimpiarPrioridad">
+
+        ✖ Borrar filtro
+
+    </div>
+
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            id="chkTodasPrioridades">
+
+        (Seleccionar todo)
+
+    </label>
+
+` + prioridades.map(valor => `
+
+    <label class="multi-filtro-item">
+
+        <input
+            type="checkbox"
+            value="${valor}"
+            class="chkPrioridad"
+            ${prioridadesSeleccionadas.includes(valor) ? "checked" : ""}>
+
+        ${valor}
+
+    </label>
+
+`).join("");
 const afectaciones = Array.from(
     new Set(
         datos.map(fila => fila[idxAfectacion])
