@@ -479,8 +479,6 @@ document.getElementById(
     </label>
 
 ` + departamentos.map(dep => `
-
-` + departamentos.map(dep => `
     <label class="multi-filtro-item">
 
         <input
