@@ -1531,23 +1531,23 @@ function aplicarFiltros(){
         ).value.toLowerCase();
 
     const deptos =
-    departamentosSeleccionados;
-    
-const prioridad =
-    document.getElementById(
-        "filtroPrioridad"
-    ).value;
-const afectacionesFiltro =
-    afectacionesSeleccionadas;
+        departamentosSeleccionados;
 
-const stoppersFiltro =
-    stoppersSeleccionados;
+    const prioridadesFiltro =
+        prioridadesSeleccionadas;
 
-const rangosFiltro =
-    rangosSeleccionados;
+    const afectacionesFiltro =
+        afectacionesSeleccionadas;
 
-const backlogsFiltro =
-    backlogsSeleccionados;
+    const stoppersFiltro =
+        stoppersSeleccionados;
+
+    const rangosFiltro =
+        rangosSeleccionados;
+
+    const backlogsFiltro =
+        backlogsSeleccionados;
+
     const encabezados =
         encabezadosGlobal;
 
@@ -1570,30 +1570,32 @@ const backlogsFiltro =
         encabezados.findIndex(
             h => h.trim() === "Departamento"
         );
-const idxPrioridad =
-    encabezados.findIndex(
-        h => h.trim() === "Tipo de prioridad"
-    );
-  const idxAfectacion =
-    encabezados.findIndex(
-        h => h.trim() === "Tipo de afectación"
-    );
 
-const idxStoppers =
-    encabezados.findIndex(
-        h => h.trim() === "Stoppers Dominion"
-    );
+    const idxPrioridad =
+        encabezados.findIndex(
+            h => h.trim() === "Tipo de prioridad"
+        );
 
-const idxRango =
-    encabezados.findIndex(
-        h => h.trim() === "Rango de afectación"
-    );
+    const idxAfectacion =
+        encabezados.findIndex(
+            h => h.trim() === "Tipo de afectación"
+        );
+
+    const idxStoppers =
+        encabezados.findIndex(
+            h => h.trim() === "Stoppers Dominion"
+        );
+
+    const idxRango =
+        encabezados.findIndex(
+            h => h.trim() === "Rango de afectación"
+        );
 
     const idxBacklog =
-    encabezados.findIndex(
-        h => h.trim() === "Indicador backlog"
-    );
-    
+        encabezados.findIndex(
+            h => h.trim() === "Indicador backlog"
+        );
+
     const resultado =
         datosGlobal.filter(fila => {
 
@@ -1617,68 +1619,75 @@ const idxRango =
 
             const cumpleDepto =
 
-    deptos.length === 0 ||
+                deptos.length === 0 ||
 
-    deptos.includes(
-        fila[idxDepto]
-    );
-            
+                deptos.includes(
+                    fila[idxDepto]
+                );
+
             const cumplePrioridad =
 
-    !prioridad ||
+                prioridadesFiltro.length === 0 ||
 
-    fila[idxPrioridad] === prioridad;
+                prioridadesFiltro.includes(
+                    fila[idxPrioridad]
+                );
 
-           const cumpleAfectacion =
+            const cumpleAfectacion =
 
-    afectacionesFiltro.length === 0 ||
+                afectacionesFiltro.length === 0 ||
 
-    afectacionesFiltro.includes(
-        fila[idxAfectacion]
-    );
+                afectacionesFiltro.includes(
+                    fila[idxAfectacion]
+                );
 
-const cumpleStoppers =
+            const cumpleStoppers =
 
-    stoppersFiltro.length === 0 ||
+                stoppersFiltro.length === 0 ||
 
-    stoppersFiltro.includes(
-        fila[idxStoppers]
-    );
+                stoppersFiltro.includes(
+                    fila[idxStoppers]
+                );
 
-const cumpleRango =
+            const cumpleRango =
 
-    rangosFiltro.length === 0 ||
+                rangosFiltro.length === 0 ||
 
-    rangosFiltro.includes(
-        fila[idxRango]
-    );
+                rangosFiltro.includes(
+                    fila[idxRango]
+                );
 
-const cumpleBacklog =
+            const cumpleBacklog =
 
-    backlogsFiltro.length === 0 ||
+                backlogsFiltro.length === 0 ||
 
-    backlogsFiltro.includes(
-        fila[idxBacklog]
-    );
+                backlogsFiltro.includes(
+                    fila[idxBacklog]
+                );
 
-           return (
-    cumpleTexto &&
-    cumpleDepto &&
-    cumplePrioridad &&
-    cumpleAfectacion &&
-    cumpleStoppers &&
-    cumpleRango &&
-    cumpleBacklog
-);
+            return (
+
+                cumpleTexto &&
+                cumpleDepto &&
+                cumplePrioridad &&
+                cumpleAfectacion &&
+                cumpleStoppers &&
+                cumpleRango &&
+                cumpleBacklog
+
+            );
+
         });
-datosFiltradosGlobal = resultado;
 
-actualizarOpcionesFiltros(
-    resultado
-);
+    datosFiltradosGlobal = resultado;
 
-pintarTabla(resultado);
-actualizarKPIs(resultado);
+    actualizarOpcionesFiltros(
+        resultado
+    );
+
+    pintarTabla(resultado);
+
+    actualizarKPIs(resultado);
 
 }
 
