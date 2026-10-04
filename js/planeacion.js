@@ -1525,3 +1525,27 @@ function exportarPlaneacion() {
 
 }
 
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const boton =
+            document.getElementById(
+                "btnExpandirTabla"
+            );
+
+        if (!boton) return;
+
+        boton.addEventListener(
+            "click",
+            () => {
+
+                document.body.classList.toggle(
+                    "modo-ampliado"
+                );
+
+            }
+        );
+
+    }
+);
