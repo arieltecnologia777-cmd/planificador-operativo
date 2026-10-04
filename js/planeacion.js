@@ -542,6 +542,64 @@ if (textoDepartamento) {
         );
 
     });
+
+    document
+    .querySelectorAll(
+        ".chkPrioridad"
+    )
+    .forEach(chk => {
+
+        chk.addEventListener(
+            "change",
+            () => {
+
+                prioridadesSeleccionadas =
+                    Array.from(
+                        document.querySelectorAll(
+                            ".chkPrioridad:checked"
+                        )
+                    ).map(
+                        item => item.value
+                    );
+
+                const textoPrioridad =
+                    document.getElementById(
+                        "textoPrioridad"
+                    );
+
+                if (textoPrioridad) {
+
+                    if (
+                        prioridadesSeleccionadas.length === 0
+                    ) {
+
+                        textoPrioridad.textContent =
+                            "Prioridad";
+
+                    }
+                    else if (
+                        prioridadesSeleccionadas.length === 1
+                    ) {
+
+                        textoPrioridad.textContent =
+                            prioridadesSeleccionadas[0];
+
+                    }
+                    else {
+
+                        textoPrioridad.textContent =
+                            `Prioridad (${prioridadesSeleccionadas.length})`;
+
+                    }
+
+                }
+
+                aplicarFiltros();
+
+            }
+        );
+
+    });
     const chkTodos =
     document.getElementById(
         "chkTodosDeptos"
@@ -1337,10 +1395,8 @@ function aplicarFiltros(){
     const deptos =
     departamentosSeleccionados;
     
-const prioridad =
-    document.getElementById(
-        "filtroPrioridad"
-    ).value;
+const prioridades =
+    prioridadesSeleccionadas;
    const afectacion =
     document.getElementById(
         "filtroAfectacion"
@@ -1437,9 +1493,11 @@ const idxRango =
             
             const cumplePrioridad =
 
-    !prioridad ||
+    prioridades.length === 0 ||
 
-    fila[idxPrioridad] === prioridad;
+    prioridades.includes(
+        fila[idxPrioridad]
+    );
 
             const cumpleAfectacion =
 
