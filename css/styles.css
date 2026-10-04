@@ -1604,3 +1604,8 @@ body.modo-ampliado .panel{
 .multi-filtro-reset:hover{
     background:#fef2f2;
 }
+.multi-filtro-btn{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
