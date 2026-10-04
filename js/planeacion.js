@@ -10,7 +10,6 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
-let prioridadesSeleccionadas = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -582,43 +581,6 @@ if (buscarDepto) {
     );
 
 }
-
-const buscarPrioridad =
-    document.getElementById(
-        "buscarPrioridad"
-    );
-
-if (buscarPrioridad) {
-
-    buscarPrioridad.addEventListener(
-        "input",
-        () => {
-
-            const texto =
-                buscarPrioridad.value
-                .toLowerCase();
-
-            document
-                .querySelectorAll(
-                    "#listaPrioridad .multi-filtro-item"
-                )
-                .forEach(item => {
-
-                    const contenido =
-                        item.textContent
-                        .toLowerCase();
-
-                    item.style.display =
-                        contenido.includes(texto)
-                        ? ""
-                        : "none";
-
-                });
-
-        }
-    );
-
-}    
 if (chkTodos) {
 
     chkTodos.addEventListener(
@@ -747,45 +709,15 @@ const prioridades = Array.from(
 .sort();
 
 document.getElementById(
-    "listaPrioridad"
+    "filtroPrioridad"
 ).innerHTML = `
-
-    <input
-        type="text"
-        id="buscarPrioridad"
-        class="buscar-multifiltro"
-        placeholder="Buscar...">
-
-    <div
-        class="multi-filtro-reset"
-        id="btnLimpiarPrioridad">
-
-        ✖ Borrar filtro
-
-    </div>
-
-    <label class="multi-filtro-item">
-
-        <input
-            type="checkbox"
-            id="chkTodasPrioridades">
-
-        (Seleccionar todo)
-
-    </label>
-
+    <option value="">Prioridad</option>
 ` + prioridades.map(valor => `
-    <label class="multi-filtro-item">
-
-        <input
-            type="checkbox"
-            value="${valor}"
-            class="chkPrioridad">
-
+    <option value="${valor}">
         ${valor}
-
-    </label>
+    </option>
 `).join("");
+
 const afectaciones = Array.from(
     new Set(
         datos.map(fila => fila[idxAfectacion])
@@ -2097,47 +2029,6 @@ document.addEventListener(
 
         if (
             e.target === boton
-        ) {
-
-            lista.classList.toggle(
-                "show"
-            );
-
-            return;
-
-        }
-
-        if (
-            !lista.contains(e.target)
-        ) {
-
-            lista.classList.remove(
-                "show"
-            );
-
-        }
-
-    }
-);
-document.addEventListener(
-    "click",
-    (e) => {
-
-        const lista =
-            document.getElementById(
-                "listaPrioridad"
-            );
-
-        const boton =
-            document.getElementById(
-                "btnPrioridad"
-            );
-
-        if (!lista || !boton) return;
-
-        if (
-            e.target === boton ||
-            boton.contains(e.target)
         ) {
 
             lista.classList.toggle(
