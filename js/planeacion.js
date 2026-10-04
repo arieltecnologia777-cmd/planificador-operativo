@@ -472,7 +472,7 @@ document.getElementById(
     class="multi-filtro-reset"
     id="btnLimpiarDepartamento">
 
-    ✖ Borrar filtro "Departamento"
+    ✖ Borrar filtro
 
 </div>
 
