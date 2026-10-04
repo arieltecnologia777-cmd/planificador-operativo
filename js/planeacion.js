@@ -1531,12 +1531,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 panel.outerHTML;
 
             destino
-                .querySelector(
-                    "#btnExpandirTabla"
-                )
-                ?.remove();
+    .querySelector(
+        "#btnExpandirTabla"
+    )
+    ?.remove();
 
-           const topScrollModal =
+modal.classList.add(
+    "show"
+);
+
+const topScrollModal =
     destino.querySelector(
         ".planeacion-scroll-top"
     );
