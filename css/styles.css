@@ -1616,6 +1616,9 @@ body.modo-ampliado .panel{
 }
 
 .multi-filtro-arrow{
-    pointer-events:none;
     font-size:.9rem;
+    font-weight:800;
+    color:#000;
+    line-height:1;
+    pointer-events:none;
 }
