@@ -823,14 +823,8 @@ const afectaciones = Array.from(
 .sort();
 
 document.getElementById(
-    "filtroAfectacion"
-).innerHTML = `
-    <option value="">Tipo de afectación</option>
-` + afectaciones.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+    "listaAfectacion"
+).innerHTML = "";
 
 const stoppers = Array.from(
     new Set(
@@ -841,14 +835,8 @@ const stoppers = Array.from(
 .sort();
 
 document.getElementById(
-    "filtroStoppers"
-).innerHTML = `
-    <option value="">Stoppers</option>
-` + stoppers.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+    "listaStoppers"
+).innerHTML = "";
 
 const rangos = Array.from(
     new Set(
