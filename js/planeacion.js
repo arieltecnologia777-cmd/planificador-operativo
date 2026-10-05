@@ -228,7 +228,6 @@ async function cargarPlaneacion(){
     encabezadosGlobal = filas[0];
     datosGlobal = filas.slice(1);
 
-    const encabezados = encabezadosGlobal;
     const datos = datosGlobal;
 
     let registrosD1 = {};
@@ -240,13 +239,6 @@ async function cargarPlaneacion(){
     }
 
     window.registrosD1 = registrosD1;
-
-    const programados = Object.values(window.registrosD1 || {}).filter(registro =>
-        registro.estadoProgramacion === "Programada"
-    ).length;
-
-    const kpiProg = document.getElementById("kpiProgramadosD1");
-    if(kpiProg) kpiProg.textContent = programados;
 
     renderizarFiltrosDinamicos(datos);
     datosFiltradosGlobal = datos;
@@ -266,6 +258,7 @@ function actualizarKPIs(datos){
     const otsBaja = new Set();
     const otsCumple = new Set();
     const otsNoCumple = new Set();
+    const otsProgramadas = new Set();
 
     datos.forEach(fila => {
         const ot = (fila[idxOT] || "").trim();
@@ -277,6 +270,11 @@ function actualizarKPIs(datos){
         if (prioridad === "BAJA") otsBaja.add(ot);
         if (backlog === "CUMPLE") otsCumple.add(ot);
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
+
+        const regD1 = (window.registrosD1 || {})[ot];
+        if (regD1 && regD1.estadoProgramacion === "Programada") {
+            otsProgramadas.add(ot);
+        }
     });
 
     const elAlta = document.getElementById("kpiAltaPlaneacion");
@@ -284,12 +282,14 @@ function actualizarKPIs(datos){
     const elBaja = document.getElementById("kpiBajaPlaneacion");
     const elCumple = document.getElementById("kpiCumpleBacklog");
     const elNoCumple = document.getElementById("kpiNoCumpleBacklog");
+    const kpiProg = document.getElementById("kpiProgramadosD1");
 
     if(elAlta) elAlta.textContent = otsAlta.size;
     if(elMedia) elMedia.textContent = otsMedia.size;
     if(elBaja) elBaja.textContent = otsBaja.size;
     if(elCumple) elCumple.textContent = otsCumple.size;
     if(elNoCumple) elNoCumple.textContent = otsNoCumple.size;
+    if(kpiProg) kpiProg.textContent = otsProgramadas.size;
 }
 
 document.addEventListener("DOMContentLoaded", cargarPlaneacion);
@@ -389,7 +389,6 @@ function actualizarOpcionesFiltros(datos) {
             String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
     };
 
-    // Evaluaciones cruzadas independientes
     const datosParaDepto = datosGlobal.filter(fila => coincideBase(fila) &&
         (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
         (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
@@ -438,7 +437,6 @@ function actualizarOpcionesFiltros(datos) {
         (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango]))
     );
 
-    // Filtrar elementos previamente marcados que desaparecen
     departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
     prioridadesSeleccionadas = prioridadesSeleccionadas.filter(val => datosParaPrioridad.some(f => f[idxPrioridad] === val));
     afectacionesSeleccionadas = afectacionesSeleccionadas.filter(val => datosParaAfectacion.some(f => f[idxAfectacion] === val));
@@ -446,7 +444,6 @@ function actualizarOpcionesFiltros(datos) {
     rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
     backlogsSeleccionados = backlogsSeleccionados.filter(val => datosParaBacklog.some(f => f[idxBacklog] === val));
 
-    // Actualización de títulos
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
 
@@ -465,7 +462,6 @@ function actualizarOpcionesFiltros(datos) {
     const txtBack = document.getElementById("textoBacklog");
     if (txtBack) txtBack.textContent = backlogsSeleccionados.length === 0 ? "Indicador backlog" : `Backlog (${backlogsSeleccionados.length})`;
 
-    // Re-renderizado dinámico de menús
     const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
@@ -845,6 +841,7 @@ async function guardarOT(fila){
                 acompanamiento: payload.acompanamiento,
                 updatedAt: new Date().toISOString()
             };
+            aplicarFiltros();
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
@@ -912,17 +909,12 @@ function detectarZoom() {
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
-// ==========================================
-// CONTROL DEL BOTÓN ZOOM (Delegado e Indestructible)
-// ==========================================
 document.addEventListener("click", (e) => {
-    // Escucha el clic sin importar si tocas el botón, el SVG interior o si cambió el ID
     const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
 
     if (botonZoom) {
-        e.preventDefault(); // Evita que la página salte
+        e.preventDefault();
         
-        // Disparamos todas las clases que tenías en tus versiones para asegurar que el CSS enganche
         document.body.classList.toggle("modo-ampliado");
         document.body.classList.toggle("modo-zoom");
         document.querySelector(".panel")?.classList.toggle("panel-zoom");
