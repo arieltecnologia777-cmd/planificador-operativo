@@ -1219,19 +1219,23 @@ min-width:220px;
     z-index:1;
 }
 
+/* Cabecera fija en el tope exacto de la ventana */
 .planeacion-header{
-    position:sticky;
-    top:0;
-    z-index:1000;
-    background:#fff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #fff;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
+/* La barra de filtros se frena a 52px de la parte superior (justo debajo de la cabecera) */
 .planeacion-filtros-sticky{
-    position:sticky;
-    top:22px;
-    z-index:250;
-    background:#fff;
-    padding-bottom:0;
+    position: sticky;
+    top: 52px !important; /* Evita que suba de más al hacer scroll */
+    z-index: 250;
+    background: #fff;
+    padding-bottom: 4px;
 }
 
 @keyframes fadeHint{
