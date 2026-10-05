@@ -1625,27 +1625,25 @@ width:160px;
     color:#111827;
     pointer-events:none;
 }
-/* Cabecera estructurada en Grid para alineación perfecta en una sola fila */
+/* Cabecera contenedora */
 .panel-header {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr; /* 3 columnas: izquierda, centro y derecha */
+    display: flex;
     align-items: center;
     width: 100%;
-    padding-bottom: 12px; /* Margen inferior para separarlo de la barra de filtros */
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    position: relative;
 }
 
-/* Columna 1: Título pegado a la izquierda */
+/* Título fijo a la izquierda */
 .panel-header h2 {
     margin: 0;
     font-size: 1.1rem;
     color: #0f172a;
-    justify-self: start;
+    flex: 0 0 auto;
 }
 
-/* Columna 2: Botón centrado en su celda propia */
+/* Botón "Limpiar filtros" ubicado en la zona centro-derecha */
 .btn-limpiar-header {
-    justify-self: center; /* Alineación horizontal en el centro exacto */
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1659,18 +1657,16 @@ width:160px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    
+    /* Estos márgenes fijan la posición del botón exacto hacia el centro */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-limpiar-header svg {
     width: 14px;
     height: 14px;
     stroke: #dc2626;
-}
-
-/* Columna 3: Botón de zoom pegado a la derecha */
-.expand-btn,
-.panel-header button:last-child {
-    justify-self: end;
 }
 
 .btn-limpiar-header:hover {
@@ -1680,4 +1676,11 @@ width:160px;
 
 .btn-limpiar-header:active {
     transform: scale(0.96);
+}
+
+/* Fuerza al botón de Zoom a quedarse pegado en la esquina derecha */
+#btnZoom, 
+.expand-btn {
+    flex: 0 0 auto;
+    margin-left: 0 !important;
 }
