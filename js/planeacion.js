@@ -787,35 +787,56 @@ function exportarPlaneacion() {
             );
         }
 
-        const datosExcel = filas.map(fila => {
+        // 1. Definimos las cabeceras exactas en el orden deseado
+        const headers = [
+            "ID", "Departamento", "Municipio", "IM", "OT", 
+            "Afectacion", "Total_IDs", "Dias_OT", "Rango_Afectacion", 
+            "Prioridad", "Stoppers_Dominion", "Estado_Programacion", 
+            "Fecha_Programacion", "Observaciones", "Estado_Gestion", 
+            "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion", 
+            "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
+        ];
+
+        // 2. Construimos la matriz de datos comenzando estrictamente por las cabeceras en la fila 1
+        const dataAOA = [headers];
+
+        filas.forEach(fila => {
             const otValor = fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")] || "";
             const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
 
-            return {
-                ID: fila[encabezadosGlobal.findIndex(h => h.trim() === "ID")] || "",
-                Departamento: fila[encabezadosGlobal.findIndex(h => h.trim() === "Departamento")] || "",
-                Municipio: fila[encabezadosGlobal.findIndex(h => h.trim() === "Municipio")] || "",
-                IM: fila[encabezadosGlobal.findIndex(h => h.trim() === "IM")] || "",
-                OT: otValor,
-                Afectacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de afectación")] || "",
-                Total_IDs: fila[encabezadosGlobal.findIndex(h => h.trim() === "IDs afectados")] || "",
-                Dias_OT: fila[encabezadosGlobal.findIndex(h => h.trim() === "Días OT")] || "",
-                Rango_Afectacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Rango de afectación")] || "",
-                Prioridad: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de prioridad")] || "",
-                Stoppers_Dominion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Stoppers Dominion")] || "",
-                Estado_Programacion: regD1.estadoProgramacion || "",
-                Fecha_Programacion: regD1.fechaProgramacion || "",
-                Observaciones: regD1.observacion || "",
-                Estado_Gestion: regD1.estadoGestion || "",
-                Indicador_Backlog: fila[encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog")] || "",
-                Stopper_P3: fila[encabezadosGlobal.findIndex(h => h.trim() === "Stopper P3")] || "",
-                Tipo_Facturacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo facturación")] || "",
-                Fecha_Vencimiento_FM: fila[encabezadosGlobal.findIndex(h => h.trim() === "Fecha vencimiento FM")] || "",
-                Alerta_Vencimiento_FM: fila[encabezadosGlobal.findIndex(h => h.trim() === "Alerta vencimiento FM")] || ""
-            };
+            const rowData = [
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "ID")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Departamento")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Municipio")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "IM")] || "",
+                otValor,
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de afectación")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "IDs afectados")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Días OT")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Rango de afectación")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de prioridad")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Stoppers Dominion")] || "",
+                regD1.estadoProgramacion || "",
+                regD1.fechaProgramacion || "",
+                regD1.observacion || "",
+                regD1.estadoGestion || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Stopper P3")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo facturación")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Fecha vencimiento FM")] || "",
+                fila[encabezadosGlobal.findIndex(h => h.trim() === "Alerta vencimiento FM")] || ""
+            ];
+
+            dataAOA.push(rowData);
         });
 
-        const ws = XLSX.utils.json_to_sheet(datosExcel);
+        // 3. Creamos la hoja con aoa_to_sheet para asegurar que la Fila 1 sean las cabeceras
+        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        // 4. Activamos explícitamente el rango de autofiltro desde la celda A1 hasta la última columna de la cabecera
+        const ultimaColumnaLetra = XLSX.utils.encode_col(headers.length - 1);
+        ws['!autofilter'] = { ref: `A1:${ultimaColumnaLetra}${dataAOA.length}` };
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
@@ -824,7 +845,7 @@ function exportarPlaneacion() {
             `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
         );
 
-        console.log("¡Archivo Excel exportado con éxito!");
+        console.log("¡Archivo Excel exportado con éxito y filtros en la Fila 1!");
     } catch (error) {
         console.error("Error crítico al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
