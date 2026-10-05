@@ -389,7 +389,7 @@ function actualizarOpcionesFiltros(datos) {
             String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
     };
 
-    // Filtros cruzados dependientes (excluyendo la dimensión del selector evaluado)
+    // Evaluaciones cruzadas independientes
     const datosParaDepto = datosGlobal.filter(fila => coincideBase(fila) &&
         (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
         (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
@@ -438,7 +438,7 @@ function actualizarOpcionesFiltros(datos) {
         (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango]))
     );
 
-    // Filtrar elementos seleccionados previamente que ya no existen en las opciones dinámicas disponibles
+    // Filtrar elementos previamente marcados que desaparecen
     departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
     prioridadesSeleccionadas = prioridadesSeleccionadas.filter(val => datosParaPrioridad.some(f => f[idxPrioridad] === val));
     afectacionesSeleccionadas = afectacionesSeleccionadas.filter(val => datosParaAfectacion.some(f => f[idxAfectacion] === val));
@@ -446,7 +446,7 @@ function actualizarOpcionesFiltros(datos) {
     rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
     backlogsSeleccionados = backlogsSeleccionados.filter(val => datosParaBacklog.some(f => f[idxBacklog] === val));
 
-    // Actualización de textos de las cabeceras de los filtros
+    // Actualización de títulos
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
 
@@ -465,7 +465,7 @@ function actualizarOpcionesFiltros(datos) {
     const txtBack = document.getElementById("textoBacklog");
     if (txtBack) txtBack.textContent = backlogsSeleccionados.length === 0 ? "Indicador backlog" : `Backlog (${backlogsSeleccionados.length})`;
 
-    // Re-renderizado de contenedores con las opciones válidas
+    // Re-renderizado dinámico de menús
     const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
@@ -820,3 +820,266 @@ async function guardarOT(fila){
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
         fechaProgramacion: fechaVal,
         observacion: fila.querySelector(".observacion")?.value || "",
+        estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
+        tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
+        acompanamiento: fila.querySelector(".acompanamiento")?.value || ""
+    };
+
+    try {
+        const resp = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const resultado = await resp.json();
+
+        if (resultado.ok) {
+            window.registrosD1 = window.registrosD1 || {};
+            window.registrosD1[payload.ot] = {
+                ot: payload.ot,
+                estadoProgramacion: payload.estadoProgramacion,
+                fechaProgramacion: payload.fechaProgramacion,
+                observacion: payload.observacion,
+                estadoGestion: payload.estadoGestion,
+                tecnicoAsignado: payload.tecnicoAsignado,
+                acompanamiento: payload.acompanamiento,
+                updatedAt: new Date().toISOString()
+            };
+        }
+    } catch (err) {
+        console.error("Error al guardar OT:", err);
+    }
+}
+
+const wrapper = document.querySelector('.planeacion-table-wrapper');
+let scrollTimer;
+if(wrapper) {
+    wrapper.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const firstRow = wrapper.querySelector('tbody tr');
+            if (!firstRow) return;
+            const rowHeight = firstRow.offsetHeight;
+            const target = Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
+            wrapper.scrollTo({ top: target, behavior: 'smooth' });
+        }, 80);
+    });
+}
+
+window.addEventListener("load", () => {
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+
+    if (!topScroll || !tableWrapper) return;
+    let syncing = false;
+
+    topScroll.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        tableWrapper.scrollLeft = topScroll.scrollLeft;
+        syncing = false;
+    });
+
+    tableWrapper.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        topScroll.scrollLeft = tableWrapper.scrollLeft;
+        syncing = false;
+    });
+});
+
+function actualizarStickyTabla() {
+    const header = document.querySelector('.planeacion-header');
+    const filtros = document.querySelector('.planeacion-filtros-sticky');
+    if (!header || !filtros) return;
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFiltros = filtros.offsetHeight;
+
+    document.documentElement.style.setProperty(
+        '--sticky-table-top',
+        `${alturaHeader + alturaFiltros}px`
+    );
+}
+
+window.addEventListener('load', actualizarStickyTabla);
+window.addEventListener('resize', actualizarStickyTabla);
+
+function detectarZoom() {
+    const zoom = Math.round(window.devicePixelRatio * 100);
+    document.body.classList.toggle('zoom-alto', zoom > 105);
+}
+window.addEventListener('resize', detectarZoom);
+detectarZoom();
+
+// ==========================================
+// CONTROL DEL BOTÓN ZOOM (Delegado e Indestructible)
+// ==========================================
+document.addEventListener("click", (e) => {
+    // Escucha el clic sin importar si tocas el botón, el SVG interior o si cambió el ID
+    const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
+
+    if (botonZoom) {
+        e.preventDefault(); // Evita que la página salte
+        
+        // Disparamos todas las clases que tenías en tus versiones para asegurar que el CSS enganche
+        document.body.classList.toggle("modo-ampliado");
+        document.body.classList.toggle("modo-zoom");
+        document.querySelector(".panel")?.classList.toggle("panel-zoom");
+        
+        console.log("🔍 Zoom activado/desactivado");
+    }
+});
+
+function exportarPlaneacion() {
+    try {
+        if (
+            typeof datosGlobal === "undefined" ||
+            typeof encabezadosGlobal === "undefined" ||
+            !datosGlobal.length
+        ) {
+            alert("No hay datos cargados para exportar todavía.");
+            return;
+        }
+
+        const exportRegionEl = document.getElementById("exportRegion");
+        const region = exportRegionEl ? exportRegionEl.value : "todos";
+
+        let filas = [...datosGlobal];
+
+        const buscarIndice = (nombre) =>
+            encabezadosGlobal.findIndex(
+                h => String(h).trim() === nombre
+            );
+
+        const idxDepto = buscarIndice("Departamento");
+
+        if (region === "R1" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                ["CESAR", "LA GUAJIRA", "SAI"].includes(
+                    String(fila[idxDepto] || "")
+                        .trim()
+                        .toUpperCase()
+                )
+            );
+        }
+
+        if (region === "R2" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                String(fila[idxDepto] || "")
+                    .trim()
+                    .toUpperCase() === "ANTIOQUIA"
+            );
+        }
+
+        const headers = [
+            "ID",
+            "Departamento",
+            "Municipio",
+            "IM",
+            "OT",
+            "Afectacion",
+            "Total_IDs",
+            "Dias_OT",
+            "Rango_Afectacion",
+            "Prioridad",
+            "Stoppers_Dominion",
+            "Estado_Programacion",
+            "Fecha_Programacion",
+            "Observaciones",
+            "Estado_Gestion",
+            "Indicador_Backlog",
+            "Stopper_P3",
+            "Tipo_Facturacion",
+            "Fecha_Vencimiento_FM",
+            "Alerta_Vencimiento_FM"
+        ];
+
+        const limpiarTexto = (texto) => {
+            if (!texto) return "";
+            return String(texto)
+                .replace(/[\r\n]+/g, " ") 
+                .trim();
+        };
+
+        const dataAOA = [];
+        dataAOA.push([...headers]);
+
+        filas.forEach(fila => {
+            const getValor = (nombre) => {
+                const index = buscarIndice(nombre);
+                return index !== -1 ? (fila[index] ?? "") : "";
+            };
+
+            const otValor = getValor("OT");
+
+            const regD1 =
+                window.registrosD1 &&
+                window.registrosD1[otValor]
+                    ? window.registrosD1[otValor]
+                    : {};
+
+            dataAOA.push([
+                getValor("ID"),
+                getValor("Departamento"),
+                getValor("Municipio"),
+                getValor("IM"),
+                otValor,
+                getValor("Tipo de afectación"),
+                getValor("IDs afectados"),
+                getValor("Días OT"),
+                getValor("Rango de afectación"),
+                getValor("Tipo de prioridad"),
+                getValor("Stoppers Dominion"),
+                limpiarTexto(regD1.estadoProgramacion),
+                limpiarTexto(regD1.fechaProgramacion),
+                limpiarTexto(regD1.observacion),
+                limpiarTexto(regD1.estadoGestion),
+                getValor("Indicador backlog"),
+                getValor("Stopper P3"),
+                getValor("Tipo facturación"),
+                getValor("Fecha vencimiento FM"),
+                getValor("Alerta vencimiento FM")
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
+        const ultimaFila = dataAOA.length;
+
+        ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
+        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
+
+        delete ws["!tables"];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
+
+        XLSX.writeFile(
+            wb,
+            `Planeacion_${region}_${new Date()
+                .toISOString()
+                .slice(0, 10)}.xlsx`
+        );
+
+        console.log("✅ Excel exportado correctamente con limpieza de texto y filtros en Fila 1.");
+
+    } catch (error) {
+        console.error("❌ Error al exportar:", error);
+        alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnExportar = document.getElementById("btnExportarExcel");
+    
+    if (btnExportar) {
+        btnExportar.addEventListener("click", (e) => {
+            e.preventDefault();
+            exportarPlaneacion();
+        });
+    } else {
+        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
+    }
+});
