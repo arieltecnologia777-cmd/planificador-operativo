@@ -754,14 +754,21 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 // ==========================================
-// CONTROL DEL BOTÓN ZOOM (Usando tu ID real)
+// CONTROL DEL BOTÓN ZOOM (Delegado e Indestructible)
 // ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    const btnExpandir = document.getElementById("btnExpandirTabla");
-    if (btnExpandir) {
-        btnExpandir.addEventListener("click", () => {
-            document.body.classList.toggle("modo-ampliado");
-        });
+document.addEventListener("click", (e) => {
+    // Escucha el clic sin importar si tocas el botón, el SVG interior o si cambió el ID
+    const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
+
+    if (botonZoom) {
+        e.preventDefault(); // Evita que la página salte
+        
+        // Disparamos todas las clases que tenías en tus versiones para asegurar que el CSS enganche
+        document.body.classList.toggle("modo-ampliado");
+        document.body.classList.toggle("modo-zoom");
+        document.querySelector(".panel")?.classList.toggle("panel-zoom");
+        
+        console.log("🔍 Zoom activado/desactivado");
     }
 });
 
