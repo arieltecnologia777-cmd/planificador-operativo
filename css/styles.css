@@ -1615,33 +1615,37 @@ width:160px;
 }
 
 /* ==========================================
-   CABECERA COMPACTA CON POSICIÓN FIJA
+   CABECERA Y FILTROS COMPACTOS
    ========================================== */
 
+/* Cabecera del panel sin exceso de espacio vertical */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    margin-bottom: 8px;
     position: relative;
-    min-height: 36px;
-    margin-bottom: 10px;
 }
 
-.panel-header h2 {
+/* Grupo título + botón alineados en la misma fila */
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+}
+
+.header-title-group h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: #0f172a;
     white-space: nowrap;
 }
 
-/* Botón centrado en pantallas grandes */
+/* Estilo del botón "Limpiar filtros" */
 .btn-limpiar-header {
-    position: absolute;
-    top: 50%;
-    left: 45%;
-    transform: translate(-50%, -50%);
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -1670,38 +1674,73 @@ width:160px;
 }
 
 .btn-limpiar-header:active {
-    transform: translate(-50%, -50%) scale(0.96);
+    transform: scale(0.96);
+}
+
+/* Contenedor pegajoso de filtros reducido en altura */
+.planeacion-filtros-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 250;
+    background: #fff;
+    padding-bottom: 4px;
+}
+
+.planeacion-filtros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    background: #fff;
+    padding: 2px 0;
 }
 
 /* ==========================================
-   SOLUCIÓN PANTALLAS PEQUEÑAS (Laptops)
+   AJUSTES PARA PANTALLAS PEQUEÑAS / LAPTOPS
    ========================================== */
-@media (max-width: 1400px) {
+
+@media (max-width: 1440px) {
+    /* Reducimos la altura general de la cabecera */
     .panel-header {
-        min-height: 28px;
-        margin-bottom: 4px; /* Pegamos más la cabecera arriba para ahorrar alto */
+        margin-bottom: 4px;
     }
 
-    .panel-header h2 {
-        font-size: 0.95rem; /* Título un poco más pequeño */
+    .header-title-group {
+        gap: 20px;
     }
 
-    /* Mantenemos el botón en el centro pero más compacto */
+    .header-title-group h2 {
+        font-size: 0.95rem;
+    }
+
+    /* Reducción de la barra de filtros */
+    .planeacion-filtros input,
+    .multi-filtro-btn {
+        height: 34px !important; /* Pasan de 42px a 34px de alto */
+        font-size: 12px !important;
+        padding: 0 8px !important;
+    }
+
+    .multi-filtro {
+        min-width: 125px; /* Reduce ancho para que no desborden */
+    }
+
+    #filtroBusqueda {
+        width: 130px;
+    }
+
     .btn-limpiar-header {
-        left: 42%;
         padding: 3px 8px;
         font-size: 11px;
     }
 
-    /* Ajuste de selectores para que no ganen altura */
-    .planeacion-filtros input,
-    .planeacion-filtros select,
-    .multi-filtro-btn {
-        height: 36px !important; /* Reduce la altura de las cajas de filtro */
-        font-size: 12px !important;
+    /* Reducción del área de scroll vertical para ganar filas visibles */
+    .planeacion-table-wrapper {
+        max-height: calc(100vh - 280px); /* Ajusta el alto automáticamente a la pantalla */
     }
 
-    .planeacion-filtros-sticky {
-        top: 0px !important; /* Evita desfasarse al hacer scroll */
+    .planeacion-table th, 
+    .planeacion-table td {
+        padding: 6px 10px; /* Celdas más compactas */
+        font-size: 0.82rem;
     }
 }
