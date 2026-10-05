@@ -852,26 +852,33 @@ function exportarPlaneacion() {
             ];
         });
 
-        // Construimos la hoja manualmente celda por celda para asegurar el tipo de texto en los encabezados
         const ws = {};
         let maxRow = datosMatriz.length;
         let maxCol = titulosColumnas.length - 1;
 
-        // Escribimos la Fila 1 (Encabezados)
+        // Fila 1: Encabezados con estilo en negrita nativo para forzar a Excel a reconocerlos como cabecera
         titulosColumnas.forEach((titulo, colIdx) => {
             const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
-            ws[cellRef] = { v: titulo, t: 's' };
+            ws[cellRef] = {
+                v: titulo,
+                t: 's',
+                s: {
+                    font: { bold: true }
+                }
+            };
         });
 
-        // Escribimos los datos de las filas subsiguientes
+        // Filas de datos subsiguientes
         datosMatriz.forEach((fila, rowIdx) => {
             fila.forEach((val, colIdx) => {
                 const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
-                ws[cellRef] = { v: val !== null && val !== undefined ? val : "", t: typeof val === 'number' ? 'n' : 's' };
+                ws[cellRef] = { 
+                    v: val !== null && val !== undefined ? val : "", 
+                    t: typeof val === 'number' ? 'n' : 's' 
+                };
             });
         });
 
-        // Definimos el rango total de la hoja de manera estricta
         ws['!ref'] = XLSX.utils.encode_range({
             s: { r: 0, c: 0 },
             e: { r: maxRow, c: maxCol }
