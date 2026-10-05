@@ -767,7 +767,6 @@ function exportarPlaneacion() {
             typeof encabezadosGlobal === "undefined" ||
             !datosGlobal.length
         ) {
-            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
@@ -777,27 +776,39 @@ function exportarPlaneacion() {
 
         let filas = [...datosGlobal];
 
-        const idxDepto = encabezadosGlobal.findIndex(
-            h => h.trim() === "Departamento"
-        );
+        const buscarIndice = (nombre) =>
+            encabezadosGlobal.findIndex(
+                h => String(h).trim() === nombre
+            );
 
-        // Filtrar región R1
+        const idxDepto = buscarIndice("Departamento");
+
+        // ==============================
+        // FILTRO DE REGIÓN
+        // ==============================
+
         if (region === "R1" && idxDepto !== -1) {
             filas = filas.filter(fila =>
                 ["CESAR", "LA GUAJIRA", "SAI"].includes(
-                    (fila[idxDepto] || "").trim().toUpperCase()
+                    String(fila[idxDepto] || "")
+                        .trim()
+                        .toUpperCase()
                 )
             );
         }
 
-        // Filtrar región R2
         if (region === "R2" && idxDepto !== -1) {
             filas = filas.filter(fila =>
-                (fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
+                String(fila[idxDepto] || "")
+                    .trim()
+                    .toUpperCase() === "ANTIOQUIA"
             );
         }
 
-        // Encabezados
+        // ==============================
+        // ENCABEZADOS
+        // ==============================
+
         const headers = [
             "ID",
             "Departamento",
@@ -821,17 +832,20 @@ function exportarPlaneacion() {
             "Alerta_Vencimiento_FM"
         ];
 
-        const dataAOA = [headers];
+        // ==============================
+        // DATOS
+        // ==============================
 
-        // Construir filas
+        const dataAOA = [];
+
+        // PRIMERA FILA = ENCABEZADOS
+        dataAOA.push([...headers]);
+
         filas.forEach(fila => {
 
             const getValor = (nombre) => {
-                const index = encabezadosGlobal.findIndex(
-                    h => h.trim() === nombre
-                );
-
-                return index !== -1 ? (fila[index] || "") : "";
+                const index = buscarIndice(nombre);
+                return index !== -1 ? (fila[index] ?? "") : "";
             };
 
             const otValor = getValor("OT");
@@ -842,7 +856,7 @@ function exportarPlaneacion() {
                     ? window.registrosD1[otValor]
                     : {};
 
-            const rowData = [
+            dataAOA.push([
                 getValor("ID"),
                 getValor("Departamento"),
                 getValor("Municipio"),
@@ -854,34 +868,40 @@ function exportarPlaneacion() {
                 getValor("Rango de afectación"),
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
-
                 regD1.estadoProgramacion || "",
                 regD1.fechaProgramacion || "",
                 regD1.observacion || "",
                 regD1.estadoGestion || "",
-
                 getValor("Indicador backlog"),
                 getValor("Stopper P3"),
                 getValor("Tipo facturación"),
                 getValor("Fecha vencimiento FM"),
                 getValor("Alerta vencimiento FM")
-            ];
-
-            dataAOA.push(rowData);
+            ]);
         });
 
-        // Crear hoja
+        // ==============================
+        // CREAR HOJA
+        // ==============================
+
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Rango exacto de datos
-        const ultimaColumnaLetra = XLSX.utils.encode_col(headers.length - 1);
-        const rangoFinal = `A1:${ultimaColumnaLetra}${dataAOA.length}`;
+        // Aseguramos que el rango COMIENCE exactamente en A1
+        const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
+        const ultimaFila = dataAOA.length;
 
-        ws["!ref"] = rangoFinal;
+        ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // IMPORTANTE:
-        // NO colocar ws["!autofilter"]
-        // El Excel se abrirá SIN filtros automáticos.
+        // MUY IMPORTANTE:
+        // No crear autofiltro
+        delete ws["!autofilter"];
+
+        // No crear tabla
+        delete ws["!tables"];
+
+        // ==============================
+        // CREAR LIBRO
+        // ==============================
 
         const wb = XLSX.utils.book_new();
 
@@ -891,22 +911,22 @@ function exportarPlaneacion() {
             "Planeacion"
         );
 
-        // Guardar archivo
+        // ==============================
+        // EXPORTAR
+        // ==============================
+
         XLSX.writeFile(
             wb,
-            `Planeacion_${region}_${new Date().toISOString().slice(0, 10)}.xlsx`
+            `Planeacion_${region}_${new Date()
+                .toISOString()
+                .slice(0, 10)}.xlsx`
         );
 
-        console.log(
-            "✅ Archivo Excel exportado correctamente SIN autofiltro."
-        );
+        console.log("✅ Excel creado. Encabezados en A1.");
 
     } catch (error) {
 
-        console.error(
-            "❌ Error crítico al exportar:",
-            error
-        );
+        console.error("❌ Error al exportar:", error);
 
         alert(
             "Ocurrió un error al exportar el archivo. Revisa la consola (F12)."
@@ -922,11 +942,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btn) {
 
         btn.addEventListener("click", (e) => {
-
             e.preventDefault();
-
             exportarPlaneacion();
-
         });
 
     } else {
@@ -934,7 +951,5 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn(
             "⚠️ No se encontró el botón con ID 'btnExportarExcel'"
         );
-
     }
-
 });
