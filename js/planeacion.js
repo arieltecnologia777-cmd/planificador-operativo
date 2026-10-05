@@ -765,17 +765,18 @@ function exportarPlaneacion() {
         const exportRegionEl = document.getElementById("exportRegion");
         const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-        if (!window.datosGlobal || !window.encabezadosGlobal) {
-            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos.");
+        // Validamos directamente las variables locales de tu script
+        if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
+            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
 
-        let filas = [...window.datosGlobal];
+        let filas = [...datosGlobal];
 
         // Función auxiliar para buscar índices de forma segura (ignorando mayúsculas, acentos y espacios extra)
         const buscarIndice = (nombreBuscado) => {
-            return window.encabezadosGlobal.findIndex(h => {
+            return encabezadosGlobal.findIndex(h => {
                 if (!h) return false;
                 const hClean = h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 const bClean = nombreBuscado.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -878,7 +879,6 @@ document.addEventListener("DOMContentLoaded", () => {
     posiblesIds.forEach(id => {
         const botonExportar = document.getElementById(id);
         if (botonExportar) {
-            // Evitamos duplicar eventos si se recarga el script
             botonExportar.replaceWith(botonExportar.cloneNode(true));
             const botonActualizado = document.getElementById(id);
             
