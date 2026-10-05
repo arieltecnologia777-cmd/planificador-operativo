@@ -855,7 +855,11 @@ function exportarPlaneacion() {
         const wsData = [titulosColumnas, ...datosMatriz];
         const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-        // Sin propiedades de autofiltro forzado: comportamiento totalmente nativo y manual
+        // Rango explícito para estabilizar la lectura de celdas en Excel
+        ws['!ref'] = XLSX.utils.encode_range({
+            s: { r: 0, c: 0 },
+            e: { r: wsData.length - 1, c: titulosColumnas.length - 1 }
+        });
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
