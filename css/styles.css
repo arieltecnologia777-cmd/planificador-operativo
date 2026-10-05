@@ -1614,23 +1614,20 @@ width:160px;
     pointer-events:none;
 }
 
-/* ==========================================
-   CABECERA Y FILTROS COMPACTOS Y FLUIDOS
-   ========================================== */
-
-/* Cabecera en Grid de 3 columnas dinámicas */
+/* Cabecera contenedora con posición relativa para el centrado del botón */
 .panel-header {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
-    margin-bottom: 6px;
     position: relative;
+    min-height: 38px;
+    margin-bottom: 8px;
 }
 
-/* Columna 1: Título pegado a la izquierda */
-.header-title-group h2,
-.panel-header h2 {
+/* Título fijo en la esquina izquierda */
+.panel-header h2,
+.header-title-group h2 {
     margin: 0;
     font-size: 1rem;
     font-weight: 800;
@@ -1638,13 +1635,16 @@ width:160px;
     white-space: nowrap;
 }
 
-/* Columna 2: Botón siempre al centro exacto del espacio sobrante */
+/* Botón centrado en el medio absoluto del panel superior */
 .btn-limpiar-header {
-    justify-self: center; /* Se auto-centra sin position:absolute ni gap fijo */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 9px;
+    padding: 4px 10px;
     background-color: transparent;
     color: #dc2626;
     border: 1px solid #fca5a5;
@@ -1655,6 +1655,7 @@ width:160px;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s ease;
+    z-index: 10;
 }
 
 .btn-limpiar-header svg {
@@ -1669,60 +1670,5 @@ width:160px;
 }
 
 .btn-limpiar-header:active {
-    transform: scale(0.96);
-}
-
-/* Columna 3: Botón de zoom a la derecha */
-#btnZoom, 
-.expand-btn {
-    justify-self: end;
-}
-
-/* ==========================================
-   FILTROS COMPACTOS (Menos altura vertical)
-   ========================================== */
-
-.planeacion-filtros-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 250;
-    background: #fff;
-    padding-bottom: 2px;
-}
-
-.planeacion-filtros {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 2px;
-    background: #fff;
-    padding: 2px 0;
-}
-
-/* Reducción general de altura para que la tabla suba y no haya scroll */
-.planeacion-filtros input,
-.planeacion-filtros select,
-.multi-filtro-btn {
-    height: 34px !important;
-    font-size: 12px !important;
-    padding: 0 8px !important;
-    border-radius: 8px !important;
-}
-
-.multi-filtro {
-    min-width: 120px;
-}
-
-#filtroBusqueda {
-    width: 130px;
-}
-
-/* Optimización de espacio para la tabla */
-.planeacion-table-wrapper {
-    max-height: calc(100vh - 270px);
-}
-
-.planeacion-table th, 
-.planeacion-table td {
-    padding: 7px 10px;
-    font-size: 0.83rem;
+    transform: translate(-50%, -50%) scale(0.96);
 }
