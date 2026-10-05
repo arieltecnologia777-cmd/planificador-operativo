@@ -1085,7 +1085,7 @@ button{
     width:100%;
     overflow-x:auto;
     overflow-y:auto;
-    max-height:600px; /* Ajustado a 600px para equilibrar la vista */
+    max-height:610px; /* Ajustado a 610px */
     border:1px solid #edf1f5;
     border-radius:14px;
 
