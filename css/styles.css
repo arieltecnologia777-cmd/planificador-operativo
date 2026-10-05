@@ -1084,7 +1084,7 @@ button{
     width:100%;
     overflow-x:auto;
     overflow-y:auto;
-    max-height:650px;
+    max-height:420px;
     border:1px solid #edf1f5;
     border-radius:14px;
 
@@ -1219,23 +1219,19 @@ min-width:220px;
     z-index:1;
 }
 
-/* Cabecera fija en el tope exacto de la ventana */
 .planeacion-header{
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: #fff;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#fff;
 }
 
-/* La barra de filtros se frena a 52px de la parte superior (justo debajo de la cabecera) */
 .planeacion-filtros-sticky{
-    position: sticky;
-    top: 52px !important; /* Evita que suba de más al hacer scroll */
-    z-index: 250;
-    background: #fff;
-    padding-bottom: 4px;
+    position:sticky;
+    top:22px;
+    z-index:250;
+    background:#fff;
+    padding-bottom:0;
 }
 
 @keyframes fadeHint{
