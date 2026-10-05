@@ -1614,23 +1614,28 @@ width:160px;
     pointer-events:none;
 }
 
-/* Cabecera contenedora principal */
+/* ==========================================
+   CABECERA COMPACTA Y RESPONSIVA
+   ========================================== */
+
+/* Reducimos márgenes para ganar espacio vertical */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 6px; /* Reducido de 12px a 6px */
+    position: relative;
 }
 
-/* Contenedor horizontal para el título y el botón "Limpiar filtros" */
+/* El contenedor del título ocupa el espacio sobrante */
 .header-title-group {
     display: flex;
     align-items: center;
-    gap: 220px; /* Ajusta la separación horizontal para centrar el botón */
+    gap: 24px; /* Separación base limpia y dinámica */
+    flex: 1;
 }
 
-/* Título fijo que no se rompe en varias líneas */
 .header-title-group h2 {
     margin: 0;
     font-size: 1.1rem;
@@ -1638,18 +1643,18 @@ width:160px;
     white-space: nowrap;
 }
 
-/* Estilo alineado del botón "Limpiar filtros" */
+/* Botón estilizado y compacto */
 .btn-limpiar-header {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 5px 10px; /* Levemente más compacto */
     background-color: transparent;
     color: #dc2626;
     border: 1px solid #fca5a5;
     border-radius: 6px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
@@ -1657,8 +1662,8 @@ width:160px;
 }
 
 .btn-limpiar-header svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     stroke: #dc2626;
 }
 
@@ -1671,8 +1676,26 @@ width:160px;
     transform: scale(0.96);
 }
 
-/* Botón de Zoom en la esquina derecha */
-#btnZoom, 
-.expand-btn {
-    flex: 0 0 auto;
+/* Ajuste del área sticky de filtros para evitar el scroll vertical excesivo */
+.planeacion-filtros-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 250;
+    background: #fff;
+    padding-bottom: 6px; /* Ajustado para dar más aire a la tabla */
+}
+
+/* ==========================================
+   AJUSTE RESPONSIVO EN PANTALLAS PEQUEÑAS
+   ========================================== */
+@media (max-width: 1280px) {
+    .header-title-group {
+        gap: 12px;
+    }
+
+    /* En pantallas ajustadas el botón se hace más compacto */
+    .btn-limpiar-header {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
 }
