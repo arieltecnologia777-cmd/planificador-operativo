@@ -761,15 +761,34 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 function exportarPlaneacion() {
-    const region = document.getElementById("exportRegion").value;
+    // Protegemos la lectura del selector de región por si no existe en el HTML
+    const exportRegionEl = document.getElementById("exportRegion");
+    const region = exportRegionEl ? exportRegionEl.value : "todos";
+
     let filas = [...datosGlobal];
-    const idxDepto = encabezadosGlobal.findIndex(h => h.trim() === "Departamento");
+
+    const idxDepto =
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Departamento"
+        );
 
     if (region === "R1") {
-        filas = filas.filter(fila => ["CESAR", "LA GUAJIRA", "SAI"].includes((fila[idxDepto] || "").trim()));
+        filas = filas.filter(fila =>
+            [
+                "CESAR",
+                "LA GUAJIRA",
+                "SAI"
+            ].includes(
+                (fila[idxDepto] || "").trim()
+            )
+        );
     }
+
     if (region === "R2") {
-        filas = filas.filter(fila => (fila[idxDepto] || "").trim() === "ANTIOQUIA");
+        filas = filas.filter(fila =>
+            (fila[idxDepto] || "").trim() ===
+            "ANTIOQUIA"
+        );
     }
 
     const datosExcel = filas.map(fila => ({
@@ -803,10 +822,15 @@ function exportarPlaneacion() {
     XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
 
+// Enlazamos el botón de exportar al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
-    const boton = document.getElementById("btnExpandirTabla");
-    if (!boton) return;
-    boton.addEventListener("click", () => {
-        document.body.classList.toggle("modo-ampliado");
+    // Buscamos el botón por los IDs más comunes que sueles usar en tus webs
+    const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
+    
+    posiblesIds.forEach(id => {
+        const botonExportar = document.getElementById(id);
+        if (botonExportar) {
+            botonExportar.addEventListener("click", exportarPlaneacion);
+        }
     });
 });
