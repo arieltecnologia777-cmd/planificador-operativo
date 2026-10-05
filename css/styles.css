@@ -319,7 +319,7 @@ button{
     position:absolute;
     inset:22px 40px 12px 65px;
     border:2px solid rgba(111,227,255,.7);
-    clip-path:polygon(45% 0,67% 10%,78% 24%,72% 37%,88% 53%,76% 66%,80% 78%,62% 91%,42% 85%,31% 100%,19% 83%,2% 78%,13% 60%,5% 44%,19% 33%,13% 17%,31% 12%);
+    clip-path:polygon(45% 0,67% 10%,78% 24%,72% 34%,90% 43%,80% 53%,84% 63%,69% 69%,75% 82%,58% 88%,50% 100%,37% 88%,25% 91%,28% 76%,13% 68%,20% 57%,6% 47%,20% 37%,16% 27%,32% 22%,27% 10%);
     filter:drop-shadow(0 0 8px rgba(70,218,255,.6));
 }
 
@@ -1219,19 +1219,82 @@ min-width:220px;
     z-index:1;
 }
 
+/* 1. Contenedor sticky superior de la cabecera completa */
 .planeacion-header{
     position:sticky;
     top:0;
-    z-index:1000;
+    z-index:300;
     background:#fff;
+    padding-top:4px;
+    padding-bottom:4px;
 }
 
+/* 2. Cabecera flex que reserva espacio preciso */
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    height: 36px;
+    margin-bottom: 6px;
+}
+
+/* Título de la sección */
+.panel-header h2,
+.header-title-group h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+}
+
+/* 3. Botón centrado respecto a la cabecera */
+.btn-limpiar-header {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background-color: transparent;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-limpiar-header svg {
+    width: 12px;
+    height: 12px;
+    stroke: #dc2626;
+}
+
+.btn-limpiar-header:hover {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+}
+
+.btn-limpiar-header:active {
+    transform: translate(-50%, -50%) scale(0.96);
+}
+
+/* 4. Posicionamiento sticky exacto para la barra de filtros */
 .planeacion-filtros-sticky{
     position:sticky;
-    top:22px;
+    top:36px; /* Se ancla directamente debajo de la cabecera de 36px */
     z-index:250;
     background:#fff;
-    padding-bottom:0;
+    padding-bottom:4px;
 }
 
 @keyframes fadeHint{
@@ -1612,63 +1675,4 @@ width:160px;
     font-weight:700;
     color:#111827;
     pointer-events:none;
-}
-
-/* Cabecera contenedora con posición relativa para el centrado del botón */
-.panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    position: relative;
-    min-height: 38px;
-    margin-bottom: 8px;
-}
-
-/* Título fijo en la esquina izquierda */
-.panel-header h2,
-.header-title-group h2 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 800;
-    color: #0f172a;
-    white-space: nowrap;
-}
-
-/* Botón centrado en el medio absoluto del panel superior */
-.btn-limpiar-header {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    background-color: transparent;
-    color: #dc2626;
-    border: 1px solid #fca5a5;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    z-index: 10;
-}
-
-.btn-limpiar-header svg {
-    width: 12px;
-    height: 12px;
-    stroke: #dc2626;
-}
-
-.btn-limpiar-header:hover {
-    background-color: #fef2f2;
-    border-color: #ef4444;
-}
-
-.btn-limpiar-header:active {
-    transform: translate(-50%, -50%) scale(0.96);
 }
