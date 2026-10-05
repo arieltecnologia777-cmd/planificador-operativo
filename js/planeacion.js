@@ -759,7 +759,6 @@ function detectarZoom() {
 }
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
-
 function exportarPlaneacion() {
     try {
         if (
@@ -833,6 +832,17 @@ function exportarPlaneacion() {
         ];
 
         // ==============================
+        // FUNCIÓN AUXILIAR DE LIMPIEZA
+        // ==============================
+        // Elimina saltos de línea ocultos para evitar errores en Excel y en los filtros
+        const limpiarTexto = (texto) => {
+            if (!texto) return "";
+            return String(texto)
+                .replace(/[\r\n]+/g, " ") 
+                .trim();
+        };
+
+        // ==============================
         // DATOS
         // ==============================
 
@@ -867,10 +877,10 @@ function exportarPlaneacion() {
                 getValor("Rango de afectación"),
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
-                regD1.estadoProgramacion || "",
-                regD1.fechaProgramacion || "",
-                regD1.observacion || "",
-                regD1.estadoGestion || "",
+                limpiarTexto(regD1.estadoProgramacion),
+                limpiarTexto(regD1.fechaProgramacion),
+                limpiarTexto(regD1.observacion), // <--- Limpieza aplicada a observaciones
+                limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
                 getValor("Stopper P3"),
                 getValor("Tipo facturación"),
@@ -891,9 +901,7 @@ function exportarPlaneacion() {
         // Definir rango exacto de la tabla
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // LA SOLUCIÓN DEFINITIVA: Declarar explícitamente el autofiltro para TODO el rango de datos.
-        // Esto le prohíbe a Excel "adivinar" y lo ata de manos para que la fila 1 sea 
-        // obligatoriamente la cabecera de los filtros (tanto en "todos" como en R1 y R2).
+        // Autofiltro configurado para fijar estrictamente la Fila 1 como cabecera
         ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
 
         delete ws["!tables"];
@@ -921,7 +929,7 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel exportado con rango de filtros asegurado en Fila 1.");
+        console.log("✅ Excel exportado correctamente con limpieza de texto y filtros en Fila 1.");
 
     } catch (error) {
         console.error("❌ Error al exportar:", error);
