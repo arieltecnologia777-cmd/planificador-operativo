@@ -852,13 +852,29 @@ function exportarPlaneacion() {
             ];
         });
 
-        const wsData = [titulosColumnas, ...datosMatriz];
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        // Construimos la hoja manualmente celda por celda para asegurar el tipo de texto en los encabezados
+        const ws = {};
+        let maxRow = datosMatriz.length;
+        let maxCol = titulosColumnas.length - 1;
 
-        // Rango explícito para estabilizar la lectura de celdas en Excel
+        // Escribimos la Fila 1 (Encabezados)
+        titulosColumnas.forEach((titulo, colIdx) => {
+            const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
+            ws[cellRef] = { v: titulo, t: 's' };
+        });
+
+        // Escribimos los datos de las filas subsiguientes
+        datosMatriz.forEach((fila, rowIdx) => {
+            fila.forEach((val, colIdx) => {
+                const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
+                ws[cellRef] = { v: val !== null && val !== undefined ? val : "", t: typeof val === 'number' ? 'n' : 's' };
+            });
+        });
+
+        // Definimos el rango total de la hoja de manera estricta
         ws['!ref'] = XLSX.utils.encode_range({
             s: { r: 0, c: 0 },
-            e: { r: wsData.length - 1, c: titulosColumnas.length - 1 }
+            e: { r: maxRow, c: maxCol }
         });
 
         const wb = XLSX.utils.book_new();
