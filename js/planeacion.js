@@ -925,4 +925,7 @@ function exportarPlaneacion() {
         console.error(
             "Error crítico al exportar el Excel:",
             error
-        );
+       });
+        }
+    });
+});
