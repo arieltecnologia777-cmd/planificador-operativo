@@ -1615,40 +1615,40 @@ width:160px;
 }
 
 /* ==========================================
-   CABECERA COMPACTA Y RESPONSIVA
+   CABECERA FLEXIBLE Y FLUIDA
    ========================================== */
 
-/* Reducimos márgenes para ganar espacio vertical */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 6px; /* Reducido de 12px a 6px */
+    margin-bottom: 8px;
     position: relative;
 }
 
-/* El contenedor del título ocupa el espacio sobrante */
+/* Grupo del título y botón alineados en la misma fila */
 .header-title-group {
     display: flex;
     align-items: center;
-    gap: 24px; /* Separación base limpia y dinámica */
+    gap: 40px; /* Separación cómoda sin forzar un salto */
     flex: 1;
 }
 
 .header-title-group h2 {
     margin: 0;
     font-size: 1.1rem;
+    font-weight: 800;
     color: #0f172a;
     white-space: nowrap;
 }
 
-/* Botón estilizado y compacto */
+/* Botón estilo pastilla compacta */
 .btn-limpiar-header {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 10px; /* Levemente más compacto */
+    gap: 5px;
+    padding: 4px 10px;
     background-color: transparent;
     color: #dc2626;
     border: 1px solid #fca5a5;
@@ -1676,26 +1676,21 @@ width:160px;
     transform: scale(0.96);
 }
 
-/* Ajuste del área sticky de filtros para evitar el scroll vertical excesivo */
-.planeacion-filtros-sticky {
-    position: sticky;
-    top: 0;
-    z-index: 250;
-    background: #fff;
-    padding-bottom: 6px; /* Ajustado para dar más aire a la tabla */
-}
-
 /* ==========================================
-   AJUSTE RESPONSIVO EN PANTALLAS PEQUEÑAS
+   ESCALADO PARA PANTALLAS PEQUEÑAS / LAPTOPS
    ========================================== */
-@media (max-width: 1280px) {
+
+@media (max-width: 1366px) {
     .header-title-group {
-        gap: 12px;
+        gap: 20px; /* Reduce la separación en laptops */
     }
 
-    /* En pantallas ajustadas el botón se hace más compacto */
+    .header-title-group h2 {
+        font-size: 0.95rem; /* Hace el título más compacto */
+    }
+
     .btn-limpiar-header {
-        padding: 4px 8px;
-        font-size: 11px;
+        padding: 3px 8px;
+        font-size: 11px; /* Reduce ligeramente el botón */
     }
 }
