@@ -761,76 +761,131 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 function exportarPlaneacion() {
-    const exportRegionEl = document.getElementById("exportRegion");
-    const region = exportRegionEl ? exportRegionEl.value : "todos";
+    try {
+        const exportRegionEl = document.getElementById("exportRegion");
+        const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-    let filas = [...datosGlobal];
+        if (!window.datosGlobal || !window.encabezadosGlobal) {
+            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos.");
+            alert("No hay datos cargados para exportar todavía.");
+            return;
+        }
 
-    const idxDepto =
-        encabezadosGlobal.findIndex(
-            h => h.trim() === "Departamento"
-        );
+        let filas = [...window.datosGlobal];
 
-    if (region === "R1") {
-        filas = filas.filter(fila =>
-            [
-                "CESAR",
-                "LA GUAJIRA",
-                "SAI"
-            ].includes(
-                (fila[idxDepto] || "").trim()
-            )
-        );
+        // Función auxiliar para buscar índices de forma segura (ignorando mayúsculas, acentos y espacios extra)
+        const buscarIndice = (nombreBuscado) => {
+            return window.encabezadosGlobal.findIndex(h => {
+                if (!h) return false;
+                const hClean = h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const bClean = nombreBuscado.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return hClean === bClean;
+            });
+        };
+
+        const idxDepto = buscarIndice("Departamento");
+
+        if (region === "R1" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                ["CESAR", "LA GUAJIRA", "SAI"].includes((fila[idxDepto] || "").trim().toUpperCase())
+            );
+        }
+
+        if (region === "R2" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                (fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
+            );
+        }
+
+        // 1. Definimos explícitamente los encabezados limpios que irán en la fila 1 de Excel
+        const titulosColumnas = [
+            "ID", "Departamento", "Municipio", "IM", "OT", "Afectación", 
+            "Total IDs", "Días OT", "Rango de Afectación", "Prioridad", 
+            "Stoppers Dominion", "Estado Programación", "Fecha Programación", 
+            "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento", 
+            "Indicador Backlog", "Stopper P3", "Tipo Facturación", 
+            "Fecha Vencimiento FM", "Alerta Vencimiento FM"
+        ];
+
+        // Obtenemos los índices de manera segura una sola vez
+        const iID = buscarIndice("ID");
+        const iDepto = idxDepto;
+        const iMuni = buscarIndice("Municipio");
+        const iIM = buscarIndice("IM");
+        const iOT = buscarIndice("OT");
+        const iAfectacion = buscarIndice("Tipo de afectación");
+        const iTotalIDs = buscarIndice("IDs afectados");
+        const iDiasOT = buscarIndice("Días OT");
+        const iRangoAfect = buscarIndice("Rango de afectación");
+        const iPrioridad = buscarIndice("Tipo de prioridad");
+        const iStoppersDom = buscarIndice("Stoppers Dominion");
+        const iIndBacklog = buscarIndice("Indicador backlog");
+        const iStopperP3 = buscarIndice("Stopper P3");
+        const iTipoFact = buscarIndice("Tipo facturación");
+        const iFechaVenc = buscarIndice("Fecha vencimiento FM");
+        const iAlertaVenc = buscarIndice("Alerta vencimiento FM");
+
+        // 2. Mapeamos los datos en forma de matriz garantizando el orden exacto
+        const datosMatriz = filas.map(fila => {
+            const otValor = iOT !== -1 ? (fila[iOT] || "").toString().trim() : "";
+            const d1Reg = (window.registrosD1 && window.registrosD1[otValor]) || {};
+
+            return [
+                iID !== -1 ? fila[iID] || "" : "",
+                iDepto !== -1 ? fila[iDepto] || "" : "",
+                iMuni !== -1 ? fila[iMuni] || "" : "",
+                iIM !== -1 ? fila[iIM] || "" : "",
+                otValor,
+                iAfectacion !== -1 ? fila[iAfectacion] || "" : "",
+                iTotalIDs !== -1 ? fila[iTotalIDs] || "" : "",
+                iDiasOT !== -1 ? fila[iDiasOT] || "" : "",
+                iRangoAfect !== -1 ? fila[iRangoAfect] || "" : "",
+                iPrioridad !== -1 ? fila[iPrioridad] || "" : "",
+                iStoppersDom !== -1 ? fila[iStoppersDom] || "" : "",
+                d1Reg.estadoProgramacion || "",
+                d1Reg.fechaProgramacion || "",
+                d1Reg.observacion || "",
+                d1Reg.estadoGestion || "",
+                d1Reg.tecnicoAsignado || "",
+                d1Reg.acompanamiento || "",
+                iIndBacklog !== -1 ? fila[iIndBacklog] || "" : "",
+                iStopperP3 !== -1 ? fila[iStopperP3] || "" : "",
+                iTipoFact !== -1 ? fila[iTipoFact] || "" : "",
+                iFechaVenc !== -1 ? fila[iFechaVenc] || "" : "",
+                iAlertaVenc !== -1 ? fila[iAlertaVenc] || "" : ""
+            ];
+        });
+
+        // 3. Unimos los títulos y los datos usando aoa_to_sheet para que los filtros queden arriba
+        const wsData = [titulosColumnas, ...datosMatriz];
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
+        XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        
+        console.log("¡Archivo Excel exportado con éxito!");
+    } catch (error) {
+        console.error("Error crítico al exportar el Excel:", error);
+        alert("Hubo un error al generar el archivo Excel. Revisa la consola para más detalles.");
     }
-
-    if (region === "R2") {
-        filas = filas.filter(fila =>
-            (fila[idxDepto] || "").trim() ===
-            "ANTIOQUIA"
-        );
-    }
-
-    // 1. Definimos explícitamente los encabezados limpios que irán en la fila 1 de Excel
-    const titulosColumnas = [
-        "ID", "Departamento", "Municipio", "IM", "OT", "Afectación", 
-        "Total IDs", "Días OT", "Rango de Afectación", "Prioridad", 
-        "Stoppers Dominion", "Estado Programación", "Fecha Programación", 
-        "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento", 
-        "Indicador Backlog", "Stopper P3", "Tipo Facturación", 
-        "Fecha Vencimiento FM", "Alerta Vencimiento FM"
-    ];
-
-    // 2. Mapeamos los datos en forma de matriz (arrays de valores) para garantizar el orden exacto
-    const datosMatriz = filas.map(fila => [
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "ID")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Departamento")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Municipio")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "IM")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de afectación")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "IDs afectados")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Días OT")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Rango de afectación")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de prioridad")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Stoppers Dominion")] || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoProgramacion || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).fechaProgramacion || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).observacion || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoGestion || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).tecnicoAsignado || "",
-        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).acompanamiento || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Stopper P3")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo facturación")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Fecha vencimiento FM")] || "",
-        fila[encabezadosGlobal.findIndex(h => h.trim() === "Alerta vencimiento FM")] || ""
-    ]);
-
-    // 3. Unimos los títulos en la primera posición usando aoa_to_sheet (Array of Arrays)
-    const wsData = [titulosColumnas, ...datosMatriz];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-    XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
+
+// Enlace automático asegurado para el botón de exportación
+document.addEventListener("DOMContentLoaded", () => {
+    const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
+    
+    posiblesIds.forEach(id => {
+        const botonExportar = document.getElementById(id);
+        if (botonExportar) {
+            // Evitamos duplicar eventos si se recarga el script
+            botonExportar.replaceWith(botonExportar.cloneNode(true));
+            const botonActualizado = document.getElementById(id);
+            
+            botonActualizado.addEventListener("click", (e) => {
+                e.preventDefault();
+                exportarPlaneacion();
+            });
+        }
+    });
+});
