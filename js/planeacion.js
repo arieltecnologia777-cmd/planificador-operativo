@@ -892,11 +892,11 @@ function exportarPlaneacion() {
 
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // MUY IMPORTANTE:
-        // No crear autofiltro
-        delete ws["!autofilter"];
+        // CORRECCIÓN: Definir explícitamente el autofiltro en la fila 1 (A1)
+        // para evitar que Excel adivine y ponga los filtros en la fila 2.
+        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
 
-        // No crear tabla
+        // No crear tablas complejas de Excel
         delete ws["!tables"];
 
         // ==============================
@@ -922,7 +922,7 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel creado. Encabezados en A1.");
+        console.log("✅ Excel creado con filtros correctamente ubicados en A1.");
 
     } catch (error) {
 
@@ -933,23 +933,3 @@ function exportarPlaneacion() {
         );
     }
 }
-
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const btn = document.getElementById("btnExportarExcel");
-
-    if (btn) {
-
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            exportarPlaneacion();
-        });
-
-    } else {
-
-        console.warn(
-            "⚠️ No se encontró el botón con ID 'btnExportarExcel'"
-        );
-    }
-});
