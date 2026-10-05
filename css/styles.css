@@ -1614,15 +1614,15 @@ width:160px;
     pointer-events:none;
 }
 
-/* Cabecera horizontal sin espacio vertical excesivo */
+/* Cabecera horizontal sin colapsos */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     position: relative;
-    height: 38px; /* Forzamos altura justa para evitar que crezca */
-    margin-bottom: 8px;
+    min-height: 40px;
+    margin-bottom: 12px; /* Margen de protección con los filtros */
 }
 
 .panel-header h2 {
@@ -1633,15 +1633,16 @@ width:160px;
     white-space: nowrap;
 }
 
-/* Fijamos el botón en el centro horizontal exacto de la pantalla/panel */
+/* Centrado exacto horizontal y vertical */
 .btn-limpiar-header {
     position: absolute;
-    left: 48%; /* Posición centrada alineada al área del medio */
-    transform: translateX(-50%);
+    top: 50%;
+    left: 48%;
+    transform: translate(-50%, -50%); /* Centrado vertical y horizontal puro */
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 10px;
+    padding: 5px 10px;
     background-color: transparent;
     color: #dc2626;
     border: 1px solid #fca5a5;
@@ -1666,21 +1667,13 @@ width:160px;
 }
 
 .btn-limpiar-header:active {
-    transform: translateX(-50%) scale(0.96);
+    transform: translate(-50%, -50%) scale(0.96);
 }
 
-/* Escalado para pantallas reducidas o laptops */
+/* Escalado para pantallas ajustadas */
 @media (max-width: 1366px) {
-    .panel-header {
-        height: 32px;
-    }
-
-    .panel-header h2 {
-        font-size: 0.95rem;
-    }
-
     .btn-limpiar-header {
-        left: 45%; /* Ligera compensación para pantallas ajustadas */
+        left: 45%;
         padding: 3px 8px;
         font-size: 11px;
     }
