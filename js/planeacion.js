@@ -677,6 +677,58 @@ if (chkTodos) {
 
 }
 
+    const chkTodasPrioridades =
+    document.getElementById(
+        "chkTodasPrioridades"
+    );
+
+if (chkTodasPrioridades) {
+
+    chkTodasPrioridades.addEventListener(
+        "change",
+        () => {
+
+            document
+                .querySelectorAll(
+                    ".chkPrioridad"
+                )
+                .forEach(chk => {
+
+                    chk.checked =
+                        chkTodasPrioridades.checked;
+
+                });
+
+            prioridadesSeleccionadas =
+                Array.from(
+                    document.querySelectorAll(
+                        ".chkPrioridad:checked"
+                    )
+                ).map(
+                    item => item.value
+                );
+
+            const textoPrioridad =
+                document.getElementById(
+                    "textoPrioridad"
+                );
+
+            if (textoPrioridad) {
+
+                textoPrioridad.textContent =
+                    prioridadesSeleccionadas.length
+                    ? `Prioridad (${prioridadesSeleccionadas.length})`
+                    : "Prioridad";
+
+            }
+
+            aplicarFiltros();
+
+        }
+    );
+
+}
+
     const btnLimpiarDepartamento =
     document.getElementById(
         "btnLimpiarDepartamento"
@@ -717,6 +769,53 @@ if (texto) {
         "Departamento";
 
 }
+            aplicarFiltros();
+
+        }
+    );
+
+}
+    const btnLimpiarPrioridad =
+    document.getElementById(
+        "btnLimpiarPrioridad"
+    );
+
+if (btnLimpiarPrioridad) {
+
+    btnLimpiarPrioridad.addEventListener(
+        "click",
+        () => {
+
+            document
+                .querySelectorAll(
+                    ".chkPrioridad"
+                )
+                .forEach(chk => {
+
+                    chk.checked = false;
+
+                });
+
+            if (chkTodasPrioridades) {
+
+                chkTodasPrioridades.checked = false;
+
+            }
+
+            prioridadesSeleccionadas = [];
+
+            const textoPrioridad =
+                document.getElementById(
+                    "textoPrioridad"
+                );
+
+            if (textoPrioridad) {
+
+                textoPrioridad.textContent =
+                    "Prioridad";
+
+            }
+
             aplicarFiltros();
 
         }
