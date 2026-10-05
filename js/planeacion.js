@@ -761,208 +761,212 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 function exportarPlaneacion() {
+    try {
+        if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
+            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
+            alert("No hay datos cargados para exportar todavía.");
+            return;
+        }
 
-    const exportRegionEl = document.getElementById("exportRegion");
-    const region = exportRegionEl ? exportRegionEl.value : "todos";
+        const exportRegionEl = document.getElementById("exportRegion");
+        const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-    if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
-        console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
-        alert("No hay datos cargados para exportar todavía.");
-        return;
-    }
+        let filas = [...datosGlobal];
 
-    let filas = [...datosGlobal];
-
-    const idxDepto =
-        encabezadosGlobal.findIndex(
-            h => h.trim() === "Departamento"
-        );
-
-    if (region === "R1" && idxDepto !== -1) {
-
-        filas = filas.filter(fila =>
-            [
-                "CESAR",
-                "LA GUAJIRA",
-                "SAI"
-            ].includes(
-                (fila[idxDepto] || "").trim().toUpperCase()
-            )
-        );
-
-    }
-
-    if (region === "R2" && idxDepto !== -1) {
-
-        filas = filas.filter(fila =>
-            (fila[idxDepto] || "").trim().toUpperCase() ===
-            "ANTIOQUIA"
-        );
-
-    }
-
-    const datosExcel = filas.map(fila => ({
-
-        ID: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "ID"
-            )
-        ] || "",
-
-        Departamento: fila[
+        const idxDepto =
             encabezadosGlobal.findIndex(
                 h => h.trim() === "Departamento"
-            )
-        ] || "",
+            );
 
-        Municipio: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Municipio"
-            )
-        ] || "",
+        if (region === "R1" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                [
+                    "CESAR",
+                    "LA GUAJIRA",
+                    "SAI"
+                ].includes(
+                    (fila[idxDepto] || "").trim().toUpperCase()
+                )
+            );
+        }
 
-        IM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "IM"
-            )
-        ] || "",
+        if (region === "R2" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                (fila[idxDepto] || "").trim().toUpperCase() ===
+                "ANTIOQUIA"
+            );
+        }
 
-        OT: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "OT"
-            )
-        ] || "",
+        const datosExcel = filas.map(fila => ({
 
-        Afectacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo de afectación"
-            )
-        ] || "",
+            ID: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "ID"
+                )
+            ] || "",
 
-        Total_IDs: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "IDs afectados"
-            )
-        ] || "",
+            Departamento: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Departamento"
+                )
+            ] || "",
 
-        Dias_OT: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Días OT"
-            )
-        ] || "",
+            Municipio: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Municipio"
+                )
+            ] || "",
 
-        Rango_Afectacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Rango de afectación"
-            )
-        ] || "",
+            IM: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "IM"
+                )
+            ] || "",
 
-        Prioridad: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo de prioridad"
-            )
-        ] || "",
+            OT: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "OT"
+                )
+            ] || "",
 
-        Stoppers_Dominion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Stoppers Dominion"
-            )
-        ] || "",
+            Afectacion: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Tipo de afectación"
+                )
+            ] || "",
 
-        Estado_Programacion:
-            (
-                window.registrosD1[
-                    fila[
-                        encabezadosGlobal.findIndex(
-                            h => h.trim() === "OT"
-                        )
-                    ]
-                ] || {}
-            ).estadoProgramacion || "",
+            Total_IDs: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "IDs afectados"
+                )
+            ] || "",
 
-        Fecha_Programacion:
-            (
-                window.registrosD1[
-                    fila[
-                        encabezadosGlobal.findIndex(
-                            h => h.trim() === "OT"
-                        )
-                    ]
-                ] || {}
-            ).fechaProgramacion || "",
+            Dias_OT: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Días OT"
+                )
+            ] || "",
 
-        Observaciones:
-            (
-                window.registrosD1[
-                    fila[
-                        encabezadosGlobal.findIndex(
-                            h => h.trim() === "OT"
-                        )
-                    ]
-                ] || {}
-            ).observacion || "",
+            Rango_Afectacion: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Rango de afectación"
+                )
+            ] || "",
 
-        Estado_Gestion:
-            (
-                window.registrosD1[
-                    fila[
-                        encabezadosGlobal.findIndex(
-                            h => h.trim() === "OT"
-                        )
+            Prioridad: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Tipo de prioridad"
+                )
+            ] || "",
+
+            Stoppers_Dominion: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Stoppers Dominion"
+                )
+            ] || "",
+
+            Estado_Programacion:
+                (
+                    window.registrosD1[
+                        fila[
+                            encabezadosGlobal.findIndex(
+                                h => h.trim() === "OT"
+                            )
+                        ]
+                    ] || {}
+                ).estadoProgramacion || "",
+
+            Fecha_Programacion:
+                (
+                    window.registrosD1[
+                        fila[
+                            encabezadosGlobal.findIndex(
+                                h => h.trim() === "OT"
+                            )
+                        ]
+                    ] || {}
+                ).fechaProgramacion || "",
+
+            Observaciones:
+                (
+                    window.registrosD1[
+                        fila[
+                            encabezadosGlobal.findIndex(
+                                h => h.trim() === "OT"
+                            )
+                        ]
+                    ] || {}
+                ).observacion || "",
+
+            Estado_Gestion:
+                (
+                    window.registrosD1[
+                        fila[
+                            encabezadosGlobal.findIndex(
+                                h => h.trim() === "OT"
+                            )
+                        ]
                     ]
                 ] || {}
             ).estadoGestion || "",
 
-        Indicador_Backlog: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Indicador backlog"
-            )
-        ] || "",
+            Indicador_Backlog: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Indicador backlog"
+                )
+            ] || "",
 
-        Stopper_P3: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Stopper P3"
-            )
-        ] || "",
+            Stopper_P3: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Stopper P3"
+                )
+            ] || "",
 
-        Tipo_Facturacion: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Tipo facturación"
-            )
-        ] || "",
+            Tipo_Facturacion: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Tipo facturación"
+                )
+            ] || "",
 
-        Fecha_Vencimiento_FM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Fecha vencimiento FM"
-            )
-        ] || "",
+            Fecha_Vencimiento_FM: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Fecha vencimiento FM"
+                )
+            ] || "",
 
-        Alerta_Vencimiento_FM: fila[
-            encabezadosGlobal.findIndex(
-                h => h.trim() === "Alerta vencimiento FM"
-            )
-        ] || ""
+            Alerta_Vencimiento_FM: fila[
+                encabezadosGlobal.findIndex(
+                    h => h.trim() === "Alerta vencimiento FM"
+                )
+            ] || ""
 
-    }));
+        }));
 
-    const ws =
-        XLSX.utils.json_to_sheet(
-            datosExcel
+        const ws = XLSX.utils.json_to_sheet(datosExcel);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
+
+        XLSX.writeFile(
+            wb,
+            `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
         );
 
-    const wb =
-        XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        wb,
-        ws,
-        "Planeacion"
-    );
-
-    XLSX.writeFile(
-        wb,
-        `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
-    );
-
-    console.log("¡Archivo Excel exportado con éxito!");
+        console.log("¡Archivo Excel exportado con éxito!");
+    } catch (error) {
+        console.error("Error crítico al exportar:", error);
+        alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
+    }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("btnExportarExcel");
+
+    if (btn) {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            exportarPlaneacion();
+        });
+    } else {
+        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel'");
+    }
+});
