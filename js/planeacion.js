@@ -933,3 +933,16 @@ function exportarPlaneacion() {
         );
     }
 }
+// Enlazar el botón de exportación cuando el DOM esté completamente cargado
+document.addEventListener("DOMContentLoaded", () => {
+    const btnExportar = document.getElementById("btnExportarExcel");
+    
+    if (btnExportar) {
+        btnExportar.addEventListener("click", (e) => {
+            e.preventDefault();
+            exportarPlaneacion();
+        });
+    } else {
+        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
+    }
+});
