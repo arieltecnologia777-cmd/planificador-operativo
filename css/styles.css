@@ -157,13 +157,13 @@ button{
 }
 
 /* =========================
-   HERO
+   HERO (MÁS PEQUEÑO)
 ========================= */
 
 .hero{
     position:relative;
-    min-height:190px;
-    margin-bottom:16px;
+    min-height:110px;
+    margin-bottom:10px;
     overflow:hidden;
     isolation:isolate;
 
@@ -173,9 +173,9 @@ button{
     background-repeat:no-repeat;
 
     border:1px solid #d4e3f6;
-    border-radius:18px;
-    padding:25px 28px;
-    box-shadow:0 7px 25px rgba(30,64,175,.13);
+    border-radius:14px;
+    padding:12px 18px;
+    box-shadow:0 4px 14px rgba(30,64,175,.08);
     color:#fff;
 }
 
@@ -201,7 +201,7 @@ button{
     display:flex;
     flex-direction:column;
 
-    height:150px;
+    height:85px;
 }
 
 .hero-badge{
@@ -212,44 +212,43 @@ button{
     width:auto;
     max-width:max-content;
 
-    gap:7px;
-    padding:5px 12px;
+    gap:5px;
+    padding:2px 8px;
 
-    border-radius:20px;
+    border-radius:16px;
 
     background:rgba(24,201,255,.9);
 
     color:#fff;
 
-    font-size:.67rem;
+    font-size:.58rem;
     font-weight:800;
 
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top:-12px;
+    margin-top:-2px;
 }
 
 .hero-badge span{
-    width:6px;
-    height:6px;
+    width:4px;
+    height:4px;
     border-radius:50%;
     background:#fff;
 }
 
 .hero h1{
-    font-size:2rem;
+    font-size:1.4rem;
     font-weight:850;
     color:#fff;
     line-height:1.05;
-    margin-bottom:3px;
-    margin-top:-4px;
-    letter-spacing:-.035em;
+    margin-bottom:2px;
+    letter-spacing:-.03em;
 }
 
 .hero p{
     color:rgba(255,255,255,.92);
-    font-size:.86rem;
+    font-size:.75rem;
     margin:0;
 }
 
@@ -258,13 +257,13 @@ button{
 
     display:flex;
     align-items:center;
-    gap:7px;
+    gap:5px;
 
-    font-size:.69rem;
+    font-size:.60rem;
     color:rgba(255,255,255,.9);
 }
 .clock-icon{
-    font-size:1rem;
+    font-size:.8rem;
 }
 
 .hero-slogan-text{
@@ -275,7 +274,7 @@ button{
 
     color:rgba(255,255,255,.92);
 
-    font-size:.86rem;
+    font-size:.75rem;
 
     font-weight:500;
 
@@ -319,7 +318,7 @@ button{
     position:absolute;
     inset:22px 40px 12px 65px;
     border:2px solid rgba(111,227,255,.7);
-    clip-path:polygon(45% 0,67% 10%,78% 24%,72% 37%,88% 53%,76% 66%,80% 78%,62% 91%,42% 85%,31% 100%,19% 83%,2% 78%,13% 60%,5% 44%,19% 33%,13% 17%,31% 12%);
+    clip-path:polygon(45% 0,67% 10%,78% 24%,72% 34%,90% 43%,80% 53%,84% 63%,69% 69%,75% 82%,58% 88%,50% 100%,37% 88%,25% 91%,28% 76%,13% 68%,20% 57%,6% 47%,20% 37%,16% 27%,32% 22%,27% 10%);
     filter:drop-shadow(0 0 8px rgba(70,218,255,.6));
 }
 
@@ -369,21 +368,21 @@ button{
 }
 
 /* =========================
-   KPI CARDS
+   KPI CARDS (MÁS PEQUEÑAS)
 ========================= */
 
 #kpis{
     display:grid;
     grid-template-columns:repeat(6,minmax(0,1fr));
-    gap:12px;
-    margin-bottom:16px;
+    gap:8px;
+    margin-bottom:10px;
 }
 
 .card{
     background:#fff;
     border:1px solid var(--border);
-    border-radius:16px;
-    padding:15px 17px;
+    border-radius:12px;
+    padding:8px 10px;
     box-shadow:var(--shadow);
     transition:.2s ease;
 }
@@ -394,17 +393,17 @@ button{
 }
 
 .kpi-card{
-    min-height:110px;
+    min-height:70px;
     position:relative;
     overflow:hidden;
 }
 .kpi-card:after{
     content:"";
     position:absolute;
-    width:55px;
-    height:55px;
-    right:-22px;
-    bottom:-24px;
+    width:35px;
+    height:35px;
+    right:-14px;
+    bottom:-14px;
     border-radius:50%;
     background:currentColor;
     opacity:.035;
@@ -413,12 +412,12 @@ button{
 .kpi-top{
     display:flex;
     align-items:center;
-    gap:9px;
-    margin-bottom:7px;
+    gap:6px;
+    margin-bottom:2px;
 }
 
 .kpi-top h3{
-    font-size:.72rem;
+    font-size:.60rem;
     color:#526b8b;
     margin:0;
     text-transform:uppercase;
@@ -427,28 +426,28 @@ button{
 }
 
 .kpi-icon{
-    width:30px;
-    height:30px;
+    width:20px;
+    height:20px;
     border-radius:50%;
     display:grid;
     place-items:center;
     color:#fff;
-    font-size:.88rem;
+    font-size:.68rem;
     font-weight:900;
     flex:none;
 }
 
 .kpi-value{
     display:block;
-    font-size:1.75rem;
+    font-size:1.25rem;
     line-height:1;
     font-weight:900;
     color:#0f172a;
-    margin:5px 0 9px;
+    margin:2px 0 2px;
 }
 
 .kpi-trend{
-    font-size:.69rem;
+    font-size:.60rem;
     font-weight:800;
 }
 
@@ -1219,23 +1218,25 @@ min-width:220px;
     z-index:1;
 }
 
-/* Cabecera fija en el tope exacto de la ventana */
+/* ==========================================
+   AJUSTE DE SCROLL Y TOPES FIX
+   ========================================== */
+
 .planeacion-header{
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: #fff;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:#fff;
+    padding-top:6px;
+    padding-bottom:6px;
 }
 
-/* La barra de filtros se frena a 52px de la parte superior (justo debajo de la cabecera) */
 .planeacion-filtros-sticky{
-    position: sticky;
-    top: 52px !important; /* Evita que suba de más al hacer scroll */
-    z-index: 250;
-    background: #fff;
-    padding-bottom: 4px;
+    position:sticky;
+    top:52px !important;
+    z-index:250;
+    background:#fff;
+    padding-bottom:4px;
 }
 
 @keyframes fadeHint{
