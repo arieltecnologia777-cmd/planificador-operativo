@@ -765,7 +765,11 @@ function exportarPlaneacion() {
         const exportRegionEl = document.getElementById("exportRegion");
         const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-        if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
+        if (
+            typeof datosGlobal === "undefined" ||
+            typeof encabezadosGlobal === "undefined" ||
+            !datosGlobal.length
+        ) {
             console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
             alert("No hay datos cargados para exportar todavía.");
             return;
@@ -776,8 +780,19 @@ function exportarPlaneacion() {
         const buscarIndice = (nombreBuscado) => {
             return encabezadosGlobal.findIndex(h => {
                 if (!h) return false;
-                const hClean = h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const bClean = nombreBuscado.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                const hClean = h
+                    .trim()
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
+                const bClean = nombreBuscado
+                    .trim()
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
                 return hClean === bClean;
             });
         };
@@ -786,7 +801,9 @@ function exportarPlaneacion() {
 
         if (region === "R1" && idxDepto !== -1) {
             filas = filas.filter(fila =>
-                ["CESAR", "LA GUAJIRA", "SAI"].includes((fila[idxDepto] || "").trim().toUpperCase())
+                ["CESAR", "LA GUAJIRA", "SAI"].includes(
+                    (fila[idxDepto] || "").trim().toUpperCase()
+                )
             );
         }
 
@@ -796,14 +813,29 @@ function exportarPlaneacion() {
             );
         }
 
-        // 1. Definimos los encabezados que irán estrictamente en la fila 1
         const titulosColumnas = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectación", 
-            "Total IDs", "Días OT", "Rango de Afectación", "Prioridad", 
-            "Stoppers Dominion", "Estado Programación", "Fecha Programación", 
-            "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento", 
-            "Indicador Backlog", "Stopper P3", "Tipo Facturación", 
-            "Fecha Vencimiento FM", "Alerta Vencimiento FM"
+            "ID",
+            "Departamento",
+            "Municipio",
+            "IM",
+            "OT",
+            "Afectación",
+            "Total IDs",
+            "Días OT",
+            "Rango de Afectación",
+            "Prioridad",
+            "Stoppers Dominion",
+            "Estado Programación",
+            "Fecha Programación",
+            "Observaciones",
+            "Estado Gestión",
+            "Técnico Asignado",
+            "Acompañamiento",
+            "Indicador Backlog",
+            "Stopper P3",
+            "Tipo Facturación",
+            "Fecha Vencimiento FM",
+            "Alerta Vencimiento FM"
         ];
 
         const iID = buscarIndice("ID");
@@ -823,10 +855,16 @@ function exportarPlaneacion() {
         const iFechaVenc = buscarIndice("Fecha vencimiento FM");
         const iAlertaVenc = buscarIndice("Alerta vencimiento FM");
 
-        // 2. Mapeamos los datos en matriz
         const datosMatriz = filas.map(fila => {
-            const otValor = iOT !== -1 ? (fila[iOT] || "").toString().trim() : "";
-            const d1Reg = (window.registrosD1 && window.registrosD1[otValor]) || {};
+            const otValor =
+                iOT !== -1
+                    ? (fila[iOT] || "").toString().trim()
+                    : "";
+
+            const d1Reg =
+                (window.registrosD1 &&
+                    window.registrosD1[otValor]) ||
+                {};
 
             return [
                 iID !== -1 ? fila[iID] || "" : "",
@@ -854,40 +892,37 @@ function exportarPlaneacion() {
             ];
         });
 
-        // 3. Creamos la hoja uniendo títulos y datos
         const wsData = [titulosColumnas, ...datosMatriz];
+
         const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-        // 🔑 CLAVE: Forzamos el AutoFiltro para que Excel lo aplique exactamente en la cabecera (Fila 1)
-        if (ws['!ref']) {
-            ws['!autofilter'] = { ref: ws['!ref'] };
-        }
+        ws["!autofilter"] = {
+            ref: XLSX.utils.encode_range({
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: titulosColumnas.length - 1 }
+            })
+        };
+
+        ws["!cols"] = titulosColumnas.map(() => ({ wch: 22 }));
 
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-        XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
-        
-        console.log("¡Archivo Excel exportado con filtros fijos en la cabecera!");
-    } catch (error) {
-        console.error("Error crítico al exportar el Excel:", error);
-        alert("Hubo un error al generar el archivo Excel. Revisa la consola para más detalles.");
-    }
-}
 
-// Enlace automático del botón
-document.addEventListener("DOMContentLoaded", () => {
-    const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
-    
-    posiblesIds.forEach(id => {
-        const botonExportar = document.getElementById(id);
-        if (botonExportar) {
-            botonExportar.replaceWith(botonExportar.cloneNode(true));
-            const botonActualizado = document.getElementById(id);
-            
-            botonActualizado.addEventListener("click", (e) => {
-                e.preventDefault();
-                exportarPlaneacion();
-            });
-        }
-    });
-});
+        XLSX.utils.book_append_sheet(
+            wb,
+            ws,
+            "Planeacion"
+        );
+
+        XLSX.writeFile(
+            wb,
+            `Planeacion_${region}_${new Date()
+                .toISOString()
+                .slice(0, 10)}.xlsx`
+        );
+
+        console.log("✅ Archivo Excel exportado con éxito.");
+    } catch (error) {
+        console.error(
+            "Error crítico al exportar el Excel:",
+            error
+        );
