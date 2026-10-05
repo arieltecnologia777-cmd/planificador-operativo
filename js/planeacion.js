@@ -787,7 +787,7 @@ function exportarPlaneacion() {
             );
         }
 
-        // 1. Definimos las cabeceras exactas en el orden deseado
+        // 1. Cabeceras exactas solicitadas
         const headers = [
             "ID", "Departamento", "Municipio", "IM", "OT", 
             "Afectacion", "Total_IDs", "Dias_OT", "Rango_Afectacion", 
@@ -797,7 +797,6 @@ function exportarPlaneacion() {
             "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
         ];
 
-        // 2. Construimos la matriz de datos comenzando estrictamente por las cabeceras en la fila 1
         const dataAOA = [headers];
 
         filas.forEach(fila => {
@@ -830,22 +829,26 @@ function exportarPlaneacion() {
             dataAOA.push(rowData);
         });
 
-        // 3. Creamos la hoja con aoa_to_sheet para asegurar que la Fila 1 sean las cabeceras
+        // 2. Crear la hoja con los datos estructurados en matriz
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // 4. Activamos explícitamente el rango de autofiltro desde la celda A1 hasta la última columna de la cabecera
+        // 3. Forzar el rango exacto de la celda de inicio A1 hasta la última celda con datos
         const ultimaColumnaLetra = XLSX.utils.encode_col(headers.length - 1);
-        ws['!autofilter'] = { ref: `A1:${ultimaColumnaLetra}${dataAOA.length}` };
+        const rangoFinal = `A1:${ultimaColumnaLetra}${dataAOA.length}`;
+        
+        ws['!ref'] = rangoFinal;
+        ws['!autofilter'] = { ref: rangoFinal };
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
+        // Guardar archivo
         XLSX.writeFile(
             wb,
             `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
         );
 
-        console.log("¡Archivo Excel exportado con éxito y filtros en la Fila 1!");
+        console.log("¡Archivo Excel exportado con éxito y autofiltro bloqueado en la Fila 1!");
     } catch (error) {
         console.error("Error crítico al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
