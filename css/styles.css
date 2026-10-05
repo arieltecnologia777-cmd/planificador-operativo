@@ -1615,47 +1615,42 @@ width:160px;
 }
 
 /* ==========================================
-   CABECERA Y FILTROS COMPACTOS
+   CABECERA Y FILTROS COMPACTOS Y FLUIDOS
    ========================================== */
 
-/* Cabecera del panel sin exceso de espacio vertical */
+/* Cabecera en Grid de 3 columnas dinámicas */
 .panel-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     position: relative;
 }
 
-/* Grupo título + botón alineados en la misma fila */
-.header-title-group {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    flex: 1;
-}
-
-.header-title-group h2 {
+/* Columna 1: Título pegado a la izquierda */
+.header-title-group h2,
+.panel-header h2 {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 800;
     color: #0f172a;
     white-space: nowrap;
 }
 
-/* Estilo del botón "Limpiar filtros" */
+/* Columna 2: Botón siempre al centro exacto del espacio sobrante */
 .btn-limpiar-header {
+    justify-self: center; /* Se auto-centra sin position:absolute ni gap fijo */
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 10px;
+    padding: 3px 9px;
     background-color: transparent;
     color: #dc2626;
     border: 1px solid #fca5a5;
     border-radius: 6px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
@@ -1663,8 +1658,8 @@ width:160px;
 }
 
 .btn-limpiar-header svg {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     stroke: #dc2626;
 }
 
@@ -1677,70 +1672,57 @@ width:160px;
     transform: scale(0.96);
 }
 
-/* Contenedor pegajoso de filtros reducido en altura */
+/* Columna 3: Botón de zoom a la derecha */
+#btnZoom, 
+.expand-btn {
+    justify-self: end;
+}
+
+/* ==========================================
+   FILTROS COMPACTOS (Menos altura vertical)
+   ========================================== */
+
 .planeacion-filtros-sticky {
     position: sticky;
     top: 0;
     z-index: 250;
     background: #fff;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
 }
 
 .planeacion-filtros {
     display: flex;
     gap: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     background: #fff;
     padding: 2px 0;
 }
 
-/* ==========================================
-   AJUSTES PARA PANTALLAS PEQUEÑAS / LAPTOPS
-   ========================================== */
+/* Reducción general de altura para que la tabla suba y no haya scroll */
+.planeacion-filtros input,
+.planeacion-filtros select,
+.multi-filtro-btn {
+    height: 34px !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
+    border-radius: 8px !important;
+}
 
-@media (max-width: 1440px) {
-    /* Reducimos la altura general de la cabecera */
-    .panel-header {
-        margin-bottom: 4px;
-    }
+.multi-filtro {
+    min-width: 120px;
+}
 
-    .header-title-group {
-        gap: 20px;
-    }
+#filtroBusqueda {
+    width: 130px;
+}
 
-    .header-title-group h2 {
-        font-size: 0.95rem;
-    }
+/* Optimización de espacio para la tabla */
+.planeacion-table-wrapper {
+    max-height: calc(100vh - 270px);
+}
 
-    /* Reducción de la barra de filtros */
-    .planeacion-filtros input,
-    .multi-filtro-btn {
-        height: 34px !important; /* Pasan de 42px a 34px de alto */
-        font-size: 12px !important;
-        padding: 0 8px !important;
-    }
-
-    .multi-filtro {
-        min-width: 125px; /* Reduce ancho para que no desborden */
-    }
-
-    #filtroBusqueda {
-        width: 130px;
-    }
-
-    .btn-limpiar-header {
-        padding: 3px 8px;
-        font-size: 11px;
-    }
-
-    /* Reducción del área de scroll vertical para ganar filas visibles */
-    .planeacion-table-wrapper {
-        max-height: calc(100vh - 280px); /* Ajusta el alto automáticamente a la pantalla */
-    }
-
-    .planeacion-table th, 
-    .planeacion-table td {
-        padding: 6px 10px; /* Celdas más compactas */
-        font-size: 0.82rem;
-    }
+.planeacion-table th, 
+.planeacion-table td {
+    padding: 7px 10px;
+    font-size: 0.83rem;
 }
