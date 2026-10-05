@@ -806,7 +806,7 @@ function exportarPlaneacion() {
         }
 
         // ==============================
-        // ENCABEZADOS
+        // ENCABEZADOS (Fila 1)
         // ==============================
 
         const headers = [
@@ -838,11 +838,10 @@ function exportarPlaneacion() {
 
         const dataAOA = [];
 
-        // PRIMERA FILA = ENCABEZADOS
+        // PRIMERA FILA = ENCABEZADOS EXACTAMENTE EN A1
         dataAOA.push([...headers]);
 
         filas.forEach(fila => {
-
             const getValor = (nombre) => {
                 const index = buscarIndice(nombre);
                 return index !== -1 ? (fila[index] ?? "") : "";
@@ -881,20 +880,18 @@ function exportarPlaneacion() {
         });
 
         // ==============================
-        // CREAR HOJA
+        // CREAR HOJA (Sin Autofiltro automático)
         // ==============================
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Aseguramos que el rango COMIENCE exactamente en A1
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
+        // Rango limpio desde A1 hasta el final
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // CORRECCIÓN: Definir explícitamente el autofiltro en la fila 1 (A1)
-        // para evitar que Excel adivine y ponga los filtros en la fila 2.
-        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
+        // Se omite ws["!autofilter"] a propósito para que no coloque filtros automáticos
 
         // No crear tablas complejas de Excel
         delete ws["!tables"];
@@ -912,7 +909,7 @@ function exportarPlaneacion() {
         );
 
         // ==============================
-        // EXPORTAR
+        // EXPORTAR ARCHIVO
         // ==============================
 
         XLSX.writeFile(
@@ -922,18 +919,17 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel creado con filtros correctamente ubicados en A1.");
+        console.log("✅ Excel creado correctamente. Encabezados en A1, sin filtros automáticos.");
 
     } catch (error) {
-
         console.error("❌ Error al exportar:", error);
-
-        alert(
-            "Ocurrió un error al exportar el archivo. Revisa la consola (F12)."
-        );
+        alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 }
-// Enlazar el botón de exportación cuando el DOM esté completamente cargado
+
+// ==========================================
+// ENLAZAR EL BOTÓN AL CARGAR LA PÁGINA
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const btnExportar = document.getElementById("btnExportarExcel");
     
