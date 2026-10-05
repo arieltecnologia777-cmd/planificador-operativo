@@ -177,9 +177,10 @@ const idxAlertaFM =
         h => h.trim() === "Alerta vencimiento FM"
     );
 
-    document.getElementById(
-    "planeacionBody"
-).innerHTML = datos.map(fila => {
+    const planeacionBody = document.getElementById("planeacionBody");
+    if (!planeacionBody) return;
+
+    planeacionBody.innerHTML = datos.map(fila => {
 
         const d1 =
     (window.registrosD1 || {})[
@@ -443,9 +444,10 @@ const programados = Object.values(
     registro.estadoProgramacion === "Programada"
 ).length;
 
-document.getElementById(
-    "kpiProgramadosD1"
-).textContent = programados;
+const kpiProgEl = document.getElementById("kpiProgramadosD1");
+if (kpiProgEl) {
+    kpiProgEl.textContent = programados;
+}
 
 const idxID =
     encabezados.findIndex(h => h.trim() === "ID");
@@ -458,9 +460,9 @@ const idxID =
     )
 ].sort();
 
-document.getElementById(
-    "listaDepartamento"
-).innerHTML = `
+const listaDeptoEl = document.getElementById("listaDepartamento");
+if (listaDeptoEl) {
+    listaDeptoEl.innerHTML = `
 
     <input
     type="text"
@@ -498,6 +500,8 @@ document.getElementById(
 
     </label>
 `).join("");
+}
+
     document
     .querySelectorAll(
         ".chkDepartamento"
@@ -515,11 +519,6 @@ document.getElementById(
                         )
                     ).map(
                         item => item.value
-                    );
-
-                const boton =
-                    document.getElementById(
-                        "btnDepartamento"
                     );
 
                 const textoDepartamento =
@@ -708,15 +707,16 @@ const prioridades = Array.from(
 .filter(Boolean)
 .sort();
 
-document.getElementById(
-    "filtroPrioridad"
-).innerHTML = `
-    <option value="">Prioridad</option>
-` + prioridades.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+const elFiltroPrioridad = document.getElementById("filtroPrioridad");
+if (elFiltroPrioridad) {
+    elFiltroPrioridad.innerHTML = `
+        <option value="">Prioridad</option>
+    ` + prioridades.map(valor => `
+        <option value="${valor}">
+            ${valor}
+        </option>
+    `).join("");
+}
 
 const afectaciones = Array.from(
     new Set(
@@ -726,15 +726,16 @@ const afectaciones = Array.from(
 .filter(Boolean)
 .sort();
 
-document.getElementById(
-    "filtroAfectacion"
-).innerHTML = `
-    <option value="">Tipo de afectación</option>
-` + afectaciones.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+const elFiltroAfectacion = document.getElementById("filtroAfectacion");
+if (elFiltroAfectacion) {
+    elFiltroAfectacion.innerHTML = `
+        <option value="">Tipo de afectación</option>
+    ` + afectaciones.map(valor => `
+        <option value="${valor}">
+            ${valor}
+        </option>
+    `).join("");
+}
 
 const stoppers = Array.from(
     new Set(
@@ -744,15 +745,16 @@ const stoppers = Array.from(
 .filter(Boolean)
 .sort();
 
-document.getElementById(
-    "filtroStoppers"
-).innerHTML = `
-    <option value="">Stoppers</option>
-` + stoppers.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+const elFiltroStoppers = document.getElementById("filtroStoppers");
+if (elFiltroStoppers) {
+    elFiltroStoppers.innerHTML = `
+        <option value="">Stoppers</option>
+    ` + stoppers.map(valor => `
+        <option value="${valor}">
+            ${valor}
+        </option>
+    `).join("");
+}
 
 const rangos = Array.from(
     new Set(
@@ -762,15 +764,16 @@ const rangos = Array.from(
 .filter(Boolean)
 .sort();
 
-document.getElementById(
-    "filtroRango"
-).innerHTML = `
-    <option value="">Rango</option>
-` + rangos.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+const elFiltroRango = document.getElementById("filtroRango");
+if (elFiltroRango) {
+    elFiltroRango.innerHTML = `
+        <option value="">Rango</option>
+    ` + rangos.map(valor => `
+        <option value="${valor}">
+            ${valor}
+        </option>
+    `).join("");
+}
 
 const backlogs = Array.from(
     new Set(
@@ -780,15 +783,16 @@ const backlogs = Array.from(
 .filter(Boolean)
 .sort();
 
-document.getElementById(
-    "filtroBacklog"
-).innerHTML = `
-    <option value="">IND Backlog</option>
-` + backlogs.map(valor => `
-    <option value="${valor}">
-        ${valor}
-    </option>
-`).join("");
+const elFiltroBacklog = document.getElementById("filtroBacklog");
+if (elFiltroBacklog) {
+    elFiltroBacklog.innerHTML = `
+        <option value="">IND Backlog</option>
+    ` + backlogs.map(valor => `
+        <option value="${valor}">
+            ${valor}
+        </option>
+    `).join("");
+}
     
     const otsAlta = new Set();
 
@@ -900,25 +904,20 @@ datos.forEach(fila => {
 const noCumpleBacklog =
     otsNoCumple.size;
     
-document.getElementById(
-    "kpiAltaPlaneacion"
-).textContent = altaPrioridad;
+const elAltaPlaneacion = document.getElementById("kpiAltaPlaneacion");
+if (elAltaPlaneacion) elAltaPlaneacion.textContent = altaPrioridad;
 
-    document.getElementById(
-    "kpiMediaPlaneacion"
-).textContent = mediaPrioridad;
+const elMediaPlaneacion = document.getElementById("kpiMediaPlaneacion");
+if (elMediaPlaneacion) elMediaPlaneacion.textContent = mediaPrioridad;
 
-document.getElementById(
-    "kpiBajaPlaneacion"
-).textContent = bajaPrioridad;
+const elBajaPlaneacion = document.getElementById("kpiBajaPlaneacion");
+if (elBajaPlaneacion) elBajaPlaneacion.textContent = bajaPrioridad;
 
-document.getElementById(
-    "kpiCumpleBacklog"
-).textContent = cumpleBacklog;
+const elCumpleBacklog = document.getElementById("kpiCumpleBacklog");
+if (elCumpleBacklog) elCumpleBacklog.textContent = cumpleBacklog;
 
-document.getElementById(
-    "kpiNoCumpleBacklog"
-).textContent = noCumpleBacklog;
+const elNoCumpleBacklog = document.getElementById("kpiNoCumpleBacklog");
+if (elNoCumpleBacklog) elNoCumpleBacklog.textContent = noCumpleBacklog;
 
     datosFiltradosGlobal = datos;
     
@@ -997,25 +996,20 @@ function actualizarKPIs(datos){
 
     });
 
-    document.getElementById(
-        "kpiAltaPlaneacion"
-    ).textContent = otsAlta.size;
+    const elAltaPlaneacion = document.getElementById("kpiAltaPlaneacion");
+    if (elAltaPlaneacion) elAltaPlaneacion.textContent = otsAlta.size;
 
-    document.getElementById(
-        "kpiMediaPlaneacion"
-    ).textContent = otsMedia.size;
+    const elMediaPlaneacion = document.getElementById("kpiMediaPlaneacion");
+    if (elMediaPlaneacion) elMediaPlaneacion.textContent = otsMedia.size;
 
-    document.getElementById(
-        "kpiBajaPlaneacion"
-    ).textContent = otsBaja.size;
+    const elBajaPlaneacion = document.getElementById("kpiBajaPlaneacion");
+    if (elBajaPlaneacion) elBajaPlaneacion.textContent = otsBaja.size;
 
-    document.getElementById(
-        "kpiCumpleBacklog"
-    ).textContent = otsCumple.size;
+    const elCumpleBacklog = document.getElementById("kpiCumpleBacklog");
+    if (elCumpleBacklog) elCumpleBacklog.textContent = otsCumple.size;
 
-    document.getElementById(
-        "kpiNoCumpleBacklog"
-    ).textContent = otsNoCumple.size;
+    const elNoCumpleBacklog = document.getElementById("kpiNoCumpleBacklog");
+    if (elNoCumpleBacklog) elNoCumpleBacklog.textContent = otsNoCumple.size;
 
 }
 
@@ -1211,100 +1205,94 @@ function actualizarOpcionesFiltros(datos) {
     .filter(Boolean)
     .sort();
 
-    document.getElementById(
-        "filtroPrioridad"
-    ).innerHTML =
-        `<option value="">Prioridad</option>` +
-        prioridades.map(valor => `
-            <option
-                value="${valor}"
-                ${prioridad === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+    const elFiltroPrioridad = document.getElementById("filtroPrioridad");
+    if (elFiltroPrioridad) {
+        elFiltroPrioridad.innerHTML =
+            `<option value="">Prioridad</option>` +
+            prioridades.map(valor => `
+                <option
+                    value="${valor}"
+                    ${prioridad === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `).join("");
+    }
 
-    document.getElementById(
-        "filtroAfectacion"
-    ).innerHTML =
-        `<option value="">Tipo de afectación</option>` +
-        afectaciones.map(valor => `
-            <option
-                value="${valor}"
-                ${afectacion === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+    const elFiltroAfectacion = document.getElementById("filtroAfectacion");
+    if (elFiltroAfectacion) {
+        elFiltroAfectacion.innerHTML =
+            `<option value="">Tipo de afectación</option>` +
+            afectaciones.map(valor => `
+                <option
+                    value="${valor}"
+                    ${afectacion === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `).join("");
+    }
 
-    document.getElementById(
-        "filtroStoppers"
-    ).innerHTML =
-        `<option value="">Stoppers</option>` +
-        listaStoppers.map(valor => `
-            <option
-                value="${valor}"
-                ${stoppers === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+    const elFiltroStoppers = document.getElementById("filtroStoppers");
+    if (elFiltroStoppers) {
+        elFiltroStoppers.innerHTML =
+            `<option value="">Stoppers</option>` +
+            listaStoppers.map(valor => `
+                <option
+                    value="${valor}"
+                    ${stoppers === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `).join("");
+    }
 
-    document.getElementById(
-        "filtroRango"
-    ).innerHTML =
-        `<option value="">Rango</option>` +
-        rangos.map(valor => `
-            <option
-                value="${valor}"
-                ${rango === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+    const elFiltroRango = document.getElementById("filtroRango");
+    if (elFiltroRango) {
+        elFiltroRango.innerHTML =
+            `<option value="">Rango</option>` +
+            rangos.map(valor => `
+                <option
+                    value="${valor}"
+                    ${rango === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `).join("");
+    }
 
-    document.getElementById(
-        "filtroBacklog"
-    ).innerHTML =
-        `<option value="">IND Backlog</option>` +
-        backlogs.map(valor => `
-            <option
-                value="${valor}"
-                ${backlog === valor ? "selected" : ""}>
-                ${valor}
-            </option>
-        `).join("");
+    const elFiltroBacklog = document.getElementById("filtroBacklog");
+    if (elFiltroBacklog) {
+        elFiltroBacklog.innerHTML =
+            `<option value="">IND Backlog</option>` +
+            backlogs.map(valor => `
+                <option
+                    value="${valor}"
+                    ${backlog === valor ? "selected" : ""}>
+                    ${valor}
+                </option>
+            `).join("");
+    }
 
 }
 function aplicarFiltros(){
 
-    const texto =
-        document.getElementById(
-            "filtroBusqueda"
-        ).value.toLowerCase();
+    const filtroBusqEl = document.getElementById("filtroBusqueda");
+    const texto = filtroBusqEl ? filtroBusqEl.value.toLowerCase() : "";
 
     const deptos =
     departamentosSeleccionados;
     
-const prioridad =
-    document.getElementById(
-        "filtroPrioridad"
-    ).value;
-   const afectacion =
-    document.getElementById(
-        "filtroAfectacion"
-    ).value;
+const prioridadEl = document.getElementById("filtroPrioridad");
+const prioridad = prioridadEl ? prioridadEl.value : "";
 
-const stoppers =
-    document.getElementById(
-        "filtroStoppers"
-    ).value;
+const afectacionEl = document.getElementById("filtroAfectacion");
+const afectacion = afectacionEl ? afectacionEl.value : "";
 
-const rango =
-    document.getElementById(
-        "filtroRango"
-    ).value;
+const stoppersEl = document.getElementById("filtroStoppers");
+const stoppers = stoppersEl ? stoppersEl.value : "";
 
-const backlog =
-    document.getElementById(
-        "filtroBacklog"
-    ).value; 
+const rangoEl = document.getElementById("filtroRango");
+const rango = rangoEl ? rangoEl.value : "";
+
+const backlogEl = document.getElementById("filtroBacklog");
+const backlog = backlogEl ? backlogEl.value : ""; 
     const encabezados =
         encabezadosGlobal;
 
@@ -1683,28 +1671,30 @@ const wrapper = document.querySelector('.planeacion-table-wrapper');
 
 let scrollTimer;
 
-wrapper.addEventListener('scroll', () => {
+if (wrapper) {
+    wrapper.addEventListener('scroll', () => {
 
-    clearTimeout(scrollTimer);
+        clearTimeout(scrollTimer);
 
-    scrollTimer = setTimeout(() => {
+        scrollTimer = setTimeout(() => {
 
-        const firstRow = wrapper.querySelector('tbody tr');
-        if (!firstRow) return;
+            const firstRow = wrapper.querySelector('tbody tr');
+            if (!firstRow) return;
 
-        const rowHeight = firstRow.offsetHeight;
+            const rowHeight = firstRow.offsetHeight;
 
-        const target =
-            Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
+            const target =
+                Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
 
-        wrapper.scrollTo({
-            top: target,
-            behavior: 'smooth'
-        });
+            wrapper.scrollTo({
+                top: target,
+                behavior: 'smooth'
+            });
 
-    }, 80);
+        }, 80);
 
-});
+    });
+}
 
 window.addEventListener("load", () => {
 
@@ -1783,10 +1773,8 @@ document.addEventListener(
 
 function exportarPlaneacion() {
 
-    const region =
-        document.getElementById(
-            "exportRegion"
-        ).value;
+    const exportRegionEl = document.getElementById("exportRegion");
+    const region = exportRegionEl ? exportRegionEl.value : "TODOS";
 
     let filas = [...datosGlobal];
 
