@@ -824,53 +824,7 @@ if (texto) {
     );
 
 }
-    const btnLimpiarPrioridad =
-    document.getElementById(
-        "btnLimpiarPrioridad"
-    );
 
-if (btnLimpiarPrioridad) {
-
-    btnLimpiarPrioridad.addEventListener(
-        "click",
-        () => {
-
-            document
-                .querySelectorAll(
-                    ".chkPrioridad"
-                )
-                .forEach(chk => {
-
-                    chk.checked = false;
-
-                });
-
-            if (chkTodasPrioridades) {
-
-                chkTodasPrioridades.checked = false;
-
-            }
-
-            prioridadesSeleccionadas = [];
-
-            const textoPrioridad =
-                document.getElementById(
-                    "textoPrioridad"
-                );
-
-            if (textoPrioridad) {
-
-                textoPrioridad.textContent =
-                    "Prioridad";
-
-            }
-
-            aplicarFiltros();
-
-        }
-    );
-
-}
     const idxMunicipio =
         encabezados.findIndex(h => h.trim() === "Municipio");
 
