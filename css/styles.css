@@ -1625,3 +1625,54 @@ width:160px;
     color:#111827;
     pointer-events:none;
 }
+/* Alineación horizontal del header */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-title-group h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #0f172a;
+}
+
+/* Estilo del botón "Limpiar filtros" */
+.btn-limpiar-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: transparent;
+    color: #dc2626; /* Texto rojo */
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-limpiar-header svg {
+    width: 14px;
+    height: 14px;
+    stroke: #dc2626;
+}
+
+/* Efecto hover */
+.btn-limpiar-header:hover {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+}
+
+.btn-limpiar-header:active {
+    transform: scale(0.96);
+}
