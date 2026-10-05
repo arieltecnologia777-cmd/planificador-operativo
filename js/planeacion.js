@@ -806,7 +806,7 @@ function exportarPlaneacion() {
         }
 
         // ==============================
-        // ENCABEZADOS (Fila 1)
+        // ENCABEZADOS
         // ==============================
 
         const headers = [
@@ -838,7 +838,7 @@ function exportarPlaneacion() {
 
         const dataAOA = [];
 
-        // PRIMERA FILA = ENCABEZADOS EXACTAMENTE EN A1
+        // PRIMERA FILA = ENCABEZADOS
         dataAOA.push([...headers]);
 
         filas.forEach(fila => {
@@ -880,7 +880,7 @@ function exportarPlaneacion() {
         });
 
         // ==============================
-        // CREAR HOJA (Sin Autofiltro automático)
+        // CREAR HOJA
         // ==============================
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
@@ -888,12 +888,15 @@ function exportarPlaneacion() {
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
-        // Rango limpio desde A1 hasta el final
+        // Definir rango total de la tabla
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // Se omite ws["!autofilter"] a propósito para que no coloque filtros automáticos
+        // LA CLAVE: Definimos el rango del autofiltro abarcando toda la tabla,
+        // pero SheetJS permite que Excel lo registre como el área de filtros oficial 
+        // de la fila 1 sin forzar las flechas visuales al abrir el archivo.
+        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
 
-        // No crear tablas complejas de Excel
+        // Desactivamos el modo tabla visual automática para que no fuerce las flechas de inicio
         delete ws["!tables"];
 
         // ==============================
@@ -909,7 +912,7 @@ function exportarPlaneacion() {
         );
 
         // ==============================
-        // EXPORTAR ARCHIVO
+        // EXPORTAR
         // ==============================
 
         XLSX.writeFile(
@@ -919,7 +922,7 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel creado correctamente. Encabezados en A1, sin filtros automáticos.");
+        console.log("✅ Excel exportado correctamente con la estructura de fila 1 reservada.");
 
     } catch (error) {
         console.error("❌ Error al exportar:", error);
