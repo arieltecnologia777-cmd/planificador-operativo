@@ -761,7 +761,6 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 function exportarPlaneacion() {
-    // Protegemos la lectura del selector de región por si no existe en el HTML
     const exportRegionEl = document.getElementById("exportRegion");
     const region = exportRegionEl ? exportRegionEl.value : "todos";
 
@@ -791,46 +790,47 @@ function exportarPlaneacion() {
         );
     }
 
-    const datosExcel = filas.map(fila => ({
-        ID: fila[encabezadosGlobal.findIndex(h => h.trim() === "ID")],
-        Departamento: fila[encabezadosGlobal.findIndex(h => h.trim() === "Departamento")],
-        Municipio: fila[encabezadosGlobal.findIndex(h => h.trim() === "Municipio")],
-        IM: fila[encabezadosGlobal.findIndex(h => h.trim() === "IM")],
-        OT: fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")],
-        Afectacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de afectación")],
-        Total_IDs: fila[encabezadosGlobal.findIndex(h => h.trim() === "IDs afectados")],
-        Dias_OT: fila[encabezadosGlobal.findIndex(h => h.trim() === "Días OT")],
-        Rango_Afectacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Rango de afectación")],
-        Prioridad: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de prioridad")],
-        Stoppers_Dominion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Stoppers Dominion")],
-        Estado_Programacion: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoProgramacion || "",
-        Fecha_Programacion: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).fechaProgramacion || "",
-        Observaciones: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).observacion || "",
-        Estado_Gestion: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoGestion || "",
-        Tecnico_Asignado: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).tecnicoAsignado || "",
-        Acompanamiento: (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).acompanamiento || "",
-        Indicador_Backlog: fila[encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog")],
-        Stopper_P3: fila[encabezadosGlobal.findIndex(h => h.trim() === "Stopper P3")],
-        Tipo_Facturacion: fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo facturación")],
-        Fecha_Vencimiento_FM: fila[encabezadosGlobal.findIndex(h => h.trim() === "Fecha vencimiento FM")],
-        Alerta_Vencimiento_FM: fila[encabezadosGlobal.findIndex(h => h.trim() === "Alerta vencimiento FM")]
-    }));
+    // 1. Definimos explícitamente los encabezados limpios que irán en la fila 1 de Excel
+    const titulosColumnas = [
+        "ID", "Departamento", "Municipio", "IM", "OT", "Afectación", 
+        "Total IDs", "Días OT", "Rango de Afectación", "Prioridad", 
+        "Stoppers Dominion", "Estado Programación", "Fecha Programación", 
+        "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento", 
+        "Indicador Backlog", "Stopper P3", "Tipo Facturación", 
+        "Fecha Vencimiento FM", "Alerta Vencimiento FM"
+    ];
 
-    const ws = XLSX.utils.json_to_sheet(datosExcel);
+    // 2. Mapeamos los datos en forma de matriz (arrays de valores) para garantizar el orden exacto
+    const datosMatriz = filas.map(fila => [
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "ID")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Departamento")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Municipio")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "IM")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de afectación")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "IDs afectados")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Días OT")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Rango de afectación")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo de prioridad")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Stoppers Dominion")] || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoProgramacion || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).fechaProgramacion || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).observacion || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).estadoGestion || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).tecnicoAsignado || "",
+        (window.registrosD1[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {}).acompanamiento || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Stopper P3")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Tipo facturación")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Fecha vencimiento FM")] || "",
+        fila[encabezadosGlobal.findIndex(h => h.trim() === "Alerta vencimiento FM")] || ""
+    ]);
+
+    // 3. Unimos los títulos en la primera posición usando aoa_to_sheet (Array of Arrays)
+    const wsData = [titulosColumnas, ...datosMatriz];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
     XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
-
-// Enlazamos el botón de exportar al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-    // Buscamos el botón por los IDs más comunes que sueles usar en tus webs
-    const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
-    
-    posiblesIds.forEach(id => {
-        const botonExportar = document.getElementById(id);
-        if (botonExportar) {
-            botonExportar.addEventListener("click", exportarPlaneacion);
-        }
-    });
-});
