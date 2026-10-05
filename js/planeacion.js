@@ -766,7 +766,7 @@ function exportarPlaneacion() {
         const region = exportRegionEl ? exportRegionEl.value : "todos";
 
         if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
-            console.error("⚠️ Error: datosGlobal o encabezadosGlobal não están definidos o están vacíos.");
+            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
@@ -852,9 +852,16 @@ function exportarPlaneacion() {
             ];
         });
 
-        // Generamos la hoja de forma nativa estándar con aoa_to_sheet
+        // Generamos la hoja exactamente como el archivo que sí funcionaba
         const wsData = [titulosColumnas, ...datosMatriz];
         const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        // 🔑 Truco clave: Aseguramos que la celda activa inicial al abrir Excel sea estrictamente A1
+        ws['!views'] = [{
+            state: 'normal',
+            topLeftCell: 'A1',
+            activeCell: 'A1'
+        }];
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
