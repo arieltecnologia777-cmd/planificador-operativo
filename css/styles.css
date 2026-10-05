@@ -1635,7 +1635,8 @@ width:160px;
 .header-title-group {
     display: flex;
     align-items: center;
-    gap: 16px;
+    flex: 1; /* Ocupa el espacio disponible */
+    justify-content: center; /* Centra el botón respecto al área superior */
 }
 
 .header-title-group h2 {
