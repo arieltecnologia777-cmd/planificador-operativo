@@ -1614,28 +1614,18 @@ width:160px;
     pointer-events:none;
 }
 
-/* ==========================================
-   CABECERA FLEXIBLE Y FLUIDA
-   ========================================== */
-
+/* Cabecera horizontal sin espacio vertical excesivo */
 .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 8px;
     position: relative;
+    height: 38px; /* Forzamos altura justa para evitar que crezca */
+    margin-bottom: 8px;
 }
 
-/* Grupo del título y botón alineados en la misma fila */
-.header-title-group {
-    display: flex;
-    align-items: center;
-    gap: 40px; /* Separación cómoda sin forzar un salto */
-    flex: 1;
-}
-
-.header-title-group h2 {
+.panel-header h2 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 800;
@@ -1643,8 +1633,11 @@ width:160px;
     white-space: nowrap;
 }
 
-/* Botón estilo pastilla compacta */
+/* Fijamos el botón en el centro horizontal exacto de la pantalla/panel */
 .btn-limpiar-header {
+    position: absolute;
+    left: 48%; /* Posición centrada alineada al área del medio */
+    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -1673,24 +1666,22 @@ width:160px;
 }
 
 .btn-limpiar-header:active {
-    transform: scale(0.96);
+    transform: translateX(-50%) scale(0.96);
 }
 
-/* ==========================================
-   ESCALADO PARA PANTALLAS PEQUEÑAS / LAPTOPS
-   ========================================== */
-
+/* Escalado para pantallas reducidas o laptops */
 @media (max-width: 1366px) {
-    .header-title-group {
-        gap: 20px; /* Reduce la separación en laptops */
+    .panel-header {
+        height: 32px;
     }
 
-    .header-title-group h2 {
-        font-size: 0.95rem; /* Hace el título más compacto */
+    .panel-header h2 {
+        font-size: 0.95rem;
     }
 
     .btn-limpiar-header {
+        left: 45%; /* Ligera compensación para pantallas ajustadas */
         padding: 3px 8px;
-        font-size: 11px; /* Reduce ligeramente el botón */
+        font-size: 11px;
     }
 }
