@@ -761,138 +761,208 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 function exportarPlaneacion() {
-    try {
-        const exportRegionEl = document.getElementById("exportRegion");
-        const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-        if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
-            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
-            alert("No hay datos cargados para exportar todavía.");
-            return;
-        }
+    const exportRegionEl = document.getElementById("exportRegion");
+    const region = exportRegionEl ? exportRegionEl.value : "todos";
 
-        let filas = [...datosGlobal];
+    if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
+        console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
+        alert("No hay datos cargados para exportar todavía.");
+        return;
+    }
 
-        const buscarIndice = (nombreBuscado) => {
-            return encabezadosGlobal.findIndex(h => {
-                if (!h) return false;
-                const hClean = h.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const bClean = nombreBuscado.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                return hClean === bClean;
-            });
-        };
+    let filas = [...datosGlobal];
 
-        const idxDepto = buscarIndice("Departamento");
-
-        if (region === "R1" && idxDepto !== -1) {
-            filas = filas.filter(fila =>
-                ["CESAR", "LA GUAJIRA", "SAI"].includes((fila[idxDepto] || "").trim().toUpperCase())
-            );
-        }
-
-        if (region === "R2" && idxDepto !== -1) {
-            filas = filas.filter(fila =>
-                (fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
-            );
-        }
-
-        const titulosColumnas = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectación",
-            "Total IDs", "Días OT", "Rango de Afectación", "Prioridad",
-            "Stoppers Dominion", "Estado Programación", "Fecha Programación",
-            "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento",
-            "Indicador Backlog", "Stopper P3", "Tipo Facturación",
-            "Fecha Vencimiento FM", "Alerta Vencimiento FM"
-        ];
-
-        const iID = buscarIndice("ID");
-        const iDepto = idxDepto;
-        const iMuni = buscarIndice("Municipio");
-        const iIM = buscarIndice("IM");
-        const iOT = buscarIndice("OT");
-        const iAfectacion = buscarIndice("Tipo de afectación");
-        const iTotalIDs = buscarIndice("IDs afectados");
-        const iDiasOT = buscarIndice("Días OT");
-        const iRangoAfect = buscarIndice("Rango de afectación");
-        const iPrioridad = buscarIndice("Tipo de prioridad");
-        const iStoppersDom = buscarIndice("Stoppers Dominion");
-        const iIndBacklog = buscarIndice("Indicador backlog");
-        const iStopperP3 = buscarIndice("Stopper P3");
-        const iTipoFact = buscarIndice("Tipo facturación");
-        const iFechaVenc = buscarIndice("Fecha vencimiento FM");
-        const iAlertaVenc = buscarIndice("Alerta vencimiento FM");
-
-        const datosMatriz = filas.map(fila => {
-            const otValor = iOT !== -1 ? (fila[iOT] || "").toString().trim() : "";
-            const d1Reg = (window.registrosD1 && window.registrosD1[otValor]) || {};
-
-            return [
-                iID !== -1 ? fila[iID] || "" : "",
-                iDepto !== -1 ? fila[iDepto] || "" : "",
-                iMuni !== -1 ? fila[iMuni] || "" : "",
-                iIM !== -1 ? fila[iIM] || "" : "",
-                otValor,
-                iAfectacion !== -1 ? fila[iAfectacion] || "" : "",
-                iTotalIDs !== -1 ? fila[iTotalIDs] || "" : "",
-                iDiasOT !== -1 ? fila[iDiasOT] || "" : "",
-                iRangoAfect !== -1 ? fila[iRangoAfect] || "" : "",
-                iPrioridad !== -1 ? fila[iPrioridad] || "" : "",
-                iStoppersDom !== -1 ? fila[iStoppersDom] || "" : "",
-                d1Reg.estadoProgramacion || "",
-                d1Reg.fechaProgramacion || "",
-                d1Reg.observacion || "",
-                d1Reg.estadoGestion || "",
-                d1Reg.tecnicoAsignado || "",
-                d1Reg.acompanamiento || "",
-                iIndBacklog !== -1 ? fila[iIndBacklog] || "" : "",
-                iStopperP3 !== -1 ? fila[iStopperP3] || "" : "",
-                iTipoFact !== -1 ? fila[iTipoFact] || "" : "",
-                iFechaVenc !== -1 ? fila[iFechaVenc] || "" : "",
-                iAlertaVenc !== -1 ? fila[iAlertaVenc] || "" : ""
-            ];
-        });
-
-        // Generamos la hoja exactamente como el archivo que sí funcionaba
-        const wsData = [titulosColumnas, ...datosMatriz];
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-        // 🔑 Truco clave: Aseguramos que la celda activa inicial al abrir Excel sea estrictamente A1
-        ws['!views'] = [{
-            state: 'normal',
-            topLeftCell: 'A1',
-            activeCell: 'A1'
-        }];
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-
-        XLSX.writeFile(
-            wb,
-            `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
+    const idxDepto =
+        encabezadosGlobal.findIndex(
+            h => h.trim() === "Departamento"
         );
 
-        console.log("¡Archivo Excel exportado con éxito!");
-    } catch (error) {
-        console.error("Error crítico al exportar el Excel:", error);
-        alert("Hubo un error al generar el archivo Excel. Revisa la consola para más detalles.");
+    if (region === "R1" && idxDepto !== -1) {
+
+        filas = filas.filter(fila =>
+            [
+                "CESAR",
+                "LA GUAJIRA",
+                "SAI"
+            ].includes(
+                (fila[idxDepto] || "").trim().toUpperCase()
+            )
+        );
+
     }
+
+    if (region === "R2" && idxDepto !== -1) {
+
+        filas = filas.filter(fila =>
+            (fila[idxDepto] || "").trim().toUpperCase() ===
+            "ANTIOQUIA"
+        );
+
+    }
+
+    const datosExcel = filas.map(fila => ({
+
+        ID: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "ID"
+            )
+        ] || "",
+
+        Departamento: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Departamento"
+            )
+        ] || "",
+
+        Municipio: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Municipio"
+            )
+        ] || "",
+
+        IM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "IM"
+            )
+        ] || "",
+
+        OT: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "OT"
+            )
+        ] || "",
+
+        Afectacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo de afectación"
+            )
+        ] || "",
+
+        Total_IDs: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "IDs afectados"
+            )
+        ] || "",
+
+        Dias_OT: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Días OT"
+            )
+        ] || "",
+
+        Rango_Afectacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Rango de afectación"
+            )
+        ] || "",
+
+        Prioridad: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo de prioridad"
+            )
+        ] || "",
+
+        Stoppers_Dominion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Stoppers Dominion"
+            )
+        ] || "",
+
+        Estado_Programacion:
+            (
+                window.registrosD1[
+                    fila[
+                        encabezadosGlobal.findIndex(
+                            h => h.trim() === "OT"
+                        )
+                    ]
+                ] || {}
+            ).estadoProgramacion || "",
+
+        Fecha_Programacion:
+            (
+                window.registrosD1[
+                    fila[
+                        encabezadosGlobal.findIndex(
+                            h => h.trim() === "OT"
+                        )
+                    ]
+                ] || {}
+            ).fechaProgramacion || "",
+
+        Observaciones:
+            (
+                window.registrosD1[
+                    fila[
+                        encabezadosGlobal.findIndex(
+                            h => h.trim() === "OT"
+                        )
+                    ]
+                ] || {}
+            ).observacion || "",
+
+        Estado_Gestion:
+            (
+                window.registrosD1[
+                    fila[
+                        encabezadosGlobal.findIndex(
+                            h => h.trim() === "OT"
+                        )
+                    ]
+                ] || {}
+            ).estadoGestion || "",
+
+        Indicador_Backlog: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Indicador backlog"
+            )
+        ] || "",
+
+        Stopper_P3: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Stopper P3"
+            )
+        ] || "",
+
+        Tipo_Facturacion: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Tipo facturación"
+            )
+        ] || "",
+
+        Fecha_Vencimiento_FM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Fecha vencimiento FM"
+            )
+        ] || "",
+
+        Alerta_Vencimiento_FM: fila[
+            encabezadosGlobal.findIndex(
+                h => h.trim() === "Alerta vencimiento FM"
+            )
+        ] || ""
+
+    }));
+
+    const ws =
+        XLSX.utils.json_to_sheet(
+            datosExcel
+        );
+
+    const wb =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Planeacion"
+    );
+
+    XLSX.writeFile(
+        wb,
+        `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
+    );
+
+    console.log("¡Archivo Excel exportado con éxito!");
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
-
-    posiblesIds.forEach(id => {
-        const botonExportar = document.getElementById(id);
-
-        if (botonExportar) {
-            botonExportar.replaceWith(botonExportar.cloneNode(true));
-
-            const botonActualizado = document.getElementById(id);
-
-            botonActualizado.addEventListener("click", (e) => {
-                e.preventDefault();
-                exportarPlaneacion();
-            });
-        }
-    });
-});
