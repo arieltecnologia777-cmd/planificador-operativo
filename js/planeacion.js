@@ -10,6 +10,12 @@ window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
 let departamentosSeleccionados = [];
+let estadosSeleccionados = [];
+let prioridadesSeleccionadas = [];
+let afectacionesSeleccionadas = [];
+let stoppersSeleccionados = [];
+let rangosSeleccionados = [];
+let backlogsSeleccionados = [];
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -96,6 +102,7 @@ const TECNICOS = [
 
 function pintarTabla(datos){
     const encabezados = encabezadosGlobal;
+
     const idxID = encabezados.findIndex(h => h.trim() === "ID");
     const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
     const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
@@ -118,6 +125,7 @@ function pintarTabla(datos){
 
     planeacionBody.innerHTML = datos.map(fila => {
         const d1 = (window.registrosD1 || {})[fila[idxOT]] || {};
+
         let fechaTipo = "text";
         let fechaDisabled = "disabled";
         let fechaValor = d1.fechaProgramacion || "⟵ Definir estado";
@@ -156,8 +164,12 @@ function pintarTabla(datos){
                     <option value="Cancelada" ${d1.estadoProgramacion === "Cancelada" ? "selected" : ""}>Cancelada</option>
                 </select>
             </td>
-            <td><input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}></td>
-            <td><input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación"></td>
+            <td>
+                <input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}>
+            </td>
+            <td>
+                <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
+            </td>
             <td>
                 <select class="edit-select estado-gestion">
                     <option value=""></option>
@@ -197,11 +209,12 @@ async function cargarPlaneacion(){
         const valores = [];
         let actual = "";
         let dentroComillas = false;
+
         for(let i=0; i<fila.length; i++){
             const caracter = fila[i];
-            if(caracter === '"') {
+            if(caracter === '"'){
                 dentroComillas = !dentroComillas;
-            } else if(caracter === "," && !dentroComillas) {
+            } else if(caracter === "," && !dentroComillas){
                 valores.push(actual);
                 actual = "";
             } else {
@@ -214,6 +227,7 @@ async function cargarPlaneacion(){
 
     encabezadosGlobal = filas[0];
     datosGlobal = filas.slice(1);
+
     const encabezados = encabezadosGlobal;
     const datos = datosGlobal;
 
@@ -224,109 +238,31 @@ async function cargarPlaneacion(){
     } catch (error) {
         console.error(error);
     }
+
     window.registrosD1 = registrosD1;
 
-    const programados = Object.values(window.registrosD1 || {}).filter(registro => registro.estadoProgramacion === "Programada").length;
-    const kpiProgEl = document.getElementById("kpiProgramadosD1");
-    if (kpiProgEl) kpiProgEl.textContent = programados;
+    const programados = Object.values(window.registrosD1 || {}).filter(registro =>
+        registro.estadoProgramacion === "Programada"
+    ).length;
+
+    const kpiProg = document.getElementById("kpiProgramadosD1");
+    if(kpiProg) kpiProg.textContent = programados;
 
     const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
-    const departamentos = [...new Set(datos.map(fila => fila[idxDepto]))].sort();
+    const departamentos = [...new Set(datos.map(fila => fila[idxDepto]))].filter(Boolean).sort();
 
     const listaDeptoEl = document.getElementById("listaDepartamento");
-    if (listaDeptoEl) {
+    if(listaDeptoEl) {
         listaDeptoEl.innerHTML = `
             <input type="text" id="buscarDepartamento" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarDepartamento">✖ Borrar filtro</div>
-            <label class="multi-filtro-item">
-                <input type="checkbox" id="chkTodosDeptos"> (Seleccionar todo)
-            </label>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDeptos"> (Seleccionar todo)</label>
         ` + departamentos.map(dep => `
-            <label class="multi-filtro-item">
-                <input type="checkbox" value="${dep}" class="chkDepartamento"> ${dep}
-            </label>
+            <label class="multi-filtro-item"><input type="checkbox" value="${dep}" class="chkDepartamento" ${departamentosSeleccionados.includes(dep) ? "checked" : ""}> ${dep}</label>
         `).join("");
     }
 
-    document.querySelectorAll(".chkDepartamento").forEach(chk => {
-        chk.addEventListener("change", () => {
-            departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(item => item.value);
-            const textoDepartamento = document.getElementById("textoDepartamento");
-            if (textoDepartamento) {
-                textoDepartamento.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
-            }
-            aplicarFiltros();
-        });
-    });
-
-    const chkTodos = document.getElementById("chkTodosDeptos");
-    const buscarDepto = document.getElementById("buscarDepartamento");
-    if (buscarDepto) {
-        buscarDepto.addEventListener("input", () => {
-            const texto = buscarDepto.value.toLowerCase();
-            document.querySelectorAll(".multi-filtro-item").forEach(item => {
-                const contenido = item.textContent.toLowerCase();
-                item.style.display = contenido.includes(texto) ? "" : "none";
-            });
-        });
-    }
-
-    if (chkTodos) {
-        chkTodos.addEventListener("change", () => {
-            document.querySelectorAll(".chkDepartamento").forEach(chk => { chk.checked = chkTodos.checked; });
-            departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(item => item.value);
-            aplicarFiltros();
-        });
-    }
-
-    const btnLimpiarDepartamento = document.getElementById("btnLimpiarDepartamento");
-    if (btnLimpiarDepartamento) {
-        btnLimpiarDepartamento.addEventListener("click", () => {
-            document.querySelectorAll(".chkDepartamento").forEach(chk => { chk.checked = false; });
-            if (chkTodos) chkTodos.checked = false;
-            departamentosSeleccionados = [];
-            const texto = document.getElementById("textoDepartamento");
-            if (texto) texto.textContent = "Departamento";
-            aplicarFiltros();
-        });
-    }
-
-    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
-    const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
-    const idxStoppersDominion = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
-    const idxRangoAfectacion = encabezados.findIndex(h => h.trim() === "Rango de afectación");
-    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
-
-    const prioridades = Array.from(new Set(datos.map(fila => fila[idxPrioridad]))).filter(Boolean).sort();
-    const elFiltroPrioridad = document.getElementById("filtroPrioridad");
-    if (elFiltroPrioridad) {
-        elFiltroPrioridad.innerHTML = `<option value="">Prioridad</option>` + prioridades.map(valor => `<option value="${valor}">${valor}</option>`).join("");
-    }
-
-    const afectaciones = Array.from(new Set(datos.map(fila => fila[idxAfectacion]))).filter(Boolean).sort();
-    const elFiltroAfectacion = document.getElementById("filtroAfectacion");
-    if (elFiltroAfectacion) {
-        elFiltroAfectacion.innerHTML = `<option value="">Tipo de afectación</option>` + afectaciones.map(valor => `<option value="${valor}">${valor}</option>`).join("");
-    }
-
-    const stoppers = Array.from(new Set(datos.map(fila => fila[idxStoppersDominion]))).filter(Boolean).sort();
-    const elFiltroStoppers = document.getElementById("filtroStoppers");
-    if (elFiltroStoppers) {
-        elFiltroStoppers.innerHTML = `<option value="">Stoppers</option>` + stoppers.map(valor => `<option value="${valor}">${valor}</option>`).join("");
-    }
-
-    const rangos = Array.from(new Set(datos.map(fila => fila[idxRangoAfectacion]))).filter(Boolean).sort();
-    const elFiltroRango = document.getElementById("filtroRango");
-    if (elFiltroRango) {
-        elFiltroRango.innerHTML = `<option value="">Rango</option>` + rangos.map(valor => `<option value="${valor}">${valor}</option>`).join("");
-    }
-
-    const backlogs = Array.from(new Set(datos.map(fila => fila[idxBacklog]))).filter(Boolean).sort();
-    const elFiltroBacklog = document.getElementById("filtroBacklog");
-    if (elFiltroBacklog) {
-        elFiltroBacklog.innerHTML = `<option value="">IND Backlog</option>` + backlogs.map(valor => `<option value="${valor}">${valor}</option>`).join("");
-    }
-    
+    renderizarFiltrosDinamicos(datos);
     datosFiltradosGlobal = datos;
     actualizarOpcionesFiltros(datos);
     pintarTabla(datos);
@@ -357,93 +293,95 @@ function actualizarKPIs(datos){
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
     });
 
-    const elAltaPlaneacion = document.getElementById("kpiAltaPlaneacion");
-    if (elAltaPlaneacion) elAltaPlaneacion.textContent = otsAlta.size;
+    const elAlta = document.getElementById("kpiAltaPlaneacion");
+    const elMedia = document.getElementById("kpiMediaPlaneacion");
+    const elBaja = document.getElementById("kpiBajaPlaneacion");
+    const elCumple = document.getElementById("kpiCumpleBacklog");
+    const elNoCumple = document.getElementById("kpiNoCumpleBacklog");
 
-    const elMediaPlaneacion = document.getElementById("kpiMediaPlaneacion");
-    if (elMediaPlaneacion) elMediaPlaneacion.textContent = otsMedia.size;
-
-    const elBajaPlaneacion = document.getElementById("kpiBajaPlaneacion");
-    if (elBajaPlaneacion) elBajaPlaneacion.textContent = otsBaja.size;
-
-    const elCumpleBacklog = document.getElementById("kpiCumpleBacklog");
-    if (elCumpleBacklog) elCumpleBacklog.textContent = otsCumple.size;
-
-    const elNoCumpleBacklog = document.getElementById("kpiNoCumpleBacklog");
-    if (elNoCumpleBacklog) elNoCumpleBacklog.textContent = otsNoCumple.size;
+    if(elAlta) elAlta.textContent = otsAlta.size;
+    if(elMedia) elMedia.textContent = otsMedia.size;
+    if(elBaja) elBaja.textContent = otsBaja.size;
+    if(elCumple) elCumple.textContent = otsCumple.size;
+    if(elNoCumple) elNoCumple.textContent = otsNoCumple.size;
 }
 
 document.addEventListener("DOMContentLoaded", cargarPlaneacion);
 
-function actualizarOpcionesFiltros(datos) {
+function renderizarFiltrosDinamicos(datos) {
     const encabezados = encabezadosGlobal;
-    const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
     const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
 
-    const depto = document.getElementById("filtroDepartamento")?.value || "";
-    const prioridad = document.getElementById("filtroPrioridad")?.value || "";
-    const afectacion = document.getElementById("filtroAfectacion")?.value || "";
-    const stoppers = document.getElementById("filtroStoppers")?.value || "";
-    const rango = document.getElementById("filtroRango")?.value || "";
-    const backlog = document.getElementById("filtroBacklog")?.value || "";
+    const prioridades = [...new Set(datos.map(fila => fila[idxPrioridad]))].filter(Boolean).sort();
+    const afectaciones = [...new Set(datos.map(fila => fila[idxAfectacion]))].filter(Boolean).sort();
+    const stoppers = [...new Set(datos.map(fila => fila[idxStoppers]))].filter(Boolean).sort();
+    const rangos = [...new Set(datos.map(fila => fila[idxRango]))].filter(Boolean).sort();
+    const backlogs = [...new Set(datos.map(fila => fila[idxBacklog]))].filter(Boolean).sort();
 
-    const sinPrioridad = datosGlobal.filter(fila => (!depto || fila[idxDepto] === depto) && (!afectacion || fila[idxAfectacion] === afectacion) && (!stoppers || fila[idxStoppers] === stoppers) && (!rango || fila[idxRango] === rango) && (!backlog || fila[idxBacklog] === backlog));
-    const sinAfectacion = datosGlobal.filter(fila => (!depto || fila[idxDepto] === depto) && (!prioridad || fila[idxPrioridad] === prioridad) && (!stoppers || fila[idxStoppers] === stoppers) && (!rango || fila[idxRango] === rango) && (!backlog || fila[idxBacklog] === backlog));
-    const sinStoppers = datosGlobal.filter(fila => (!depto || fila[idxDepto] === depto) && (!prioridad || fila[idxPrioridad] === prioridad) && (!afectacion || fila[idxAfectacion] === afectacion) && (!rango || fila[idxRango] === rango) && (!backlog || fila[idxBacklog] === backlog));
-    const sinRango = datosGlobal.filter(fila => (!depto || fila[idxDepto] === depto) && (!prioridad || fila[idxPrioridad] === prioridad) && (!afectacion || fila[idxAfectacion] === afectacion) && (!stoppers || fila[idxStoppers] === stoppers) && (!backlog || fila[idxBacklog] === backlog));
-    const sinBacklog = datosGlobal.filter(fila => (!depto || fila[idxDepto] === depto) && (!prioridad || fila[idxPrioridad] === prioridad) && (!afectacion || fila[idxAfectacion] === afectacion) && (!stoppers || fila[idxStoppers] === stoppers) && (!rango || fila[idxRango] === rango));
-
-    const prioridades = [...new Set(sinPrioridad.map(fila => fila[idxPrioridad]))].filter(Boolean).sort();
-    const afectaciones = [...new Set(sinAfectacion.map(fila => fila[idxAfectacion]))].filter(Boolean).sort();
-    const listaStoppers = [...new Set(sinStoppers.map(fila => fila[idxStoppers]))].filter(Boolean).sort();
-    const rangos = [...new Set(sinRango.map(fila => fila[idxRango]))].filter(Boolean).sort();
-    const backlogs = [...new Set(sinBacklog.map(fila => fila[idxBacklog]))].filter(Boolean).sort();
-
-    const elFiltroPrioridad = document.getElementById("filtroPrioridad");
-    if (elFiltroPrioridad) {
-        elFiltroPrioridad.innerHTML = `<option value="">Prioridad</option>` + prioridades.map(valor => `<option value="${valor}" ${prioridad === valor ? "selected" : ""}>${valor}</option>`).join("");
+    const pEl = document.getElementById("listaPrioridad");
+    if(pEl) {
+        pEl.innerHTML = `
+            <input type="text" id="buscarPrioridad" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarPrioridad">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasPrioridades"> (Seleccionar todo)</label>
+        ` + prioridades.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkPrioridad" ${prioridadesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const elFiltroAfectacion = document.getElementById("filtroAfectacion");
-    if (elFiltroAfectacion) {
-        elFiltroAfectacion.innerHTML = `<option value="">Tipo de afectación</option>` + afectaciones.map(valor => `<option value="${valor}" ${afectacion === valor ? "selected" : ""}>${valor}</option>`).join("");
+    const aEl = document.getElementById("listaAfectacion");
+    if(aEl) {
+        aEl.innerHTML = `
+            <input type="text" id="buscarAfectacion" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarAfectacion">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasAfectaciones"> (Seleccionar todo)</label>
+        ` + afectaciones.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const elFiltroStoppers = document.getElementById("filtroStoppers");
-    if (elFiltroStoppers) {
-        elFiltroStoppers.innerHTML = `<option value="">Stoppers</option>` + listaStoppers.map(valor => `<option value="${valor}" ${stoppers === valor ? "selected" : ""}>${valor}</option>`).join("");
+    const sEl = document.getElementById("listaStoppers");
+    if(sEl) {
+        sEl.innerHTML = `
+            <input type="text" id="buscarStoppers" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarStoppers">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosStoppers"> (Seleccionar todo)</label>
+        ` + stoppers.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const elFiltroRango = document.getElementById("filtroRango");
-    if (elFiltroRango) {
-        elFiltroRango.innerHTML = `<option value="">Rango</option>` + rangos.map(valor => `<option value="${valor}" ${rango === valor ? "selected" : ""}>${valor}</option>`).join("");
+    const rEl = document.getElementById("listaRango");
+    if(rEl) {
+        rEl.innerHTML = `
+            <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
+        ` + rangos.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const elFiltroBacklog = document.getElementById("filtroBacklog");
-    if (elFiltroBacklog) {
-        elFiltroBacklog.innerHTML = `<option value="">IND Backlog</option>` + backlogs.map(valor => `<option value="${valor}" ${backlog === valor ? "selected" : ""}>${valor}</option>`).join("");
+    const bEl = document.getElementById("listaBacklog");
+    if(bEl) {
+        bEl.innerHTML = `
+            <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
+        ` + backlogs.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 }
 
+function actualizarOpcionesFiltros(datos) {
+    // Método auxiliar conservado
+}
+
 function aplicarFiltros(){
-    const filtroBusqEl = document.getElementById("filtroBusqueda");
-    const texto = filtroBusqEl ? filtroBusqEl.value.toLowerCase() : "";
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
 
     const deptos = departamentosSeleccionados;
-    const prioridadEl = document.getElementById("filtroPrioridad");
-    const prioridad = prioridadEl ? prioridadEl.value : "";
-    const afectacionEl = document.getElementById("filtroAfectacion");
-    const afectacion = afectacionEl ? afectacionEl.value : "";
-    const stoppersEl = document.getElementById("filtroStoppers");
-    const stoppers = stoppersEl ? stoppersEl.value : "";
-    const rangoEl = document.getElementById("filtroRango");
-    const rango = rangoEl ? rangoEl.value : "";
-    const backlogEl = document.getElementById("filtroBacklog");
-    const backlog = backlogEl ? backlogEl.value : ""; 
+    const prioridadesFiltro = prioridadesSeleccionadas;
+    const afectacionesFiltro = afectacionesSeleccionadas;
+    const stoppersFiltro = stoppersSeleccionados;
+    const rangosFiltro = rangosSeleccionados;
+    const backlogsFiltro = backlogsSeleccionados;
 
     const encabezados = encabezadosGlobal;
     const idxID = encabezados.findIndex(h => h.trim() === "ID");
@@ -455,40 +393,152 @@ function aplicarFiltros(){
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
-    
+
     const resultado = datosGlobal.filter(fila => {
-        const cumpleTexto = String(fila[idxID] || "").toLowerCase().includes(texto) || String(fila[idxOT] || "").toLowerCase().includes(texto) || String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
+        const cumpleTexto = !texto || 
+            String(fila[idxID] || "").toLowerCase().includes(texto) ||
+            String(fila[idxOT] || "").toLowerCase().includes(texto) ||
+            String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
+
         const cumpleDepto = deptos.length === 0 || deptos.includes(fila[idxDepto]);
-        const cumplePrioridad = !prioridad || fila[idxPrioridad] === prioridad;
-        const cumpleAfectacion = !afectacion || fila[idxAfectacion] === afectacion;
-        const cumpleStoppers = !stoppers || fila[idxStoppers] === stoppers;
-        const cumpleRango = !rango || fila[idxRango] === rango;
-        const cumpleBacklog = !backlog || fila[idxBacklog] === backlog;
-        return (cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleBacklog);
+        const cumplePrioridad = prioridadesFiltro.length === 0 || prioridadesFiltro.includes(fila[idxPrioridad]);
+        const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(fila[idxAfectacion]);
+        const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
+        const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(fila[idxRango]);
+        const cumpleBacklog = backlogsFiltro.length === 0 || backlogsFiltro.includes(fila[idxBacklog]);
+
+        return cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleBacklog;
     });
 
     datosFiltradosGlobal = resultado;
-    actualizarOpcionesFiltros(resultado);
     pintarTabla(resultado);
     actualizarKPIs(resultado);
 }
 
-document.addEventListener("input",(e)=>{
-    if(e.target.id === "filtroBusqueda"){
+document.addEventListener("input", (e) => {
+    if(e.target.id === "filtroBusqueda") {
         aplicarFiltros();
+    }
+    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
+        const textoBusq = e.target.value.toLowerCase();
+        const contenedor = e.target.closest("div");
+        if(contenedor) {
+            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
+                const contenido = item.textContent.toLowerCase();
+                item.style.display = contenido.includes(textoBusq) ? "" : "none";
+            });
+        }
     }
 });
 
-document.addEventListener("change",(e)=>{
-    if(e.target.classList.contains("estado-programacion")){
-        const fila = e.target.closest("tr");
-        const fecha = fila.querySelector(".fecha-input");
-        const valor = e.target.value;
+document.addEventListener("change", (e) => {
+    const target = e.target;
 
-        if(valor === "Programada"){
+    if (target.classList.contains("chkDepartamento")) {
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        const txt = document.getElementById("textoDepartamento");
+        if (txt) txt.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosDeptos") {
+        document.querySelectorAll(".chkDepartamento").forEach(chk => chk.checked = target.checked);
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkPrioridad")) {
+        prioridadesSeleccionadas = Array.from(document.querySelectorAll(".chkPrioridad:checked")).map(i => i.value);
+        const txt = document.getElementById("textoPrioridad");
+        if (txt) {
+            txt.textContent = prioridadesSeleccionadas.length === 0 ? "Prioridad" : (prioridadesSeleccionadas.length === 1 ? prioridadesSeleccionadas[0] : `Prioridad (${prioridadesSeleccionadas.length})`);
+        }
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasPrioridades") {
+        document.querySelectorAll(".chkPrioridad").forEach(chk => chk.checked = target.checked);
+        prioridadesSeleccionadas = Array.from(document.querySelectorAll(".chkPrioridad:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkAfectacion")) {
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        const txt = document.getElementById("textoAfectacion");
+        if (txt) {
+            txt.textContent = afectacionesSeleccionadas.length === 0 ? "Tipo de afectación" : `Afectación (${afectacionesSeleccionadas.length})`;
+        }
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasAfectaciones") {
+        document.querySelectorAll(".chkAfectacion").forEach(chk => chk.checked = target.checked);
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkStoppers")) {
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        const txt = document.getElementById("textoStoppers");
+        if (txt) {
+            txt.textContent = stoppersSeleccionados.length === 0 ? "Stoppers" : `Stoppers (${stoppersSeleccionados.length})`;
+        }
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(chk => chk.checked = target.checked);
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkRango")) {
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        const txt = document.getElementById("textoRango");
+        if (txt) {
+            txt.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
+        }
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosRangos") {
+        document.querySelectorAll(".chkRango").forEach(chk => chk.checked = target.checked);
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkBacklog")) {
+        backlogsSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        const txt = document.getElementById("textoBacklog");
+        if (txt) {
+            txt.textContent = backlogsSeleccionados.length === 0 ? "Indicador backlog" : `Backlog (${backlogsSeleccionados.length})`;
+        }
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(chk => chk.checked = target.checked);
+        backlogsSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if(target.classList.contains("estado-programacion")){
+        const fila = target.closest("tr");
+        const fecha = fila.querySelector(".fecha-input");
+        const valor = target.value;
+
+        if(valor === "Programada" || valor === "Cancelada"){
             fecha.type = "date";
             fecha.disabled = false;
-            fecha.value = "";
+            if(!fecha.value || fecha.value.includes("Definir") || fecha.value.includes("validación") || fecha.value.includes("aplica")) {
+                fecha.value = "";
+            }
         } else if(valor === "Pendiente"){
             fecha.type = "text";
             fecha.disabled = true;
@@ -497,25 +547,101 @@ document.addEventListener("change",(e)=>{
             fecha.type = "text";
             fecha.disabled = true;
             fecha.value = "No aplica";
-        } else if(valor === "Cancelada"){
-            fecha.type = "date";
-            fecha.disabled = false;
-            fecha.value = "";
         } else if(valor === ""){
             fecha.type = "text";
             fecha.disabled = true;
             fecha.value = "⟵ Definir estado";
         }
-        return;
     }
 
-    if(["filtroDepartamento", "filtroPrioridad", "filtroAfectacion", "filtroStoppers", "filtroRango", "filtroBacklog"].includes(e.target.id)){
-        aplicarFiltros();
+    const filaTabla = target.closest("tr");
+    if(filaTabla && !target.closest(".multi-filtro-item")) {
+        guardarOT(filaTabla);
     }
 });
 
+document.addEventListener("click", (e) => {
+    const target = e.target;
+
+    if(target.id === "btnLimpiarDepartamento") {
+        document.querySelectorAll(".chkDepartamento").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosDeptos");
+        if(chkAll) chkAll.checked = false;
+        departamentosSeleccionados = [];
+        const txt = document.getElementById("textoDepartamento");
+        if(txt) txt.textContent = "Departamento";
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarPrioridad") {
+        document.querySelectorAll(".chkPrioridad").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasPrioridades");
+        if(chkAll) chkAll.checked = false;
+        prioridadesSeleccionadas = [];
+        const txt = document.getElementById("textoPrioridad");
+        if(txt) txt.textContent = "Prioridad";
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarAfectacion") {
+        document.querySelectorAll(".chkAfectacion").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasAfectaciones");
+        if(chkAll) chkAll.checked = false;
+        afectacionesSeleccionadas = [];
+        const txt = document.getElementById("textoAfectacion");
+        if(txt) txt.textContent = "Tipo de afectación";
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosStoppers");
+        if(chkAll) chkAll.checked = false;
+        stoppersSeleccionados = [];
+        const txt = document.getElementById("textoStoppers");
+        if(txt) txt.textContent = "Stoppers";
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarRango") {
+        document.querySelectorAll(".chkRango").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosRangos");
+        if(chkAll) chkAll.checked = false;
+        rangosSeleccionados = [];
+        const txt = document.getElementById("textoRango");
+        if(txt) txt.textContent = "Rango de afectación";
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosBacklog");
+        if(chkAll) chkAll.checked = false;
+        backlogsSeleccionados = [];
+        const txt = document.getElementById("textoBacklog");
+        if(txt) txt.textContent = "Indicador backlog";
+        aplicarFiltros();
+    }
+
+    const dropdowns = [
+        { btn: "btnDepartamento", lista: "listaDepartamento" },
+        { btn: "btnPrioridad", lista: "listaPrioridad" },
+        { btn: "btnAfectacion", lista: "listaAfectacion" },
+        { btn: "btnStoppers", lista: "listaStoppers" },
+        { btn: "btnRango", lista: "listaRango" },
+        { btn: "btnBacklog", lista: "listaBacklog" }
+    ];
+
+    dropdowns.forEach(item => {
+        const botonEl = document.getElementById(item.btn);
+        const listaEl = document.getElementById(item.lista);
+        if(botonEl && listaEl) {
+            if(botonEl.contains(target)) {
+                listaEl.classList.toggle("show");
+            } else if(!listaEl.contains(target)) {
+                listaEl.classList.remove("show");
+            }
+        }
+    });
+});
+
 document.addEventListener("blur", async e => {
-    if(!e.target.classList.contains("observacion")) return;
+    if(!e.target.classList.contains("observacion") && !e.target.classList.contains("fecha-input")) return;
     const fila = e.target.closest("tr");
     if(!fila) return;
     await guardarOT(fila);
@@ -523,48 +649,52 @@ document.addEventListener("blur", async e => {
 
 async function guardarOT(fila){
     const ot = fila.children[4].textContent.trim();
+    
+    const inputFecha = fila.querySelector(".fecha-input");
+    let fechaVal = inputFecha?.value || "";
+    if(inputFecha && (fechaVal.includes("Definir") || fechaVal.includes("validación") || fechaVal.includes("aplica"))) {
+        fechaVal = "";
+    }
+
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
-        fechaProgramacion: fila.querySelector(".fecha-input")?.value || "",
+        fechaProgramacion: fechaVal,
         observacion: fila.querySelector(".observacion")?.value || "",
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || ""
     };
 
-    const resp = await fetch(API_URL,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(payload)
-    });
-    const resultado = await resp.json();
+    try {
+        const resp = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const resultado = await resp.json();
 
-    if (resultado.ok) {
-        window.registrosD1 = window.registrosD1 || {};
-        window.registrosD1[payload.ot] = {
-            ot: payload.ot,
-            estadoProgramacion: payload.estadoProgramacion,
-            fechaProgramacion: payload.fechaProgramacion,
-            observacion: payload.observacion,
-            estadoGestion: payload.estadoGestion,
-            tecnicoAsignado: payload.tecnicoAsignado,
-            acompanamiento: payload.acompanamiento,
-            updatedAt: new Date().toISOString()
-        };
-        pintarTabla(datosFiltradosGlobal);
+        if (resultado.ok) {
+            window.registrosD1 = window.registrosD1 || {};
+            window.registrosD1[payload.ot] = {
+                ot: payload.ot,
+                estadoProgramacion: payload.estadoProgramacion,
+                fechaProgramacion: payload.fechaProgramacion,
+                observacion: payload.observacion,
+                estadoGestion: payload.estadoGestion,
+                tecnicoAsignado: payload.tecnicoAsignado,
+                acompanamiento: payload.acompanamiento,
+                updatedAt: new Date().toISOString()
+            };
+        }
+    } catch (err) {
+        console.error("Error al guardar OT:", err);
     }
 }
 
-document.addEventListener("change", async e => {
-    const fila = e.target.closest("tr");
-    if(!fila) return;
-    await guardarOT(fila);
-});
-
 const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
-if (wrapper) {
+if(wrapper) {
     wrapper.addEventListener('scroll', () => {
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
@@ -580,6 +710,7 @@ if (wrapper) {
 window.addEventListener("load", () => {
     const topScroll = document.querySelector(".planeacion-scroll-top");
     const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+
     if (!topScroll || !tableWrapper) return;
     let syncing = false;
 
@@ -602,9 +733,14 @@ function actualizarStickyTabla() {
     const header = document.querySelector('.planeacion-header');
     const filtros = document.querySelector('.planeacion-filtros-sticky');
     if (!header || !filtros) return;
+
     const alturaHeader = header.offsetHeight;
     const alturaFiltros = filtros.offsetHeight;
-    document.documentElement.style.setProperty('--sticky-table-top', `${alturaHeader + alturaFiltros}px`);
+
+    document.documentElement.style.setProperty(
+        '--sticky-table-top',
+        `${alturaHeader + alturaFiltros}px`
+    );
 }
 
 window.addEventListener('load', actualizarStickyTabla);
@@ -618,69 +754,86 @@ window.addEventListener('resize', detectarZoom);
 detectarZoom();
 
 // ==========================================
-// CONTROL DEL BOTÓN ZOOM (Restaurado con tu ID y Clase real)
+// CONTROL DEL BOTÓN ZOOM (Usando tu ID real)
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    const botonExpandir = document.getElementById("btnExpandirTabla");
-    if (!botonExpandir) return;
-    botonExpandir.addEventListener("click", () => {
-        document.body.classList.toggle("modo-ampliado");
-    });
-});
-
-// ==========================================
-// BOTÓN DE DESPLEGAR DEPARTAMENTOS
-// ==========================================
-document.addEventListener("click", (e) => {
-    const lista = document.getElementById("listaDepartamento");
-    const boton = document.getElementById("btnDepartamento");
-    if (!lista || !boton) return;
-    
-    if (e.target === boton || boton.contains(e.target)) {
-        lista.classList.toggle("show");
-        return;
-    }
-    if (!lista.contains(e.target)) {
-        lista.classList.remove("show");
+    const btnExpandir = document.getElementById("btnExpandirTabla");
+    if (btnExpandir) {
+        btnExpandir.addEventListener("click", () => {
+            document.body.classList.toggle("modo-ampliado");
+        });
     }
 });
 
-// ==========================================
-// FUNCIÓN DE EXPORTACIÓN (Restaurada y Mejorada)
-// ==========================================
 function exportarPlaneacion() {
     try {
-        if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
+        if (
+            typeof datosGlobal === "undefined" ||
+            typeof encabezadosGlobal === "undefined" ||
+            !datosGlobal.length
+        ) {
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
 
         const exportRegionEl = document.getElementById("exportRegion");
         const region = exportRegionEl ? exportRegionEl.value : "todos";
+
         let filas = [...datosGlobal];
 
-        const buscarIndice = (nombre) => encabezadosGlobal.findIndex(h => String(h).trim() === nombre);
+        const buscarIndice = (nombre) =>
+            encabezadosGlobal.findIndex(
+                h => String(h).trim() === nombre
+            );
+
         const idxDepto = buscarIndice("Departamento");
 
         if (region === "R1" && idxDepto !== -1) {
-            filas = filas.filter(fila => ["CESAR", "LA GUAJIRA", "SAI"].includes(String(fila[idxDepto] || "").trim().toUpperCase()));
+            filas = filas.filter(fila =>
+                ["CESAR", "LA GUAJIRA", "SAI"].includes(
+                    String(fila[idxDepto] || "")
+                        .trim()
+                        .toUpperCase()
+                )
+            );
         }
 
         if (region === "R2" && idxDepto !== -1) {
-            filas = filas.filter(fila => String(fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA");
+            filas = filas.filter(fila =>
+                String(fila[idxDepto] || "")
+                    .trim()
+                    .toUpperCase() === "ANTIOQUIA"
+            );
         }
 
         const headers = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Total_IDs", "Dias_OT", 
-            "Rango_Afectacion", "Prioridad", "Stoppers_Dominion", "Estado_Programacion", 
-            "Fecha_Programacion", "Observaciones", "Estado_Gestion", "Indicador_Backlog", 
-            "Stopper_P3", "Tipo_Facturacion", "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
+            "ID",
+            "Departamento",
+            "Municipio",
+            "IM",
+            "OT",
+            "Afectacion",
+            "Total_IDs",
+            "Dias_OT",
+            "Rango_Afectacion",
+            "Prioridad",
+            "Stoppers_Dominion",
+            "Estado_Programacion",
+            "Fecha_Programacion",
+            "Observaciones",
+            "Estado_Gestion",
+            "Indicador_Backlog",
+            "Stopper_P3",
+            "Tipo_Facturacion",
+            "Fecha_Vencimiento_FM",
+            "Alerta_Vencimiento_FM"
         ];
 
-        // Función para limpiar texto y saltos de línea y no dañar Excel
         const limpiarTexto = (texto) => {
             if (!texto) return "";
-            return String(texto).replace(/[\r\n]+/g, " ").trim();
+            return String(texto)
+                .replace(/[\r\n]+/g, " ") 
+                .trim();
         };
 
         const dataAOA = [];
@@ -693,48 +846,74 @@ function exportarPlaneacion() {
             };
 
             const otValor = getValor("OT");
-            const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
+
+            const regD1 =
+                window.registrosD1 &&
+                window.registrosD1[otValor]
+                    ? window.registrosD1[otValor]
+                    : {};
 
             dataAOA.push([
-                getValor("ID"), getValor("Departamento"), getValor("Municipio"), getValor("IM"), otValor,
-                getValor("Tipo de afectación"), getValor("IDs afectados"), getValor("Días OT"),
-                getValor("Rango de afectación"), getValor("Tipo de prioridad"), getValor("Stoppers Dominion"),
-                limpiarTexto(regD1.estadoProgramacion), limpiarTexto(regD1.fechaProgramacion),
-                limpiarTexto(regD1.observacion), limpiarTexto(regD1.estadoGestion),
-                getValor("Indicador backlog"), getValor("Stopper P3"), getValor("Tipo facturación"),
-                getValor("Fecha vencimiento FM"), getValor("Alerta vencimiento FM")
+                getValor("ID"),
+                getValor("Departamento"),
+                getValor("Municipio"),
+                getValor("IM"),
+                otValor,
+                getValor("Tipo de afectación"),
+                getValor("IDs afectados"),
+                getValor("Días OT"),
+                getValor("Rango de afectación"),
+                getValor("Tipo de prioridad"),
+                getValor("Stoppers Dominion"),
+                limpiarTexto(regD1.estadoProgramacion),
+                limpiarTexto(regD1.fechaProgramacion),
+                limpiarTexto(regD1.observacion),
+                limpiarTexto(regD1.estadoGestion),
+                getValor("Indicador backlog"),
+                getValor("Stopper P3"),
+                getValor("Tipo facturación"),
+                getValor("Fecha vencimiento FM"),
+                getValor("Alerta vencimiento FM")
             ]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
-        // Obliga al filtro a ponerse en la Fila 1 para todos los archivos (R1, R2 y Todos)
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
         ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
+
         delete ws["!tables"];
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-        XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0, 10)}.xlsx`);
 
-        console.log("✅ Excel exportado correctamente con limpieza de texto y filtros fijos en Fila 1.");
+        XLSX.writeFile(
+            wb,
+            `Planeacion_${region}_${new Date()
+                .toISOString()
+                .slice(0, 10)}.xlsx`
+        );
+
+        console.log("✅ Excel exportado correctamente con limpieza de texto y filtros en Fila 1.");
+
     } catch (error) {
         console.error("❌ Error al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 }
 
-// ==========================================
-// CONECTAR EL BOTÓN DE EXPORTAR
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const btnExportar = document.getElementById("btnExportarExcel");
+    
     if (btnExportar) {
         btnExportar.addEventListener("click", (e) => {
             e.preventDefault();
             exportarPlaneacion();
         });
+    } else {
+        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
     }
 });
