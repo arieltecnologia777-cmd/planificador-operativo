@@ -888,16 +888,21 @@ function exportarPlaneacion() {
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
-        // Definir rango total de la tabla
+        // Definir rango exacto
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // LA CLAVE: Definimos el rango del autofiltro abarcando toda la tabla,
-        // pero SheetJS permite que Excel lo registre como el área de filtros oficial 
-        // de la fila 1 sin forzar las flechas visuales al abrir el archivo.
-        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
-
-        // Desactivamos el modo tabla visual automática para que no fuerce las flechas de inicio
+        // Limpiamos cualquier tabla o autofiltro previo que fuerce visualización
         delete ws["!tables"];
+        delete ws["!autofilter"];
+
+        // TRUCO ADICIONAL: Asegurar que las celdas de la fila 1 tengan tipo de dato explícito 
+        // para que Excel reconozca sin lugar a dudas que la Fila 1 son títulos de texto y la Fila 2 son datos.
+        for (let c = 0; c < headers.length; c++) {
+            const cellRef = XLSX.utils.encode_cell({ r: 0, c: c });
+            if (ws[cellRef]) {
+                ws[cellRef].t = "s"; // Forzar tipo string (texto) en la cabecera
+            }
+        }
 
         // ==============================
         // CREAR LIBRO
@@ -922,7 +927,7 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel exportado correctamente con la estructura de fila 1 reservada.");
+        console.log("✅ Excel exportado con cabeceras tipificadas en Fila 1.");
 
     } catch (error) {
         console.error("❌ Error al exportar:", error);
