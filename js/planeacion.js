@@ -796,13 +796,12 @@ function exportarPlaneacion() {
             );
         }
 
-        // 1. Encabezados limpios que irán de forma natural en la fila 1
         const titulosColumnas = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectación", 
-            "Total IDs", "Días OT", "Rango de Afectación", "Prioridad", 
-            "Stoppers Dominion", "Estado Programación", "Fecha Programación", 
-            "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento", 
-            "Indicador Backlog", "Stopper P3", "Tipo Facturación", 
+            "ID", "Departamento", "Municipio", "IM", "OT", "Afectación",
+            "Total IDs", "Días OT", "Rango de Afectación", "Prioridad",
+            "Stoppers Dominion", "Estado Programación", "Fecha Programación",
+            "Observaciones", "Estado Gestión", "Técnico Asignado", "Acompañamiento",
+            "Indicador Backlog", "Stopper P3", "Tipo Facturación",
             "Fecha Vencimiento FM", "Alerta Vencimiento FM"
         ];
 
@@ -823,7 +822,6 @@ function exportarPlaneacion() {
         const iFechaVenc = buscarIndice("Fecha vencimiento FM");
         const iAlertaVenc = buscarIndice("Alerta vencimiento FM");
 
-        // 2. Mapeamos los datos en matriz
         const datosMatriz = filas.map(fila => {
             const otValor = iOT !== -1 ? (fila[iOT] || "").toString().trim() : "";
             const d1Reg = (window.registrosD1 && window.registrosD1[otValor]) || {};
@@ -854,14 +852,25 @@ function exportarPlaneacion() {
             ];
         });
 
-        // 3. Creamos la hoja con los títulos arriba y los datos abajo (comportamiento estándar)
         const wsData = [titulosColumnas, ...datosMatriz];
+
         const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        ws["!autofilter"] = {
+            ref: XLSX.utils.encode_range({
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: titulosColumnas.length - 1 }
+            })
+        };
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-        XLSX.writeFile(wb, `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`);
-        
+
+        XLSX.writeFile(
+            wb,
+            `Planeacion_${region}_${new Date().toISOString().slice(0,10)}.xlsx`
+        );
+
         console.log("¡Archivo Excel exportado con éxito!");
     } catch (error) {
         console.error("Error crítico al exportar el Excel:", error);
@@ -869,16 +878,17 @@ function exportarPlaneacion() {
     }
 }
 
-// Enlace automático del botón
 document.addEventListener("DOMContentLoaded", () => {
     const posiblesIds = ["btnExportar", "btnExportarExcel", "exportarBtn", "btnExportarPlaneacion"];
-    
+
     posiblesIds.forEach(id => {
         const botonExportar = document.getElementById(id);
+
         if (botonExportar) {
             botonExportar.replaceWith(botonExportar.cloneNode(true));
+
             const botonActualizado = document.getElementById(id);
-            
+
             botonActualizado.addEventListener("click", (e) => {
                 e.preventDefault();
                 exportarPlaneacion();
