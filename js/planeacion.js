@@ -1703,6 +1703,59 @@ document.addEventListener("input",(e)=>{
 
 document.addEventListener("change",(e)=>{
 
+    if (
+        e.target.classList.contains(
+            "chkPrioridad"
+        )
+    ) {
+
+        prioridadesSeleccionadas =
+            Array.from(
+                document.querySelectorAll(
+                    ".chkPrioridad:checked"
+                )
+            ).map(
+                item => item.value
+            );
+
+        const textoPrioridad =
+            document.getElementById(
+                "textoPrioridad"
+            );
+
+        if (textoPrioridad) {
+
+            if (
+                prioridadesSeleccionadas.length === 0
+            ) {
+
+                textoPrioridad.textContent =
+                    "Prioridad";
+
+            }
+            else if (
+                prioridadesSeleccionadas.length === 1
+            ) {
+
+                textoPrioridad.textContent =
+                    prioridadesSeleccionadas[0];
+
+            }
+            else {
+
+                textoPrioridad.textContent =
+                    `Prioridad (${prioridadesSeleccionadas.length})`;
+
+            }
+
+        }
+
+        aplicarFiltros();
+
+        return;
+
+    }
+
     if(
         e.target.classList.contains(
             "estado-programacion"
@@ -1734,54 +1787,53 @@ document.addEventListener("change",(e)=>{
             fecha.value = "En validación";
 
         }
-else if(valor === "N/A"){
+        else if(valor === "N/A"){
 
-    fecha.type = "text";
-    fecha.disabled = true;
-    fecha.value = "No aplica";
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "No aplica";
 
-}
-else if(
-    valor === "Postular FM" ||
-    valor === "Postular abast."
-){
+        }
+        else if(
+            valor === "Postular FM" ||
+            valor === "Postular abast."
+        ){
 
-    fecha.type = "text";
-    fecha.disabled = true;
-    fecha.value = "No aplica";
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "No aplica";
 
-}
-else if(valor === "Cancelada"){
+        }
+        else if(valor === "Cancelada"){
 
-    fecha.type = "date";
-    fecha.disabled = false;
-    fecha.value = "";
+            fecha.type = "date";
+            fecha.disabled = false;
+            fecha.value = "";
 
-}
-else if(valor === ""){
+        }
+        else if(valor === ""){
 
-    fecha.type = "text";
-    fecha.disabled = true;
-    fecha.value = "⟵ Definir estado";
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "⟵ Definir estado";
 
-}
+        }
 
         return;
     }
 
     if(
-    e.target.id === "filtroDepartamento" ||
-    e.target.id === "filtroPrioridad" ||
-    e.target.id === "filtroAfectacion" ||
-    e.target.id === "filtroStoppers" ||
-    e.target.id === "filtroRango" ||
-    e.target.id === "filtroBacklog"
-){
-    aplicarFiltros();
-}
+        e.target.id === "filtroDepartamento" ||
+        e.target.id === "filtroPrioridad" ||
+        e.target.id === "filtroAfectacion" ||
+        e.target.id === "filtroStoppers" ||
+        e.target.id === "filtroRango" ||
+        e.target.id === "filtroBacklog"
+    ){
+        aplicarFiltros();
+    }
 
 });
-
 document.addEventListener(
     "blur",
     async e => {
