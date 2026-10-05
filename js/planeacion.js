@@ -766,7 +766,7 @@ function exportarPlaneacion() {
         const region = exportRegionEl ? exportRegionEl.value : "todos";
 
         if (typeof datosGlobal === "undefined" || typeof encabezadosGlobal === "undefined" || !datosGlobal.length) {
-            console.error("⚠️ Error: datosGlobal o encabezadosGlobal no están definidos o están vacíos.");
+            console.error("⚠️ Error: datosGlobal o encabezadosGlobal não están definidos o están vacíos.");
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
@@ -852,37 +852,9 @@ function exportarPlaneacion() {
             ];
         });
 
-        const ws = {};
-        let maxRow = datosMatriz.length;
-        let maxCol = titulosColumnas.length - 1;
-
-        // Fila 1: Encabezados con estilo en negrita nativo para forzar a Excel a reconocerlos como cabecera
-        titulosColumnas.forEach((titulo, colIdx) => {
-            const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
-            ws[cellRef] = {
-                v: titulo,
-                t: 's',
-                s: {
-                    font: { bold: true }
-                }
-            };
-        });
-
-        // Filas de datos subsiguientes
-        datosMatriz.forEach((fila, rowIdx) => {
-            fila.forEach((val, colIdx) => {
-                const cellRef = XLSX.utils.encode_cell({ r: rowIdx + 1, c: colIdx });
-                ws[cellRef] = { 
-                    v: val !== null && val !== undefined ? val : "", 
-                    t: typeof val === 'number' ? 'n' : 's' 
-                };
-            });
-        });
-
-        ws['!ref'] = XLSX.utils.encode_range({
-            s: { r: 0, c: 0 },
-            e: { r: maxRow, c: maxCol }
-        });
+        // Generamos la hoja de forma nativa estándar con aoa_to_sheet
+        const wsData = [titulosColumnas, ...datosMatriz];
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
