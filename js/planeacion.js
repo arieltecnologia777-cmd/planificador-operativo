@@ -412,12 +412,11 @@ function aplicarFiltros(){
     actualizarKPIs(resultado);
 }
 
-// Manejador centralizado de eventos por Delegación para checkboxes, selects y botones de limpieza
+// Manejador centralizado de eventos por Delegación para checkboxes, selects y búsqueda
 document.addEventListener("input", (e) => {
     if(e.target.id === "filtroBusqueda") {
         aplicarFiltros();
     }
-    // Búsquedas internas dentro de los dropdowns de filtros
     if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
         const textoBusq = e.target.value.toLowerCase();
         const contenedor = e.target.closest("div");
@@ -533,7 +532,7 @@ document.addEventListener("change", (e) => {
         return;
     }
 
-    // Cambios en estado de programación de la tabla
+    // Manejo visual dinámico del input fecha al cambiar estado de programación
     if(target.classList.contains("estado-programacion")){
         const fila = target.closest("tr");
         const fecha = fila.querySelector(".fecha-input");
@@ -542,7 +541,9 @@ document.addEventListener("change", (e) => {
         if(valor === "Programada" || valor === "Cancelada"){
             fecha.type = "date";
             fecha.disabled = false;
-            fecha.value = "";
+            if(!fecha.value || fecha.value.includes("Definir") || fecha.value.includes("validación") || fecha.value.includes("aplica")) {
+                fecha.value = "";
+            }
         } else if(valor === "Pendiente"){
             fecha.type = "text";
             fecha.disabled = true;
@@ -556,10 +557,9 @@ document.addEventListener("change", (e) => {
             fecha.disabled = true;
             fecha.value = "⟵ Definir estado";
         }
-        return;
     }
 
-    // Guardado automático en cambios de selects de la tabla
+    // Guardado automático en D1 para cualquier celda editable de la tabla
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         guardarOT(filaTabla);
@@ -570,7 +570,6 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Botones de Borrar Filtro Individuales
     if(target.id === "btnLimpiarDepartamento") {
         document.querySelectorAll(".chkDepartamento").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodosDeptos");
@@ -626,7 +625,6 @@ document.addEventListener("click", (e) => {
         aplicarFiltros();
     }
 
-    // Toggle de despliegue de los dropdowns de filtros superiores
     const dropdowns = [
         { btn: "btnDepartamento", lista: "listaDepartamento" },
         { btn: "btnPrioridad", lista: "listaPrioridad" },
@@ -652,7 +650,7 @@ document.addEventListener("click", (e) => {
 document.addEventListener(
     "blur",
     async e => {
-        if(!e.target.classList.contains("observacion")) return;
+        if(!e.target.classList.contains("observacion") && !e.target.classList.contains("fecha-input")) return;
         const fila = e.target.closest("tr");
         if(!fila) return;
         await guardarOT(fila);
@@ -662,10 +660,17 @@ document.addEventListener(
 
 async function guardarOT(fila){
     const ot = fila.children[4].textContent.trim();
+    
+    const inputFecha = fila.querySelector(".fecha-input");
+    let fechaVal = inputFecha?.value || "";
+    if(inputFecha && (fechaVal.includes("Definir") || fechaVal.includes("validación") || fechaVal.includes("aplica"))) {
+        fechaVal = "";
+    }
+
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
-        fechaProgramacion: fila.querySelector(".fecha-input")?.value || "",
+        fechaProgramacion: fechaVal,
         observacion: fila.querySelector(".observacion")?.value || "",
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
@@ -692,7 +697,6 @@ async function guardarOT(fila){
                 acompanamiento: payload.acompanamiento,
                 updatedAt: new Date().toISOString()
             };
-            pintarTabla(datosFiltradosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
@@ -759,6 +763,19 @@ function detectarZoom() {
 }
 window.addEventListener('resize', detectarZoom);
 detectarZoom();
+
+// ==========================================
+// CONTROL DEL BOTÓN ZOOM
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const btnZoom = document.getElementById("btnZoom");
+    if (btnZoom) {
+        btnZoom.addEventListener("click", () => {
+            document.body.classList.toggle("zoom-activo");
+        });
+    }
+});
+
 function exportarPlaneacion() {
     try {
         if (
@@ -782,10 +799,6 @@ function exportarPlaneacion() {
 
         const idxDepto = buscarIndice("Departamento");
 
-        // ==============================
-        // FILTRO DE REGIÓN
-        // ==============================
-
         if (region === "R1" && idxDepto !== -1) {
             filas = filas.filter(fila =>
                 ["CESAR", "LA GUAJIRA", "SAI"].includes(
@@ -803,10 +816,6 @@ function exportarPlaneacion() {
                     .toUpperCase() === "ANTIOQUIA"
             );
         }
-
-        // ==============================
-        // ENCABEZADOS
-        // ==============================
 
         const headers = [
             "ID",
@@ -831,10 +840,6 @@ function exportarPlaneacion() {
             "Alerta_Vencimiento_FM"
         ];
 
-        // ==============================
-        // FUNCIÓN AUXILIAR DE LIMPIEZA
-        // ==============================
-        // Elimina saltos de línea ocultos para evitar errores en Excel y en los filtros
         const limpiarTexto = (texto) => {
             if (!texto) return "";
             return String(texto)
@@ -842,13 +847,7 @@ function exportarPlaneacion() {
                 .trim();
         };
 
-        // ==============================
-        // DATOS
-        // ==============================
-
         const dataAOA = [];
-
-        // PRIMERA FILA = ENCABEZADOS
         dataAOA.push([...headers]);
 
         filas.forEach(fila => {
@@ -879,7 +878,7 @@ function exportarPlaneacion() {
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
                 limpiarTexto(regD1.fechaProgramacion),
-                limpiarTexto(regD1.observacion), // <--- Limpieza aplicada a observaciones
+                limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
                 getValor("Stopper P3"),
@@ -889,38 +888,18 @@ function exportarPlaneacion() {
             ]);
         });
 
-        // ==============================
-        // CREAR HOJA
-        // ==============================
-
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
-        // Definir rango exacto de la tabla
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
-
-        // Autofiltro configurado para fijar estrictamente la Fila 1 como cabecera
         ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
 
         delete ws["!tables"];
 
-        // ==============================
-        // CREAR LIBRO
-        // ==============================
-
         const wb = XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(
-            wb,
-            ws,
-            "Planeacion"
-        );
-
-        // ==============================
-        // EXPORTAR
-        // ==============================
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         XLSX.writeFile(
             wb,
@@ -937,9 +916,6 @@ function exportarPlaneacion() {
     }
 }
 
-// ==========================================
-// ENLAZAR EL BOTÓN AL CARGAR LA PÁGINA
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const btnExportar = document.getElementById("btnExportarExcel");
     
