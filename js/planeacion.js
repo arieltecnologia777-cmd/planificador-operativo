@@ -888,21 +888,15 @@ function exportarPlaneacion() {
         const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
         const ultimaFila = dataAOA.length;
 
-        // Definir rango exacto
+        // Definir rango exacto de la tabla
         ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
 
-        // Limpiamos cualquier tabla o autofiltro previo que fuerce visualización
-        delete ws["!tables"];
-        delete ws["!autofilter"];
+        // LA SOLUCIÓN DEFINITIVA: Declarar explícitamente el autofiltro para TODO el rango de datos.
+        // Esto le prohíbe a Excel "adivinar" y lo ata de manos para que la fila 1 sea 
+        // obligatoriamente la cabecera de los filtros (tanto en "todos" como en R1 y R2).
+        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
 
-        // TRUCO ADICIONAL: Asegurar que las celdas de la fila 1 tengan tipo de dato explícito 
-        // para que Excel reconozca sin lugar a dudas que la Fila 1 son títulos de texto y la Fila 2 son datos.
-        for (let c = 0; c < headers.length; c++) {
-            const cellRef = XLSX.utils.encode_cell({ r: 0, c: c });
-            if (ws[cellRef]) {
-                ws[cellRef].t = "s"; // Forzar tipo string (texto) en la cabecera
-            }
-        }
+        delete ws["!tables"];
 
         // ==============================
         // CREAR LIBRO
@@ -927,7 +921,7 @@ function exportarPlaneacion() {
                 .slice(0, 10)}.xlsx`
         );
 
-        console.log("✅ Excel exportado con cabeceras tipificadas en Fila 1.");
+        console.log("✅ Excel exportado con rango de filtros asegurado en Fila 1.");
 
     } catch (error) {
         console.error("❌ Error al exportar:", error);
