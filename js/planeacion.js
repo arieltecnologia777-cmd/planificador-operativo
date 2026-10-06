@@ -266,6 +266,7 @@ function actualizarKPIs(datos){
     const idxOT = encabezados.findIndex(h => h.trim() === "OT");
     const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+    const idxIdsAfectados = encabezados.findIndex(h => h.trim() === "IDs afectados");
 
     const otsAlta = new Set();
     const otsMedia = new Set();
@@ -273,11 +274,19 @@ function actualizarKPIs(datos){
     const otsCumple = new Set();
     const otsNoCumple = new Set();
     const otsProgramadas = new Set();
+    
+    let sumaIdsAfectados = 0; // Acumulador
 
     datos.forEach(fila => {
         const ot = (fila[idxOT] || "").trim();
         const prioridad = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
+
+        // Sumar IDs afectados de forma segura
+        const valIds = parseInt(fila[idxIdsAfectados], 10);
+        if (!isNaN(valIds)) {
+            sumaIdsAfectados += valIds;
+        }
 
         if (prioridad === "ALTA") otsAlta.add(ot);
         if (prioridad === "MEDIA") otsMedia.add(ot);
@@ -297,6 +306,7 @@ function actualizarKPIs(datos){
     const elCumple = document.getElementById("kpiCumpleBacklog");
     const elNoCumple = document.getElementById("kpiNoCumpleBacklog");
     const kpiProg = document.getElementById("kpiProgramadosD1");
+    const elSumaIds = document.getElementById("totalIdsAfectados");
 
     if(elAlta) elAlta.textContent = otsAlta.size;
     if(elMedia) elMedia.textContent = otsMedia.size;
@@ -304,8 +314,8 @@ function actualizarKPIs(datos){
     if(elCumple) elCumple.textContent = otsCumple.size;
     if(elNoCumple) elNoCumple.textContent = otsNoCumple.size;
     if(kpiProg) kpiProg.textContent = otsProgramadas.size;
+    if(elSumaIds) elSumaIds.textContent = sumaIdsAfectados.toLocaleString();
 }
-
 document.addEventListener("DOMContentLoaded", cargarPlaneacion);
 
 function renderizarFiltrosDinamicos(datos) {
