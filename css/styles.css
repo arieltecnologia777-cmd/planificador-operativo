@@ -1854,3 +1854,19 @@ width:160px;
     color: #0f172a;
     font-weight: 600;
 }
+/* Cuando hay un KPI activo, las tarjetas no seleccionadas se ponen grises */
+.kpi-container-activo .kpi-card:not(.kpi-seleccionado),
+.kpi-container-activo .card:not(.kpi-seleccionado) {
+    opacity: 0.45;
+    filter: grayscale(80%);
+    transition: all 0.25s ease;
+}
+
+/* La tarjeta seleccionada resalta con total claridad */
+.kpi-seleccionado {
+    opacity: 1 !important;
+    filter: none !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+    transform: translateY(-2px);
+}
