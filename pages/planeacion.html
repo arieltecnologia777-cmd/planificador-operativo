@@ -311,7 +311,7 @@ function renderizarFiltrosDinamicos(datos) {
     const stoppers = [...new Set(datos.map(fila => fila[idxStoppers]))].filter(Boolean).sort();
     const rangos = [...new Set(datos.map(fila => fila[idxRango]))].filter(Boolean).sort();
     const backlogs = [...new Set(datos.map(fila => fila[idxBacklog]))].filter(Boolean).sort();
-    const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
+    const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx"];
 
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
@@ -547,7 +547,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + backDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
+    const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx"];
     const egEl = document.getElementById("listaEstadoGestion") || document.getElementById("listaEstado");
     if(egEl) {
         egEl.innerHTML = `
