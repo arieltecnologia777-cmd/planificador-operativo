@@ -1820,14 +1820,14 @@ width:160px;
 .btn-accion-obs {
     background: #edf2f8;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    width: 32px;
-    height: 38px;
+    border-radius: 6px;
+    width: 28px;
+    height: 32px;
     display: grid;
     place-items: center;
     cursor: pointer;
     flex: none;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     transition: all 0.2s ease;
 }
 
