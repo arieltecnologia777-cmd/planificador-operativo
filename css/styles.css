@@ -1675,49 +1675,16 @@ width:160px;
 }
 
 /* ==========================================
-   TOOLTIP DE OBSERVACIONES CORREGIDO Y SEGURO
+   ESTILOS DEL MODAL Y BOTONES DE OBSERVACIONES
    ========================================== */
 
-/* Contenedor del input con posición relativa */
+/* Contenedor del input */
 .observacion-container {
     position: relative;
     display: block;
     width: 100%;
 }
 
-/* El cuadro flotante personalizado con ancho dinámico y multilínea */
-.observacion-container .custom-tooltip {
-    visibility: hidden;
-    width: max-content;
-    max-width: 400px;
-    background-color: #0f172a; /* Fondo azul oscuro elegante */
-    color: #ffffff; /* Texto blanco nítido */
-    text-align: left;
-    border-radius: 8px;
-    padding: 10px 14px;
-    position: absolute;
-    z-index: 999999; /* Por encima de todo */
-    bottom: 120%;
-    left: 0;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
-    pointer-events: none;
-    line-height: 1.4;
-    border: 1px solid #334155;
-    white-space: normal !important; /* Fuerza los saltos de línea para mostrar todo el texto */
-}
-
-/* Mostrar el cuadro completo al pasar el mouse */
-.observacion-container:hover .custom-tooltip {
-    visibility: visible;
-    opacity: 1;
-}
-/* ==========================================
-   ESTILOS DEL MODAL DE OBSERVACIONES
-   ========================================== */
 .obs-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1842,28 +1809,29 @@ width:160px;
     background: #1d4ed8;
 }
 
-/* Estilo del botón lápiz integrado al lado del input */
+/* Contenedor para el input y los botones de acción (Ver y Editar) */
 .obs-edit-wrapper {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
 }
 
-.btn-abrir-modal-obs {
+.btn-accion-obs {
     background: #edf2f8;
     border: 1px solid var(--border);
     border-radius: 8px;
-    width: 36px;
+    width: 32px;
     height: 38px;
     display: grid;
     place-items: center;
     cursor: pointer;
     flex: none;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
 }
 
-.btn-abrir-modal-obs:hover {
+.btn-accion-obs:hover {
     background: #2563eb;
     color: #fff;
     border-color: #2563eb;
