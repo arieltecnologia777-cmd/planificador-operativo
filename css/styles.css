@@ -1675,7 +1675,7 @@ width:160px;
 }
 
 /* ==========================================
-   TOOLTIP DE OBSERVACIONES DEFINITIVO
+   TOOLTIP DE OBSERVACIONES CORREGIDO Y SEGURO
    ========================================== */
 
 /* Contenedor del input con posición relativa */
@@ -1685,50 +1685,33 @@ width:160px;
     width: 100%;
 }
 
-/* Permitir que el contenedor de la tabla no oculte elementos flotantes superiores */
-.planeacion-table-wrapper {
-    overflow: visible !important;
-}
-
 /* El cuadro flotante personalizado con ancho dinámico y multilínea */
 .observacion-container .custom-tooltip {
     visibility: hidden;
     width: max-content;
-    max-width: 450px;
-    background-color: #0f172a;
-    color: #ffffff;
+    max-width: 400px;
+    background-color: #0f172a; /* Fondo azul oscuro elegante */
+    color: #ffffff; /* Texto blanco nítido */
     text-align: left;
     border-radius: 8px;
     padding: 10px 14px;
     position: absolute;
-    z-index: 99999;
-    bottom: 140%;
+    z-index: 999999; /* Por encima de todo */
+    bottom: 120%;
     left: 0;
     opacity: 0;
-    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
     font-size: 13px;
     font-weight: 500;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
     pointer-events: none;
     line-height: 1.4;
     border: 1px solid #334155;
-    white-space: normal !important;
-}
-
-/* Flechita decorativa del cuadro flotante */
-.observacion-container .custom-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 20px;
-    border-width: 6px;
-    border-style: solid;
-    border-color: #0f172a transparent transparent transparent;
+    white-space: normal !important; /* Fuerza los saltos de línea para mostrar todo el texto */
 }
 
 /* Mostrar el cuadro completo al pasar el mouse */
 .observacion-container:hover .custom-tooltip {
     visibility: visible;
     opacity: 1;
-    transform: translateY(-2px);
 }
