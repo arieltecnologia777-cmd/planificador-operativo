@@ -1836,3 +1836,21 @@ width:160px;
     color: #fff;
     border-color: #2563eb;
 }
+/* Estilo ordenado para los datos del sitio en el modal */
+.obs-modal-subtitle {
+    margin: 0 0 12px 0;
+    font-size: 0.85rem;
+    color: #334155;
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-left: 4px solid #2563eb;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.obs-modal-subtitle span {
+    color: #0f172a;
+    font-weight: 600;
+}
