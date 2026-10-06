@@ -155,7 +155,7 @@ function pintarTabla(datos){
             <td>${fila[idxPrioridad] || ""}</td>
             <td>${fila[idxStoppersDominion] || ""}</td>
             <td>
-               <select class="edit-select estado-programacion">
+                <select class="edit-select estado-programacion">
                     <option value=""></option>
                     <option value="Programada" ${d1.estadoProgramacion === "Programada" ? "selected" : ""}>Programada</option>
                     <option value="Pendiente" ${d1.estadoProgramacion === "Pendiente" ? "selected" : ""}>Pendiente</option>
@@ -178,17 +178,17 @@ function pintarTabla(datos){
                     </div>
                 </div>
             </td>
-</td>
-    <select class="edit-select estado-gestion">
-        <option value=""></option>
-        <option value="Gestionable" ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>Gestionable</option>
-        <option value="Operativa" ${d1.estadoGestion === "Operativa" ? "selected" : ""}>Operativa</option>
-        <option value="FM/traslado/reubicación" ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>FM/traslado/reubicación</option>
-        <option value="Abastecimiento" ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>Abastecimiento</option>
-        <option value="Falla Tx" ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>Falla Tx</option>
-        <option value="Receso escolar" ${d1.estadoGestion === "Receso escolar" ? "selected" : ""}>Receso escolar</option>
-    </select>
-</td>
+            <td>
+                <select class="edit-select estado-gestion">
+                    <option value=""></option>
+                    <option value="Gestionable" ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>Gestionable</option>
+                    <option value="Operativa" ${d1.estadoGestion === "Operativa" ? "selected" : ""}>Operativa</option>
+                    <option value="FM/traslado/reubicación" ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>FM/traslado/reubicación</option>
+                    <option value="Abastecimiento" ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>Abastecimiento</option>
+                    <option value="Falla Tx" ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>Falla Tx</option>
+                    <option value="Receso escolar" ${d1.estadoGestion === "Receso escolar" ? "selected" : ""}>Receso escolar</option>
+                </select>
+            </td>
             <td>
                 <select class="edit-select tecnico-asignado">
                     <option value=""></option>
