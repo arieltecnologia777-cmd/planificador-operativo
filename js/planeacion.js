@@ -166,11 +166,11 @@ function pintarTabla(datos){
                 </select>
             </td>
             <td>
-                <input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}>
-            </td>
-            <td>
                 <div class="observacion-container">
-                    <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
+                    <div class="obs-edit-wrapper">
+                        <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
+                        <button type="button" class="btn-abrir-modal-obs" data-ot="${fila[idxOT]}" title="Ampliar y editar historial">✏️</button>
+                    </div>
                     <span class="custom-tooltip">${d1.observacion || "Sin observaciones"}</span>
                 </div>
             </td>
@@ -1166,5 +1166,52 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     } else {
         console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
+    }
+});
+// ==========================================
+// LÓGICA PARA EL MODAL DE OBSERVACIONES
+// ==========================================
+let filaActualModal = null;
+
+document.addEventListener("click", (e) => {
+    const btnEditar = e.target.closest(".btn-abrir-modal-obs");
+    if (btnEditar) {
+        const fila = btnEditar.closest("tr");
+        filaActualModal = fila;
+        const ot = btnEditar.getAttribute("data-ot");
+        const inputObs = fila.querySelector(".observacion");
+        
+        const modal = document.getElementById("modalObservacion");
+        const txtArea = document.getElementById("textareaModalObs");
+        const otInfo = document.getElementById("obsModalOtInfo");
+
+        if (modal && txtArea && otInfo) {
+            otInfo.textContent = `Orden de Trabajo (OT): ${ot || "--"}`;
+            txtArea.value = inputObs ? inputObs.value : "";
+            modal.style.display = "grid";
+            txtArea.focus();
+        }
+    }
+
+    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs" || e.target.id === "modalObservacion") {
+        if (e.target.id === "modalObservacion" && e.target !== document.getElementById("modalObservacion")) return;
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
+    }
+
+    if (e.target.id === "btnGuardarObs") {
+        const txtArea = document.getElementById("textareaModalObs");
+        if (filaActualModal && txtArea) {
+            const inputObs = filaActualModal.querySelector(".observacion");
+            if (inputObs) {
+                inputObs.value = txtArea.value;
+                // Llama a tu función existente para guardar en la base de datos
+                if (typeof guardarOT === "function") {
+                    guardarOT(filaActualModal);
+                }
+            }
+        }
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
     }
 });
