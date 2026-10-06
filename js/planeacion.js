@@ -17,6 +17,7 @@ let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
 let backlogsSeleccionados = [];
 let estadosGestionSeleccionados = [];
+let kpiFiltroActivo = null;
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -598,6 +599,8 @@ function aplicarFiltros(){
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const estG = regD1.estadoGestion || "";
+        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
 
         const cumpleTexto = !texto || 
             String(fila[idxID] || "").toLowerCase().includes(texto) ||
@@ -612,7 +615,15 @@ function aplicarFiltros(){
         const cumpleBacklog = backlogsFiltro.length === 0 || backlogsFiltro.includes(fila[idxBacklog]);
         const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
 
-        return cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleBacklog && cumpleEstGestion;
+        let cumpleKpi = true;
+        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+
+        return cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
 
     datosFiltradosGlobal = resultado;
@@ -628,6 +639,12 @@ function resetearTodosLosFiltros() {
     rangosSeleccionados = [];
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
+    kpiFiltroActivo = null;
+
+    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+        c.style.borderColor = "";
+        c.style.boxShadow = "";
+    });
 
     const filtroBusquedaEl = document.getElementById("filtroBusqueda");
     if(filtroBusquedaEl) filtroBusquedaEl.value = "";
@@ -802,6 +819,40 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
     const target = e.target;
+
+    const kpiCard = target.closest(".kpi-card, .card");
+    if (kpiCard && !target.closest("input, select, button")) {
+        const valorEl = kpiCard.querySelector("[id^='kpi']");
+        if (valorEl) {
+            const idKpi = valorEl.id;
+            let tipoFiltro = null;
+
+            if (idKpi === "kpiAltaPlaneacion") tipoFiltro = "alta";
+            else if (idKpi === "kpiMediaPlaneacion") tipoFiltro = "media";
+            else if (idKpi === "kpiBajaPlaneacion") tipoFiltro = "baja";
+            else if (idKpi === "kpiCumpleBacklog") tipoFiltro = "cumple";
+            else if (idKpi === "kpiNoCumpleBacklog") tipoFiltro = "nocumple";
+            else if (idKpi === "kpiProgramadosD1") tipoFiltro = "programados";
+
+            if (tipoFiltro) {
+                if (kpiFiltroActivo === tipoFiltro) {
+                    kpiFiltroActivo = null;
+                    kpiCard.style.borderColor = "";
+                    kpiCard.style.boxShadow = "";
+                } else {
+                    kpiFiltroActivo = tipoFiltro;
+                    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+                        c.style.borderColor = "";
+                        c.style.boxShadow = "";
+                    });
+                    kpiCard.style.borderColor = "#2563eb";
+                    kpiCard.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.2)";
+                }
+                aplicarFiltros();
+                return;
+            }
+        }
+    }
 
     if (target.closest("#btnLimpiarHeader, .btn-limpiar-header")) {
         resetearTodosLosFiltros();
