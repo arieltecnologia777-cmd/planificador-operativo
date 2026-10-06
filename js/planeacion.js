@@ -169,8 +169,8 @@ function pintarTabla(datos){
                 <input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}>
             </td>
             <td>
-                <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
-            </td>
+    <input class="edit-input observacion" value="${d1.observacion || ""}" title="${d1.observacion || ""}" placeholder="Observación">
+</td>
            <td>
     <select class="edit-select estado-gestion">
         <option value=""></option>
