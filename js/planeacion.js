@@ -652,9 +652,13 @@ function resetearTodosLosFiltros() {
     kpiFiltroActivo = null;
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
+        c.classList.remove("kpi-seleccionado");
         c.style.borderColor = "";
         c.style.boxShadow = "";
     });
+
+    const contenedorKpis = document.getElementById("kpis");
+    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
 
     const filtroBusquedaEl = document.getElementById("filtroBusqueda");
     if(filtroBusquedaEl) filtroBusquedaEl.value = "";
@@ -845,18 +849,19 @@ document.addEventListener("click", (e) => {
             else if (idKpi === "kpiProgramadosD1") tipoFiltro = "programados";
 
             if (tipoFiltro) {
+                const contenedorKpis = kpiCard.closest("#kpis") || kpiCard.parentElement;
+
                 if (kpiFiltroActivo === tipoFiltro) {
                     kpiFiltroActivo = null;
-                    kpiCard.style.borderColor = "";
-                    kpiCard.style.boxShadow = "";
+                    kpiCard.classList.remove("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
                 } else {
                     kpiFiltroActivo = tipoFiltro;
                     document.querySelectorAll(".kpi-card, .card").forEach(c => {
-                        c.style.borderColor = "";
-                        c.style.boxShadow = "";
+                        c.classList.remove("kpi-seleccionado");
                     });
-                    kpiCard.style.borderColor = "#2563eb";
-                    kpiCard.style.boxShadow = "0 0 0 3px rgba(37, 99, 235, 0.2)";
+                    kpiCard.classList.add("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.add("kpi-container-activo");
                 }
                 aplicarFiltros();
                 return;
