@@ -221,179 +221,190 @@
 
             <div class="planeacion-filtros-sticky">
 
-    <div class="planeacion-filtros">
+    <div class="planeacion-filtros" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
 
-    <input
-        id="filtroBusqueda"
-        type="text"
-        placeholder="Buscador">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1;">
+        <input
+            id="filtroBusqueda"
+            type="text"
+            placeholder="Buscador">
 
-    <div class="multi-filtro" id="multiDepartamento">
+        <div class="multi-filtro" id="multiDepartamento">
 
-        <button
-            type="button"
-            id="btnDepartamento"
-            class="multi-filtro-btn">
+            <button
+                type="button"
+                id="btnDepartamento"
+                class="multi-filtro-btn">
 
-            <span id="textoDepartamento">
-                Departamento
-            </span>
+                <span id="textoDepartamento">
+                    Departamento
+                </span>
 
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
 
-        </button>
+            </button>
 
-        <div
-            id="listaDepartamento"
-            class="multi-filtro-lista">
+            <div
+                id="listaDepartamento"
+                class="multi-filtro-lista">
+            </div>
+
         </div>
 
+        <div class="multi-filtro" id="multiEstado">
+
+            <button
+                type="button"
+                id="btnEstado"
+                class="multi-filtro-btn">
+
+                <span id="textoEstado">
+                    Estado
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaEstado"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
+
+        <div class="multi-filtro" id="multiPrioridad">
+
+            <button
+                type="button"
+                id="btnPrioridad"
+                class="multi-filtro-btn">
+
+                <span id="textoPrioridad">
+                    Prioridad
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaPrioridad"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
+
+        <div class="multi-filtro" id="multiAfectacion">
+
+            <button
+                type="button"
+                id="btnAfectacion"
+                class="multi-filtro-btn">
+
+                <span id="textoAfectacion">
+                    Afectación
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaAfectacion"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
+
+        <div class="multi-filtro" id="multiStoppers">
+
+            <button
+                type="button"
+                id="btnStoppers"
+                class="multi-filtro-btn">
+
+                <span id="textoStoppers">
+                    Stoppers
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaStoppers"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
+
+        <div class="multi-filtro" id="multiRango">
+
+            <button
+                type="button"
+                id="btnRango"
+                class="multi-filtro-btn">
+
+                <span id="textoRango">
+                    Rango
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaRango"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
+
+        <div class="multi-filtro" id="multiBacklog">
+
+            <button
+                type="button"
+                id="btnBacklog"
+                class="multi-filtro-btn">
+
+                <span id="textoBacklog">
+                    IND Backlog
+                </span>
+
+                <span class="multi-filtro-arrow">
+                    ⌄
+                </span>
+
+            </button>
+
+            <div
+                id="listaBacklog"
+                class="multi-filtro-lista">
+            </div>
+
+        </div>
     </div>
 
-    <div class="multi-filtro" id="multiEstado">
-
-        <button
-            type="button"
-            id="btnEstado"
-            class="multi-filtro-btn">
-
-            <span id="textoEstado">
-                Estado
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaEstado"
-            class="multi-filtro-lista">
+    <!-- Widget KPI compacto ubicado exactamente en el espacio superior derecho -->
+    <div class="kpi-ids-afectados-widget">
+        <div class="kpi-ids-icon">📊</div>
+        <div class="kpi-ids-content">
+            <span class="kpi-ids-label">Total IDs Afectados</span>
+            <span id="totalIdsAfectados" class="kpi-ids-value">0</span>
         </div>
-
-    </div>
-
-    <div class="multi-filtro" id="multiPrioridad">
-
-        <button
-            type="button"
-            id="btnPrioridad"
-            class="multi-filtro-btn">
-
-            <span id="textoPrioridad">
-                Prioridad
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaPrioridad"
-            class="multi-filtro-lista">
-        </div>
-
-    </div>
-
-    <div class="multi-filtro" id="multiAfectacion">
-
-        <button
-            type="button"
-            id="btnAfectacion"
-            class="multi-filtro-btn">
-
-            <span id="textoAfectacion">
-                Afectación
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaAfectacion"
-            class="multi-filtro-lista">
-        </div>
-
-    </div>
-
-    <div class="multi-filtro" id="multiStoppers">
-
-        <button
-            type="button"
-            id="btnStoppers"
-            class="multi-filtro-btn">
-
-            <span id="textoStoppers">
-                Stoppers
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaStoppers"
-            class="multi-filtro-lista">
-        </div>
-
-    </div>
-
-    <div class="multi-filtro" id="multiRango">
-
-        <button
-            type="button"
-            id="btnRango"
-            class="multi-filtro-btn">
-
-            <span id="textoRango">
-                Rango
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaRango"
-            class="multi-filtro-lista">
-        </div>
-
-    </div>
-
-    <div class="multi-filtro" id="multiBacklog">
-
-        <button
-            type="button"
-            id="btnBacklog"
-            class="multi-filtro-btn">
-
-            <span id="textoBacklog">
-                IND Backlog
-            </span>
-
-            <span class="multi-filtro-arrow">
-                ⌄
-            </span>
-
-        </button>
-
-        <div
-            id="listaBacklog"
-            class="multi-filtro-lista">
-        </div>
-
     </div>
 
 </div>
