@@ -410,6 +410,8 @@ function actualizarOpcionesFiltros(datos) {
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const estG = regD1.estadoGestion || "";
+        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
 
         const cumpleTexto = !texto || 
             String(fila[idxID] || "").toLowerCase().includes(texto) ||
@@ -418,7 +420,15 @@ function actualizarOpcionesFiltros(datos) {
 
         const cumpleEstGestion = estadosGestionSeleccionados.length === 0 || estadosGestionSeleccionados.includes(estG);
 
-        return cumpleTexto && cumpleEstGestion;
+        let cumpleKpi = true;
+        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+
+        return cumpleTexto && cumpleEstGestion && cumpleKpi;
     };
 
     const datosParaDepto = datosGlobal.filter(fila => coincideBase(fila) &&
