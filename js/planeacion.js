@@ -169,9 +169,9 @@ function pintarTabla(datos){
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
                         <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
-                        <button type="button" class="btn-abrir-modal-obs" data-ot="${fila[idxOT]}" title="Ampliar y editar historial">✏️</button>
+                        <button type="button" class="btn-accion-obs btn-ver-obs" data-ot="${fila[idxOT]}" title="Ver observaciones amplias">👁️</button>
+                        <button type="button" class="btn-accion-obs btn-editar-obs" data-ot="${fila[idxOT]}" title="Editar observaciones">✏️</button>
                     </div>
-                    <span class="custom-tooltip">${d1.observacion || "Sin observaciones"}</span>
                 </div>
             </td>
            <td>
@@ -1169,12 +1169,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 // ==========================================
-// LÓGICA PARA EL MODAL DE OBSERVACIONES
+// LÓGICA MODAL DE OBSERVACIONES (VER / EDITAR)
 // ==========================================
 let filaActualModal = null;
 
 document.addEventListener("click", (e) => {
-    const btnEditar = e.target.closest(".btn-abrir-modal-obs");
+    const btnVer = e.target.closest(".btn-ver-obs");
+    const btnEditar = e.target.closest(".btn-editar-obs");
+
+    // ACCIÓN: VER (Solo lectura / o lectura cómoda)
+    if (btnVer) {
+        const fila = btnVer.closest("tr");
+        filaActualModal = fila;
+        const ot = btnVer.getAttribute("data-ot");
+        const inputObs = fila.querySelector(".observacion");
+        
+        const modal = document.getElementById("modalObservacion");
+        const txtArea = document.getElementById("textareaModalObs");
+        const otInfo = document.getElementById("obsModalOtInfo");
+        const titulo = document.getElementById("obsModalTitulo");
+        const btnGuardar = document.getElementById("btnGuardarObs");
+
+        if (modal && txtArea && otInfo) {
+            titulo.textContent = "👁️ Ver Observaciones";
+            otInfo.textContent = `Orden de Trabajo (OT): ${ot || "--"}`;
+            txtArea.value = inputObs ? inputObs.value : "";
+            txtArea.readOnly = true; // Solo lectura para el botón ver
+            if (btnGuardar) btnGuardar.style.display = "none"; // Ocultar guardar al solo ver
+            modal.style.display = "grid";
+        }
+    }
+
+    // ACCIÓN: EDITAR (Editable con guardado)
     if (btnEditar) {
         const fila = btnEditar.closest("tr");
         filaActualModal = fila;
@@ -1184,30 +1210,36 @@ document.addEventListener("click", (e) => {
         const modal = document.getElementById("modalObservacion");
         const txtArea = document.getElementById("textareaModalObs");
         const otInfo = document.getElementById("obsModalOtInfo");
+        const titulo = document.getElementById("obsModalTitulo");
+        const btnGuardar = document.getElementById("btnGuardarObs");
 
         if (modal && txtArea && otInfo) {
+            titulo.textContent = "✏️ Editar Observaciones";
             otInfo.textContent = `Orden de Trabajo (OT): ${ot || "--"}`;
             txtArea.value = inputObs ? inputObs.value : "";
+            txtArea.readOnly = false; // Permite escribir
+            if (btnGuardar) btnGuardar.style.display = "inline-block"; // Muestra el botón guardar
             modal.style.display = "grid";
             txtArea.focus();
         }
     }
 
+    // Cerrar el modal
     if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs" || e.target.id === "modalObservacion") {
         if (e.target.id === "modalObservacion" && e.target !== document.getElementById("modalObservacion")) return;
         const modal = document.getElementById("modalObservacion");
         if (modal) modal.style.display = "none";
     }
 
+    // Guardar cambios desde el modal de edición
     if (e.target.id === "btnGuardarObs") {
         const txtArea = document.getElementById("textareaModalObs");
         if (filaActualModal && txtArea) {
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
                 inputObs.value = txtArea.value;
-                // Llama a tu función existente para guardar en la base de datos
                 if (typeof guardarOT === "function") {
-                    guardarOT(filaActualModal);
+                    guardarOT(filaActualModal); // Envía a D1 automáticamente
                 }
             }
         }
