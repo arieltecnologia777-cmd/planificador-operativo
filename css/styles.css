@@ -1085,7 +1085,7 @@ button{
     width:100%;
     overflow-x:auto;
     overflow-y:auto;
-    max-height:610px; /* Ajustado a 610px */
+    max-height:610px;
     border:1px solid #edf1f5;
     border-radius:14px;
 
@@ -1673,35 +1673,46 @@ width:160px;
 .btn-limpiar-header:active {
     transform: translate(-50%, -50%) scale(0.96);
 }
-/* Contenedor del input con posición relativa para el tooltip */
+
+/* ==========================================
+   TOOLTIP DE OBSERVACIONES DEFINITIVO
+   ========================================== */
+
+/* Contenedor del input con posición relativa */
 .observacion-container {
     position: relative;
-    display: inline-block;
+    display: block;
     width: 100%;
 }
 
-/* El cuadro flotante personalizado con alta visibilidad */
+/* Permitir que el contenedor de la tabla no oculte elementos flotantes superiores */
+.planeacion-table-wrapper {
+    overflow: visible !important;
+}
+
+/* El cuadro flotante personalizado con ancho dinámico y multilínea */
 .observacion-container .custom-tooltip {
     visibility: hidden;
-    width: 320px;
-    background-color: #0f172a; /* Azul oscuro casi negro muy profesional */
-    color: #ffffff; /* Texto totalmente blanco y nítido */
+    width: max-content;
+    max-width: 450px;
+    background-color: #0f172a;
+    color: #ffffff;
     text-align: left;
     border-radius: 8px;
     padding: 10px 14px;
     position: absolute;
-    z-index: 9999;
-    bottom: 130%; /* Se muestra flotando arriba del input */
-    left: 50%;
-    transform: translateX(-50%);
+    z-index: 99999;
+    bottom: 140%;
+    left: 0;
     opacity: 0;
     transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     font-size: 13px;
     font-weight: 500;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5); /* Sombra fuerte para destacar sobre la tabla */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
     pointer-events: none;
     line-height: 1.4;
-    border: 1px solid #334155; /* Borde sutil para darle relieve */
+    border: 1px solid #334155;
+    white-space: normal !important;
 }
 
 /* Flechita decorativa del cuadro flotante */
@@ -1709,16 +1720,15 @@ width:160px;
     content: "";
     position: absolute;
     top: 100%;
-    left: 50%;
-    margin-left: -6px;
+    left: 20px;
     border-width: 6px;
     border-style: solid;
     border-color: #0f172a transparent transparent transparent;
 }
 
-/* Mostrar el cuadro al pasar el mouse con un efecto flotante limpio */
+/* Mostrar el cuadro completo al pasar el mouse */
 .observacion-container:hover .custom-tooltip {
     visibility: visible;
     opacity: 1;
-    transform: translateX(-50%) translateY(-2px);
+    transform: translateY(-2px);
 }
