@@ -1809,7 +1809,7 @@ width:160px;
     background: #1d4ed8;
 }
 
-/* Contenedor para el input y los botones de acción (Ver y Editar) */
+/* Estilo del botón lápiz integrado al lado del input */
 .obs-edit-wrapper {
     display: flex;
     align-items: center;
@@ -1817,7 +1817,7 @@ width:160px;
     width: 100%;
 }
 
-.btn-accion-obs {
+.btn-abrir-modal-obs {
     background: #edf2f8;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -1831,7 +1831,7 @@ width:160px;
     transition: all 0.2s ease;
 }
 
-.btn-accion-obs:hover {
+.btn-abrir-modal-obs:hover {
     background: #2563eb;
     color: #fff;
     border-color: #2563eb;
