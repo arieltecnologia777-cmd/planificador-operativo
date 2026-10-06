@@ -166,14 +166,18 @@ function pintarTabla(datos){
                 </select>
             </td>
             <td>
-                <div class="observacion-container">
-                    <div class="obs-edit-wrapper">
-                        <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
-                        <button type="button" class="btn-abrir-modal-obs" data-ot="${fila[idxOT]}" title="Ampliar y editar observaciones">✏️</button>
-                    </div>
-                </div>
-            </td>
-           <td>
+    <div class="observacion-container">
+        <div class="obs-edit-wrapper">
+            <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
+            <button type="button" class="btn-abrir-modal-obs" 
+                data-ot="${fila[idxOT] || ""}" 
+                data-id="${fila[idxID] || ""}" 
+                data-depto="${fila[idxDepto] || ""}" 
+                data-muni="${fila[idxMuni] || ""}" 
+                title="Ampliar y editar observaciones">✏️</button>
+        </div>
+    </div>
+</td>
     <select class="edit-select estado-gestion">
         <option value=""></option>
         <option value="Gestionable" ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>Gestionable</option>
@@ -1178,22 +1182,37 @@ document.addEventListener("click", (e) => {
     if (btnEditar) {
         const fila = btnEditar.closest("tr");
         filaActualModal = fila;
+        
+        // Capturar los valores desde los atributos data-*
         const ot = btnEditar.getAttribute("data-ot");
+        const id = btnEditar.getAttribute("data-id");
+        const depto = btnEditar.getAttribute("data-depto");
+        const muni = btnEditar.getAttribute("data-muni");
+        
         const inputObs = fila.querySelector(".observacion");
         
         const modal = document.getElementById("modalObservacion");
         const txtArea = document.getElementById("textareaModalObs");
-        const otInfo = document.getElementById("obsModalOtInfo");
+        
+        // Elementos visuales del modal
+        const spanOt = document.getElementById("modalValOt");
+        const spanId = document.getElementById("modalValId");
+        const spanDepto = document.getElementById("modalValDepto");
+        const spanMuni = document.getElementById("modalValMuni");
 
-        if (modal && txtArea && otInfo) {
-            otInfo.textContent = `Orden de Trabajo (OT): ${ot || "--"}`;
+        if (modal && txtArea) {
+            if (spanOt) spanOt.textContent = ot || "--";
+            if (spanId) spanId.textContent = id || "--";
+            if (spanDepto) spanDepto.textContent = depto || "--";
+            if (spanMuni) spanMuni.textContent = muni || "--";
+
             txtArea.value = inputObs ? inputObs.value : "";
             modal.style.display = "grid";
             txtArea.focus();
         }
     }
 
-    // Cerrar el modal
+    // Cerrar modal
     if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs" || e.target.id === "modalObservacion") {
         if (e.target.id === "modalObservacion" && e.target !== document.getElementById("modalObservacion")) return;
         const modal = document.getElementById("modalObservacion");
@@ -1208,7 +1227,7 @@ document.addEventListener("click", (e) => {
             if (inputObs) {
                 inputObs.value = txtArea.value;
                 if (typeof guardarOT === "function") {
-                    guardarOT(filaActualModal); // Guarda automáticamente
+                    guardarOT(filaActualModal);
                 }
             }
         }
