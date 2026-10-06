@@ -166,17 +166,18 @@ function pintarTabla(datos){
                 </select>
             </td>
             <td>
-    <div class="observacion-container">
-        <div class="obs-edit-wrapper">
-            <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
-            <button type="button" class="btn-abrir-modal-obs" 
-                data-ot="${fila[idxOT] || ""}" 
-                data-id="${fila[idxID] || ""}" 
-                data-depto="${fila[idxDepto] || ""}" 
-                data-muni="${fila[idxMuni] || ""}" 
-                title="Ampliar y editar observaciones">✏️</button>
-        </div>
-    </div>
+                <div class="observacion-container">
+                    <div class="obs-edit-wrapper">
+                        <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
+                        <button type="button" class="btn-abrir-modal-obs" 
+                            data-ot="${d1.ot || ""}" 
+                            data-id="${d1.id || ""}" 
+                            data-depto="${d1.departamento || ""}" 
+                            data-muni="${d1.municipio || ""}" 
+                            title="Ampliar y editar observaciones">✏️</button>
+                    </div>
+                </div>
+            </td>
 </td>
     <select class="edit-select estado-gestion">
         <option value=""></option>
