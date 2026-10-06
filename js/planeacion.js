@@ -177,6 +177,7 @@ function pintarTabla(datos){
                             data-id="${fila[idxID] || ""}" 
                             data-depto="${fila[idxDepto] || ""}" 
                             data-muni="${fila[idxMunicipio] || ""}" 
+                            data-afec="${fila[idxAfectacion] || ""}" 
                             title="Ampliar y editar observaciones">✏️</button>
                     </div>
                 </div>
@@ -1192,6 +1193,7 @@ document.addEventListener("click", (e) => {
         const id = btnEditar.getAttribute("data-id");
         const depto = btnEditar.getAttribute("data-depto");
         const muni = btnEditar.getAttribute("data-muni");
+        const afec = btnEditar.getAttribute("data-afec");
         
         const inputObs = fila.querySelector(".observacion");
         
@@ -1203,12 +1205,14 @@ document.addEventListener("click", (e) => {
         const spanId = document.getElementById("modalValId");
         const spanDepto = document.getElementById("modalValDepto");
         const spanMuni = document.getElementById("modalValMuni");
+        const spanAfec = document.getElementById("modalValAfec");
 
         if (modal && txtArea) {
             if (spanOt) spanOt.textContent = ot || "--";
             if (spanId) spanId.textContent = id || "--";
             if (spanDepto) spanDepto.textContent = depto || "--";
             if (spanMuni) spanMuni.textContent = muni || "--";
+            if (spanAfec) spanAfec.textContent = afec || "--";
 
             txtArea.value = inputObs ? inputObs.value : "";
             modal.style.display = "grid";
