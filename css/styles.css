@@ -1673,3 +1673,18 @@ width:160px;
 .btn-limpiar-header:active {
     transform: translate(-50%, -50%) scale(0.96);
 }
+/* Tooltip personalizado para observaciones */
+input.observacion {
+    position: relative;
+}
+
+/* Nota: Para un tooltip avanzado flotante con HTML/CSS se requiere un elemento contenedor, 
+   pero si quieres mantenerlo simple y nativo pero grande, podemos usar un truco de estilo 
+   o manejarlo con una clase si usas un contenedor personalizado. 
+   Sin embargo, si prefieres que el cuadro de texto mismo se expanda al seleccionarlo o pasar el mouse: */
+
+input.observacion:hover {
+    font-size: 14px;
+    background-color: #fffde7; /* Un color amarillo muy suave para destacar */
+    border-color: #fbc02d;
+}
