@@ -195,9 +195,9 @@
 <div id="panelPlaceholder"></div>
         <section class="panel">
 
-            <div class="planeacion-header">
+           <div class="planeacion-header">
 
-    <div class="panel-header">
+    <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
 
         <div class="header-title-group">
             <h2>Planeación Operativa</h2>
@@ -211,9 +211,20 @@
             </button>
         </div>
 
-        <button id="btnZoom" class="expand-btn" title="Zoom / Pantalla completa">
-            ⛶
-        </button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <!-- Widget KPI compacto en la esquina superior derecha -->
+            <div class="kpi-ids-afectados-widget">
+                <div class="kpi-ids-icon">📊</div>
+                <div class="kpi-ids-content">
+                    <span class="kpi-ids-label">Total IDs Afectados</span>
+                    <span id="totalIdsAfectados" class="kpi-ids-value">0</span>
+                </div>
+            </div>
+
+            <button id="btnZoom" class="expand-btn" title="Zoom / Pantalla completa">
+                ⛶
+            </button>
+        </div>
 
     </div>
 
