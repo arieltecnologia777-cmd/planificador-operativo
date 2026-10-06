@@ -476,15 +476,21 @@
  <script src="../js/app.js"></script>
  <script src="../js/planeacion.js"></script>
 
-<!-- Modal flotante para ver y editar observaciones -->
+<!-- Modal flotante para editar observaciones -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content">
         <div class="obs-modal-header">
-            <h3 id="obsModalTitulo">📝 Observaciones del Sitio</h3>
+            <h3>📝 Observaciones del Sitio</h3>
             <button type="button" id="cerrarModalObs" class="obs-modal-close">&times;</button>
         </div>
         <div class="obs-modal-body">
-            <p id="obsModalOtInfo" class="obs-modal-subtitle">Orden de Trabajo (OT): --</p>
+            <!-- Contenedor de información detallada del sitio en el orden solicitado -->
+            <div id="obsModalOtInfo" class="obs-modal-subtitle">
+                <div><strong>ID:</strong> <span id="modalValId">--</span></div>
+                <div><strong>Departamento:</strong> <span id="modalValDepto">--</span></div>
+                <div><strong>Municipio:</strong> <span id="modalValMuni">--</span></div>
+                <div><strong>Orden de Trabajo (OT):</strong> <span id="modalValOt">--</span></div>
+            </div>
             <textarea id="textareaModalObs" rows="6" placeholder="Escribe o actualiza los avances aquí..."></textarea>
         </div>
         <div class="obs-modal-footer">
