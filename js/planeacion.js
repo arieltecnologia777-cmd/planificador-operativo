@@ -1467,7 +1467,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
                     });
 
-                    // Búsqueda estricta de la columna de fecha de programación para evitar falsos positivos
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
@@ -1487,6 +1486,49 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
+                    // Función robusta para normalizar fechas de Excel a YYYY-MM-DD
+                    const formatearFechaExcelAInput = (valorCrudo) => {
+                        if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
+
+                        // Si Excel lo leyó como número serial de fecha
+                        if (typeof valorCrudo === "number") {
+                            const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
+                            if (fechaObj) {
+                                const y = fechaObj.y;
+                                const m = String(fechaObj.m).padStart(2, "0");
+                                const d = String(fechaObj.d).padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        const texto = String(valorCrudo).trim();
+                        if (!texto || texto === "-" || texto === "undefined" || texto === "null") return "";
+
+                        // Si ya está en formato YYYY-MM-DD
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+
+                        // Si viene en formato DD/MM/YYYY o DD-MM-YYYY
+                        const partes = texto.split(/[\/\-]/);
+                        if (partes.length === 3) {
+                            // Asumimos formato DD/MM/YYYY
+                            if (partes[0].length <= 2 && partes[2].length === 4) {
+                                const d = partes[0].padStart(2, "0");
+                                const m = partes[1].padStart(2, "0");
+                                const y = partes[2];
+                                return `${y}-${m}-${d}`;
+                            }
+                            // Asumimos formato YYYY/MM/DD
+                            if (partes[0].length === 4 && partes[2].length <= 2) {
+                                const y = partes[0];
+                                const m = partes[1].padStart(2, "0");
+                                const d = partes[2].padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        return texto;
+                    };
+
                     let actualizados = 0;
 
                     for (let i = 1; i < filasExcel.length; i++) {
@@ -1498,23 +1540,18 @@ document.addEventListener("DOMContentLoaded", () => {
                             
                             const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
                             
-                            // Extraer fecha con validación estricta de que la celda exista y no esté vacía
                             let fechaVal = "";
                             if (idxFechaProg !== -1 && fila[idxFechaProg] !== undefined && fila[idxFechaProg] !== null) {
-                                fechaVal = String(fila[idxFechaProg]).trim();
+                                fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
                             }
 
                             let estadoProgVal = regD1Actual.estadoProgramacion || "";
 
-                            // Si el Excel trae un estado explícito, lo respetamos
                             if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
-                            } 
-                            // CONDICIÓN ESTRICTA: Solo cambia a "Programada" si la fecha tiene texto real (ej. YYYY-MM-DD o formato válido) y no está vacía
-                            else if (fechaVal !== "" && fechaVal !== "-" && fechaVal !== "undefined" && fechaVal !== "null" && fechaVal.length >= 6) {
+                            } else if (fechaVal !== "") {
                                 estadoProgVal = "Programada";
                             } else {
-                                // Si no hay fecha en el Excel para esta fila, conservamos el estado que ya tenía (o vacío si no tenía)
                                 fechaVal = regD1Actual.fechaProgramacion || "";
                             }
 
