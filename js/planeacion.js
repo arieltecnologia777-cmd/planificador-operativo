@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (CON FORMATO DE FECHA REAL)
+// LÓGICA DE EXPORTACIÓN A EXCEL (PROGRAMADA Y CANCELADA CON FECHA)
 // ==========================================
 function exportarPlaneacion() {
     try {
@@ -1222,15 +1222,23 @@ function exportarPlaneacion() {
                     ? window.registrosD1[otValor]
                     : {};
 
-            // Convertir la fecha YYYY-MM-DD a un objeto Date real para que Excel la gestione como fecha estructurada
-            let fechaExportar = "";
+            let valorFechaExportar = "";
+            const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
-            
-            if (regexFecha.test(fechaStr)) {
+
+            // Se incluye tanto "Programada" como "Cancelada" para la salida con fecha estructurada
+            if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                // Creamos el objeto fecha UTC a mediodía para evitar desfases de zona horaria en Excel
-                fechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+            } else {
+                if (estadoProg === "Pendiente") {
+                    valorFechaExportar = "En validación";
+                } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
+                    valorFechaExportar = "No aplica";
+                } else {
+                    valorFechaExportar = "⟵ Definir estado";
+                }
             }
 
             dataAOA.push([
@@ -1246,7 +1254,7 @@ function exportarPlaneacion() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                fechaExportar, // Objeto Date real para la columna de fecha
+                valorFechaExportar,
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1259,15 +1267,16 @@ function exportarPlaneacion() {
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Recorremos las celdas de la columna de fecha (columna M, índice 12) para darles el formato nativo de fecha de Excel
-        const rango = XLSX.utils.decode_range(ws['!ref']);
-        const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+        if (ws['!ref']) {
+            const rango = XLSX.utils.decode_range(ws['!ref']);
+            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
-        for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
-            const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-            if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
-                ws[celdaRef].t = 'd'; // Tipo fecha nativo de SheetJS/Excel
-                ws[celdaRef].z = 'dd/mm/yyyy'; // Formato visual deseado
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
+                    ws[celdaRef].t = 'd';
+                    ws[celdaRef].z = 'dd/mm/yyyy';
+                }
             }
         }
 
