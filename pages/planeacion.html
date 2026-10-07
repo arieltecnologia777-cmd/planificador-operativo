@@ -8,14 +8,12 @@
 
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        /* Optimización para eliminar el parpadeo / efecto fantasma */
         .planeacion-table-wrapper, .planeacion-scroll-top {
             transform: translateZ(0);
             will-change: scroll-position;
             backface-visibility: hidden;
         }
 
-        /* Contenedor donde las flechitas quedan perfectamente pegadas a los extremos de la barra */
         .scroll-with-arrows-top {
             display: flex;
             align-items: center;
@@ -33,14 +31,13 @@
             border-bottom: 1px solid #ced4da;
         }
 
-        /* Estilo de los botoncitos pegados tipo Excel */
         .btn-scroll-arrow {
             background-color: #f1f3f5;
             border: 1px solid #ced4da;
             width: 20px;
             height: 16px;
             cursor: pointer;
-            font-size: 9px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -277,7 +274,6 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 12px;">
-            <!-- Widget KPI compacto (sin icono) -->
             <div class="kpi-ids-afectados-widget">
                 <div class="kpi-ids-content">
                     <span class="kpi-ids-label">Total IDs Afectados</span>
@@ -475,13 +471,13 @@
 
 </div>
 
-<!-- Barra superior con flechitas integradas de lado a lado -->
+<!-- Xiyyeewwan fi scroll bar walitti qabamanii akka qarqaraatti taa'an -->
 <div class="scroll-with-arrows-top">
-    <button type="button" class="btn-scroll-arrow" id="scrollLeftTopBtn" title="Izquierda">&#9664;</button>
+    <button type="button" class="btn-scroll-arrow" id="scrollLeftTopBtn" title="Bitaa">&#9664;</button>
     <div class="planeacion-scroll-top">
         <div class="planeacion-scroll-top-inner"></div>
     </div>
-    <button type="button" class="btn-scroll-arrow" id="scrollRightTopBtn" title="Derecha">&#9658;</button>
+    <button type="button" class="btn-scroll-arrow" id="scrollRightTopBtn" title="Mirga">&#9654;</button>
 </div>
 
 <div class="planeacion-table-wrapper">
@@ -549,12 +545,10 @@
 
 </div>
 
-
  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
  <script src="../js/app.js"></script>
  <script src="../js/planeacion.js"></script>
 
-<!-- Modal flotante para editar observaciones -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content">
         <div class="obs-modal-header">
@@ -562,7 +556,6 @@
             <button type="button" id="cerrarModalObs" class="obs-modal-close">&times;</button>
         </div>
         <div class="obs-modal-body">
-            <!-- Contenedor de información detallada del sitio -->
             <div id="obsModalOtInfo" class="obs-modal-subtitle">
                 <div><strong>ID:</strong> <span id="modalValId">--</span></div>
                 <div><strong>Departamento:</strong> <span id="modalValDepto">--</span></div>
