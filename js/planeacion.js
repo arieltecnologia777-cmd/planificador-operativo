@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL
+// LÓGICA DE EXPORTACIÓN A EXCEL (CON FORMATO DE FECHA REAL)
 // ==========================================
 function exportarPlaneacion() {
     try {
@@ -1205,17 +1205,6 @@ function exportarPlaneacion() {
                 .trim();
         };
 
-        const formatearFechaDDMMYYYY = (texto) => {
-            if (!texto) return "";
-            const limpio = String(texto).trim();
-            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
-            if (regexFecha.test(limpio)) {
-                const [, year, month, day] = limpio.match(regexFecha);
-                return `${day}/${month}/${year}`;
-            }
-            return limpio; 
-        };
-
         const dataAOA = [];
         dataAOA.push([...headers]);
 
@@ -1233,6 +1222,17 @@ function exportarPlaneacion() {
                     ? window.registrosD1[otValor]
                     : {};
 
+            // Convertir la fecha YYYY-MM-DD a un objeto Date real para que Excel la gestione como fecha estructurada
+            let fechaExportar = "";
+            const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
+            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
+            
+            if (regexFecha.test(fechaStr)) {
+                const [, year, month, day] = fechaStr.match(regexFecha);
+                // Creamos el objeto fecha UTC a mediodía para evitar desfases de zona horaria en Excel
+                fechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+            }
+
             dataAOA.push([
                 getValor("ID"),
                 getValor("Departamento"),
@@ -1246,7 +1246,7 @@ function exportarPlaneacion() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                formatearFechaDDMMYYYY(regD1.fechaProgramacion),
+                fechaExportar, // Objeto Date real para la columna de fecha
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1258,6 +1258,19 @@ function exportarPlaneacion() {
         });
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        // Recorremos las celdas de la columna de fecha (columna M, índice 12) para darles el formato nativo de fecha de Excel
+        const rango = XLSX.utils.decode_range(ws['!ref']);
+        const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+
+        for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+            const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+            if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
+                ws[celdaRef].t = 'd'; // Tipo fecha nativo de SheetJS/Excel
+                ws[celdaRef].z = 'dd/mm/yyyy'; // Formato visual deseado
+            }
+        }
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
@@ -1273,16 +1286,6 @@ function exportarPlaneacion() {
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const btnExportar = document.getElementById("btnExportarExcel");
-    if (btnExportar) {
-        btnExportar.addEventListener("click", (e) => {
-            e.preventDefault();
-            exportarPlaneacion();
-        });
-    }
-});
 
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
