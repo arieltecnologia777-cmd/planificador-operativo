@@ -170,19 +170,20 @@ function pintarTabla(datos){
                 <input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}>
             </td>
             <td>
-                <div class="observacion-container">
-                    <div class="obs-edit-wrapper">
-                        <input class="edit-input observacion" value="${d1.observacion || ""}" placeholder="Observación">
-                        <button type="button" class="btn-abrir-modal-obs" 
-                            data-ot="${fila[idxOT] || ""}" 
-                            data-id="${fila[idxID] || ""}" 
-                            data-depto="${fila[idxDepto] || ""}" 
-                            data-muni="${fila[idxMunicipio] || ""}" 
-                            data-afec="${fila[idxAfectacion] || ""}" 
-                            title="Ampliar y editar observaciones">✏️</button>
-                    </div>
-                </div>
-            </td>
+    <div class="observacion-container">
+        <div class="obs-edit-wrapper">
+            <!-- Usamos replace para mostrarlo plano en la tabla de una sola línea -->
+            <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, "  |  ")}" placeholder="Observación">
+            <button type="button" class="btn-abrir-modal-obs" 
+                data-ot="${fila[idxOT] || ""}" 
+                data-id="${fila[idxID] || ""}" 
+                data-depto="${fila[idxDepto] || ""}" 
+                data-muni="${fila[idxMunicipio] || ""}" 
+                data-afec="${fila[idxAfectacion] || ""}" 
+                title="Ampliar y editar observaciones">✏️</button>
+        </div>
+    </div>
+</td>
             <td>
                 <select class="edit-select estado-gestion">
                     <option value=""></option>
@@ -1170,10 +1171,10 @@ function exportarPlaneacion() {
         const limpiarTexto = (texto) => {
             if (!texto) return "";
             return String(texto)
-                .replace(/[\r\n]+/g, " ") 
+                .replace(/[\r\n]+/g, " | ")
+                .replace(/\s+/g, " ")
                 .trim();
         };
-
         const formatearFechaDDMMYYYY = (texto) => {
             if (!texto) return "";
             const limpio = String(texto).trim();
@@ -1296,7 +1297,11 @@ document.addEventListener("click", (e) => {
             if (spanMuni) spanMuni.textContent = muni || "--";
             if (spanAfec) spanAfec.textContent = afec || "--";
 
-            txtArea.value = inputObs ? inputObs.value : "";
+            // Reemplazo del Punto B:
+            const textoCrudo = (window.registrosD1[ot]?.observacion || inputObs?.value || "");
+            const valorRealObs = textoCrudo.replace(/  ?\|  ?/g, "\n");
+            txtArea.value = valorRealObs;
+
             modal.style.display = "grid";
             txtArea.focus();
         }
