@@ -172,8 +172,8 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <!-- Muestra los saltos de línea con la viñeta en la tabla principal -->
-                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " • ").replace(/\s+/g, " ").trim()}" placeholder="Observación">
+                        <!-- readonly agregado para bloquear la edición directa en la celda y obligar el uso del modal -->
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " • ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
                         
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${fila[idxOT] || ""}" 
@@ -974,7 +974,7 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("blur", async e => {
-    if(!e.target.classList.contains("observacion") && !e.target.classList.contains("fecha-input")) return;
+    if(!e.target.classList.contains("fecha-input")) return;
     const fila = e.target.closest("tr");
     if(!fila) return;
     await guardarOT(fila);
@@ -990,7 +990,6 @@ async function guardarOT(fila, observacionForzada = null){
     }
 
     const inputObs = fila.querySelector(".observacion");
-    // Si viene una observación forzada del modal, la usamos; si no, leemos del registro o input
     const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
 
     const payload = {
@@ -1174,7 +1173,7 @@ function exportarPlaneacion() {
         const limpiarTexto = (texto) => {
             if (!texto) return "";
             return String(texto)
-                .replace(/[\r\n]+/g, " | ")
+                .replace(/[\r\n]+/g, " • ")
                 .replace(/\s+/g, " ")
                 .trim();
         };
@@ -1300,12 +1299,12 @@ document.addEventListener("click", (e) => {
             if (spanMuni) spanMuni.textContent = muni || "--";
             if (spanAfec) spanAfec.textContent = afec || "--";
 
-            // Obtenemos el texto directamente de la base de datos o del registro global
             const registroActual = window.registrosD1[ot] || {};
             let textoGuardado = registroActual.observacion || inputObs?.value || "";
 
-            // Si el texto venía con el separador visual de la tabla, lo pasamos a saltos de línea reales para el textarea
-            if (textoGuardado.includes(" | ")) {
+            if (textoGuardado.includes(" • ")) {
+                textoGuardado = textoGuardado.replace(/\s*•\s*/g, "\n");
+            } else if (textoGuardado.includes(" | ")) {
                 textoGuardado = textoGuardado.replace(/\s*\|\s*/g, "\n");
             }
 
@@ -1315,8 +1314,8 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs" || e.target.id === "modalObservacion") {
-        if (e.target.id === "modalObservacion" && e.target !== document.getElementById("modalObservacion")) return;
+    // Solo se cierra mediante el botón cerrar o cancelar (sin permitir clic afuera)
+    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs") {
         const modal = document.getElementById("modalObservacion");
         if (modal) modal.style.display = "none";
     }
@@ -1327,22 +1326,29 @@ document.addEventListener("click", (e) => {
             const ot = filaActualModal.children[4].textContent.trim();
             const textoConSaltos = txtArea.value;
 
-            // Guardamos los saltos reales en el objeto global
             window.registrosD1[ot] = window.registrosD1[ot] || {};
             window.registrosD1[ot].observacion = textoConSaltos;
 
-            // En el input visual de la tabla ponemos los separadores | para que no rompa el diseño
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
-            inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " • ");
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " • ");
             }
 
             if (typeof guardarOT === "function") {
-                // Enviamos el texto real con saltos de línea al Worker
                 guardarOT(filaActualModal, textoConSaltos);
             }
         }
         const modal = document.getElementById("modalObservacion");
         if (modal) modal.style.display = "none";
+    }
+});
+
+// Cerrar el modal al presionar la tecla Escape
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        const modal = document.getElementById("modalObservacion");
+        if (modal && modal.style.display === "grid") {
+            modal.style.display = "none";
+        }
     }
 });
