@@ -979,7 +979,7 @@ document.addEventListener("blur", async e => {
     await guardarOT(fila);
 }, true);
 
-async function guardarOT(fila){
+async function guardarOT(fila, observacionForzada = null){
     const ot = fila.children[4].textContent.trim();
     
     const inputFecha = fila.querySelector(".fecha-input");
@@ -988,14 +988,15 @@ async function guardarOT(fila){
         fechaVal = "";
     }
 
-    // Nota: Si estás editando desde la tabla o el modal, buscamos la observación correspondiente
     const inputObs = fila.querySelector(".observacion");
+    // Si viene una observación forzada del modal, la usamos; si no, leemos del registro o input
+    const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
 
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
         fechaProgramacion: fechaVal,
-        observacion: inputObs?.value || "", // Captura el texto tal cual
+        observacion: obsFinal,
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || ""
@@ -1322,12 +1323,22 @@ document.addEventListener("click", (e) => {
     if (e.target.id === "btnGuardarObs") {
         const txtArea = document.getElementById("textareaModalObs");
         if (filaActualModal && txtArea) {
+            const ot = filaActualModal.children[4].textContent.trim();
+            const textoConSaltos = txtArea.value;
+
+            // Guardamos los saltos reales en el objeto global
+            window.registrosD1[ot] = window.registrosD1[ot] || {};
+            window.registrosD1[ot].observacion = textoConSaltos;
+
+            // En el input visual de la tabla ponemos los separadores | para que no rompa el diseño
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
-                inputObs.value = txtArea.value;
-                if (typeof guardarOT === "function") {
-                    guardarOT(filaActualModal);
-                }
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
+            }
+
+            if (typeof guardarOT === "function") {
+                // Enviamos el texto real con saltos de línea al Worker
+                guardarOT(filaActualModal, textoConSaltos);
             }
         }
         const modal = document.getElementById("modalObservacion");
