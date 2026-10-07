@@ -172,7 +172,8 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación">
+                        <!-- Muestra los saltos de línea con la viñeta en la tabla principal -->
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " • ").replace(/\s+/g, " ").trim()}" placeholder="Observación">
                         
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${fila[idxOT] || ""}" 
