@@ -2018,3 +2018,9 @@ width:160px;
     will-change: scroll-position;
     backface-visibility: hidden;
 }
+/* Eliminar efecto fantasma / parpadeo en la barra de desplazamiento inferior de la tabla */
+.planeacion-table-wrapper {
+    transform: translateZ(0);
+    will-change: scroll-position;
+    backface-visibility: hidden;
+}
