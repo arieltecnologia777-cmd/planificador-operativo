@@ -1131,16 +1131,13 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (BLINDADA Y CON FECHAS ESTRUCTURADAS)
+// LÓGICA DE EXPORTACIÓN A EXCEL (DIRECTA E INFALIBLE)
 // ==========================================
-function exportarPlaneacion() {
-    console.log("🚀 El botón de exportar fue presionado");
+window.exportarPlaneacion = function() {
+    console.log("🚀 Función exportarPlaneacion ejecutada correctamente");
+    
     try {
-        if (
-            typeof datosGlobal === "undefined" ||
-            typeof encabezadosGlobal === "undefined" ||
-            !datosGlobal.length
-        ) {
+        if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
             alert("No hay datos cargados para exportar todavía.");
             return;
         }
@@ -1151,27 +1148,21 @@ function exportarPlaneacion() {
         let filas = [...datosGlobal];
 
         const buscarIndice = (nombre) =>
-            encabezadosGlobal.findIndex(
-                h => String(h).trim() === nombre
-            );
+            encabezadosGlobal.findIndex(h => String(h).trim() === nombre);
 
         const idxDepto = buscarIndice("Departamento");
 
         if (region === "R1" && idxDepto !== -1) {
             filas = filas.filter(fila =>
                 ["CESAR", "LA GUAJIRA", "SAI"].includes(
-                    String(fila[idxDepto] || "")
-                        .trim()
-                        .toUpperCase()
+                    String(fila[idxDepto] || "").trim().toUpperCase()
                 )
             );
         }
 
         if (region === "R2" && idxDepto !== -1) {
             filas = filas.filter(fila =>
-                String(fila[idxDepto] || "")
-                    .trim()
-                    .toUpperCase() === "ANTIOQUIA"
+                String(fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
             );
         }
 
@@ -1200,10 +1191,7 @@ function exportarPlaneacion() {
 
         const limpiarTexto = (texto) => {
             if (!texto) return "";
-            return String(texto)
-                .replace(/[\r\n]+/g, " | ")
-                .replace(/\s+/g, " ")
-                .trim();
+            return String(texto).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim();
         };
 
         const dataAOA = [];
@@ -1216,31 +1204,17 @@ function exportarPlaneacion() {
             };
 
             const otValor = getValor("OT");
-
-            const regD1 =
-                window.registrosD1 &&
-                window.registrosD1[otValor]
-                    ? window.registrosD1[otValor]
-                    : {};
+            const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
 
             let valorFechaExportar = "";
-            let esFechaReal = false;
             const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Si está Programada o Cancelada con fecha válida, creamos un objeto Date UTC seguro
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
-                if (!isNaN(fechaObj.getTime())) {
-                    valorFechaExportar = fechaObj;
-                    esFechaReal = true;
-                }
-            }
-
-            // Si no es una fecha válida, asignamos el texto correspondiente según el estado web
-            if (!esFechaReal) {
+                valorFechaExportar = `${day}/${month}/${year}`; // Formato DD/MM/AAAA limpio
+            } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1275,42 +1249,19 @@ function exportarPlaneacion() {
         });
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
-
-        // Recorrido seguro para tipificar correctamente cada celda de la columna de fechas
-        if (ws && ws['!ref']) {
-            const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
-
-            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
-                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-                const celda = ws[celdaRef];
-                if (celda) {
-                    if (celda.v instanceof Date && !isNaN(celda.v.getTime())) {
-                        celda.t = 'd'; // Tipo fecha nativa de Excel
-                        celda.z = 'dd/mm/yyyy'; // Formato visual dd/mm/aaaa
-                    } else {
-                        celda.t = 's'; // Tipo texto para los mensajes de estado
-                    }
-                }
-            }
-        }
-
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
-        XLSX.writeFile(
-            wb,
-            `Planeacion_${region}_${timestamp}.xlsx`
-        );
+        XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
         console.log("✅ Archivo exportado con éxito");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
-}
+};
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
