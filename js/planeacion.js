@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO Y DEFINITIVO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO Y BLINDADO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1262,8 +1262,8 @@ window.exportarPlaneacion = function() {
                 }
             }
 
-            // Forzar el autofiltro estricto abarcando desde A1 hasta el final de la tabla
-            ws['!autofilter'] = { ref: XLSX.utils.encode_range(rango) };
+            // ⭐ FORZAR EL RANGO DEL AUTOFILTER DESDE A1 HASTA EL FINAL DE LA TABLA
+            ws['!autofilter'] = { ref: ws['!ref'] };
         }
 
         const wb = XLSX.utils.book_new();
@@ -1272,7 +1272,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito y filtro fijado en la fila 1");
+        console.log("✅ Archivo exportado con éxito y filtro asegurado en la fila 1");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
