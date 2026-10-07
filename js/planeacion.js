@@ -1324,7 +1324,6 @@ document.addEventListener("click", (e) => {
         if (filaActualModal && txtArea) {
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
-                // Asignamos el valor con saltos de línea reales al input oculto/principal de la fila
                 inputObs.value = txtArea.value;
                 if (typeof guardarOT === "function") {
                     await guardarOT(filaActualModal);
