@@ -1326,7 +1326,7 @@ document.addEventListener("click", (e) => {
             if (inputObs) {
                 inputObs.value = txtArea.value;
                 if (typeof guardarOT === "function") {
-                    await guardarOT(filaActualModal);
+                    guardarOT(filaActualModal);
                 }
             }
         }
