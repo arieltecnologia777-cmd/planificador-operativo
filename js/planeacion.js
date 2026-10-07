@@ -1394,22 +1394,28 @@ document.addEventListener("mouseup", () => {
     }
 });
 // ==========================================
-// SINCRONIZACIÓN EXACTA DEL ANCHO DE LA BARRA SUPERIOR
+// SINCRONIZACIÓN PROPORCIONAL EXACTA DE LA BARRA SUPERIOR
 // ==========================================
 function ajustarAnchoScrollSuperior() {
     const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
     const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
 
-    if (tableWrapper && topScrollInner) {
-        // Obtenemos el ancho máximo real que puede desplazarse la tabla
-        const maxScrollableWidth = tableWrapper.scrollWidth;
+    if (tableWrapper && topScroll && topScrollInner) {
+        // Calculamos cuánto se puede desplazar la tabla realmente
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
         
-        // Asignamos ese ancho exacto al elemento interno de la barra superior
-        topScrollInner.style.width = maxScrollableWidth + "px";
+        // Calculamos cuánto espacio libre tiene la barra superior para moverse
+        const maxScrollBarra = topScroll.clientWidth - topScroll.querySelector(".btn-scroll-arrow")?.clientWidth || 300;
+
+        if (maxScrollTabla > 0) {
+            // Ajustamos el ancho interno para que la proporción de scroll sea 1:1 exacta
+            const anchoIdeal = topScroll.clientWidth + maxScrollTabla;
+            topScrollInner.style.width = anchoIdeal + "px";
+        }
     }
 }
 
-// Ejecutar al cargar, redimensionar y tras un pequeño retraso
 window.addEventListener("load", ajustarAnchoScrollSuperior);
 window.addEventListener("resize", ajustarAnchoScrollSuperior);
 setTimeout(ajustarAnchoScrollSuperior, 300);
