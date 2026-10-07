@@ -1917,3 +1917,47 @@ width:160px;
     font-weight: 900;
     color: #0f172a;
 }
+/* Eliminar el efecto fantasma / parpadeo en las tablas con scroll sincronizado */
+.planeacion-table-wrapper, .planeacion-scroll-top {
+    transform: translateZ(0);
+    will-change: scroll-position;
+    backface-visibility: hidden;
+}
+
+/* Contenedor para la barra superior y las flechas de desplazamiento */
+.scroll-control-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.scroll-control-container .planeacion-scroll-top {
+    flex-grow: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Estilo de los botones con flechas tipo Excel */
+.btn-scroll-step {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    width: 32px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.btn-scroll-step:hover {
+    background-color: #e2e6ea;
+}
+
+.btn-scroll-step:active {
+    background-color: #dae0e5;
+}
