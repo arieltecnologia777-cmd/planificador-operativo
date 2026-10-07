@@ -1263,7 +1263,12 @@ window.exportarPlaneacion = function() {
             }
 
             // Aplicar rango de autofiltro
-            ws['!autofilter'] = { ref: ws['!ref'] };
+            const ultimaColumna = XLSX.utils.encode_col(rango.e.c);
+const ultimaFila = rango.e.r + 1;
+
+ws['!autofilter'] = {
+    ref: `A1:${ultimaColumna}${ultimaFila}`
+};
 
             // ⭐ CONGELAR LA FILA 1: Esto obliga a Excel a reconocer la fila 1 como encabezado estático inamovible
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
