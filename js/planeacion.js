@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (DEFINITIVA Y FUNCIONAL)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS JERÁRQUICAS + TEXTOS WEB)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1211,10 +1211,12 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+            // Si está Programada o Cancelada con fecha válida, creamos un objeto Date UTC real para la jerarquía de Excel
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = `${day}/${month}/${year}`;
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
+                // Si no, asignamos el texto descriptivo correspondiente
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1249,20 +1251,35 @@ window.exportarPlaneacion = function() {
         });
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        // Ajustar el formato de celda de manera segura para las fechas nativas
+        if (ws && ws['!ref']) {
+            const rango = XLSX.utils.decode_range(ws['!ref']);
+            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                const celda = ws[celdaRef];
+                if (celda && celda.v instanceof Date && !isNaN(celda.v.getTime())) {
+                    celda.t = 'd'; // Tipo fecha nativa (activa el árbol de años y meses en Excel)
+                    celda.z = 'dd/mm/yyyy'; // Formato visual de la fecha
+                }
+            }
+        }
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito");
+        console.log("✅ Archivo exportado con éxito y con fechas estructuradas");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 };
-
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
