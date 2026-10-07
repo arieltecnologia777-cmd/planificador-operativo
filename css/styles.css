@@ -2034,3 +2034,7 @@ width:160px;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
 }
+/* Cambiar el cursor a manito en las tarjetas de KPIs que funcionan como filtros */
+.kpi-card, .card {
+    cursor: pointer;
+}
