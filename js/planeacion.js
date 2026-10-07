@@ -1393,3 +1393,12 @@ document.addEventListener("mouseup", () => {
         scrollInterval = null;
     }
 });
+// Sincronizar el ancho interno exacto para que la barrita mantenga su tamaño real
+window.addEventListener("load", () => {
+    const table = document.querySelector(".planeacion-table");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+    
+    if (table && topScrollInner) {
+        topScrollInner.style.width = table.scrollWidth + "px";
+    }
+});
