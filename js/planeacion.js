@@ -1394,7 +1394,7 @@ document.addEventListener("mouseup", () => {
     }
 });
 // ==========================================
-// SINCRONIZACIÓN PROPORCIONAL EXACTA DE LA BARRA SUPERIOR
+// SINCRONIZACIÓN PERFECTA 1:1 DE LA BARRA SUPERIOR
 // ==========================================
 function ajustarAnchoScrollSuperior() {
     const tableWrapper = document.querySelector(".planeacion-table-wrapper");
@@ -1402,17 +1402,16 @@ function ajustarAnchoScrollSuperior() {
     const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
 
     if (tableWrapper && topScroll && topScrollInner) {
-        // Calculamos cuánto se puede desplazar la tabla realmente
+        // Cuánto se puede desplazar la tabla en total
         const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
         
-        // Calculamos cuánto espacio libre tiene la barra superior para moverse
-        const maxScrollBarra = topScroll.clientWidth - topScroll.querySelector(".btn-scroll-arrow")?.clientWidth || 300;
+        // Cuánto espacio real tiene disponible la barra superior para moverse dentro de su caja
+        const maxScrollBarra = topScroll.clientWidth - topScroll.offsetWidth; // (o el ancho visible de la barra menos su thumb)
 
-        if (maxScrollTabla > 0) {
-            // Ajustamos el ancho interno para que la proporción de scroll sea 1:1 exacta
-            const anchoIdeal = topScroll.clientWidth + maxScrollTabla;
-            topScrollInner.style.width = anchoIdeal + "px";
-        }
+        // El ancho interno debe ser el ancho visible de la barra + los pixeles extra que se mueve la tabla
+        const anchoPerfecto = topScroll.clientWidth + maxScrollTabla;
+        
+        topScrollInner.style.width = anchoPerfecto + "px";
     }
 }
 
