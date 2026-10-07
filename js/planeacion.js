@@ -1333,7 +1333,7 @@ document.addEventListener("click", (e) => {
             // En el input visual de la tabla ponemos los separadores | para que no rompa el diseño
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
-                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " • ");
             }
 
             if (typeof guardarOT === "function") {
