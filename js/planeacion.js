@@ -1353,31 +1353,43 @@ document.addEventListener("keydown", (e) => {
     }
 });
 // ==========================================
-// CONTROL GRADUAL DE SCROLL CON FLECHAS
+// CONTROL DE SCROLL RÁPIDO Y CONTINUO (MANTENER CLIC)
 // ==========================================
-document.addEventListener("click", (e) => {
+let scrollInterval = null;
+
+function iniciarScroll(direccion) {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    
+    if (!tableWrapper) return;
+
+    const step = 20; // Velocidad equilibrada por cada fotograma
+
+    tableWrapper.scrollLeft += direccion * step;
+    if (topScroll) {
+        topScroll.scrollLeft += direccion * step;
+    }
+}
+
+document.addEventListener("mousedown", (e) => {
     const btnLeft = e.target.closest("#scrollLeftTopBtn");
     const btnRight = e.target.closest("#scrollRightTopBtn");
 
     if (btnLeft || btnRight) {
-        const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-        const topScroll = document.querySelector(".planeacion-scroll-top");
+        const direccion = btnLeft ? -1 : 1;
         
-        if (!tableWrapper) return;
+        iniciarScroll(direccion);
 
-        const step = 150; 
-        const direccion = btnLeft ? -step : step;
+        // Intervalo ajustado a 30ms para un movimiento constante, suave y a buena velocidad
+        scrollInterval = setInterval(() => {
+            iniciarScroll(direccion);
+        }, 30);
+    }
+});
 
-        tableWrapper.scrollBy({
-            left: direccion,
-            behavior: "smooth"
-        });
-
-        if (topScroll) {
-            topScroll.scrollBy({
-                left: direccion,
-                behavior: "smooth"
-            });
-        }
+document.addEventListener("mouseup", () => {
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
     }
 });
