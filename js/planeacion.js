@@ -173,7 +173,7 @@ function pintarTabla(datos){
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
                         <!-- readonly agregado para bloquear la edición directa en la celda y obligar el uso del modal -->
-                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " • ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
                         
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${fila[idxOT] || ""}" 
@@ -1056,7 +1056,6 @@ window.addEventListener("load", () => {
     function ajustarAnchoBarra() {
         const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
         if (maxScrollTabla > 0) {
-            // Ajusta el ancho interno proporcionalmente al área visible de la barra superior
             topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
         }
     }
@@ -1067,7 +1066,6 @@ window.addEventListener("load", () => {
 
     let syncing = false;
 
-    // Sincronizar desde la barra superior hacia la tabla de forma proporcional
     topScroll.addEventListener("scroll", () => {
         if (syncing) return;
         syncing = true;
@@ -1081,7 +1079,6 @@ window.addEventListener("load", () => {
         syncing = false;
     });
 
-    // Sincronizar desde la tabla hacia la barra superior de forma proporcional
     tableWrapper.addEventListener("scroll", () => {
         if (syncing) return;
         syncing = true;
@@ -1095,6 +1092,7 @@ window.addEventListener("load", () => {
         syncing = false;
     });
 });
+
 function actualizarStickyTabla() {
     const header = document.querySelector('.planeacion-header');
     const filtros = document.querySelector('.planeacion-filtros-sticky');
@@ -1128,8 +1126,6 @@ document.addEventListener("click", (e) => {
         document.body.classList.toggle("modo-ampliado");
         document.body.classList.toggle("modo-zoom");
         document.querySelector(".panel")?.classList.toggle("panel-zoom");
-        
-        console.log("🔍 Zoom activado/desactivado");
     }
 });
 
@@ -1203,7 +1199,7 @@ function exportarPlaneacion() {
         const limpiarTexto = (texto) => {
             if (!texto) return "";
             return String(texto)
-                .replace(/[\r\n]+/g, " • ")
+                .replace(/[\r\n]+/g, " | ")
                 .replace(/\s+/g, " ")
                 .trim();
         };
@@ -1271,15 +1267,12 @@ function exportarPlaneacion() {
             `Planeacion_${region}_${timestamp}.xlsx`
         );
 
-        console.log("✅ Excel exportado correctamente con formato de fecha DD/MM/AAAA.");
-
     } catch (error) {
         console.error("❌ Error al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
-}
+});
 
-// Vincular el evento de clic al botón de exportación
 document.addEventListener("DOMContentLoaded", () => {
     const btnExportar = document.getElementById("btnExportarExcel");
     
@@ -1288,8 +1281,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             exportarPlaneacion();
         });
-    } else {
-        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
     }
 });
 
@@ -1344,7 +1335,6 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    // Solo se cierra mediante el botón cerrar o cancelar (sin permitir clic afuera)
     if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs") {
         const modal = document.getElementById("modalObservacion");
         if (modal) modal.style.display = "none";
@@ -1361,7 +1351,7 @@ document.addEventListener("click", (e) => {
 
             const inputObs = filaActualModal.querySelector(".observacion");
             if (inputObs) {
-                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " • ");
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
             }
 
             if (typeof guardarOT === "function") {
@@ -1373,7 +1363,6 @@ document.addEventListener("click", (e) => {
     }
 });
 
-// Cerrar el modal al presionar la tecla Escape
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         const modal = document.getElementById("modalObservacion");
@@ -1382,6 +1371,7 @@ document.addEventListener("keydown", (e) => {
         }
     }
 });
+
 // ==========================================
 // CONTROL DE SCROLL RÁPIDO Y CONTINUO (MANTENER CLIC)
 // ==========================================
@@ -1393,7 +1383,7 @@ function iniciarScroll(direccion) {
     
     if (!tableWrapper) return;
 
-    const step = 20; // Velocidad equilibrada por cada fotograma
+    const step = 20;
 
     tableWrapper.scrollLeft += direccion * step;
     if (topScroll) {
@@ -1410,7 +1400,6 @@ document.addEventListener("mousedown", (e) => {
         
         iniciarScroll(direccion);
 
-        // Intervalo ajustado a 30ms para un movimiento constante, suave y a buena velocidad
         scrollInterval = setInterval(() => {
             iniciarScroll(direccion);
         }, 30);
@@ -1423,6 +1412,7 @@ document.addEventListener("mouseup", () => {
         scrollInterval = null;
     }
 });
+
 // ==========================================
 // SINCRONIZACIÓN PERFECTA 1:1 DE LA BARRA SUPERIOR
 // ==========================================
@@ -1432,15 +1422,8 @@ function ajustarAnchoScrollSuperior() {
     const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
 
     if (tableWrapper && topScroll && topScrollInner) {
-        // Cuánto se puede desplazar la tabla en total
         const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        
-        // Cuánto espacio real tiene disponible la barra superior para moverse dentro de su caja
-        const maxScrollBarra = topScroll.clientWidth - topScroll.offsetWidth; // (o el ancho visible de la barra menos su thumb)
-
-        // El ancho interno debe ser el ancho visible de la barra + los pixeles extra que se mueve la tabla
         const anchoPerfecto = topScroll.clientWidth + maxScrollTabla;
-        
         topScrollInner.style.width = anchoPerfecto + "px";
     }
 }
