@@ -1271,7 +1271,7 @@ function exportarPlaneacion() {
         console.error("❌ Error al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
-});
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const btnExportar = document.getElementById("btnExportarExcel");
