@@ -1100,6 +1100,9 @@ document.addEventListener("click", (e) => {
     }
 });
 
+// ==========================================
+// LÓGICA DE EXPORTACIÓN A EXCEL
+// ==========================================
 function exportarPlaneacion() {
     try {
         if (
@@ -1171,17 +1174,15 @@ function exportarPlaneacion() {
                 .trim();
         };
 
-        // Función para transformar YYYY-MM-DD a DD/MM/AAAA respetando los textos
         const formatearFechaDDMMYYYY = (texto) => {
             if (!texto) return "";
             const limpio = String(texto).trim();
-            // Detecta el formato YYYY-MM-DD devuelto por los inputs de fecha
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
             if (regexFecha.test(limpio)) {
                 const [, year, month, day] = limpio.match(regexFecha);
                 return `${day}/${month}/${year}`;
             }
-            return limpio; // Si es "N/A", "Pendiente" o texto libre, lo deja intacto
+            return limpio; 
         };
 
         const dataAOA = [];
@@ -1214,7 +1215,7 @@ function exportarPlaneacion() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                formatearFechaDDMMYYYY(regD1.fechaProgramacion), // <--- Aplicando el formato DD/MM/AAAA aquí
+                formatearFechaDDMMYYYY(regD1.fechaProgramacion),
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1226,7 +1227,6 @@ function exportarPlaneacion() {
         });
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
-
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
@@ -1244,6 +1244,20 @@ function exportarPlaneacion() {
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 }
+
+// Vincular el evento de clic al botón de exportación
+document.addEventListener("DOMContentLoaded", () => {
+    const btnExportar = document.getElementById("btnExportarExcel");
+    
+    if (btnExportar) {
+        btnExportar.addEventListener("click", (e) => {
+            e.preventDefault();
+            exportarPlaneacion();
+        });
+    } else {
+        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
+    }
+});
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
