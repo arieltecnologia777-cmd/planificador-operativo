@@ -1353,31 +1353,46 @@ document.addEventListener("keydown", (e) => {
     }
 });
 // ==========================================
-// CONTROL GRADUAL DE SCROLL CON FLECHAS
+// CONTROL DE SCROLL RÁPIDO CON FLECHAS (CLIC Y MANTENER)
 // ==========================================
-document.addEventListener("click", (e) => {
+let scrollInterval = null;
+
+function iniciarScroll(direccion) {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    
+    if (!tableWrapper) return;
+
+    const step = 40; // Pixeles que avanza por cada fotograma al mantener presionado
+
+    // Desplazamiento instantáneo sin animación "smooth" para máxima velocidad
+    tableWrapper.scrollLeft += direccion * step;
+    if (topScroll) {
+        topScroll.scrollLeft += direccion * step;
+    }
+}
+
+document.addEventListener("mousedown", (e) => {
     const btnLeft = e.target.closest("#scrollLeftTopBtn");
     const btnRight = e.target.closest("#scrollRightTopBtn");
 
     if (btnLeft || btnRight) {
-        const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-        const topScroll = document.querySelector(".planeacion-scroll-top");
+        const direccion = btnLeft ? -1 : 1;
         
-        if (!tableWrapper) return;
+        // Mover inmediatamente al hacer clic
+        iniciarScroll(direccion);
 
-        const step = 500; 
-        const direccion = btnLeft ? -step : step;
-
-        tableWrapper.scrollBy({
-            left: direccion,
-            behavior: "smooth"
+        // Continuar moviendo fluidamente mientras mantienes presionado el clic
+        scrollInterval = setInterval(() => {
+            iniciarScroll(direccion), 50;
         });
+    }
+});
 
-        if (topScroll) {
-            topScroll.scrollBy({
-                left: direccion,
-                behavior: "smooth"
-            });
-        }
+// Detener el movimiento al soltar el clic en cualquier parte
+document.addEventListener("mouseup", () => {
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
     }
 });
