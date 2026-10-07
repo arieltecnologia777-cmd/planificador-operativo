@@ -1982,5 +1982,5 @@ width:160px;
 
 /* Ocultar temporalmente los botones de flecha del scroll superior */
 .btn-scroll-arrow {
-    display: none !important;
-}
+   /* display: none !important;
+}/*
