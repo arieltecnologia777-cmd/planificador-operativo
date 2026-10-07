@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS AGRUPADAS Y TEXTOS WEB)
+// LÓGICA DE EXPORTACIÓN A EXCEL (BLINDADA Y CON FECHAS ESTRUCTURADAS)
 // ==========================================
 function exportarPlaneacion() {
     console.log("🚀 El botón de exportar fue presionado");
@@ -1224,16 +1224,23 @@ function exportarPlaneacion() {
                     : {};
 
             let valorFechaExportar = "";
+            let esFechaReal = false;
             const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Si está Programada o Cancelada con fecha válida, pasamos un objeto Date UTC real
+            // Si está Programada o Cancelada con fecha válida, creamos un objeto Date UTC seguro
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
-            } else {
-                // Si no tiene fecha, imprimimos los textos correspondientes a la interfaz web
+                const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                if (!isNaN(fechaObj.getTime())) {
+                    valorFechaExportar = fechaObj;
+                    esFechaReal = true;
+                }
+            }
+
+            // Si no es una fecha válida, asignamos el texto correspondiente según el estado web
+            if (!esFechaReal) {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1269,16 +1276,21 @@ function exportarPlaneacion() {
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Aplicamos el formato nativo de fecha exclusivamente a las celdas que contienen objetos Date
+        // Recorrido seguro para tipificar correctamente cada celda de la columna de fechas
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
             const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-                if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
-                    ws[celdaRef].t = 'd';
-                    ws[celdaRef].z = 'dd/mm/yyyy';
+                const celda = ws[celdaRef];
+                if (celda) {
+                    if (celda.v instanceof Date && !isNaN(celda.v.getTime())) {
+                        celda.t = 'd'; // Tipo fecha nativa de Excel
+                        celda.z = 'dd/mm/yyyy'; // Formato visual dd/mm/aaaa
+                    } else {
+                        celda.t = 's'; // Tipo texto para los mensajes de estado
+                    }
                 }
             }
         }
