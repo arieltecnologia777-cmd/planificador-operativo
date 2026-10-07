@@ -1365,7 +1365,7 @@ document.addEventListener("click", (e) => {
         
         if (!tableWrapper) return;
 
-        const step = 150; 
+        const step = 500; 
         const direccion = btnLeft ? -step : step;
 
         tableWrapper.scrollBy({
