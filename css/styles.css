@@ -1263,15 +1263,16 @@ min-width:220px;
 }
 
 .scroll-with-arrows-top .planeacion-scroll-top {
-    width: 300px; /* Ancho compacto original */
+    width: 300px;
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 10px;
+    height: 10px; /* Altura ligeramente más estilizada (menos amplia) */
     border: 1px solid #ced4da;
     border-radius: 2px;
     background: #f1f3f5;
 }
+
 .planeacion-scroll-top-inner {
     width: 2700px;
     height: 1px;
@@ -1978,8 +1979,3 @@ width:160px;
     will-change: scroll-position;
     backface-visibility: hidden;
 }
-
-/* Ocultar temporalmente los botones de flecha del scroll superior */
-.btn-scroll-arrow {
-   /* display: none !important;
-}/*
