@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (ESTRUCTURA CLÁSICA ORIGINAL)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO Y DEFINITIVO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1211,7 +1211,6 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Si está Programada o Cancelada con fecha válida, pasamos la fecha estructurada
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
@@ -1249,10 +1248,8 @@ window.exportarPlaneacion = function() {
             ]);
         });
 
-        // Creación limpia de la hoja sin alteración de tipos posteriores
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Aplicar el formato nativo únicamente a las celdas que son fechas reales
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
             const colFechaIdx = 12; // Columna 'Fecha_Programacion'
@@ -1264,6 +1261,9 @@ window.exportarPlaneacion = function() {
                     ws[celdaRef].z = 'dd/mm/yyyy';
                 }
             }
+
+            // Forzar el autofiltro estricto abarcando desde A1 hasta el final de la tabla
+            ws['!autofilter'] = { ref: XLSX.utils.encode_range(rango) };
         }
 
         const wb = XLSX.utils.book_new();
@@ -1272,7 +1272,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con la estructura original limpia");
+        console.log("✅ Archivo exportado con éxito y filtro fijado en la fila 1");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
