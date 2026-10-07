@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO Y CONGELADO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FORMATO TABLA / FILTRO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1262,25 +1262,25 @@ window.exportarPlaneacion = function() {
                 }
             }
 
-            // Aplicar rango de autofiltro
-            const ultimaColumna = XLSX.utils.encode_col(rango.e.c);
-const ultimaFila = rango.e.r + 1;
+            // ⭐ FORZAR AUTOFILTRE EXPLÍCITO EN LA FILA 1
+            ws['!autofilter'] = { ref: ws['!ref'] };
 
-ws['!autofilter'] = {
-    ref: `A1:${ultimaColumna}${ultimaFila}`
-};
-
-            // ⭐ CONGELAR LA FILA 1: Esto obliga a Excel a reconocer la fila 1 como encabezado estático inamovible
+            // ⭐ CONGELAR PANEL SUPERIOR PARA ANCLAR EL ENCABEZADO
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
         const wb = XLSX.utils.book_new();
+        
+        // ⭐ CONFIGURAR PROPIEDADES DE TABLA SI LA VERSIÓN DE SHEETJS LO SOPORTA
+        if(!wb.Workbook) wb.Workbook = {};
+        if(!wb.Workbook.Views) wb.Workbook.Views = [{ }];
+        
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito, filtro y cabecera congelados en la fila 1");
+        console.log("✅ Archivo exportado con éxito");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
