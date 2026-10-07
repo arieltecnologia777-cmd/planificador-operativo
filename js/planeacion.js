@@ -170,20 +170,20 @@ function pintarTabla(datos){
                 <input class="edit-input fecha-input" type="${fechaTipo}" value="${fechaValor}" ${fechaDisabled}>
             </td>
             <td>
-    <div class="observacion-container">
-        <div class="obs-edit-wrapper">
-            <!-- Usamos replace para mostrarlo plano en la tabla de una sola línea -->
-            <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, "  |  ")}" placeholder="Observación">
-            <button type="button" class="btn-abrir-modal-obs" 
-                data-ot="${fila[idxOT] || ""}" 
-                data-id="${fila[idxID] || ""}" 
-                data-depto="${fila[idxDepto] || ""}" 
-                data-muni="${fila[idxMunicipio] || ""}" 
-                data-afec="${fila[idxAfectacion] || ""}" 
-                title="Ampliar y editar observaciones">✏️</button>
-        </div>
-    </div>
-</td>
+                <div class="observacion-container">
+                    <div class="obs-edit-wrapper">
+                        <!-- Muestra los saltos de línea de forma plana con un separador en la tabla principal -->
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ")}" placeholder="Observación">
+                        <button type="button" class="btn-abrir-modal-obs" 
+                            data-ot="${fila[idxOT] || ""}" 
+                            data-id="${fila[idxID] || ""}" 
+                            data-depto="${fila[idxDepto] || ""}" 
+                            data-muni="${fila[idxMunicipio] || ""}" 
+                            data-afec="${fila[idxAfectacion] || ""}" 
+                            title="Ampliar y editar observaciones">✏️</button>
+                    </div>
+                </div>
+            </td>
             <td>
                 <select class="edit-select estado-gestion">
                     <option value=""></option>
@@ -276,14 +276,13 @@ function actualizarKPIs(datos){
     const otsNoCumple = new Set();
     const otsProgramadas = new Set();
     
-    let sumaIdsAfectados = 0; // Acumulador
+    let sumaIdsAfectados = 0;
 
     datos.forEach(fila => {
         const ot = (fila[idxOT] || "").trim();
         const prioridad = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
 
-        // Sumar IDs afectados de forma segura
         const valIds = parseInt(fila[idxIdsAfectados], 10);
         if (!isNaN(valIds)) {
             sumaIdsAfectados += valIds;
@@ -1175,6 +1174,7 @@ function exportarPlaneacion() {
                 .replace(/\s+/g, " ")
                 .trim();
         };
+
         const formatearFechaDDMMYYYY = (texto) => {
             if (!texto) return "";
             const limpio = String(texto).trim();
@@ -1259,6 +1259,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
     }
 });
+
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
@@ -1271,7 +1272,6 @@ document.addEventListener("click", (e) => {
         const fila = btnEditar.closest("tr");
         filaActualModal = fila;
         
-        // Capturar los valores desde los atributos data-*
         const ot = btnEditar.getAttribute("data-ot");
         const id = btnEditar.getAttribute("data-id");
         const depto = btnEditar.getAttribute("data-depto");
@@ -1283,7 +1283,6 @@ document.addEventListener("click", (e) => {
         const modal = document.getElementById("modalObservacion");
         const txtArea = document.getElementById("textareaModalObs");
         
-        // Elementos visuales del modal
         const spanOt = document.getElementById("modalValOt");
         const spanId = document.getElementById("modalValId");
         const spanDepto = document.getElementById("modalValDepto");
@@ -1297,9 +1296,9 @@ document.addEventListener("click", (e) => {
             if (spanMuni) spanMuni.textContent = muni || "--";
             if (spanAfec) spanAfec.textContent = afec || "--";
 
-            // Reemplazo del Punto B:
+            // Reemplazo del Punto B optimizado:
             const textoCrudo = (window.registrosD1[ot]?.observacion || inputObs?.value || "");
-            const valorRealObs = textoCrudo.replace(/  ?\|  ?/g, "\n");
+            const valorRealObs = textoCrudo.replace(/\s*\|\s*/g, "\n");
             txtArea.value = valorRealObs;
 
             modal.style.display = "grid";
@@ -1307,14 +1306,12 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    // Cerrar modal
     if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs" || e.target.id === "modalObservacion") {
         if (e.target.id === "modalObservacion" && e.target !== document.getElementById("modalObservacion")) return;
         const modal = document.getElementById("modalObservacion");
         if (modal) modal.style.display = "none";
     }
 
-    // Guardar cambios
     if (e.target.id === "btnGuardarObs") {
         const txtArea = document.getElementById("textareaModalObs");
         if (filaActualModal && txtArea) {
