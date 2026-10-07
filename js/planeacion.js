@@ -1171,6 +1171,19 @@ function exportarPlaneacion() {
                 .trim();
         };
 
+        // Función para transformar YYYY-MM-DD a DD/MM/AAAA respetando los textos
+        const formatearFechaDDMMYYYY = (texto) => {
+            if (!texto) return "";
+            const limpio = String(texto).trim();
+            // Detecta el formato YYYY-MM-DD devuelto por los inputs de fecha
+            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
+            if (regexFecha.test(limpio)) {
+                const [, year, month, day] = limpio.match(regexFecha);
+                return `${day}/${month}/${year}`;
+            }
+            return limpio; // Si es "N/A", "Pendiente" o texto libre, lo deja intacto
+        };
+
         const dataAOA = [];
         dataAOA.push([...headers]);
 
@@ -1201,7 +1214,7 @@ function exportarPlaneacion() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                limpiarTexto(regD1.fechaProgramacion),
+                formatearFechaDDMMYYYY(regD1.fechaProgramacion), // <--- Aplicando el formato DD/MM/AAAA aquí
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1214,44 +1227,23 @@ function exportarPlaneacion() {
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        const ultimaColumna = XLSX.utils.encode_col(headers.length - 1);
-        const ultimaFila = dataAOA.length;
-
-        ws["!ref"] = `A1:${ultimaColumna}${ultimaFila}`;
-        ws["!autofilter"] = { ref: `A1:${ultimaColumna}${ultimaFila}` };
-
-        delete ws["!tables"];
-
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+
         XLSX.writeFile(
             wb,
-            `Planeacion_${region}_${new Date()
-                .toISOString()
-                .slice(0, 10)}.xlsx`
+            `Planeacion_${region}_${timestamp}.xlsx`
         );
 
-        console.log("✅ Excel exportado correctamente con limpieza de texto y filtros en Fila 1.");
+        console.log("✅ Excel exportado correctamente con formato de fecha DD/MM/AAAA.");
 
     } catch (error) {
         console.error("❌ Error al exportar:", error);
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const btnExportar = document.getElementById("btnExportarExcel");
-    
-    if (btnExportar) {
-        btnExportar.addEventListener("click", (e) => {
-            e.preventDefault();
-            exportarPlaneacion();
-        });
-    } else {
-        console.warn("⚠️ No se encontró el botón con ID 'btnExportarExcel' en el DOM.");
-    }
-});
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
