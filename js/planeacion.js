@@ -1131,10 +1131,10 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (DIRECTA E INFALIBLE)
+// LÓGICA DE EXPORTACIÓN A EXCEL (DEFINITIVA Y FUNCIONAL)
 // ==========================================
 window.exportarPlaneacion = function() {
-    console.log("🚀 Función exportarPlaneacion ejecutada correctamente");
+    console.log("🚀 Botón exportar presionado");
     
     try {
         if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
@@ -1143,7 +1143,7 @@ window.exportarPlaneacion = function() {
         }
 
         const exportRegionEl = document.getElementById("exportRegion");
-        const region = exportRegionEl ? exportRegionEl.value : "todos";
+        const region = exportRegionEl ? exportRegionEl.value : "TODOS";
 
         let filas = [...datosGlobal];
 
@@ -1213,7 +1213,7 @@ window.exportarPlaneacion = function() {
 
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = `${day}/${month}/${year}`; // Formato DD/MM/AAAA limpio
+                valorFechaExportar = `${day}/${month}/${year}`;
             } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
@@ -1262,6 +1262,7 @@ window.exportarPlaneacion = function() {
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 };
+
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
