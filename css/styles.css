@@ -1267,7 +1267,7 @@ min-width:220px;
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 10px; /* Altura ligeramente más estilizada (menos amplia) */
+    height: 10px;
     border: 1px solid #ced4da;
     border-radius: 2px;
     background: #f1f3f5;
@@ -1279,12 +1279,12 @@ min-width:220px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 10px; /* Coincide con la altura */
+    height: 10px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
     background: #f1f3f5;
-    margin: 0 6px; /* Mantiene la separación lateral exacta */
+    margin: 0 6px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-thumb{
@@ -1300,7 +1300,7 @@ min-width:220px;
     background-color: #f1f3f5;
     border: 1px solid #ced4da;
     width: 19px;
-    height: 10px; /* Misma altura para perfecta simetría */
+    height: 10px;
     cursor: pointer;
     font-size: 7px;
     display: flex;
@@ -1333,6 +1333,45 @@ min-width:220px;
 
 .btn-scroll-arrow:active {
     background-color: #ced4da;
+}
+
+/* =========================
+   SCROLL INFERIOR TIPO EXCEL (NUEVO: FLOTANTE A LA DERECHA)
+========================= */
+.scroll-with-arrows-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    margin-top: 5px;
+    margin-right: 12px;
+}
+
+.scroll-with-arrows-bottom .planeacion-table-wrapper {
+    width: 300px;
+    flex-grow: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+    background: #f1f3f5;
+}
+
+#scrollLeftBottomBtn {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-right: none;
+    width: 19px;
+    height: 10px;
+}
+
+#scrollRightBottomBtn {
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-left: none;
+    width: 19px;
+    height: 10px;
 }
 
 /* =========================
@@ -1978,4 +2017,20 @@ width:160px;
     transform: translateZ(0);
     will-change: scroll-position;
     backface-visibility: hidden;
+}
+/* Eliminar efecto fantasma / parpadeo en la barra de desplazamiento inferior de la tabla */
+.planeacion-table-wrapper {
+    transform: translateZ(0);
+    will-change: scroll-position;
+    backface-visibility: hidden;
+}
+/* Estabilizar celdas fijas para eliminar el parpadeo al hacer scroll */
+.planeacion-table th:nth-child(1),
+.planeacion-table td:nth-child(1),
+.planeacion-table th:nth-child(2),
+.planeacion-table td:nth-child(2),
+.planeacion-table th:nth-child(3),
+.planeacion-table td:nth-child(3) {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
