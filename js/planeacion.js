@@ -1458,6 +1458,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
+                    console.log("Encabezados detectados:", encabezadosExcel);
                     
                     const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
@@ -1467,6 +1468,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
                     });
 
+                    // Detección precisa de Fecha Programación (excluyendo fecha FM)
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
@@ -1477,6 +1479,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n.includes("ESTADO") && n.includes("PROGRAMACION");
                     });
 
+                    console.log("Columna Fecha Programación índice:", idxFechaProg, "Cabecera:", encabezadosExcel[idxFechaProg]);
+
                     if (idxOT === -1) {
                         alert("El Excel debe contener obligatoriamente la columna 'OT'.");
                         return;
@@ -1486,8 +1490,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
+                    // Conversor robusto para formato DD/MM/AAAA o números seriales de Excel
                     const formatearFechaExcelAInput = (valorCrudo) => {
                         if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
+
+                        // Si Excel lo lee como objeto Date o número serial
+                        if (valorCrudo instanceof Date) {
+                            const y = valorCrudo.getFullYear();
+                            const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
+                            const d = String(valorCrudo.getDate()).padStart(2, "0");
+                            return `${y}-${m}-${d}`;
+                        }
 
                         if (typeof valorCrudo === "number") {
                             const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
@@ -1500,19 +1513,23 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         const texto = String(valorCrudo).trim();
-                        if (!texto || texto === "-" || texto === "undefined" || texto === "null") return "";
+                        if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
 
+                        // Si ya está en formato YYYY-MM-DD
                         if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
 
+                        // Si viene en formato DD/MM/AAAA o DD-MM-AAAA
                         const partes = texto.split(/[\/\-]/);
                         if (partes.length === 3) {
-                            if (partes[0].length <= 2 && partes[2].length === 4) {
+                            // Año al final (DD/MM/AAAA)
+                            if (partes[2].length === 4) {
                                 const d = partes[0].padStart(2, "0");
                                 const m = partes[1].padStart(2, "0");
                                 const y = partes[2];
                                 return `${y}-${m}-${d}`;
                             }
-                            if (partes[0].length === 4 && partes[2].length <= 2) {
+                            // Año al inicio (AAAA/MM/DD)
+                            if (partes[0].length === 4) {
                                 const y = partes[0];
                                 const m = partes[1].padStart(2, "0");
                                 const d = partes[2].padStart(2, "0");
@@ -1520,7 +1537,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
                         }
 
-                        return texto;
+                        return "";
                     };
 
                     let actualizados = 0;
@@ -1539,18 +1556,22 @@ document.addEventListener("DOMContentLoaded", () => {
                                 fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
                             }
 
+                            // Validación estricta: solo si resulta un formato YYYY-MM-DD válido es una fecha real
+                            const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
+                            if (!esFechaValida) {
+                                fechaVal = "";
+                            }
+
                             let estadoProgVal = regD1Actual.estadoProgramacion || "";
 
-                            // REGLA ESTRICTA DE ESTADO Y FECHA
                             if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
                             } else {
-                                if (fechaVal !== "") {
-                                    // Si hay fecha, obligatoriamente es Programada
+                                if (esFechaValida) {
+                                    // SÓLO se vuelve Programada si la celda tenía fecha DD/MM/AAAA válida
                                     estadoProgVal = "Programada";
                                 } else {
-                                    // Si NO hay fecha, limpia la fecha y evita que quede como Programada
-                                    fechaVal = "";
+                                    // Si la celda de fecha venía vacía, nos aseguramos de quitar el estado Programada
                                     if (estadoProgVal === "Programada") {
                                         estadoProgVal = "";
                                     }
