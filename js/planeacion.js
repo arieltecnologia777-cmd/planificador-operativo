@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FORMATO TABLA / FILTRO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO Y COLUMNA TIPIFICADA)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1197,7 +1197,7 @@ window.exportarPlaneacion = function() {
         const dataAOA = [];
         dataAOA.push([...headers]);
 
-        filas.forEach(fila => {
+        filas.forEach((fila, index) => {
             const getValor = (nombre) => {
                 const index = buscarIndice(nombre);
                 return index !== -1 ? (fila[index] ?? "") : "";
@@ -1215,12 +1215,16 @@ window.exportarPlaneacion = function() {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
+                // ⭐ SOLUCIÓN DEL HALLAZGO: Para la primera fila (índice 0) o filas sin fecha, 
+                // aseguramos un formato que no rompa el tipo de columna de fecha en Excel.
+                // Si es la primera fila y no tiene fecha, le asignamos una fecha en blanco o estándar, 
+                // o usamos los textos cortos para evitar que Excel baje el filtro.
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
                     valorFechaExportar = "No aplica";
                 } else {
-                    valorFechaExportar = "⟵ Definir estado";
+                    valorFechaExportar = ""; // Celda en blanco para la primera fila evita que Excel baje el filtro
                 }
             }
 
@@ -1262,25 +1266,20 @@ window.exportarPlaneacion = function() {
                 }
             }
 
-            // ⭐ FORZAR AUTOFILTRE EXPLÍCITO EN LA FILA 1
+            // Forzar rango estricto del autofiltro desde A1
             ws['!autofilter'] = { ref: ws['!ref'] };
-
-            // ⭐ CONGELAR PANEL SUPERIOR PARA ANCLAR EL ENCABEZADO
+            
+            // Congelar la primera fila para blindar el encabezado
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
         const wb = XLSX.utils.book_new();
-        
-        // ⭐ CONFIGURAR PROPIEDADES DE TABLA SI LA VERSIÓN DE SHEETJS LO SOPORTA
-        if(!wb.Workbook) wb.Workbook = {};
-        if(!wb.Workbook.Views) wb.Workbook.Views = [{ }];
-        
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito");
+        console.log("✅ Archivo exportado con éxito y filtro asegurado en la fila 1");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
