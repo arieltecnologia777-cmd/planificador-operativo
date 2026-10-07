@@ -7,56 +7,6 @@
     <title>Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        /* Optimización de scroll para eliminar parpadeo y efecto fantasma */
-        .planeacion-table-wrapper, .planeacion-scroll-top {
-            transform: translateZ(0);
-            will-change: scroll-position;
-            backface-visibility: hidden;
-        }
-
-        /* Contenedor compacto que integra las flechitas sutiles a los lados de la barra superior */
-        .scroll-control-container {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 5px;
-        }
-
-        .scroll-control-container .planeacion-scroll-top {
-            flex-grow: 1;
-            overflow-x: auto;
-            overflow-y: hidden;
-            height: 14px; /* Altura compacta y original de la barra */
-        }
-
-        /* Botones de flecha pequeños, discretos y estilizados tipo Excel clásico */
-        .btn-scroll-step {
-            background-color: #f1f3f5;
-            border: 1px solid #ced4da;
-            border-radius: 3px;
-            width: 22px;
-            height: 16px;
-            cursor: pointer;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            color: #495057;
-            padding: 0;
-            line-height: 1;
-            transition: background-color 0.15s;
-        }
-
-        .btn-scroll-step:hover {
-            background-color: #dee2e6;
-        }
-
-        .btn-scroll-step:active {
-            background-color: #ced4da;
-        }
-    </style>
 </head>
 
 <body>
@@ -460,15 +410,8 @@
 
 </div>
 
-<!-- Barra superior compacta con flechitas sutiles a los lados -->
-<div class="scroll-control-container">
-    <button type="button" class="btn-scroll-step" id="scrollLeftBtn" title="Desplazar a la izquierda">◄</button>
-    
-    <div class="planeacion-scroll-top">
-        <div class="planeacion-scroll-top-inner"></div>
-    </div>
-    
-    <button type="button" class="btn-scroll-step" id="scrollRightBtn" title="Desplazar a la derecha">►</button>
+<div class="planeacion-scroll-top">
+    <div class="planeacion-scroll-top-inner"></div>
 </div>
 
 <div class="planeacion-table-wrapper">
