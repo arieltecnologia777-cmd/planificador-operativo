@@ -1251,7 +1251,7 @@ min-width:220px;
 }
 
 /* =========================
-   SCROLL SUPERIOR TIPO EXCEL (DELGADO)
+   SCROLL SUPERIOR TIPO EXCEL (DELGADO Y IDÉNTICO)
 ========================= */
 .scroll-with-arrows-top {
     display: flex;
@@ -1267,7 +1267,7 @@ min-width:220px;
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 10px;
+    height: 8px;
     border-top: 1px solid #ced4da;
     border-bottom: 1px solid #ced4da;
     background: #f1f3f5;
@@ -1279,7 +1279,7 @@ min-width:220px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 10px;
+    height: 8px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
@@ -1299,10 +1299,10 @@ min-width:220px;
 .btn-scroll-arrow {
     background-color: #f1f3f5;
     border: 1px solid #ced4da;
-    width: 20px;
-    height: 10px;
+    width: 18px;
+    height: 8px;
     cursor: pointer;
-    font-size: 8px;
+    font-size: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1315,14 +1315,14 @@ min-width:220px;
 }
 
 #scrollLeftTopBtn {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
     border-right: none;
 }
 
 #scrollRightTopBtn {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
     border-left: none;
 }
 
