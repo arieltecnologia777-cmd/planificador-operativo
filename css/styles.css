@@ -2034,3 +2034,12 @@ width:160px;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
 }
+/* Desactivar el scroll horizontal nativo y preparar la tabla para la GPU */
+.planeacion-table-wrapper {
+    overflow-x: hidden !important; /* Desactiva el scroll nativo que causa el parpadeo */
+}
+
+.planeacion-table {
+    will-change: transform;
+    backface-visibility: hidden;
+}
