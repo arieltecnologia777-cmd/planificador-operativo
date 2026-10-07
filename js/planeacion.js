@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (PARCHE DEFINITIVO DE FILTROS Y FECHAS)
+// LÓGICA DE EXPORTACIÓN A EXCEL (PARCHE DEFINITIVO DE FILTROS EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1211,15 +1211,23 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Si está Programada o Cancelada con fecha válida, pasamos el objeto Date real
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
                 if (!isNaN(fechaObj.getTime())) {
                     valorFechaExportar = fechaObj;
                 }
+            } else {
+                // En lugar de dejarlo vacío o con texto largo que confunda a Excel, 
+                // ponemos un guion limpio o dejamos la celda tipificada como texto corto.
+                if (estadoProg === "Pendiente") {
+                    valorFechaExportar = "En validación";
+                } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
+                    valorFechaExportar = "No aplica";
+                } else {
+                    valorFechaExportar = "⟵ Definir estado";
+                }
             }
-            // Si no tiene fecha, dejamos la celda limpia ("") para evitar que Excel confunda el tipo de dato de la columna
 
             dataAOA.push([
                 getValor("ID"),
@@ -1234,7 +1242,7 @@ window.exportarPlaneacion = function() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                valorFechaExportar, // Quedará como fecha real o celda limpia profesionalmente
+                valorFechaExportar,
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1247,18 +1255,22 @@ window.exportarPlaneacion = function() {
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Forzar de manera estricta el rango del autofiltro en la fila 1 de encabezados
+        // 1. Forzar de forma inquebrantable el rango del autofiltro desde la celda A1 hasta el final de la tabla
         const rangoTotal = XLSX.utils.decode_range(ws['!ref']);
         ws['!autofilter'] = { ref: XLSX.utils.encode_range(rangoTotal) };
 
-        // Tipificar correctamente las celdas de fecha
+        // 2. Recorrer la columna de fechas para asegurar que Excel la trate correctamente fila por fila
         const colFechaIdx = 12; // Columna 'Fecha_Programacion'
         for (let R = rangoTotal.s.r + 1; R <= rangoTotal.e.r; ++R) {
             const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
             const celda = ws[celdaRef];
-            if (celda && celda.v instanceof Date && !isNaN(celda.v.getTime())) {
-                celda.t = 'd';
-                celda.z = 'dd/mm/yyyy';
+            if (celda) {
+                if (celda.v instanceof Date && !isNaN(celda.v.getTime())) {
+                    celda.t = 'd'; // Tipo fecha nativa
+                    celda.z = 'dd/mm/yyyy'; // Formato visual
+                } else {
+                    celda.t = 's'; // Forzar explícitamente tipo texto para los estados web para que Excel no adivine mal
+                }
             }
         }
 
@@ -1268,7 +1280,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito: Filtro en fila 1 y fechas ordenadas");
+        console.log("✅ Archivo exportado con éxito: Filtro bloqueado en la Fila 1");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
