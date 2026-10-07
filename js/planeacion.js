@@ -1353,7 +1353,7 @@ document.addEventListener("keydown", (e) => {
     }
 });
 // ==========================================
-// CONTROL DE SCROLL RÁPIDO CON FLECHAS (CLIC Y MANTENER)
+// CONTROL DE SCROLL RÁPIDO EQUILIBRADO
 // ==========================================
 let scrollInterval = null;
 
@@ -1363,9 +1363,8 @@ function iniciarScroll(direccion) {
     
     if (!tableWrapper) return;
 
-    const step = 40; // Pixeles que avanza por cada fotograma al mantener presionado
+    const step = 20; // Velocidad equilibrada por cada fotograma
 
-    // Desplazamiento instantáneo sin animación "smooth" para máxima velocidad
     tableWrapper.scrollLeft += direccion * step;
     if (topScroll) {
         topScroll.scrollLeft += direccion * step;
@@ -1379,17 +1378,15 @@ document.addEventListener("mousedown", (e) => {
     if (btnLeft || btnRight) {
         const direccion = btnLeft ? -1 : 1;
         
-        // Mover inmediatamente al hacer clic
         iniciarScroll(direccion);
 
-        // Continuar moviendo fluidamente mientras mantienes presionado el clic
+        // Intervalo ajustado a 30ms para un movimiento constante y suave
         scrollInterval = setInterval(() => {
-            iniciarScroll(direccion), 50;
-        });
+            iniciarScroll(direccion);
+        }, 30);
     }
 });
 
-// Detener el movimiento al soltar el clic en cualquier parte
 document.addEventListener("mouseup", () => {
     if (scrollInterval) {
         clearInterval(scrollInterval);
