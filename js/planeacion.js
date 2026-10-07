@@ -1353,52 +1353,31 @@ document.addEventListener("keydown", (e) => {
     }
 });
 // ==========================================
-// CONTROL DE SCROLL RÁPIDO EQUILIBRADO
+// CONTROL GRADUAL DE SCROLL CON FLECHAS
 // ==========================================
-let scrollInterval = null;
-
-function iniciarScroll(direccion) {
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    
-    if (!tableWrapper) return;
-
-    const step = 20; // Velocidad equilibrada por cada fotograma
-
-    tableWrapper.scrollLeft += direccion * step;
-    if (topScroll) {
-        topScroll.scrollLeft += direccion * step;
-    }
-}
-
-document.addEventListener("mousedown", (e) => {
+document.addEventListener("click", (e) => {
     const btnLeft = e.target.closest("#scrollLeftTopBtn");
     const btnRight = e.target.closest("#scrollRightTopBtn");
 
     if (btnLeft || btnRight) {
-        const direccion = btnLeft ? -1 : 1;
+        const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+        const topScroll = document.querySelector(".planeacion-scroll-top");
         
-        iniciarScroll(direccion);
+        if (!tableWrapper) return;
 
-        // Intervalo ajustado a 30ms para un movimiento constante y suave
-        scrollInterval = setInterval(() => {
-            iniciarScroll(direccion);
-        }, 30);
-    }
-});
+        const step = 150; 
+        const direccion = btnLeft ? -step : step;
 
-document.addEventListener("mouseup", () => {
-    if (scrollInterval) {
-        clearInterval(scrollInterval);
-        scrollInterval = null;
-    }
-});
-// Sincronizar el ancho interno exacto para que la barrita mantenga su tamaño real
-window.addEventListener("load", () => {
-    const table = document.querySelector(".planeacion-table");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
-    
-    if (table && topScrollInner) {
-        topScrollInner.style.width = table.scrollWidth + "px";
+        tableWrapper.scrollBy({
+            left: direccion,
+            behavior: "smooth"
+        });
+
+        if (topScroll) {
+            topScroll.scrollBy({
+                left: direccion,
+                behavior: "smooth"
+            });
+        }
     }
 });
