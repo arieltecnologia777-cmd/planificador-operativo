@@ -1249,130 +1249,35 @@ min-width:220px;
         visibility:hidden;
     }
 }
-
-/* =========================
-   SCROLL SUPERIOR TIPO EXCEL (GROSOR Y SEPARACIÓN AJUSTADOS)
-========================= */
-.scroll-with-arrows-top {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 2px;
-    margin-bottom: 5px;
-    margin-right: 12px;
+.planeacion-scroll-top{
+    width:150px;
+    margin-left:auto;
+    margin-right:12px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    height:18px;
+    margin-bottom:8px;
 }
 
-.scroll-with-arrows-top .planeacion-scroll-top {
-    width: 300px;
-    flex-grow: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    height: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 2px;
-    background: #f1f3f5;
-}
-
-.planeacion-scroll-top-inner {
-    width: 2700px;
-    height: 1px;
+.planeacion-scroll-top-inner{
+    width:2500px;
+    height:1px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 10px;
+    height:10px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
-    background: #f1f3f5;
-    margin: 0 6px;
+    background:#e5e7eb;
+    border-radius:20px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-thumb{
-    background: #adb5bd;
-    border-radius: 2px;
+    background:#94a3b8;
+    border-radius:20px;
 }
 
-.planeacion-scroll-top::-webkit-scrollbar-thumb:hover{
-    background: #6c757d;
-}
-
-.btn-scroll-arrow {
-    background-color: #f1f3f5;
-    border: 1px solid #ced4da;
-    width: 19px;
-    height: 10px;
-    cursor: pointer;
-    font-size: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    color: #495057;
-    padding: 0;
-    line-height: 1;
-    border-radius: 2px;
-    transition: background-color 0.15s;
-    flex-shrink: 0;
-}
-
-#scrollLeftTopBtn {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-    border-right: none;
-}
-
-#scrollRightTopBtn {
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-    border-left: none;
-}
-
-.btn-scroll-arrow:hover {
-    background-color: #dee2e6;
-}
-
-.btn-scroll-arrow:active {
-    background-color: #ced4da;
-}
-
-/* =========================
-   SCROLL INFERIOR TIPO EXCEL (NUEVO: FLOTANTE A LA DERECHA)
-========================= */
-.scroll-with-arrows-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 2px;
-    margin-top: 5px;
-    margin-right: 12px;
-}
-
-.scroll-with-arrows-bottom .planeacion-table-wrapper {
-    width: 300px;
-    flex-grow: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    height: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 2px;
-    background: #f1f3f5;
-}
-
-#scrollLeftBottomBtn {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-    border-right: none;
-    width: 19px;
-    height: 10px;
-}
-
-#scrollRightBottomBtn {
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-    border-left: none;
-    width: 19px;
-    height: 10px;
-}
 
 /* =========================
    RESPONSIVE
@@ -2018,19 +1923,41 @@ width:160px;
     will-change: scroll-position;
     backface-visibility: hidden;
 }
-/* Eliminar efecto fantasma / parpadeo en la barra de desplazamiento inferior de la tabla */
-.planeacion-table-wrapper {
-    transform: translateZ(0);
-    will-change: scroll-position;
-    backface-visibility: hidden;
+
+/* Contenedor para la barra superior y las flechas de desplazamiento */
+.scroll-control-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
 }
-/* Estabilizar celdas fijas para eliminar el parpadeo al hacer scroll */
-.planeacion-table th:nth-child(1),
-.planeacion-table td:nth-child(1),
-.planeacion-table th:nth-child(2),
-.planeacion-table td:nth-child(2),
-.planeacion-table th:nth-child(3),
-.planeacion-table td:nth-child(3) {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+
+.scroll-control-container .planeacion-scroll-top {
+    flex-grow: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Estilo de los botones con flechas tipo Excel */
+.btn-scroll-step {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    width: 32px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.btn-scroll-step:hover {
+    background-color: #e2e6ea;
+}
+
+.btn-scroll-step:active {
+    background-color: #dae0e5;
 }
