@@ -172,8 +172,9 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <!-- Muestra los saltos de línea de forma plana con un separador en la tabla principal -->
-                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ")}" placeholder="Observación">
+                        <!-- ---><--- PÓNELO AQUÍ ---><--- -->
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/(\r\n|\n|\r)/g, " | ")}" placeholder="Observación">
+                        
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${fila[idxOT] || ""}" 
                             data-id="${fila[idxID] || ""}" 
@@ -988,11 +989,14 @@ async function guardarOT(fila){
         fechaVal = "";
     }
 
+    // Nota: Si estás editando desde la tabla o el modal, buscamos la observación correspondiente
+    const inputObs = fila.querySelector(".observacion");
+
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
         fechaProgramacion: fechaVal,
-        observacion: fila.querySelector(".observacion")?.value || "",
+        observacion: inputObs?.value || "", // Captura el texto tal cual
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || ""
@@ -1024,7 +1028,6 @@ async function guardarOT(fila){
         console.error("Error al guardar OT:", err);
     }
 }
-
 const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
@@ -1296,11 +1299,13 @@ document.addEventListener("click", (e) => {
             if (spanMuni) spanMuni.textContent = muni || "--";
             if (spanAfec) spanAfec.textContent = afec || "--";
 
-            // Reemplazo del Punto B optimizado:
-            const textoCrudo = (window.registrosD1[ot]?.observacion || inputObs?.value || "");
-            const valorRealObs = textoCrudo.replace(/\s*\|\s*/g, "\n");
+            // Buscamos el texto guardado en la API/Worker o en el input
+            const textoCrudo = window.registrosD1[ot]?.observacion || inputObs?.value || "";
+            
+            // Reemplazamos tanto el separador visual como los saltos de línea de forma segura para el textarea
+            const valorRealObs = textoCrudo.replace(/(\r\n|\n|\r)/g, "\n").replace(/\s*\|\s*/g, "\n");
+            
             txtArea.value = valorRealObs;
-
             modal.style.display = "grid";
             txtArea.focus();
         }
