@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (BLINDADA Y CORREGIDA)
+// LÓGICA DE EXPORTACIÓN A EXCEL (DIRECTA Y BLINDADA)
 // ==========================================
 function exportarPlaneacion() {
     try {
@@ -1227,12 +1227,10 @@ function exportarPlaneacion() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Si está Programada o Cancelada y tiene fecha válida, se pasa como objeto Date real para que Excel la agrupe por años y meses
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
-                // Si no, se imprime el texto correspondiente respetando el estado web
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1268,10 +1266,9 @@ function exportarPlaneacion() {
 
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Recorrido seguro de celdas para asignar formato de fecha nativo solo a los objetos Date
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+            const colFechaIdx = 12;
 
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
@@ -1298,6 +1295,16 @@ function exportarPlaneacion() {
     }
 }
 
+// Vinculación directa y segura del botón al cargar la página
+window.addEventListener("load", () => {
+    const btnExportar = document.getElementById("btnExportarExcel");
+    if (btnExportar) {
+        btnExportar.onclick = (e) => {
+            e.preventDefault();
+            exportarPlaneacion();
+        };
+    }
+});
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
