@@ -1356,8 +1356,8 @@ document.addEventListener("keydown", (e) => {
 // CONTROL GRADUAL DE SCROLL CON FLECHAS
 // ==========================================
 document.addEventListener("click", (e) => {
-    const btnLeft = e.target.closest("#scrollLeftBtn");
-    const btnRight = e.target.closest("#scrollRightBtn");
+    const btnLeft = e.target.closest("#scrollLeftTopBtn");
+    const btnRight = e.target.closest("#scrollRightTopBtn");
 
     if (btnLeft || btnRight) {
         const tableWrapper = document.querySelector(".planeacion-table-wrapper");
@@ -1365,11 +1365,10 @@ document.addEventListener("click", (e) => {
         
         if (!tableWrapper) return;
 
-        // Cantidad de pixeles que se desplaza por cada clic (ajustable a tu gusto)
+        // Cantidad de pixeles que se desplaza por cada clic
         const step = 150; 
         const direccion = btnLeft ? -step : step;
 
-        // Desplazamos suavemente la tabla (y la sincronización se encarga del resto)
         tableWrapper.scrollBy({
             left: direccion,
             behavior: "smooth"
