@@ -1251,7 +1251,7 @@ min-width:220px;
 }
 
 /* =========================
-   SCROLL SUPERIOR TIPO EXCEL (CON SEPARACIÓN LIGERA)
+   SCROLL SUPERIOR TIPO EXCEL (ANCHO Y SEPARACIÓN AJUSTADOS)
 ========================= */
 .scroll-with-arrows-top {
     display: flex;
@@ -1267,24 +1267,24 @@ min-width:220px;
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 8px;
+    height: 12px; /* Altura/ancho de la barra aumentado ligeramente */
     border: 1px solid #ced4da;
     border-radius: 2px;
     background: #f1f3f5;
 }
 
 .planeacion-scroll-top-inner {
-    width: 2700px; /* Un poco más amplio para crear ese margen de holgura ligero en los extremos */
+    width: 2700px;
     height: 1px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 8px;
+    height: 12px; /* Coincide con la altura de la barra */
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
     background: #f1f3f5;
-    margin: 0 3px; /* Margen ligero exacto para separar la pista de los triángulos */
+    margin: 0 6px; /* Mayor separación lateral respecto a los extremos/triángulos */
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-thumb{
@@ -1299,10 +1299,10 @@ min-width:220px;
 .btn-scroll-arrow {
     background-color: #f1f3f5;
     border: 1px solid #ced4da;
-    width: 18px;
-    height: 8px;
+    width: 20px;
+    height: 12px; /* Ajustado a la misma altura para mantener simetría */
     cursor: pointer;
-    font-size: 7px;
+    font-size: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1334,7 +1334,6 @@ min-width:220px;
 .btn-scroll-arrow:active {
     background-color: #ced4da;
 }
-
 /* =========================
    RESPONSIVE
 ========================= */
