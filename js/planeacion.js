@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (PARCHE DEFINITIVO DE FILTROS EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (ESTRUCTURA CLÁSICA ORIGINAL)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1211,15 +1211,11 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+            // Si está Programada o Cancelada con fecha válida, pasamos la fecha estructurada
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
-                if (!isNaN(fechaObj.getTime())) {
-                    valorFechaExportar = fechaObj;
-                }
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
-                // En lugar de dejarlo vacío o con texto largo que confunda a Excel, 
-                // ponemos un guion limpio o dejamos la celda tipificada como texto corto.
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1253,23 +1249,19 @@ window.exportarPlaneacion = function() {
             ]);
         });
 
+        // Creación limpia de la hoja sin alteración de tipos posteriores
         const ws = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // 1. Forzar de forma inquebrantable el rango del autofiltro desde la celda A1 hasta el final de la tabla
-        const rangoTotal = XLSX.utils.decode_range(ws['!ref']);
-        ws['!autofilter'] = { ref: XLSX.utils.encode_range(rangoTotal) };
+        // Aplicar el formato nativo únicamente a las celdas que son fechas reales
+        if (ws && ws['!ref']) {
+            const rango = XLSX.utils.decode_range(ws['!ref']);
+            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
-        // 2. Recorrer la columna de fechas para asegurar que Excel la trate correctamente fila por fila
-        const colFechaIdx = 12; // Columna 'Fecha_Programacion'
-        for (let R = rangoTotal.s.r + 1; R <= rangoTotal.e.r; ++R) {
-            const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-            const celda = ws[celdaRef];
-            if (celda) {
-                if (celda.v instanceof Date && !isNaN(celda.v.getTime())) {
-                    celda.t = 'd'; // Tipo fecha nativa
-                    celda.z = 'dd/mm/yyyy'; // Formato visual
-                } else {
-                    celda.t = 's'; // Forzar explícitamente tipo texto para los estados web para que Excel no adivine mal
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
+                    ws[celdaRef].t = 'd';
+                    ws[celdaRef].z = 'dd/mm/yyyy';
                 }
             }
         }
@@ -1280,7 +1272,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito: Filtro bloqueado en la Fila 1");
+        console.log("✅ Archivo exportado con la estructura original limpia");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
