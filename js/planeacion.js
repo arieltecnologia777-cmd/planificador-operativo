@@ -1457,11 +1457,28 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
-                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim().toUpperCase());
-                    const idxOT = encabezadosExcel.findIndex(h => h === "OT");
-                    const idxObs = encabezadosExcel.findIndex(h => h === "OBSERVACIONES" || h === "OBSERVACION");
-                    const idxFechaProg = encabezadosExcel.findIndex(h => h.includes("FECHA_PROGRAMACION") || h.includes("FECHA PROGRAMACION"));
-                    const idxEstadoProg = encabezadosExcel.findIndex(h => h.includes("ESTADO_PROGRAMACION") || h.includes("ESTADO PROGRAMACION"));
+                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
+                    
+                    // Función auxiliar para normalizar textos (eliminar tildes y llevar a mayúsculas)
+                    const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+
+                    const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
+                    const idxObs = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n === "OBSERVACION" || n === "OBSERVACIONES";
+                    });
+
+                    // Detección flexible de la columna de fecha (sin importar tildes o espacios)
+                    const idxFechaProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG"));
+                    });
+
+                    // Detección flexible de la columna de estado
+                    const idxEstadoProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("ESTADO") && n.includes("PROGRAMACION");
+                    });
 
                     if (idxOT === -1) {
                         alert("El Excel debe contener obligatoriamente la columna 'OT'.");
@@ -1485,9 +1502,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             let fechaVal = idxFechaProg !== -1 && fila[idxFechaProg] !== undefined ? String(fila[idxFechaProg]).trim() : (regD1Actual.fechaProgramacion || "");
                             let estadoProgVal = regD1Actual.estadoProgramacion || "";
 
+                            // Si el Excel trae un estado explícito, lo respetamos
                             if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
-                            } else if (fechaVal && fechaVal !== "" && fechaVal !== "-") {
+                            } 
+                            // Si NO trae estado pero SÍ hay una fecha escrita, activamos automáticamente a "Programada"
+                            else if (fechaVal && fechaVal !== "" && fechaVal !== "-") {
                                 estadoProgVal = "Programada";
                             }
 
