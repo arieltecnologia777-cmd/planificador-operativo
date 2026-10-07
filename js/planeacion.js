@@ -1381,34 +1381,3 @@ document.addEventListener("click", (e) => {
         }
     }
 });
-// ==========================================
-// SCROLL ULTRA-FLUIDO POR GPU (ELIMINA GHOSTING)
-// ==========================================
-window.addEventListener("load", () => {
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
-    const table = document.querySelector(".planeacion-table");
-
-    if (!tableWrapper || !topScroll) return;
-
-    // Sincronizar el ancho total para que la barra superior conserve la proporción real
-    if (topScrollInner && table) {
-        topScrollInner.style.width = table.scrollWidth + "px";
-    }
-
-    let ticking = false;
-
-    topScroll.addEventListener("scroll", () => {
-        const scrollLeft = topScroll.scrollLeft;
-
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                // Mueve la tabla mediante la GPU usando translateX (Cero Ghosting)
-                table.style.transform = `translateX(-${scrollLeft}px)`;
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-});
