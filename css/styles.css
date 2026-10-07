@@ -1251,7 +1251,7 @@ min-width:220px;
 }
 
 /* =========================
-   SCROLL SUPERIOR TIPO EXCEL (CORREGIDO)
+   SCROLL SUPERIOR TIPO EXCEL (DELGADO)
 ========================= */
 .scroll-with-arrows-top {
     display: flex;
@@ -1267,7 +1267,7 @@ min-width:220px;
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 18px;
+    height: 10px;
     border-top: 1px solid #ced4da;
     border-bottom: 1px solid #ced4da;
     background: #f1f3f5;
@@ -1279,7 +1279,7 @@ min-width:220px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 18px;
+    height: 10px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
@@ -1300,9 +1300,9 @@ min-width:220px;
     background-color: #f1f3f5;
     border: 1px solid #ced4da;
     width: 20px;
-    height: 18px;
+    height: 10px;
     cursor: pointer;
-    font-size: 9px;
+    font-size: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1333,7 +1333,6 @@ min-width:220px;
 .btn-scroll-arrow:active {
     background-color: #ced4da;
 }
-
 
 /* =========================
    RESPONSIVE
