@@ -1433,7 +1433,7 @@ window.addEventListener("resize", ajustarAnchoScrollSuperior);
 setTimeout(ajustarAnchoScrollSuperior, 300);
 
 // ==========================================
-// IMPORTACIÓN MASIVA DESDE EXCEL
+// IMPORTACIÓN MASIVA DESDE EXCEL (CON FECHAS Y ESTADOS)
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const inputExcel = document.getElementById("inputExcelMasivo");
@@ -1448,58 +1448,64 @@ document.addEventListener("DOMContentLoaded", () => {
                     const datosBinarios = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(datosBinarios, { type: "array" });
                     
-                    // Lee la primera hoja del Excel
                     const nombreHoja = workbook.SheetNames[0];
                     const hoja = workbook.Sheets[nombreHoja];
-                    
-                    // Convierte la hoja a una matriz de filas (Array of Arrays)
                     const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+                    
                     if (filasExcel.length === 0) {
                         alert("El archivo Excel está vacío.");
                         return;
                     }
 
-                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
-                    const idxOTExcel = encabezadosExcel.findIndex(h => h.toUpperCase() === "OT");
-                    const idxObsExcel = encabezadosExcel.findIndex(h => h.toUpperCase() === "OBSERVACIONES" || h.toUpperCase() === "OBSERVACION");
+                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim().toUpperCase());
+                    const idxOT = encabezadosExcel.findIndex(h => h === "OT");
+                    const idxObs = encabezadosExcel.findIndex(h => h === "OBSERVACIONES" || h === "OBSERVACION");
+                    const idxEstadoProg = encabezadosExcel.findIndex(h => h === "ESTADO_PROGRAMACION" || h === "ESTADO PROGRAMACION");
+                    const idxFechaProg = encabezadosExcel.findIndex(h => h === "FECHA_PROGRAMACION" || h === "FECHA PROGRAMACION" || h === "FECHA VENCIMIENTO FM");
 
-                    if (idxOTExcel === -1 || idxObsExcel === -1) {
-                        alert("No se encontró la columna 'OT' o 'Observaciones' en el Excel. Revisa los encabezados.");
+                    if (idxOT === -1 || (idxObs === -1 && idxFechaProg === -1)) {
+                        alert("El Excel debe tener al menos la columna 'OT' y columnas de 'Observaciones' o 'Fecha'.");
                         return;
                     }
 
-                    if (!confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones de las OTs?`)) {
+                    if (!confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente los datos en la base de datos?`)) {
                         return;
                     }
 
                     let actualizados = 0;
 
-                    // Recorremos las filas del Excel (saltando el encabezado)
                     for (let i = 1; i < filasExcel.length; i++) {
                         const fila = filasExcel[i];
-                        const otVal = String(fila[idxOTExcel] || "").trim();
-                        const obsVal = String(fila[idxObsExcel] || "").trim();
+                        const otVal = String(fila[idxOT] || "").trim();
 
-                        if (otVal && obsVal) {
-                            // Buscamos si esa OT existe en tu tabla global actual para heredar sus otros estados si es necesario
-                            const filaDatosGlobal = datosGlobal.find(f => {
-                                const idxOTGlobal = encabezadosGlobal.findIndex(h => h.trim() === "OT");
-                                return String(f[idxOTGlobal]).trim() === otVal;
-                            });
-
+                        if (otVal) {
                             const regD1Actual = window.registrosD1[otVal] || {};
+                            
+                            const obsVal = idxObs !== -1 ? String(fila[idxObs] || "").trim() : (regD1Actual.observacion || "");
+                            let fechaVal = idxFechaProg !== -1 ? String(fila[idxFechaProg] || "").trim() : (regD1Actual.fechaProgramacion || "");
+
+                            // Si el Excel trae una fecha, determinamos el estado de programación automáticamente
+                            let estadoProgVal = regD1Actual.estadoProgramacion || "";
+                            
+                            if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
+                                estadoProgVal = String(fila[idxEstadoProg]).trim();
+                            } else if (fechaVal && fechaVal !== "-" && fechaVal !== "") {
+                                // Si hay fecha y no tenía estado programado, lo forzamos a Programada para que se active visualmente
+                                if (!estadoProgVal || estadoProgVal === "Pendiente" || estadoProgVal === "N/A") {
+                                    estadoProgVal = "Programada";
+                                }
+                            }
 
                             const payload = {
                                 ot: otVal,
-                                estadoProgramacion: regD1Actual.estadoProgramacion || "",
-                                fechaProgramacion: regD1Actual.fechaProgramacion || "",
+                                estadoProgramacion: estadoProgVal,
+                                fechaProgramacion: fechaVal,
                                 observacion: obsVal,
                                 estadoGestion: regD1Actual.estadoGestion || "",
                                 tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
                                 acompanamiento: regD1Actual.acompanamiento || ""
                             };
 
-                            // Enviamos la actualización al backend
                             try {
                                 const resp = await fetch(API_URL, {
                                     method: "POST",
@@ -1508,7 +1514,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 });
                                 const resJson = await resp.json();
                                 if (resJson.ok) {
-                                    window.registrosD1[otVal] = { ...regD1Actual, observacion: obsVal };
+                                    window.registrosD1[otVal] = { ...regD1Actual, ...payload };
                                     actualizados++;
                                 }
                             } catch (err) {
@@ -1517,8 +1523,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
 
-                    alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
-                    aplicarFiltros(); // Refresca la tabla en pantalla
+                    alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros correctamente.`);
+                    aplicarFiltros();
 
                 } catch (error) {
                     console.error("Error leyendo el Excel:", error);
