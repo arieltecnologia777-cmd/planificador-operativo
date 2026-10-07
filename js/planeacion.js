@@ -1486,11 +1486,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
-                    // Función robusta para normalizar fechas de Excel a YYYY-MM-DD
                     const formatearFechaExcelAInput = (valorCrudo) => {
                         if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
 
-                        // Si Excel lo leyó como número serial de fecha
                         if (typeof valorCrudo === "number") {
                             const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
                             if (fechaObj) {
@@ -1504,20 +1502,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         const texto = String(valorCrudo).trim();
                         if (!texto || texto === "-" || texto === "undefined" || texto === "null") return "";
 
-                        // Si ya está en formato YYYY-MM-DD
                         if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
 
-                        // Si viene en formato DD/MM/YYYY o DD-MM-YYYY
                         const partes = texto.split(/[\/\-]/);
                         if (partes.length === 3) {
-                            // Asumimos formato DD/MM/YYYY
                             if (partes[0].length <= 2 && partes[2].length === 4) {
                                 const d = partes[0].padStart(2, "0");
                                 const m = partes[1].padStart(2, "0");
                                 const y = partes[2];
                                 return `${y}-${m}-${d}`;
                             }
-                            // Asumimos formato YYYY/MM/DD
                             if (partes[0].length === 4 && partes[2].length <= 2) {
                                 const y = partes[0];
                                 const m = partes[1].padStart(2, "0");
@@ -1547,12 +1541,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             let estadoProgVal = regD1Actual.estadoProgramacion || "";
 
+                            // REGLA ESTRICTA DE ESTADO Y FECHA
                             if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
-                            } else if (fechaVal !== "") {
-                                estadoProgVal = "Programada";
                             } else {
-                                fechaVal = regD1Actual.fechaProgramacion || "";
+                                if (fechaVal !== "") {
+                                    // Si hay fecha, obligatoriamente es Programada
+                                    estadoProgVal = "Programada";
+                                } else {
+                                    // Si NO hay fecha, limpia la fecha y evita que quede como Programada
+                                    fechaVal = "";
+                                    if (estadoProgVal === "Programada") {
+                                        estadoProgVal = "";
+                                    }
+                                }
                             }
 
                             const payload = {
