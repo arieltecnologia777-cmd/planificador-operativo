@@ -2024,3 +2024,13 @@ width:160px;
     will-change: scroll-position;
     backface-visibility: hidden;
 }
+/* Estabilizar celdas fijas para eliminar el parpadeo al hacer scroll */
+.planeacion-table th:nth-child(1),
+.planeacion-table td:nth-child(1),
+.planeacion-table th:nth-child(2),
+.planeacion-table td:nth-child(2),
+.planeacion-table th:nth-child(3),
+.planeacion-table td:nth-child(3) {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
