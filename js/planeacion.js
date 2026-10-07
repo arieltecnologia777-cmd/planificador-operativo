@@ -1393,3 +1393,23 @@ document.addEventListener("mouseup", () => {
         scrollInterval = null;
     }
 });
+// ==========================================
+// SINCRONIZACIÓN EXACTA DEL ANCHO DE LA BARRA SUPERIOR
+// ==========================================
+function ajustarAnchoScrollSuperior() {
+    const table = document.querySelector(".planeacion-table");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+
+    if (table && topScrollInner && tableWrapper) {
+        // Asigna exactamente el ancho real desbordado de la tabla al contenedor interno
+        topScrollInner.style.width = table.scrollWidth + "px";
+    }
+}
+
+// Ejecutar al cargar la página y al cambiar el tamaño de la ventana
+window.addEventListener("load", ajustarAnchoScrollSuperior);
+window.addEventListener("resize", ajustarAnchoScrollSuperior);
+
+// También ejecutar un pequeño retraso por si los datos se pintan asíncronamente
+setTimeout(ajustarAnchoScrollSuperior, 500);
