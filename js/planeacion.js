@@ -1043,28 +1043,58 @@ if(wrapper) {
     });
 }
 
+// ==========================================
+// SINCRONIZACIÓN PROPORCIONAL EXACTA DE SCROLL
+// ==========================================
 window.addEventListener("load", () => {
     const topScroll = document.querySelector(".planeacion-scroll-top");
     const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
 
-    if (!topScroll || !tableWrapper) return;
+    if (!topScroll || !tableWrapper || !topScrollInner) return;
+
+    function ajustarAnchoBarra() {
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        if (maxScrollTabla > 0) {
+            // Ajusta el ancho interno proporcionalmente al área visible de la barra superior
+            topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
+        }
+    }
+
+    ajustarAnchoBarra();
+    window.addEventListener("resize", ajustarAnchoBarra);
+    setTimeout(ajustarAnchoBarra, 400);
+
     let syncing = false;
 
+    // Sincronizar desde la barra superior hacia la tabla de forma proporcional
     topScroll.addEventListener("scroll", () => {
         if (syncing) return;
         syncing = true;
-        tableWrapper.scrollLeft = topScroll.scrollLeft;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollBarra > 0) {
+            const porcentaje = topScroll.scrollLeft / maxScrollBarra;
+            tableWrapper.scrollLeft = porcentaje * maxScrollTabla;
+        }
         syncing = false;
     });
 
+    // Sincronizar desde la tabla hacia la barra superior de forma proporcional
     tableWrapper.addEventListener("scroll", () => {
         if (syncing) return;
         syncing = true;
-        topScroll.scrollLeft = tableWrapper.scrollLeft;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollTabla > 0 && maxScrollBarra > 0) {
+            const porcentaje = tableWrapper.scrollLeft / maxScrollTabla;
+            topScroll.scrollLeft = porcentaje * maxScrollBarra;
+        }
         syncing = false;
     });
 });
-
 function actualizarStickyTabla() {
     const header = document.querySelector('.planeacion-header');
     const filtros = document.querySelector('.planeacion-filtros-sticky');
