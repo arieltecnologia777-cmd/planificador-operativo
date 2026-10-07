@@ -7,6 +7,63 @@
     <title>Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Optimización de scroll para evitar el efecto fantasma / parpadeo */
+        .planeacion-table-wrapper, .planeacion-scroll-top {
+            transform: translateZ(0);
+            will-change: scroll-position;
+            backface-visibility: hidden;
+        }
+
+        /* Contenedor general para alinear los botoncitos de flecha con el scroll superior */
+        .scroll-with-arrows-top {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Lo mantiene alineado a la derecha tal como estaba */
+            gap: 4px;
+            margin-bottom: 5px;
+        }
+
+        /* Contenedor envolvente para la barra inferior imitando el estilo Excel */
+        .scroll-with-arrows-bottom {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .scroll-with-arrows-bottom .planeacion-table-wrapper {
+            flex-grow: 1;
+        }
+
+        /* Estilo de los triangulitos laterales tipo Excel */
+        .btn-scroll-arrow {
+            background-color: #f1f3f5;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            width: 20px;
+            height: 16px;
+            cursor: pointer;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            color: #495057;
+            padding: 0;
+            line-height: 1;
+            transition: background-color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .btn-scroll-arrow:hover {
+            background-color: #dee2e6;
+        }
+
+        .btn-scroll-arrow:active {
+            background-color: #ced4da;
+        }
+    </style>
 </head>
 
 <body>
@@ -410,68 +467,80 @@
 
 </div>
 
-<div class="planeacion-scroll-top">
-    <div class="planeacion-scroll-top-inner"></div>
+<!-- Scroll superior conservando su tamaño original con flechitas sutiles a los lados -->
+<div class="scroll-with-arrows-top">
+    <button type="button" class="btn-scroll-arrow" id="scrollLeftTopBtn" title="Izquierda">◄</button>
+    <div class="planeacion-scroll-top">
+        <div class="planeacion-scroll-top-inner"></div>
+    </div>
+    <button type="button" class="btn-scroll-arrow" id="scrollRightTopBtn" title="Derecha">►</button>
 </div>
 
-<div class="planeacion-table-wrapper">
+<!-- Scroll inferior con sus respectivas flechitas sutiles a los lados -->
+<div class="scroll-with-arrows-bottom">
+    <button type="button" class="btn-scroll-arrow" id="scrollLeftBottomBtn" title="Izquierda">◄</button>
+    
+    <div class="planeacion-table-wrapper">
 
-    <table class="planeacion-table">
+        <table class="planeacion-table">
 
-        <thead>
-    <tr>
+            <thead>
+        <tr>
 
-        <th>ID</th>
-        <th>Departamento</th>
-        <th>Municipio</th>
-        <th>IM</th>
-        <th>OT</th>
-        <th>Afectación</th>
-        <th>IDS afectados</th>
-        <th>Días OT</th>
-        <th>Rango de afectación</th>
-        <th>Prioridad</th>
-        <th>Stoppers</th>
+            <th>ID</th>
+            <th>Departamento</th>
+            <th>Municipio</th>
+            <th>IM</th>
+            <th>OT</th>
+            <th>Afectación</th>
+            <th>IDS afectados</th>
+            <th>Días OT</th>
+            <th>Rango de afectación</th>
+            <th>Prioridad</th>
+            <th>Stoppers</th>
 
-        <th class="editable-col">
-            Estado programación
-        </th>
+            <th class="editable-col">
+                Estado programación
+            </th>
 
-        <th class="editable-col">
-            Fecha programación
-        </th>
+            <th class="editable-col">
+                Fecha programación
+            </th>
 
-        <th class="editable-col">
-            Observaciones
-        </th>
+            <th class="editable-col">
+                Observaciones
+            </th>
 
-        <th class="editable-col">
-            Estado gestión
-        </th>
+            <th class="editable-col">
+                Estado gestión
+            </th>
 
-        <th class="editable-col">
-            Técnico asignado
-        </th>
+            <th class="editable-col">
+                Técnico asignado
+            </th>
 
-        <th class="editable-col">
-            Acompañamiento
-        </th>
+            <th class="editable-col">
+                Acompañamiento
+            </th>
 
-        <th>Indicador backlog</th>
-        <th>Stopper P3</th>
-        <th>Tipo facturación</th>
-        <th>Fecha vencimiento FM</th>
-        <th>Alerta vencimiento FM</th>
+            <th>Indicador backlog</th>
+            <th>Stopper P3</th>
+            <th>Tipo facturación</th>
+            <th>Fecha vencimiento FM</th>
+            <th>Alerta vencimiento FM</th>
 
-    </tr>
-</thead>
+        </tr>
+    </thead>
 
-<tbody id="planeacionBody">
+    <tbody id="planeacionBody">
 
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
 
+    </div>
+
+    <button type="button" class="btn-scroll-arrow" id="scrollRightBottomBtn" title="Derecha">►</button>
 </div>
         </section>
 
@@ -485,6 +554,27 @@
 
  <script src="../js/app.js"></script>
  <script src="../js/planeacion.js"></script>
+
+<!-- Script rápido para que las flechitas muevan el scroll (puedes agregarlo también en tu JS o dejarlo aquí integrado) -->
+<script>
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-scroll-arrow");
+    if (!btn) return;
+
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    if (!tableWrapper) return;
+
+    const step = 150;
+    const isLeft = btn.id === "scrollLeftTopBtn" || btn.id === "scrollLeftBottomBtn";
+    const direccion = isLeft ? -step : step;
+
+    tableWrapper.scrollBy({ left: direccion, behavior: "smooth" });
+    if (topScroll) {
+        topScroll.scrollBy({ left: direccion, behavior: "smooth" });
+    }
+});
+</script>
 
 <!-- Modal flotante para editar observaciones -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
@@ -512,3 +602,4 @@
 </div>
  </body>
  </html>
+```[cite: 12]
