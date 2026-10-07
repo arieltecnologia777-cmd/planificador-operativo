@@ -1397,19 +1397,19 @@ document.addEventListener("mouseup", () => {
 // SINCRONIZACIÓN EXACTA DEL ANCHO DE LA BARRA SUPERIOR
 // ==========================================
 function ajustarAnchoScrollSuperior() {
-    const table = document.querySelector(".planeacion-table");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
     const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
 
-    if (table && topScrollInner && tableWrapper) {
-        // Asigna exactamente el ancho real desbordado de la tabla al contenedor interno
-        topScrollInner.style.width = table.scrollWidth + "px";
+    if (tableWrapper && topScrollInner) {
+        // Obtenemos el ancho máximo real que puede desplazarse la tabla
+        const maxScrollableWidth = tableWrapper.scrollWidth;
+        
+        // Asignamos ese ancho exacto al elemento interno de la barra superior
+        topScrollInner.style.width = maxScrollableWidth + "px";
     }
 }
 
-// Ejecutar al cargar la página y al cambiar el tamaño de la ventana
+// Ejecutar al cargar, redimensionar y tras un pequeño retraso
 window.addEventListener("load", ajustarAnchoScrollSuperior);
 window.addEventListener("resize", ajustarAnchoScrollSuperior);
-
-// También ejecutar un pequeño retraso por si los datos se pintan asíncronamente
-setTimeout(ajustarAnchoScrollSuperior, 500);
+setTimeout(ajustarAnchoScrollSuperior, 300);
