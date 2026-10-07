@@ -1251,13 +1251,13 @@ min-width:220px;
 }
 
 /* =========================
-   SCROLL SUPERIOR TIPO EXCEL (CON SEPARACIÓN NATURAL)
+   SCROLL SUPERIOR TIPO EXCEL (CON SEPARACIÓN REAL)
 ========================= */
 .scroll-with-arrows-top {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 3px; /* Pequeña separación entre los botones y la barra */
+    gap: 3px;
     margin-bottom: 5px;
     margin-right: 12px;
 }
@@ -1271,6 +1271,7 @@ min-width:220px;
     border: 1px solid #ced4da;
     border-radius: 2px;
     background: #f1f3f5;
+    padding: 0 4px; /* Esto separa visualmente la barra deslizante de los extremos */
 }
 
 .planeacion-scroll-top-inner {
@@ -1279,17 +1280,16 @@ min-width:220px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar{
-    height: 8px;
+    height: 6px; /* Ligeramente menor para que respire dentro del padding */
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-track{
-    background: #f1f3f5;
-    border-radius: 0;
+    background: transparent;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-thumb{
     background: #adb5bd;
-    border-radius: 0;
+    border-radius: 3px;
 }
 
 .planeacion-scroll-top::-webkit-scrollbar-thumb:hover{
