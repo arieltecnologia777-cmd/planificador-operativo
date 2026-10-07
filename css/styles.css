@@ -1263,16 +1263,15 @@ min-width:220px;
 }
 
 .scroll-with-arrows-top .planeacion-scroll-top {
-    width: 300px;
+    width: 300px; /* Ancho compacto original */
     flex-grow: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 10px; /* Altura ligeramente más estilizada (menos amplia) */
+    height: 10px;
     border: 1px solid #ced4da;
     border-radius: 2px;
     background: #f1f3f5;
 }
-
 .planeacion-scroll-top-inner {
     width: 2700px;
     height: 1px;
