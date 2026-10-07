@@ -8,17 +8,18 @@
 
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        /* Estilos para aceleración por hardware (eliminar parpadeo/efecto fantasma) y botones de scroll */
+        /* Optimización de scroll para eliminar parpadeo y efecto fantasma */
         .planeacion-table-wrapper, .planeacion-scroll-top {
             transform: translateZ(0);
             will-change: scroll-position;
             backface-visibility: hidden;
         }
 
+        /* Contenedor compacto que integra las flechitas sutiles a los lados de la barra superior */
         .scroll-control-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
             margin-bottom: 5px;
         }
 
@@ -26,29 +27,34 @@
             flex-grow: 1;
             overflow-x: auto;
             overflow-y: hidden;
+            height: 14px; /* Altura compacta y original de la barra */
         }
 
+        /* Botones de flecha pequeños, discretos y estilizados tipo Excel clásico */
         .btn-scroll-step {
-            background-color: #f8f9fa;
+            background-color: #f1f3f5;
             border: 1px solid #ced4da;
-            border-radius: 4px;
-            width: 32px;
-            height: 28px;
+            border-radius: 3px;
+            width: 22px;
+            height: 16px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
-            transition: background-color 0.2s;
+            color: #495057;
+            padding: 0;
+            line-height: 1;
+            transition: background-color 0.15s;
         }
 
         .btn-scroll-step:hover {
-            background-color: #e2e6ea;
+            background-color: #dee2e6;
         }
 
         .btn-scroll-step:active {
-            background-color: #dae0e5;
+            background-color: #ced4da;
         }
     </style>
 </head>
@@ -454,15 +460,15 @@
 
 </div>
 
-<!-- Barra de scroll superior integrada con las flechitas laterales tipo Excel -->
+<!-- Barra superior compacta con flechitas sutiles a los lados -->
 <div class="scroll-control-container">
-    <button type="button" class="btn-scroll-step" id="scrollLeftBtn" title="Desplazar a la izquierda">◀</button>
+    <button type="button" class="btn-scroll-step" id="scrollLeftBtn" title="Desplazar a la izquierda">◄</button>
     
     <div class="planeacion-scroll-top">
         <div class="planeacion-scroll-top-inner"></div>
     </div>
     
-    <button type="button" class="btn-scroll-step" id="scrollRightBtn" title="Desplazar a la derecha">▶</button>
+    <button type="button" class="btn-scroll-step" id="scrollRightBtn" title="Desplazar a la derecha">►</button>
 </div>
 
 <div class="planeacion-table-wrapper">
