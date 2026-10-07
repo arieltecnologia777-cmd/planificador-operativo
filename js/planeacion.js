@@ -1459,7 +1459,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
                     
-                    // Función auxiliar para normalizar textos (eliminar tildes y llevar a mayúsculas)
                     const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
                     const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
@@ -1468,13 +1467,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
                     });
 
-                    // Detección flexible de la columna de fecha (sin importar tildes o espacios)
+                    // Búsqueda estricta de la columna de fecha de programación para evitar falsos positivos
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
-                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG"));
+                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
                     });
 
-                    // Detección flexible de la columna de estado
                     const idxEstadoProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n.includes("ESTADO") && n.includes("PROGRAMACION");
@@ -1499,16 +1497,25 @@ document.addEventListener("DOMContentLoaded", () => {
                             const regD1Actual = window.registrosD1[otVal] || {};
                             
                             const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
-                            let fechaVal = idxFechaProg !== -1 && fila[idxFechaProg] !== undefined ? String(fila[idxFechaProg]).trim() : (regD1Actual.fechaProgramacion || "");
+                            
+                            // Extraer fecha con validación estricta de que la celda exista y no esté vacía
+                            let fechaVal = "";
+                            if (idxFechaProg !== -1 && fila[idxFechaProg] !== undefined && fila[idxFechaProg] !== null) {
+                                fechaVal = String(fila[idxFechaProg]).trim();
+                            }
+
                             let estadoProgVal = regD1Actual.estadoProgramacion || "";
 
                             // Si el Excel trae un estado explícito, lo respetamos
                             if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
                             } 
-                            // Si NO trae estado pero SÍ hay una fecha escrita, activamos automáticamente a "Programada"
-                            else if (fechaVal && fechaVal !== "" && fechaVal !== "-") {
+                            // CONDICIÓN ESTRICTA: Solo cambia a "Programada" si la fecha tiene texto real (ej. YYYY-MM-DD o formato válido) y no está vacía
+                            else if (fechaVal !== "" && fechaVal !== "-" && fechaVal !== "undefined" && fechaVal !== "null" && fechaVal.length >= 6) {
                                 estadoProgVal = "Programada";
+                            } else {
+                                // Si no hay fecha en el Excel para esta fila, conservamos el estado que ya tenía (o vacío si no tenía)
+                                fechaVal = regD1Actual.fechaProgramacion || "";
                             }
 
                             const payload = {
