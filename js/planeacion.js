@@ -1291,20 +1291,23 @@ document.addEventListener("click", (e) => {
         const spanMuni = document.getElementById("modalValMuni");
         const spanAfec = document.getElementById("modalValAfec");
 
-        if (modal && txtArea) {
+       if (modal && txtArea) {
             if (spanOt) spanOt.textContent = ot || "--";
             if (spanId) spanId.textContent = id || "--";
             if (spanDepto) spanDepto.textContent = depto || "--";
             if (spanMuni) spanMuni.textContent = muni || "--";
             if (spanAfec) spanAfec.textContent = afec || "--";
 
-            // Buscamos el texto guardado en la API/Worker o en el input
-            const textoCrudo = window.registrosD1[ot]?.observacion || inputObs?.value || "";
-            
-            // Reemplazamos tanto el separador visual como los saltos de línea de forma segura para el textarea
-            const valorRealObs = textoCrudo.replace(/(\r\n|\n|\r)/g, "\n").replace(/\s*\|\s*/g, "\n");
-            
-            txtArea.value = valorRealObs;
+            // Obtenemos el texto directamente de la base de datos o del registro global
+            const registroActual = window.registrosD1[ot] || {};
+            let textoGuardado = registroActual.observacion || inputObs?.value || "";
+
+            // Si el texto venía con el separador visual de la tabla, lo pasamos a saltos de línea reales para el textarea
+            if (textoGuardado.includes(" | ")) {
+                textoGuardado = textoGuardado.replace(/\s*\|\s*/g, "\n");
+            }
+
+            txtArea.value = textoGuardado;
             modal.style.display = "grid";
             txtArea.focus();
         }
