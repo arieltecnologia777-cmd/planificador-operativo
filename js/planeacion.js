@@ -172,7 +172,6 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <!-- ---><--- PÓNELO AQUÍ ---><--- -->
                         <input class="edit-input observacion" value="${(d1.observacion || "").replace(/(\r\n|\n|\r)/g, " | ")}" placeholder="Observación">
                         
                         <button type="button" class="btn-abrir-modal-obs" 
