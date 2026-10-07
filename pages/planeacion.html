@@ -15,31 +15,32 @@
             backface-visibility: hidden;
         }
 
-        /* Contenedor exacto para que las flechitas queden pegadas de lado a lado de la barra superior */
+        /* Contenedor donde las flechitas quedan perfectamente pegadas a los extremos de la barra */
         .scroll-with-arrows-top {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 2px;
+            gap: 0;
             margin-bottom: 5px;
         }
 
         .scroll-with-arrows-top .planeacion-scroll-top {
-            width: 300px; /* Mantén aquí el ancho compacto original de tu barra superior */
+            width: 300px;
             flex-grow: 0;
             overflow-x: auto;
             overflow-y: hidden;
+            border-top: 1px solid #ced4da;
+            border-bottom: 1px solid #ced4da;
         }
 
-        /* Estilo de los botoncitos con las flechas exactas de la imagen */
+        /* Estilo de los botoncitos pegados tipo Excel */
         .btn-scroll-arrow {
             background-color: #f1f3f5;
             border: 1px solid #ced4da;
-            border-radius: 3px;
-            width: 22px;
+            width: 20px;
             height: 16px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -49,6 +50,18 @@
             line-height: 1;
             transition: background-color 0.15s;
             flex-shrink: 0;
+        }
+
+        #scrollLeftTopBtn {
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+            border-right: none;
+        }
+
+        #scrollRightTopBtn {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            border-left: none;
         }
 
         .btn-scroll-arrow:hover {
@@ -462,7 +475,7 @@
 
 </div>
 
-<!-- Barra superior con las flechitas exactamente pegadas de lado a lado -->
+<!-- Barra superior con flechitas integradas de lado a lado -->
 <div class="scroll-with-arrows-top">
     <button type="button" class="btn-scroll-arrow" id="scrollLeftTopBtn" title="Izquierda">&#9664;</button>
     <div class="planeacion-scroll-top">
@@ -538,31 +551,8 @@
 
 
  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-
-
  <script src="../js/app.js"></script>
  <script src="../js/planeacion.js"></script>
-
-<!-- Script para darle funcionalidad de desplazamiento a las flechitas -->
-<script>
-document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".btn-scroll-arrow");
-    if (!btn) return;
-
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    if (!tableWrapper) return;
-
-    const step = 150;
-    const isLeft = btn.id === "scrollLeftTopBtn";
-    const direccion = isLeft ? -step : step;
-
-    tableWrapper.scrollBy({ left: direccion, behavior: "smooth" });
-    if (topScroll) {
-        topScroll.scrollBy({ left: direccion, behavior: "smooth" });
-    }
-});
-</script>
 
 <!-- Modal flotante para editar observaciones -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
