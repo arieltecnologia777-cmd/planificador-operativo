@@ -1641,3 +1641,55 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// ==========================================
+// BARRA DE PROGRESO PARA CARGA MASIVA
+// ==========================================
+const inputExcelMasivo = document.getElementById('inputExcelMasivo');
+const containerProgreso = document.getElementById('containerProgresoMasivo');
+const textoProgreso = document.getElementById('textoProgreso');
+
+if (inputExcelMasivo && containerProgreso) {
+    inputExcelMasivo.addEventListener('change', function(e) {
+        const archivo = e.target.files[0];
+        if (!archivo) return;
+
+        // Mostrar la barra de progreso animada inmediatamente
+        containerProgreso.style.display = "block";
+        if (textoProgreso) {
+            textoProgreso.textContent = `Leyendo "${archivo.name}"...`;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Un pequeño respiro al DOM para que la barra se pinte antes del procesamiento pesado
+            setTimeout(() => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    // ==========================================
+                    // ⚙️ COLOCA AQUÍ TU FUNCIÓN ACTUAL DE PROCESAMIENTO
+                    // Ejemplo: procesarDatosMasivos(jsonData);
+                    // ==========================================
+
+                    console.log("✅ Archivo masivo procesado con éxito");
+
+                } catch (error) {
+                    console.error("❌ Error al procesar el archivo:", error);
+                    alert("Ocurrió un error al procesar el archivo Excel. Revisa la consola (F12).");
+                } finally {
+                    // Ocultar la barra y limpiar el input al terminar (exito o error)
+                    containerProgreso.style.display = "none";
+                    inputExcelMasivo.value = "";
+                }
+            }, 50);
+        };
+
+        reader.readAsArrayBuffer(archivo);
+    });
+}
