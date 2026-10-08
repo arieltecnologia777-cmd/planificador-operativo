@@ -19,33 +19,33 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
 
-// Estilos mejorados: botón más ancho y destacado solo con el icono en azul
+// Estilos limpios, pequeños, suaves y discretos para el botón de agrupar/desagrupar
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
     .btn-excel-grupo {
-        background: #007bff;
-        color: #ffffff;
-        border: none;
-        border-radius: 4px;
+        background: #f1f3f5;
+        color: #495057;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
         cursor: pointer;
-        padding: 4px 14px;
-        font-weight: bold;
-        font-size: 0.95rem;
-        margin-left: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-        transition: background 0.2s, transform 0.1s;
+        padding: 1px 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        margin-left: 6px;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        vertical-align: middle;
+        line-height: 1;
     }
     .btn-excel-grupo:hover {
-        background: #0056b3;
-    }
-    .btn-excel-grupo:active {
-        transform: scale(0.95);
+        background: #e2e6ea;
+        color: #212529;
+        border-color: #adb5bd;
     }
 `;
 document.head.appendChild(styleGrupoExcel);
@@ -137,19 +137,16 @@ function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 6) {
         const thIdsAfectados = ths[6]; // Columna "IDs afectados"
-        if (!thIdsAfectados.querySelector(".btn-excel-grupo")) {
-            const btn = document.createElement("button");
+        let btn = thIdsAfectados.querySelector(".btn-excel-grupo");
+        if (!btn) {
+            btn = document.createElement("button");
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            btn.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
-            btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
             thIdsAfectados.appendChild(btn);
-        } else {
-            const btnExistente = thIdsAfectados.querySelector(".btn-excel-grupo");
-            btnExistente.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
-            btnExistente.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
         }
+        btn.textContent = grupoColumnasColapsado ? "+" : "-";
+        btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 }
 
@@ -185,7 +182,7 @@ function aplicarEstadoGrupoColumnas() {
 
     const btn = document.getElementById("btnToggleGrupoCols");
     if (btn) {
-        btn.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
+        btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 }
@@ -913,7 +910,7 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Manejar botón de agrupar/desagrupar columnas estilo Excel con alternancia garantizada
+    // Manejar botón de agrupar/desagrupar columnas con alternancia limpia y segura
     const btnGrupo = target.closest("#btnToggleGrupoCols");
     if (btnGrupo) {
         grupoColumnasColapsado = !grupoColumnasColapsado;
