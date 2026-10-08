@@ -331,7 +331,6 @@ function actualizarOpcionesFiltros(datos) {
     const idxOT = encabezados.findIndex(h => h.trim() === "OT");
     const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
     const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
-    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
@@ -341,7 +340,6 @@ function actualizarOpcionesFiltros(datos) {
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const estG = regD1.estadoGestion || "";
-        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
 
         const cumpleTexto = !texto || 
@@ -352,9 +350,9 @@ function actualizarOpcionesFiltros(datos) {
         const cumpleEstGestion = estadosGestionSeleccionados.length === 0 || estadosGestionSeleccionados.includes(estG);
 
         let cumpleKpi = true;
-        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
-        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
-        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "alta") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "BAJA");
         if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
@@ -513,7 +511,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    // Estructura Jerárquica de Fechas (Año ➔ Mes ➔ Día)
+    // Estructura Jerárquica de Fechas con Plegado/Desplegado (Accordion) y Días Limpios
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const arbolFechas = {};
     
@@ -540,23 +538,33 @@ function actualizarOpcionesFiltros(datos) {
 
         const aniosOrdenados = Object.keys(arbolFechas).sort();
         aniosOrdenados.forEach(anio => {
-            htmlJerarquico += `<div class="filtro-grupo-anio" style="padding-left: 5px; font-weight: bold; margin-top: 4px;">📂 ${anio}</div>`;
+            htmlJerarquico += `
+                <div class="filtro-grupo-anio-container">
+                    <div class="filtro-grupo-anio" style="padding: 4px 5px; font-weight: bold; cursor: pointer; user-select: none;">📂 ${anio} ▾</div>
+                    <div class="filtro-contenido-anio" style="display: block;">`;
             
             const mesesOrdenados = Object.keys(arbolFechas[anio]).sort();
             mesesOrdenados.forEach(mesIdx => {
                 const nombreMes = mesesNombres[parseInt(mesIdx, 10) - 1] || mesIdx;
-                htmlJerarquico += `<div class="filtro-grupo-mes" style="padding-left: 15px; font-weight: 600; color: #555; margin-top: 2px;">📁 ${nombreMes}</div>`;
+                htmlJerarquico += `
+                        <div class="filtro-grupo-mes-container">
+                            <div class="filtro-grupo-mes" style="padding: 3px 5px 3px 15px; font-weight: 600; color: #555; cursor: pointer; user-select: none;">📁 ${nombreMes} ▾</div>
+                            <div class="filtro-contenido-mes" style="display: block;">`;
                 
                 const diasOrdenados = arbolFechas[anio][mesIdx].sort();
                 diasOrdenados.forEach(fechaStr => {
                     const [, , dia] = fechaStr.split("-");
                     const estaChequeado = fechasProgSeleccionadas.includes(fechaStr) ? "checked" : "";
                     htmlJerarquico += `
-                        <label class="multi-filtro-item" style="padding-left: 25px;">
-                            <input type="checkbox" value="${fechaStr}" class="chkFechaProg" ${estaChequeado}> ${dia} (${fechaStr})
-                        </label>`;
+                                <label class="multi-filtro-item" style="padding-left: 30px; display: block;">
+                                    <input type="checkbox" value="${fechaStr}" class="chkFechaProg" ${estaChequeado}> ${dia}
+                                </label>`;
                 });
+
+                htmlJerarquico += `</div></div>`;
             });
+
+            htmlJerarquico += `</div></div>`;
         });
 
         fpEl.innerHTML = htmlJerarquico;
@@ -811,6 +819,28 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
     const target = e.target;
+
+    const headerAnio = target.closest(".filtro-grupo-anio");
+    if (headerAnio) {
+        const contenido = headerAnio.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerAnio.textContent = headerAnio.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
+
+    const headerMes = target.closest(".filtro-grupo-mes");
+    if (headerMes) {
+        const contenido = headerMes.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerMes.textContent = headerMes.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
 
     const kpiCard = target.closest(".kpi-card, .card");
     if (kpiCard && !target.closest("input, select, button")) {
