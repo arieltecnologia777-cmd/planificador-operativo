@@ -217,7 +217,7 @@ function pintarTabla(datos){
         let fechaDisabled = "disabled";
         let fechaValor = d1.fechaProgramacion || "⟵ Definir estado";
 
-        if (d1.estadoProgramacion === "Programada" || d1.estadoProgramacion === "Cancelada") {
+        if (d1.estadoProgramacion === "Programada" || d1.estadoProgramacion === "Cancelada" || d1.estadoProgramacion === "Operativa") {
             fechaTipo = "date";
             fechaDisabled = "";
             fechaValor = d1.fechaProgramacion || "";
@@ -246,6 +246,7 @@ function pintarTabla(datos){
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
                     <option value="Programada" ${d1.estadoProgramacion === "Programada" ? "selected" : ""}>Programada</option>
+                    <option value="Operativa" ${d1.estadoProgramacion === "Operativa" ? "selected" : ""}>Operativa</option>
                     <option value="Pendiente" ${d1.estadoProgramacion === "Pendiente" ? "selected" : ""}>Pendiente</option>
                     <option value="N/A" ${d1.estadoProgramacion === "N/A" ? "selected" : ""}>N/A</option>
                     <option value="Postular FM" ${d1.estadoProgramacion === "Postular FM" ? "selected" : ""}>Postular FM</option>
@@ -385,7 +386,7 @@ function actualizarKPIs(datos){
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
 
         const regD1 = (window.registrosD1 || {})[ot];
-        if (regD1 && regD1.estadoProgramacion === "Programada") {
+        if (regD1 && (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa")) {
             otsProgramadas.add(ot);
         }
     });
@@ -446,7 +447,7 @@ function actualizarOpcionesFiltros(datos) {
         if (kpiFiltroActivo === "baja") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "BAJA");
         if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
-        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
 
         return cumpleTexto && cumpleEstGestion && cumpleKpi;
     };
@@ -733,7 +734,7 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
         if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
-        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
 
         return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
@@ -880,7 +881,7 @@ document.addEventListener("change", (e) => {
         const fecha = fila.querySelector(".fecha-input");
         const valor = target.value;
 
-        if(valor === "Programada" || valor === "Cancelada"){
+        if(valor === "Programada" || valor === "Cancelada" || valor === "Operativa"){
             fecha.type = "date";
             fecha.disabled = false;
             if(!fecha.value || fecha.value.includes("Definir") || fecha.value.includes("validación") || fecha.value.includes("aplica")) {
@@ -1261,7 +1262,7 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
+            if ((estadoProg === "Programada" || estadoProg === "Cancelada" || estadoProg === "Operativa") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
                 esFechaReal = true;
