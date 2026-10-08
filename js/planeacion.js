@@ -1642,7 +1642,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 // ==========================================
-// BARRA DE PROGRESO PARA CARGA MASIVA
+// FLUJO CORRECTO DE CARGA MASIVA Y BARRA DE PROGRESO
 // ==========================================
 const inputExcelMasivo = document.getElementById('inputExcelMasivo');
 const containerProgreso = document.getElementById('containerProgresoMasivo');
@@ -1653,16 +1653,25 @@ if (inputExcelMasivo && containerProgreso) {
         const archivo = e.target.files[0];
         if (!archivo) return;
 
-        // Mostrar la barra de progreso animada inmediatamente
+        // 1. Mostrar el confirm ANTES de activar la barra (la barra sigue oculta)
+        const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
+
+        if (!confirmar) {
+            // Si el usuario cancela, limpiamos el input y no hacemos nada
+            inputExcelMasivo.value = "";
+            return;
+        }
+
+        // 2. Apenas el usuario da "Aceptar", mostramos la barra de progreso
         containerProgreso.style.display = "block";
         if (textoProgreso) {
-            textoProgreso.textContent = `Leyendo "${archivo.name}"...`;
+            textoProgreso.textContent = `Procesando "${archivo.name}"...`;
         }
 
         const reader = new FileReader();
 
         reader.onload = function(e) {
-            // Un pequeño respiro al DOM para que la barra se pinte antes del procesamiento pesado
+            // Un pequeño respiro al DOM (setTimeout) para que pinte la barra antes de congelar con el procesamiento
             setTimeout(() => {
                 try {
                     const data = new Uint8Array(e.target.result);
@@ -1673,17 +1682,21 @@ if (inputExcelMasivo && containerProgreso) {
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
                     // ==========================================
-                    // ⚙️ COLOCA AQUÍ TU FUNCIÓN ACTUAL DE PROCESAMIENTO
+                    // ⚙️ AQUÍ LLAMAS A TU FUNCIÓN DE PROCESAMIENTO REAL
                     // Ejemplo: procesarDatosMasivos(jsonData);
                     // ==========================================
 
                     console.log("✅ Archivo masivo procesado con éxito");
 
+                    // 3. Al terminar todo el proceso, ocultamos la barra y lanzamos el popup final de éxito
+                    containerProgreso.style.display = "none";
+                    inputExcelMasivo.value = "";
+                    
+                    alert("¡Archivo masivo cargado y procesado exitosamente!");
+
                 } catch (error) {
                     console.error("❌ Error al procesar el archivo:", error);
                     alert("Ocurrió un error al procesar el archivo Excel. Revisa la consola (F12).");
-                } finally {
-                    // Ocultar la barra y limpiar el input al terminar (exito o error)
                     containerProgreso.style.display = "none";
                     inputExcelMasivo.value = "";
                 }
