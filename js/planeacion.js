@@ -1647,26 +1647,45 @@ document.addEventListener("DOMContentLoaded", () => {
 const inputExcelMasivo = document.getElementById('inputExcelMasivo');
 const containerProgreso = document.getElementById('containerProgresoMasivo');
 const textoProgreso = document.getElementById('textoProgreso');
+const barraProgresoAnimada = document.getElementById('barraProgresoAnimada');
+const porcentajeProgreso = document.getElementById('porcentajeProgreso');
 
 if (inputExcelMasivo && containerProgreso) {
     inputExcelMasivo.addEventListener('change', function(e) {
         const archivo = e.target.files[0];
         if (!archivo) return;
 
-        // NOTA: Si tu código ya tiene el window.confirm() más adelante, 
-        // puedes disparar la barra justo después de que el usuario acepta.
-        // Aquí asumimos que pones la barra a correr justo cuando arranca el proceso:
+        // 1. PRIMERO: Sale tu ventana de confirmación. La barra NO se muestra aún.
+        const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
 
-        // 1. Mostrar la barra de progreso animada
-        containerProgreso.style.display = "block";
-        if (textoProgreso) {
-            textoProgreso.textContent = `Procesando "${archivo.name}"...`;
+        if (!confirmar) {
+            inputExcelMasivo.value = "";
+            return;
         }
+
+        // 2. SEGUNDO: El usuario aceptó. Hacemos visible la barra y la ponemos en 0%
+        containerProgreso.style.display = "block";
+        if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
+        
+        let porcentajeActual = 0;
+        if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
+        if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
+
+        // Simulamos un avance progresivo fluido mientras se procesan los datos
+        const intervaloProgreso = setInterval(() => {
+            if (porcentajeActual < 90) {
+                porcentajeActual += Math.floor(Math.random() * 15) + 5; // Sube de a pocos
+                if (porcentajeActual > 90) porcentajeActual = 90; // Tope en 90% hasta que termine de verdad
+                
+                if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
+                if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
+            }
+        }, 150); // Cada 150ms avanza un poco
 
         const reader = new FileReader();
 
         reader.onload = function(e) {
-            // Un pequeño respiro al DOM para que la barra se pinte con fluidez
+            // Damos un pequeño respiro para que el lector procese el archivo
             setTimeout(() => {
                 try {
                     const data = new Uint8Array(e.target.result);
@@ -1677,18 +1696,29 @@ if (inputExcelMasivo && containerProgreso) {
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
                     // ==========================================
-                    // ⚙️ AQUÍ LLAMAS A TU FUNCIÓN QUE HACE EL TRABAJO DURO
-                    // (Ella misma lanzará tu popup final de "Se actualizaron X registros")
+                    // ⚙️ AQUÍ LLAMAS A TU FUNCIÓN DE ACTUALIZACIÓN MASIVA
+                    // (Ej: procesarCargaMasiva(jsonData);)
                     // ==========================================
-                    // procesarTuFuncionMasiva(jsonData);
 
-                    console.log("✅ Lectura del archivo masivo completada");
+                    // 3. TERCERO: Cuando el proceso termina con éxito, llevamos la barra al 100%
+                    clearInterval(intervaloProgreso);
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
+
+                    // Pequeña pausa visual antes de ocultar y mostrar tu popup final
+                    setTimeout(() => {
+                        containerProgreso.style.display = "none";
+                        inputExcelMasivo.value = "";
+                        
+                        // AQUÍ SE MUESTRA TU POPUP FINAL DE "Se actualizaron X registros"
+                        // (Si tu función ya lo muestra, se ejecutará en este punto exacto de forma sincronizada)
+
+                    }, 400);
 
                 } catch (error) {
                     console.error("❌ Error al procesar el archivo:", error);
+                    clearInterval(intervaloProgreso);
                     alert("Ocurrió un error al procesar el archivo Excel. Revisa la consola (F12).");
-                } finally {
-                    // 2. Al terminar (sea éxito o error), Ocultamos la barra y limpiamos el input
                     containerProgreso.style.display = "none";
                     inputExcelMasivo.value = "";
                 }
