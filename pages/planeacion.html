@@ -87,14 +87,14 @@
         </label>
         <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
     </div>
-<!-- Contenedor de la barra de carga masiva -->
 <div id="containerProgresoMasivo" class="progreso-masivo-container">
     <div class="progreso-masivo-header">
         <span id="textoProgreso">Procesando archivo...</span>
-        <span>⏳</span>
+        <span id="porcentajeProgreso">0%</span>
     </div>
     <div class="progreso-masivo-track">
-        <div id="barraProgresoAnimada" class="progreso-masivo-barra"></div>
+        <!-- Usamos un ancho inicial de 0% para que avance progresivamente -->
+        <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%;"></div>
     </div>
 </div>
 </div>
