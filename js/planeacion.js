@@ -16,6 +16,7 @@ let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
 let fechasProgSeleccionadas = [];
+let backlogsSeleccionados = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 
@@ -384,7 +385,6 @@ function renderizarFiltrosDinamicos(datos) {
         ` + rangos.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    // Obtenemos las fechas de programación únicas registradas en D1
     const fechasProgDisponibles = [...new Set(
         Object.values(window.registrosD1 || {})
             .map(r => r.fechaProgramacion)
@@ -612,7 +612,7 @@ function actualizarOpcionesFiltros(datos) {
             <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
-        ` + backlogs.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+        ` + backDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
@@ -1252,7 +1252,6 @@ window.exportarPlaneacion = function() {
             return String(texto).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim();
         };
 
-        // Mapeamos los datos para procesar fechas y textos
         let registrosProcesados = filas.map(fila => {
             const getValor = (nombre) => {
                 const index = buscarIndice(nombre);
@@ -1291,12 +1290,9 @@ window.exportarPlaneacion = function() {
             };
         });
 
-        // ⭐ ESTRATEGIA MAESTRA: Ordenar los registros para que las fechas reales queden PRIMERO
-        // y los textos queden de últimos. Esto obliga a Excel a poner la primera celda de datos como Fecha
-        // y fijar el filtro en la fila 1 de manera definitiva.
         registrosProcesados.sort((a, b) => {
-            if (a.esFechaReal && !b.esFechaReal) return -1; // a va primero
-            if (!a.esFechaReal && b.esFechaReal) return 1;  // b va primero
+            if (a.esFechaReal && !b.esFechaReal) return -1;
+            if (!a.esFechaReal && b.esFechaReal) return 1;
             return 0;
         });
 
@@ -1322,7 +1318,7 @@ window.exportarPlaneacion = function() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(item.regD1.estadoProgramacion),
-                item.valorFechaExportar, // Fecha real arriba, textos abajo
+                item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion),
                 limpiarTexto(item.regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1337,7 +1333,7 @@ window.exportarPlaneacion = function() {
 
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+            const colFechaIdx = 12;
 
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
@@ -1348,7 +1344,6 @@ window.exportarPlaneacion = function() {
                 }
             }
 
-            // Forzar rango del autofiltro y congelar la cabecera
             ws['!autofilter'] = { ref: ws['!ref'] };
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
@@ -1366,6 +1361,7 @@ window.exportarPlaneacion = function() {
         alert("Ocurrió un error al exportar el archivo. Revisa la consola (F12).");
     }
 };
+
 // ==========================================
 // LÓGICA MODAL DE OBSERVACIONES
 // ==========================================
@@ -1513,6 +1509,7 @@ function ajustarAnchoScrollSuperior() {
 window.addEventListener("load", ajustarAnchoScrollSuperior);
 window.addEventListener("resize", ajustarAnchoScrollSuperior);
 setTimeout(ajustarAnchoScrollSuperior, 300);
+
 // ==========================================
 // IMPORTACIÓN MASIVA INTELIGENTE CON BARRA DE PROGRESO PROGRESIVA
 // ==========================================
@@ -1528,7 +1525,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const archivo = e.target.files[0];
             if (!archivo) return;
 
-            // 1. ÚNICA VENTANA DE CONFIRMACIÓN (Sin duplicados)
             const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
             
             if (!confirmar) {
@@ -1536,7 +1532,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // 2. ACTIVAR LA BARRA DE PROGRESO (Cambiando el display por JS)
             if (containerProgreso) containerProgreso.style.display = "block";
             if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
             
@@ -1544,7 +1539,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
             if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
 
-            // Avance fluido simulado mientras se lee y procesa
             const intervaloProgreso = setInterval(() => {
                 if (porcentajeActual < 90) {
                     porcentajeActual += Math.floor(Math.random() * 12) + 4;
@@ -1705,7 +1699,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
 
-                    // 3. FINALIZAR PROCESO: Barra al 100% y luego se oculta para mostrar tu popup de éxito
                     clearInterval(intervaloProgreso);
                     if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
                     if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
