@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS JERÁRQUICAS + FILTRO FIJO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS SERIALES + FILTRO FIJO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1207,13 +1207,19 @@ window.exportarPlaneacion = function() {
             const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
 
             let valorFechaExportar = "";
+            let tipoCelda = 's'; // Por defecto texto
             const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                // Creamos un objeto Date UTC y dejamos que SheetJS lo convierta de forma limpia
+                const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                if (!isNaN(fechaObj.getTime())) {
+                    valorFechaExportar = fechaObj;
+                    tipoCelda = 'd'; // Tipo fecha nativa segura
+                }
             } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
@@ -1254,18 +1260,22 @@ window.exportarPlaneacion = function() {
             const rango = XLSX.utils.decode_range(ws['!ref']);
             const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
+            // Recorremos la columna para asegurar que las fechas tengan formato numérico/fecha correcto sin descolocar el autofiltro
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-                if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
-                    ws[celdaRef].t = 'd';
-                    ws[celdaRef].z = 'dd/mm/yyyy';
+                const celda = ws[celdaRef];
+                if (celda && celda.v instanceof Date) {
+                    celda.t = 'd';
+                    celda.z = 'dd/mm/yyyy';
+                } else if (celda) {
+                    celda.t = 's'; // Forzar explícitamente texto para los estados
                 }
             }
 
-            // Forzar rango estricto del autofiltro desde A1 abarcando toda la tabla
+            // ⭐ FORZAR EL RANGO EXACTO DEL AUTOFILTER DESDE A1
             ws['!autofilter'] = { ref: ws['!ref'] };
 
-            // Congelar la fila de encabezados para bloquear visualmente la estructura
+            // ⭐ CONGELAR EL PANEL EN LA FILA 1
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
