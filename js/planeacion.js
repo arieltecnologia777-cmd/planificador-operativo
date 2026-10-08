@@ -19,23 +19,23 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
 
-// Estilos limpios, pequeños, suaves y discretos para el botón de agrupar/desagrupar
+// Estilos con el azul exacto del botón Exportar y texto blanco
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
     .btn-excel-grupo {
-        background: #f1f3f5;
-        color: #495057;
-        border: 1px solid #ced4da;
+        background: #2b6cb0;
+        color: #ffffff;
+        border: none;
         border-radius: 3px;
         cursor: pointer;
         padding: 1px 6px;
-        font-weight: 600;
+        font-weight: bold;
         font-size: 0.75rem;
         margin-left: 6px;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        transition: background 0.2s;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -43,9 +43,7 @@ styleGrupoExcel.innerHTML = `
         line-height: 1;
     }
     .btn-excel-grupo:hover {
-        background: #e2e6ea;
-        color: #212529;
-        border-color: #adb5bd;
+        background: #2c5282;
     }
 `;
 document.head.appendChild(styleGrupoExcel);
