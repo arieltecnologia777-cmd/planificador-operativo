@@ -19,7 +19,7 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
 
-// Estilos mejorados y visibles para el botón de agrupar/desagrupar columnas
+// Estilos mejorados: botón más ancho y destacado solo con el icono en azul
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
@@ -31,12 +31,15 @@ styleGrupoExcel.innerHTML = `
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        padding: 3px 8px;
-        font-weight: 600;
-        font-size: 0.75rem;
+        padding: 4px 14px;
+        font-weight: bold;
+        font-size: 0.95rem;
         margin-left: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25);
         transition: background 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     .btn-excel-grupo:hover {
         background: #0056b3;
@@ -139,9 +142,13 @@ function inicializarBotonAgruparColumnas() {
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            btn.innerHTML = grupoColumnasColapsado ? "Expandir ➕" : "Agrupar ➖";
-            btn.title = "Ocultar o mostrar el bloque de columnas agrupadas";
+            btn.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
+            btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
             thIdsAfectados.appendChild(btn);
+        } else {
+            const btnExistente = thIdsAfectados.querySelector(".btn-excel-grupo");
+            btnExistente.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
+            btnExistente.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
         }
     }
 }
@@ -178,7 +185,8 @@ function aplicarEstadoGrupoColumnas() {
 
     const btn = document.getElementById("btnToggleGrupoCols");
     if (btn) {
-        btn.innerHTML = grupoColumnasColapsado ? "Expandir ➕" : "Agrupar ➖";
+        btn.innerHTML = grupoColumnasColapsado ? "➕" : "➖";
+        btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 }
 
@@ -905,8 +913,9 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Manejar botón de agrupar/desagrupar columnas estilo Excel con rollback garantizado
-    if (target.id === "btnToggleGrupoCols" || target.closest("#btnToggleGrupoCols")) {
+    // Manejar botón de agrupar/desagrupar columnas estilo Excel con alternancia garantizada
+    const btnGrupo = target.closest("#btnToggleGrupoCols");
+    if (btnGrupo) {
         grupoColumnasColapsado = !grupoColumnasColapsado;
         aplicarEstadoGrupoColumnas();
         return;
