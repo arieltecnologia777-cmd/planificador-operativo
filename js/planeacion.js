@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO EN FILA 1 - PARCHE DEFINITIVO)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FILTRO FIJO EN FILA 1 - SIN FECHAS FALSAS)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1197,7 +1197,7 @@ window.exportarPlaneacion = function() {
         const dataAOA = [];
         dataAOA.push([...headers]);
 
-        filas.forEach((fila, index) => {
+        filas.forEach(fila => {
             const getValor = (nombre) => {
                 const index = buscarIndice(nombre);
                 return index !== -1 ? (fila[index] ?? "") : "";
@@ -1215,7 +1215,6 @@ window.exportarPlaneacion = function() {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
-                // Recuperamos tus textos descriptivos originales para los estados
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
                 } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
@@ -1255,16 +1254,7 @@ window.exportarPlaneacion = function() {
             const rango = XLSX.utils.decode_range(ws['!ref']);
             const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
-            // ⭐ TRUCO MAESTRO: Si la primera fila de datos (R = 1) no tiene un objeto Date real,
-            // le inyectamos temporalmente una fecha técnica neutra (ej. fecha actual o base) en el objeto de la celda
-            // para obligar a Excel a clasificar toda la columna como tipo Fecha y fijar el filtro en la fila 1.
-            const celdaPrimeraRef = XLSX.utils.encode_cell({ r: 1, c: colFechaIdx });
-            if (ws[celdaPrimeraRef] && !(ws[celdaPrimeraRef].v instanceof Date)) {
-                ws[celdaPrimeraRef].v = new Date(Date.UTC(2026, 0, 1, 12, 0, 0)); // Fecha base neutra para anclar el filtro
-                ws[celdaPrimeraRef].t = 'd';
-                ws[celdaPrimeraRef].z = 'dd/mm/yyyy';
-            }
-
+            // Formatear correctamente todas las celdas que sí son fechas reales (para la jerarquía Años/Meses)
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
                 if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
@@ -1273,10 +1263,10 @@ window.exportarPlaneacion = function() {
                 }
             }
 
-            // Forzar el rango absoluto del autofiltro desde la celda A1
+            // ⭐ FORZAR EL AUTOFILTER ESTRICTAMENTE DESDE LA CELDA A1 HASTA EL FINAL
             ws['!autofilter'] = { ref: ws['!ref'] };
-            
-            // Congelar paneles para blindar visualmente la cabecera
+
+            // ⭐ CONGELAR LA PRIMERA FILA PARA BLINDAR EL ENCABEZADO
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
@@ -1286,7 +1276,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito y filtro anclado en la fila 1");
+        console.log("✅ Archivo exportado con éxito");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
