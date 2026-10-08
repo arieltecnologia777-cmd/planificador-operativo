@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (DATOS ÍNTEGROS + FILTRO FIJO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (ORDENAMIENTO ESTRATÉGICO PARA ANCLAR FILTROS)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1194,10 +1194,8 @@ window.exportarPlaneacion = function() {
             return String(texto).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim();
         };
 
-        const dataAOA = [];
-        dataAOA.push([...headers]);
-
-        filas.forEach(fila => {
+        // Mapeamos los datos para procesar fechas y textos
+        let registrosProcesados = filas.map(fila => {
             const getValor = (nombre) => {
                 const index = buscarIndice(nombre);
                 return index !== -1 ? (fila[index] ?? "") : "";
@@ -1207,14 +1205,15 @@ window.exportarPlaneacion = function() {
             const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
 
             let valorFechaExportar = "";
+            let esFechaReal = false;
             const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Respetamos estrictamente tus textos originales y fechas reales sin modificar la primera fila
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
                 valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                esFechaReal = true;
             } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
@@ -1225,22 +1224,49 @@ window.exportarPlaneacion = function() {
                 }
             }
 
+            return {
+                filaOriginal: fila,
+                esFechaReal: esFechaReal,
+                valorFechaExportar: valorFechaExportar,
+                regD1: regD1,
+                otValor: otValor
+            };
+        });
+
+        // ⭐ ESTRATEGIA MAESTRA: Ordenar los registros para que las fechas reales queden PRIMERO
+        // y los textos queden de últimos. Esto obliga a Excel a poner la primera celda de datos como Fecha
+        // y fijar el filtro en la fila 1 de manera definitiva.
+        registrosProcesados.sort((a, b) => {
+            if (a.esFechaReal && !b.esFechaReal) return -1; // a va primero
+            if (!a.esFechaReal && b.esFechaReal) return 1;  // b va primero
+            return 0;
+        });
+
+        const dataAOA = [];
+        dataAOA.push([...headers]);
+
+        registrosProcesados.forEach(item => {
+            const getValor = (nombre) => {
+                const index = buscarIndice(nombre);
+                return index !== -1 ? (item.filaOriginal[index] ?? "") : "";
+            };
+
             dataAOA.push([
                 getValor("ID"),
                 getValor("Departamento"),
                 getValor("Municipio"),
                 getValor("IM"),
-                otValor,
+                item.otValor,
                 getValor("Tipo de afectación"),
                 getValor("IDs afectados"),
                 getValor("Días OT"),
                 getValor("Rango de afectación"),
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
-                limpiarTexto(regD1.estadoProgramacion),
-                valorFechaExportar,
-                limpiarTexto(regD1.observacion),
-                limpiarTexto(regD1.estadoGestion),
+                limpiarTexto(item.regD1.estadoProgramacion),
+                item.valorFechaExportar, // Fecha real arriba, textos abajo
+                limpiarTexto(item.regD1.observacion),
+                limpiarTexto(item.regD1.estadoGestion),
                 getValor("Indicador backlog"),
                 getValor("Stopper P3"),
                 getValor("Tipo facturación"),
@@ -1258,20 +1284,14 @@ window.exportarPlaneacion = function() {
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
                 const celda = ws[celdaRef];
-                if (celda) {
-                    if (celda.v instanceof Date) {
-                        celda.t = 'd';
-                        celda.z = 'dd/mm/yyyy';
-                    } else {
-                        celda.t = 's'; // Tipo texto para los estados ("⟵ Definir estado", etc.)
-                    }
+                if (celda && celda.v instanceof Date) {
+                    celda.t = 'd';
+                    celda.z = 'dd/mm/yyyy';
                 }
             }
 
-            // ⭐ FORZAR LA PROPIEDAD DE AUTOFILTER ESTRICTAMENTE DESDE LA CELDA A1
+            // Forzar rango del autofiltro y congelar la cabecera
             ws['!autofilter'] = { ref: ws['!ref'] };
-
-            // ⭐ INMOVILIZAR LA FILA 1 PARA EVITAR DESPLAZAMIENTOS EN LA UI DE EXCEL
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
@@ -1281,7 +1301,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito y datos íntegros");
+        console.log("✅ Archivo exportado con éxito y orden estratégico aplicado");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
