@@ -612,7 +612,7 @@ function actualizarOpcionesFiltros(datos) {
             <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
-        ` + backDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+        ` + backlogs.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
