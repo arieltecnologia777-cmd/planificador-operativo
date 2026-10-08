@@ -439,7 +439,6 @@ function actualizarOpcionesFiltros(datos) {
         const estG = regD1.estadoGestion || "";
         const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
-        const fechaProgVal = regD1.fechaProgramacion || "";
 
         const cumpleTexto = !texto || 
             String(fila[idxID] || "").toLowerCase().includes(texto) ||
@@ -447,7 +446,6 @@ function actualizarOpcionesFiltros(datos) {
             String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
 
         const cumpleEstGestion = estadosGestionSeleccionados.length === 0 || estadosGestionSeleccionados.includes(estG);
-        const cumpleFechaProg = fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal);
 
         let cumpleKpi = true;
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
@@ -457,64 +455,121 @@ function actualizarOpcionesFiltros(datos) {
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
-        return cumpleTexto && cumpleEstGestion && cumpleFechaProg && cumpleKpi;
+        return cumpleTexto && cumpleEstGestion && cumpleKpi;
     };
 
-    const datosParaDepto = datosGlobal.filter(fila => coincideBase(fila) &&
-        (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
-        (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-        (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-        (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
-        (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]))
-    );
+    // Filtros cruzados para cada categoría, incluyendo ahora fecha de programación
+    const datosParaDepto = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]));
+    });
 
-    const datosParaPrioridad = datosGlobal.filter(fila => coincideBase(fila) &&
-        (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-        (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-        (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-        (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
-        (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]))
-    );
+    const datosParaPrioridad = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]));
+    });
 
-    const datosParaAfectacion = datosGlobal.filter(fila => coincideBase(fila) &&
-        (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-        (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
-        (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-        (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
-        (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]))
-    );
+    const datosParaAfectacion = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]));
+    });
 
-    const datosParaStoppers = datosGlobal.filter(fila => coincideBase(fila) &&
-        (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-        (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
-        (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-        (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
-        (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]))
-    );
+    const datosParaStoppers = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]));
+    });
 
-    const datosParaRango = datosGlobal.filter(fila => coincideBase(fila) &&
-        (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-        (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
-        (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-        (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-        (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]))
-    );
+    const datosParaRango = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(fila[idxBacklog]));
+    });
 
-    const datosParaBacklog = datosGlobal.filter(fila => coincideBase(fila) &&
-        (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-        (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
-        (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-        (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-        (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango]))
-    );
+    const datosParaFechaProg = datosGlobal.filter(fila => {
+        const depart = fila[idxDepto];
+        const prio = fila[idxPrioridad];
+        const afec = fila[idxAfectacion];
+        const stop = fila[idxStoppers];
+        const rang = fila[idxRango];
+        const back = fila[idxBacklog];
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(depart)) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(prio)) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(afec)) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(stop)) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(rang)) &&
+            (backlogsSeleccionados.length === 0 || backlogsSeleccionados.includes(back));
+    });
 
+    const datosParaBacklog = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (prioridadesSeleccionadas.length === 0 || prioridadesSeleccionadas.includes(fila[idxPrioridad])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
+    });
+
+    // Limpiar selecciones huérfanas
     departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
     prioridadesSeleccionadas = prioridadesSeleccionadas.filter(val => datosParaPrioridad.some(f => f[idxPrioridad] === val));
     afectacionesSeleccionadas = afectacionesSeleccionadas.filter(val => datosParaAfectacion.some(f => f[idxAfectacion] === val));
     stoppersSeleccionados = stoppersSeleccionados.filter(val => datosParaStoppers.some(f => f[idxStoppers] === val));
     rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
+    
+    fechasProgSeleccionadas = fechasProgSeleccionadas.filter(val => {
+        return datosParaFechaProg.some(f => {
+            const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+            return (reg.fechaProgramacion || "") === val;
+        });
+    });
+
     backlogsSeleccionados = backlogsSeleccionados.filter(val => datosParaBacklog.some(f => f[idxBacklog] === val));
 
+    // Actualizar textos de los botones dinámicamente
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
 
@@ -539,6 +594,7 @@ function actualizarOpcionesFiltros(datos) {
     const txtEstadoG = document.getElementById("textoEstadoGestion") || document.getElementById("textoEstado");
     if (txtEstadoG) txtEstadoG.textContent = estadosGestionSeleccionados.length === 0 ? "Estado gestión" : `Estado (${estadosGestionSeleccionados.length})`;
 
+    // Renderizar opciones disponibles en la interfaz según el filtrado cruzado
     const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
@@ -591,9 +647,12 @@ function actualizarOpcionesFiltros(datos) {
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const fechasProgDisponibles = [...new Set(
-        Object.values(window.registrosD1 || {})
-            .map(r => r.fechaProgramacion)
+    // Fechas de programación disponibles según los demás filtros activos
+    const fechasProgDisp = [...new Set(
+        datosParaFechaProg.map(f => {
+            const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+            return reg.fechaProgramacion;
+        })
     )].filter(Boolean).sort();
 
     const fpEl = document.getElementById("listaFechaProg");
@@ -602,7 +661,7 @@ function actualizarOpcionesFiltros(datos) {
             <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
             <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
-        ` + fechasProgDisponibles.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkFechaProg" ${fechasProgSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+        ` + fechasProgDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkFechaProg" ${fechasProgSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const backDisp = [...new Set(datosParaBacklog.map(f => f[idxBacklog]))].filter(Boolean).sort();
@@ -614,7 +673,7 @@ function actualizarOpcionesFiltros(datos) {
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
         ` + backDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
-
+}
     const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
     const egEl = document.getElementById("listaEstadoGestion") || document.getElementById("listaEstado");
     if(egEl) {
