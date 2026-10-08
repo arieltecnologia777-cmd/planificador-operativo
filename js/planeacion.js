@@ -19,27 +19,30 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
 
-// Estilos dinámicos para el grupo de columnas colapsables estilo Excel
+// Estilos mejorados y visibles para el botón de agrupar/desagrupar columnas
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
     .btn-excel-grupo {
-        background: #e9ecef;
-        border: 1px solid #ced4da;
-        border-radius: 3px;
+        background: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
         cursor: pointer;
-        padding: 1px 6px;
-        font-weight: bold;
+        padding: 3px 8px;
+        font-weight: 600;
         font-size: 0.75rem;
-        margin-left: 6px;
-        color: #495057;
-        transition: background 0.2s;
+        margin-left: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        transition: background 0.2s, transform 0.1s;
     }
     .btn-excel-grupo:hover {
-        background: #dee2e6;
-        color: #212529;
+        background: #0056b3;
+    }
+    .btn-excel-grupo:active {
+        transform: scale(0.95);
     }
 `;
 document.head.appendChild(styleGrupoExcel);
@@ -136,8 +139,8 @@ function inicializarBotonAgruparColumnas() {
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            btn.textContent = grupoColumnasColapsado ? "[+]" : "[-]";
-            btn.title = "Agrupar o desagrupar bloques de columnas";
+            btn.innerHTML = grupoColumnasColapsado ? "Expandir ➕" : "Agrupar ➖";
+            btn.title = "Ocultar o mostrar el bloque de columnas agrupadas";
             thIdsAfectados.appendChild(btn);
         }
     }
@@ -175,7 +178,7 @@ function aplicarEstadoGrupoColumnas() {
 
     const btn = document.getElementById("btnToggleGrupoCols");
     if (btn) {
-        btn.textContent = grupoColumnasColapsado ? "[+]" : "[-]";
+        btn.innerHTML = grupoColumnasColapsado ? "Expandir ➕" : "Agrupar ➖";
     }
 }
 
@@ -902,7 +905,7 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Manejar botón de agrupar/desagrupar columnas estilo Excel
+    // Manejar botón de agrupar/desagrupar columnas estilo Excel con rollback garantizado
     if (target.id === "btnToggleGrupoCols" || target.closest("#btnToggleGrupoCols")) {
         grupoColumnasColapsado = !grupoColumnasColapsado;
         aplicarEstadoGrupoColumnas();
