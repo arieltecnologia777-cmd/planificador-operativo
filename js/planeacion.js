@@ -15,7 +15,7 @@ let prioridadesSeleccionadas = [];
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
-let backlogsSeleccionados = [];
+let fechasProgSeleccionadas = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 
@@ -384,6 +384,21 @@ function renderizarFiltrosDinamicos(datos) {
         ` + rangos.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
+    // Obtenemos las fechas de programación únicas registradas en D1
+    const fechasProgDisponibles = [...new Set(
+        Object.values(window.registrosD1 || {})
+            .map(r => r.fechaProgramacion)
+    )].filter(Boolean).sort();
+
+    const fpEl = document.getElementById("listaFechaProg");
+    if(fpEl) {
+        fpEl.innerHTML = `
+            <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
+            <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
+        ` + fechasProgDisponibles.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkFechaProg" ${fechasProgSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
     const bEl = document.getElementById("listaBacklog");
     if(bEl) {
         bEl.innerHTML = `
@@ -424,6 +439,7 @@ function actualizarOpcionesFiltros(datos) {
         const estG = regD1.estadoGestion || "";
         const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
+        const fechaProgVal = regD1.fechaProgramacion || "";
 
         const cumpleTexto = !texto || 
             String(fila[idxID] || "").toLowerCase().includes(texto) ||
@@ -431,6 +447,7 @@ function actualizarOpcionesFiltros(datos) {
             String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
 
         const cumpleEstGestion = estadosGestionSeleccionados.length === 0 || estadosGestionSeleccionados.includes(estG);
+        const cumpleFechaProg = fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal);
 
         let cumpleKpi = true;
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
@@ -440,7 +457,7 @@ function actualizarOpcionesFiltros(datos) {
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
-        return cumpleTexto && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleEstGestion && cumpleFechaProg && cumpleKpi;
     };
 
     const datosParaDepto = datosGlobal.filter(fila => coincideBase(fila) &&
@@ -513,6 +530,9 @@ function actualizarOpcionesFiltros(datos) {
     const txtRang = document.getElementById("textoRango");
     if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
 
+    const txtFP = document.getElementById("textoFechaProg");
+    if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
+
     const txtBack = document.getElementById("textoBacklog");
     if (txtBack) txtBack.textContent = backlogsSeleccionados.length === 0 ? "Indicador backlog" : `Backlog (${backlogsSeleccionados.length})`;
 
@@ -571,6 +591,20 @@ function actualizarOpcionesFiltros(datos) {
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
+    const fechasProgDisponibles = [...new Set(
+        Object.values(window.registrosD1 || {})
+            .map(r => r.fechaProgramacion)
+    )].filter(Boolean).sort();
+
+    const fpEl = document.getElementById("listaFechaProg");
+    if(fpEl) {
+        fpEl.innerHTML = `
+            <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
+            <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
+        ` + fechasProgDisponibles.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkFechaProg" ${fechasProgSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
     const backDisp = [...new Set(datosParaBacklog.map(f => f[idxBacklog]))].filter(Boolean).sort();
     const bEl = document.getElementById("listaBacklog");
     if(bEl) {
@@ -603,6 +637,7 @@ function aplicarFiltros(){
     const afectacionesFiltro = afectacionesSeleccionadas;
     const stoppersFiltro = stoppersSeleccionados;
     const rangosFiltro = rangosSeleccionados;
+    const fechasFiltro = fechasProgSeleccionadas;
     const backlogsFiltro = backlogsSeleccionados;
     const estGestionFiltro = estadosGestionSeleccionados;
 
@@ -621,6 +656,7 @@ function aplicarFiltros(){
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const estG = regD1.estadoGestion || "";
+        const fechaProgVal = regD1.fechaProgramacion || "";
         const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
 
@@ -634,6 +670,7 @@ function aplicarFiltros(){
         const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(fila[idxAfectacion]);
         const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
         const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(fila[idxRango]);
+        const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
         const cumpleBacklog = backlogsFiltro.length === 0 || backlogsFiltro.includes(fila[idxBacklog]);
         const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
 
@@ -645,7 +682,7 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
-        return cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleBacklog && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleDepto && cumplePrioridad && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
 
     datosFiltradosGlobal = resultado;
@@ -659,6 +696,7 @@ function resetearTodosLosFiltros() {
     afectacionesSeleccionadas = [];
     stoppersSeleccionados = [];
     rangosSeleccionados = [];
+    fechasProgSeleccionadas = [];
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
@@ -775,6 +813,18 @@ document.addEventListener("change", (e) => {
     if (target.id === "chkTodosRangos") {
         document.querySelectorAll(".chkRango").forEach(chk => chk.checked = target.checked);
         rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkFechaProg")) {
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasFechasProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(chk => chk.checked = target.checked);
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
         aplicarFiltros();
         return;
     }
@@ -931,6 +981,13 @@ document.addEventListener("click", (e) => {
         if(txt) txt.textContent = "Rango de afectación";
         aplicarFiltros();
     }
+    if(target.id === "btnLimpiarFechaProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasFechasProg");
+        if(chkAll) chkAll.checked = false;
+        fechasProgSeleccionadas = [];
+        aplicarFiltros();
+    }
     if(target.id === "btnLimpiarBacklog") {
         document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodosBacklog");
@@ -956,6 +1013,7 @@ document.addEventListener("click", (e) => {
         { btn: "btnAfectacion", lista: "listaAfectacion" },
         { btn: "btnStoppers", lista: "listaStoppers" },
         { btn: "btnRango", lista: "listaRango" },
+        { btn: "btnFechaProg", lista: "listaFechaProg" },
         { btn: "btnBacklog", lista: "listaBacklog" },
         { btn: "btnEstadoGestion", lista: "listaEstadoGestion" },
         { btn: "btnEstado", lista: "listaEstado" }
