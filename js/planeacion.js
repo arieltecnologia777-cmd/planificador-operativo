@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS SERIALES + FILTRO FIJO EN FILA 1)
+// LÓGICA DE EXPORTACIÓN A EXCEL (DATOS ÍNTEGROS + FILTRO FIJO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1207,19 +1207,14 @@ window.exportarPlaneacion = function() {
             const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
 
             let valorFechaExportar = "";
-            let tipoCelda = 's'; // Por defecto texto
             const estadoProg = regD1.estadoProgramacion || "";
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+            // Respetamos estrictamente tus textos originales y fechas reales sin modificar la primera fila
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                // Creamos un objeto Date UTC y dejamos que SheetJS lo convierta de forma limpia
-                const fechaObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
-                if (!isNaN(fechaObj.getTime())) {
-                    valorFechaExportar = fechaObj;
-                    tipoCelda = 'd'; // Tipo fecha nativa segura
-                }
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
@@ -1260,22 +1255,23 @@ window.exportarPlaneacion = function() {
             const rango = XLSX.utils.decode_range(ws['!ref']);
             const colFechaIdx = 12; // Columna 'Fecha_Programacion'
 
-            // Recorremos la columna para asegurar que las fechas tengan formato numérico/fecha correcto sin descolocar el autofiltro
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
                 const celda = ws[celdaRef];
-                if (celda && celda.v instanceof Date) {
-                    celda.t = 'd';
-                    celda.z = 'dd/mm/yyyy';
-                } else if (celda) {
-                    celda.t = 's'; // Forzar explícitamente texto para los estados
+                if (celda) {
+                    if (celda.v instanceof Date) {
+                        celda.t = 'd';
+                        celda.z = 'dd/mm/yyyy';
+                    } else {
+                        celda.t = 's'; // Tipo texto para los estados ("⟵ Definir estado", etc.)
+                    }
                 }
             }
 
-            // ⭐ FORZAR EL RANGO EXACTO DEL AUTOFILTER DESDE A1
+            // ⭐ FORZAR LA PROPIEDAD DE AUTOFILTER ESTRICTAMENTE DESDE LA CELDA A1
             ws['!autofilter'] = { ref: ws['!ref'] };
 
-            // ⭐ CONGELAR EL PANEL EN LA FILA 1
+            // ⭐ INMOVILIZAR LA FILA 1 PARA EVITAR DESPLAZAMIENTOS EN LA UI DE EXCEL
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
@@ -1285,7 +1281,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado con éxito");
+        console.log("✅ Archivo exportado con éxito y datos íntegros");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
