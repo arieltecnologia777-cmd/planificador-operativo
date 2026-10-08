@@ -2043,7 +2043,7 @@ width:160px;
    NUEVA BARRA DE PROGRESO PROGRESIVA PARA CARGA MASIVA
    ========================================== */
 .progreso-masivo-container {
-    display: none !important; /* Oculta por defecto de forma estricta */
+    display: none; /* Se mostrará correctamente cuando JS lo altere a block */
     margin-top: 10px;
     width: 100%;
 }
