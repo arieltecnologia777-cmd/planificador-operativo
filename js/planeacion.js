@@ -19,7 +19,7 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
 
-// Estilos con el azul exacto del botón Exportar y texto blanco
+// Estilos limpios y posicionamiento fijo junto al encabezado de Estado programación
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
@@ -34,7 +34,7 @@ styleGrupoExcel.innerHTML = `
         padding: 1px 6px;
         font-weight: bold;
         font-size: 0.75rem;
-        margin-left: 6px;
+        margin-right: 6px;
         transition: background 0.2s;
         display: inline-flex;
         align-items: center;
@@ -133,15 +133,17 @@ const TECNICOS = [
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    if (ths.length > 6) {
-        const thIdsAfectados = ths[6]; // Columna "IDs afectados"
-        let btn = thIdsAfectados.querySelector(".btn-excel-grupo");
+    // El índice 11 corresponde a "Estado programación"
+    if (ths.length > 11) {
+        const thEstadoProg = ths[11]; 
+        let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            thIdsAfectados.appendChild(btn);
+            // Insertar el botón al inicio del contenido de la celda th para que quede justo antes del texto
+            thEstadoProg.insertBefore(btn, thEstadoProg.firstChild);
         }
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
