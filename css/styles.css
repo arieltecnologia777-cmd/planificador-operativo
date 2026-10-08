@@ -2038,14 +2038,16 @@ width:160px;
 .kpi-card, .card {
     cursor: pointer;
 }
-/* Contenedor principal de la barra de carga masiva */
+
+/* ==========================================
+   NUEVA BARRA DE PROGRESO PROGRESIVA PARA CARGA MASIVA
+   ========================================== */
 .progreso-masivo-container {
-    display: none; /* Se oculta por defecto hasta que se active por JS */
+    display: none !important; /* Oculta por defecto de forma estricta */
     margin-top: 10px;
     width: 100%;
 }
 
-/* Cabecera con el texto y el ícono */
 .progreso-masivo-header {
     font-size: 0.85rem;
     color: #495057;
@@ -2056,7 +2058,6 @@ width:160px;
     align-items: center;
 }
 
-/* Pista o fondo de la barra de progreso */
 .progreso-masivo-track {
     width: 100%;
     background-color: #e9ecef;
@@ -2065,21 +2066,10 @@ width:160px;
     height: 8px;
 }
 
-/* Barra interna animada con gradiente */
 .progreso-masivo-barra {
-    width: 100%;
+    width: 0%; /* Inicia en 0% para el llenado progresivo mediante JS */
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #00d2ff, #007bff);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
-}
-
-/* Animación fluida de movimiento continuo */
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
+    background: linear-gradient(90deg, #007bff, #00d2ff);
+    border-radius: 4px;
+    transition: width 0.2s ease-out; /* Transición fluida al avanzar */
 }
