@@ -1455,16 +1455,47 @@ function ajustarAnchoScrollSuperior() {
 window.addEventListener("load", ajustarAnchoScrollSuperior);
 window.addEventListener("resize", ajustarAnchoScrollSuperior);
 setTimeout(ajustarAnchoScrollSuperior, 300);
-
 // ==========================================
-// IMPORTACIÓN MASIVA INTELIGENTE DESDE EXCEL
+// IMPORTACIÓN MASIVA INTELIGENTE CON BARRA DE PROGRESO PROGRESIVA
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     const inputExcel = document.getElementById("inputExcelMasivo");
+    const containerProgreso = document.getElementById("containerProgresoMasivo");
+    const textoProgreso = document.getElementById("textoProgreso");
+    const barraProgresoAnimada = document.getElementById("barraProgresoAnimada");
+    const porcentajeProgreso = document.getElementById("porcentajeProgreso");
+
     if (inputExcel) {
         inputExcel.addEventListener("change", async (e) => {
             const archivo = e.target.files[0];
             if (!archivo) return;
+
+            // 1. ÚNICA VENTANA DE CONFIRMACIÓN (Sin duplicados)
+            const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
+            
+            if (!confirmar) {
+                inputExcel.value = "";
+                return;
+            }
+
+            // 2. ACTIVAR LA BARRA DE PROGRESO (Cambiando el display por JS)
+            if (containerProgreso) containerProgreso.style.display = "block";
+            if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
+            
+            let porcentajeActual = 0;
+            if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
+            if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
+
+            // Avance fluido simulado mientras se lee y procesa
+            const intervaloProgreso = setInterval(() => {
+                if (porcentajeActual < 90) {
+                    porcentajeActual += Math.floor(Math.random() * 12) + 4;
+                    if (porcentajeActual > 90) porcentajeActual = 90;
+                    
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
+                }
+            }, 120);
 
             const lector = new FileReader();
             lector.onload = async function (evt) {
@@ -1477,13 +1508,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
                     
                     if (filasExcel.length === 0) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
                         alert("El archivo Excel está vacío.");
+                        inputExcel.value = "";
                         return;
                     }
 
                     const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
-                    console.log("Encabezados detectados:", encabezadosExcel);
-                    
                     const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
                     const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
@@ -1492,7 +1524,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
                     });
 
-                    // Detección precisa de Fecha Programación (excluyendo fecha FM)
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
@@ -1503,22 +1534,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n.includes("ESTADO") && n.includes("PROGRAMACION");
                     });
 
-                    console.log("Columna Fecha Programación índice:", idxFechaProg, "Cabecera:", encabezadosExcel[idxFechaProg]);
-
                     if (idxOT === -1) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
                         alert("El Excel debe contener obligatoriamente la columna 'OT'.");
+                        inputExcel.value = "";
                         return;
                     }
 
-                    if (!confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas?`)) {
-                        return;
-                    }
-
-                    // Conversor robusto para formato DD/MM/AAAA o números seriales de Excel
                     const formatearFechaExcelAInput = (valorCrudo) => {
                         if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
 
-                        // Si Excel lo lee como objeto Date o número serial
                         if (valorCrudo instanceof Date) {
                             const y = valorCrudo.getFullYear();
                             const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
@@ -1539,20 +1565,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         const texto = String(valorCrudo).trim();
                         if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
 
-                        // Si ya está en formato YYYY-MM-DD
                         if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
 
-                        // Si viene en formato DD/MM/AAAA o DD-MM-AAAA
                         const partes = texto.split(/[\/\-]/);
                         if (partes.length === 3) {
-                            // Año al final (DD/MM/AAAA)
                             if (partes[2].length === 4) {
                                 const d = partes[0].padStart(2, "0");
                                 const m = partes[1].padStart(2, "0");
                                 const y = partes[2];
                                 return `${y}-${m}-${d}`;
                             }
-                            // Año al inicio (AAAA/MM/DD)
                             if (partes[0].length === 4) {
                                 const y = partes[0];
                                 const m = partes[1].padStart(2, "0");
@@ -1572,7 +1594,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         if (otVal) {
                             const regD1Actual = window.registrosD1[otVal] || {};
-                            
                             const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
                             
                             let fechaVal = "";
@@ -1580,7 +1601,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                 fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
                             }
 
-                            // Validación estricta: solo si resulta un formato YYYY-MM-DD válido es una fecha real
                             const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
                             if (!esFechaValida) {
                                 fechaVal = "";
@@ -1592,10 +1612,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 estadoProgVal = String(fila[idxEstadoProg]).trim();
                             } else {
                                 if (esFechaValida) {
-                                    // SÓLO se vuelve Programada si la celda tenía fecha DD/MM/AAAA válida
                                     estadoProgVal = "Programada";
                                 } else {
-                                    // Si la celda de fecha venía vacía, nos aseguramos de quitar el estado Programada
                                     if (estadoProgVal === "Programada") {
                                         estadoProgVal = "";
                                     }
@@ -1629,102 +1647,27 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
 
-                    alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
-                    aplicarFiltros();
+                    // 3. FINALIZAR PROCESO: Barra al 100% y luego se oculta para mostrar tu popup de éxito
+                    clearInterval(intervaloProgreso);
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
+
+                    setTimeout(() => {
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        inputExcel.value = "";
+                        alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
+                        aplicarFiltros();
+                    }, 300);
 
                 } catch (error) {
                     console.error("Error leyendo el Excel:", error);
+                    clearInterval(intervaloProgreso);
+                    if (containerProgreso) containerProgreso.style.display = "none";
                     alert("Ocurrió un error al procesar el archivo Excel.");
+                    inputExcel.value = "";
                 }
             };
             lector.readAsArrayBuffer(archivo);
         });
     }
 });
-// ==========================================
-// INTEGRACIÓN LIMPIA CON TU PROPIA CONFIRMACIÓN Y BARRA DE PROGRESO
-// ==========================================
-const inputExcelMasivo = document.getElementById('inputExcelMasivo');
-const containerProgreso = document.getElementById('containerProgresoMasivo');
-const textoProgreso = document.getElementById('textoProgreso');
-const barraProgresoAnimada = document.getElementById('barraProgresoAnimada');
-const porcentajeProgreso = document.getElementById('porcentajeProgreso');
-
-if (inputExcelMasivo && containerProgreso) {
-    inputExcelMasivo.addEventListener('change', function(e) {
-        const archivo = e.target.files[0];
-        if (!archivo) return;
-
-        // 1. PRIMERO: Sale tu ventana de confirmación. La barra NO se muestra aún.
-        const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
-
-        if (!confirmar) {
-            inputExcelMasivo.value = "";
-            return;
-        }
-
-        // 2. SEGUNDO: El usuario aceptó. Hacemos visible la barra y la ponemos en 0%
-        containerProgreso.style.display = "block";
-        if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
-        
-        let porcentajeActual = 0;
-        if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
-        if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
-
-        // Simulamos un avance progresivo fluido mientras se procesan los datos
-        const intervaloProgreso = setInterval(() => {
-            if (porcentajeActual < 90) {
-                porcentajeActual += Math.floor(Math.random() * 15) + 5; // Sube de a pocos
-                if (porcentajeActual > 90) porcentajeActual = 90; // Tope en 90% hasta que termine de verdad
-                
-                if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
-                if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
-            }
-        }, 150); // Cada 150ms avanza un poco
-
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            // Damos un pequeño respiro para que el lector procese el archivo
-            setTimeout(() => {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-                    // ==========================================
-                    // ⚙️ AQUÍ LLAMAS A TU FUNCIÓN DE ACTUALIZACIÓN MASIVA
-                    // (Ej: procesarCargaMasiva(jsonData);)
-                    // ==========================================
-
-                    // 3. TERCERO: Cuando el proceso termina con éxito, llevamos la barra al 100%
-                    clearInterval(intervaloProgreso);
-                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
-                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
-
-                    // Pequeña pausa visual antes de ocultar y mostrar tu popup final
-                    setTimeout(() => {
-                        containerProgreso.style.display = "none";
-                        inputExcelMasivo.value = "";
-                        
-                        // AQUÍ SE MUESTRA TU POPUP FINAL DE "Se actualizaron X registros"
-                        // (Si tu función ya lo muestra, se ejecutará en este punto exacto de forma sincronizada)
-
-                    }, 400);
-
-                } catch (error) {
-                    console.error("❌ Error al procesar el archivo:", error);
-                    clearInterval(intervaloProgreso);
-                    alert("Ocurrió un error al procesar el archivo Excel. Revisa la consola (F12).");
-                    containerProgreso.style.display = "none";
-                    inputExcelMasivo.value = "";
-                }
-            }, 50);
-        };
-
-        reader.readAsArrayBuffer(archivo);
-    });
-}
