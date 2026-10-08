@@ -17,6 +17,32 @@ let fechasProgSeleccionadas = [];
 let backlogsSeleccionados = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
+let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
+
+// Estilos dinámicos para el grupo de columnas colapsables estilo Excel
+const styleGrupoExcel = document.createElement('style');
+styleGrupoExcel.innerHTML = `
+    .col-grupo-oculta {
+        display: none !important;
+    }
+    .btn-excel-grupo {
+        background: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 1px 6px;
+        font-weight: bold;
+        font-size: 0.75rem;
+        margin-left: 6px;
+        color: #495057;
+        transition: background 0.2s;
+    }
+    .btn-excel-grupo:hover {
+        background: #dee2e6;
+        color: #212529;
+    }
+`;
+document.head.appendChild(styleGrupoExcel);
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -101,6 +127,58 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
+function inicializarBotonAgruparColumnas() {
+    const ths = document.querySelectorAll(".planeacion-table th");
+    if (ths.length > 6) {
+        const thIdsAfectados = ths[6]; // Columna "IDs afectados"
+        if (!thIdsAfectados.querySelector(".btn-excel-grupo")) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn-excel-grupo";
+            btn.id = "btnToggleGrupoCols";
+            btn.textContent = grupoColumnasColapsado ? "[+]" : "[-]";
+            btn.title = "Agrupar o desagrupar bloques de columnas";
+            thIdsAfectados.appendChild(btn);
+        }
+    }
+}
+
+function aplicarEstadoGrupoColumnas() {
+    const ths = document.querySelectorAll(".planeacion-table th");
+    const filas = document.querySelectorAll(".planeacion-table tbody tr");
+
+    // Índices de las columnas a agrupar/ocultar: 6 (IDs afectados), 7 (Días OT), 8 (Rango), 9 (Prioridad), 10 (Stoppers)
+    const indicesGrupo = [6, 7, 8, 9, 10];
+
+    indicesGrupo.forEach(idx => {
+        if (ths[idx]) {
+            if (grupoColumnasColapsado) {
+                ths[idx].classList.add("col-grupo-oculta");
+            } else {
+                ths[idx].classList.remove("col-grupo-oculta");
+            }
+        }
+    });
+
+    filas.forEach(fila => {
+        const celdas = fila.children;
+        indicesGrupo.forEach(idx => {
+            if (celdas[idx]) {
+                if (grupoColumnasColapsado) {
+                    celdas[idx].classList.add("col-grupo-oculta");
+                } else {
+                    celdas[idx].classList.remove("col-grupo-oculta");
+                }
+            }
+        });
+    });
+
+    const btn = document.getElementById("btnToggleGrupoCols");
+    if (btn) {
+        btn.textContent = grupoColumnasColapsado ? "[+]" : "[-]";
+    }
+}
+
 function pintarTabla(datos){
     const encabezados = encabezadosGlobal;
 
@@ -141,6 +219,8 @@ function pintarTabla(datos){
             fechaValor = "No aplica";
         }
 
+        const ocultarClase = grupoColumnasColapsado ? "col-grupo-oculta" : "";
+
         return `
         <tr>
             <td>${fila[idxID] || ""}</td>
@@ -149,11 +229,11 @@ function pintarTabla(datos){
             <td>${fila[idxIM] || ""}</td>
             <td>${fila[idxOT] || ""}</td>
             <td>${fila[idxAfectacion] || ""}</td>
-            <td>${fila[idxIdsAfectados] || ""}</td>
-            <td>${fila[idxDias] || ""}</td>
-            <td>${fila[idxRangoAfectacion] || ""}</td>
-            <td>${fila[idxPrioridad] || ""}</td>
-            <td>${fila[idxStoppersDominion] || ""}</td>
+            <td class="${ocultarClase}">${fila[idxIdsAfectados] || ""}</td>
+            <td class="${ocultarClase}">${fila[idxDias] || ""}</td>
+            <td class="${ocultarClase}">${fila[idxRangoAfectacion] || ""}</td>
+            <td class="${ocultarClase}">${fila[idxPrioridad] || ""}</td>
+            <td class="${ocultarClase}">${fila[idxStoppersDominion] || ""}</td>
             <td>
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
@@ -213,6 +293,9 @@ function pintarTabla(datos){
             <td>${fila[idxAlertaFM] || ""}</td>
         </tr>`;
     }).join("");
+
+    inicializarBotonAgruparColumnas();
+    aplicarEstadoGrupoColumnas();
 }
 
 async function cargarPlaneacion(){
@@ -511,7 +594,6 @@ function actualizarOpcionesFiltros(datos) {
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    // Estructura Jerárquica de Fechas con Plegado/Desplegado (Accordion) y Días Limpios
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const arbolFechas = {};
     
@@ -819,6 +901,13 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
     const target = e.target;
+
+    // Manejar botón de agrupar/desagrupar columnas estilo Excel
+    if (target.id === "btnToggleGrupoCols" || target.closest("#btnToggleGrupoCols")) {
+        grupoColumnasColapsado = !grupoColumnasColapsado;
+        aplicarEstadoGrupoColumnas();
+        return;
+    }
 
     const headerAnio = target.closest(".filtro-grupo-anio");
     if (headerAnio) {
