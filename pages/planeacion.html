@@ -87,8 +87,15 @@
         </label>
         <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
     </div>
-<div id="loadingMasivo" style="display: none; margin-top: 8px; font-size: 0.85rem; color: #007bff; font-weight: 500; text-align: center;">
-    ⏳ Procesando archivo masivo, por favor espera...
+<!-- Contenedor de la barra de carga masiva -->
+<div id="containerProgresoMasivo" class="progreso-masivo-container">
+    <div class="progreso-masivo-header">
+        <span id="textoProgreso">Procesando archivo...</span>
+        <span>⏳</span>
+    </div>
+    <div class="progreso-masivo-track">
+        <div id="barraProgresoAnimada" class="progreso-masivo-barra"></div>
+    </div>
 </div>
 </div>
         </nav>
