@@ -1131,7 +1131,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ==========================================
-// LÓGICA DE EXPORTACIÓN A EXCEL (TODO EN FORMATO GENERAL / TEXTO)
+// LÓGICA DE EXPORTACIÓN A EXCEL (FECHAS JERÁRQUICAS + FILTRO FIJO EN FILA 1)
 // ==========================================
 window.exportarPlaneacion = function() {
     console.log("🚀 Botón exportar presionado");
@@ -1211,10 +1211,9 @@ window.exportarPlaneacion = function() {
             const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
             const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-            // Convertimos la fecha a texto plano con formato DD/MM/AAAA en lugar de objeto Date
             if ((estadoProg === "Programada" || estadoProg === "Cancelada") && regexFecha.test(fechaStr)) {
                 const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = `${day}/${month}/${year}`;
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
             } else {
                 if (estadoProg === "Pendiente") {
                     valorFechaExportar = "En validación";
@@ -1238,7 +1237,7 @@ window.exportarPlaneacion = function() {
                 getValor("Tipo de prioridad"),
                 getValor("Stoppers Dominion"),
                 limpiarTexto(regD1.estadoProgramacion),
-                valorFechaExportar, // Ahora es texto plano general
+                valorFechaExportar,
                 limpiarTexto(regD1.observacion),
                 limpiarTexto(regD1.estadoGestion),
                 getValor("Indicador backlog"),
@@ -1253,11 +1252,20 @@ window.exportarPlaneacion = function() {
 
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
-            
-            // Forzamos el autofiltro estricto sobre todo el rango
+            const colFechaIdx = 12; // Columna 'Fecha_Programacion'
+
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                if (ws[celdaRef] && ws[celdaRef].v instanceof Date) {
+                    ws[celdaRef].t = 'd';
+                    ws[celdaRef].z = 'dd/mm/yyyy';
+                }
+            }
+
+            // Forzar rango estricto del autofiltro desde A1 abarcando toda la tabla
             ws['!autofilter'] = { ref: ws['!ref'] };
-            
-            // Congelamos la cabecera
+
+            // Congelar la fila de encabezados para bloquear visualmente la estructura
             ws['!freeze'] = { xSplit: 0, ySplit: 1 };
         }
 
@@ -1267,7 +1275,7 @@ window.exportarPlaneacion = function() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-        console.log("✅ Archivo exportado en formato general con éxito");
+        console.log("✅ Archivo exportado con éxito");
 
     } catch (error) {
         console.error("❌ Error detallado al exportar:", error);
