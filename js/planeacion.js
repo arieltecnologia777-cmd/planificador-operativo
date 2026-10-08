@@ -277,6 +277,7 @@ function pintarTabla(datos){
                     <option value=""></option>
                     <option value="Gestionable" ${d1.estadoGestion === "Gestionable" ? "selected" : ""}>Gestionable</option>
                     <option value="Operativa" ${d1.estadoGestion === "Operativa" ? "selected" : ""}>Operativa</option>
+                    <option value="Pte. aprobación" ${d1.estadoGestion === "Pte. aprobación" ? "selected" : ""}>Pte. aprobación</option>
                     <option value="FM/traslado/reubicación" ${d1.estadoGestion === "FM/traslado/reubicación" ? "selected" : ""}>FM/traslado/reubicación</option>
                     <option value="Abastecimiento" ${d1.estadoGestion === "Abastecimiento" ? "selected" : ""}>Abastecimiento</option>
                     <option value="Falla Tx" ${d1.estadoGestion === "Falla Tx" ? "selected" : ""}>Falla Tx</option>
@@ -671,7 +672,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + backDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogsSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const estadosGestionList = ["Gestionable", "Operativa", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
+    const estadosGestionList = ["Gestionable", "Operativa", "Pte. aprobación", "FM/traslado/reubicación", "Abastecimiento", "Falla Tx", "Receso escolar"];
     const egEl = document.getElementById("listaEstadoGestion") || document.getElementById("listaEstado");
     if(egEl) {
         egEl.innerHTML = `
