@@ -893,7 +893,7 @@ function aplicarFiltros(){
 
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
-    actualizarKPIs(datosGlobal); // Actualizado para reflejar la totalidad del dataset
+    actualizarKPIs(datosGlobal);
     actualizarOpcionesFiltros(datosGlobal);
 }
 
@@ -1284,7 +1284,6 @@ async function guardarOT(fila, observacionForzada = null){
                 updatedAt: new Date().toISOString()
             };
 
-            // ACTUALIZACIÓN INMEDIATA DE KPIS AL CAMBIAR UN ESTADO
             actualizarKPIs(datosGlobal);
         }
     } catch (err) {
@@ -1389,6 +1388,7 @@ document.addEventListener("click", (e) => {
     }
 });
 
+// EXPORTACIÓN ACTUALIZADA: Incluye absolutamente todas las columnas y respeta el orden idéntico de la tabla web
 window.exportarPlaneacion = function() {
     try {
         if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
@@ -1421,10 +1421,11 @@ window.exportarPlaneacion = function() {
         }
 
         const headers = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Total_IDs",
-            "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
+            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Nuevo",
+            "Total_IDs", "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
             "Estado_Programacion", "Fecha_Programacion", "Observaciones",
-            "Estado_Gestion", "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion",
+            "Estado_Gestion", "Tecnico_Asignado", "Acompanamiento",
+            "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion",
             "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
         ];
 
@@ -1488,6 +1489,7 @@ window.exportarPlaneacion = function() {
             };
 
             const limpiarTexto = (t) => t ? String(t).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim() : "";
+            const esN = esCasoNuevo(item.otValor) ? "Sí" : "No";
 
             dataAOA.push([
                 getValor("ID", true), 
@@ -1496,6 +1498,7 @@ window.exportarPlaneacion = function() {
                 getValor("IM"), 
                 item.otValor, 
                 getValor("Tipo de afectación"),
+                esN,
                 getValor("IDs afectados", true), 
                 getValor("Días OT", true), 
                 getValor("Rango de afectación"),
@@ -1505,6 +1508,8 @@ window.exportarPlaneacion = function() {
                 item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion), 
                 limpiarTexto(item.regD1.estadoGestion),
+                limpiarTexto(item.regD1.tecnicoAsignado),
+                limpiarTexto(item.regD1.acompanamiento),
                 getValor("Indicador backlog"), 
                 getValor("Stopper P3"),
                 getValor("Tipo facturación"), 
@@ -1517,7 +1522,7 @@ window.exportarPlaneacion = function() {
 
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 12;
+            const colFechaIdx = 13; // Índice de la columna Fecha programación
 
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
