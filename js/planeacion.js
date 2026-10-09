@@ -98,6 +98,24 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
+    /* Estilos seguros para redimensionar ancho de columnas */
+    .planeacion-table th {
+        position: relative;
+        user-select: none;
+    }
+    .table-resizer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 6px;
+        cursor: col-resize;
+        user-select: none;
+        z-index: 20;
+        height: 100%;
+    }
+    .table-resizer:hover, .table-resizer.resizing {
+        background-color: #3182ce;
+    }
 `;
 document.head.appendChild(styleGrupoExcel);
 
@@ -194,25 +212,60 @@ function esCasoNuevo(otVal) {
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    if (ths.length > 7) {
-        const thIDsAfectados = ths[7]; // Columna "IDs afectados" (inicio del bloque colapsable)
-        let btn = thIDsAfectados.querySelector(".btn-excel-grupo");
+    if (ths.length > 12) {
+        const thEstadoProg = ths[12]; // Columna Estado programación (índice 12)
+        let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            thIDsAfectados.insertBefore(btn, thIDsAfectados.firstChild);
+            thEstadoProg.insertBefore(btn, thEstadoProg.firstChild);
         }
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 }
 
+// Lógica de redimensionamiento para arrastrar los bordes de los encabezados
+function inicializarRedimensionamientoColumnas() {
+    const ths = document.querySelectorAll(".planeacion-table th");
+    ths.forEach(th => {
+        if (th.querySelector('.table-resizer')) return; 
+        const resizer = document.createElement('div');
+        resizer.className = 'table-resizer';
+        th.appendChild(resizer);
+
+        let x = 0;
+        let w = 0;
+
+        resizer.addEventListener('mousedown', function(e) {
+            e.stopPropagation(); // Evitar que dispare otros eventos del encabezado
+            x = e.clientX;
+            w = th.offsetWidth;
+            resizer.classList.add('resizing');
+
+            function mouseMoveHandler(e) {
+                const dx = e.clientX - x;
+                th.style.width = `${Math.max(50, w + dx)}px`;
+            }
+
+            function mouseUpHandler() {
+                resizer.classList.remove('resizing');
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            }
+
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        });
+    });
+}
+
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [7, 8, 9, 10, 11]; // Índices correspondientes a IDs afectados, Días OT, Rango, Prioridad, Stoppers
+    const indicesGrupo = [7, 8, 9, 10, 11]; // Columnas agrupadas que se ocultan (IDs afectados, Días OT, Rango, Prioridad, Stoppers)
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -375,6 +428,7 @@ function pintarTabla(datos){
 
     inicializarBotonAgruparColumnas();
     aplicarEstadoGrupoColumnas();
+    inicializarRedimensionamientoColumnas(); // Activa las líneas divisorias para arrastrar y cambiar el ancho
 }
 
 async function cargarPlaneacion(){
