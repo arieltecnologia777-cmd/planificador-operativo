@@ -9,7 +9,7 @@ let encabezadosGlobal = [];
 window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
-let nuevosSeleccionados = []; // Filtro para Nuevo/Existente
+let nuevosSeleccionados = [];
 let departamentosSeleccionados = [];
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
@@ -441,7 +441,6 @@ async function cargarPlaneacion(){
 function actualizarKPIs(datos){
     const encabezados = encabezadosGlobal;
     const idxOT = encabezados.findIndex(h => h.trim() === "OT");
-    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxIdsAfectados = encabezados.findIndex(h => h.trim() === "IDs afectados");
 
@@ -456,7 +455,6 @@ function actualizarKPIs(datos){
 
     datos.forEach(fila => {
         const ot = (fila[idxOT] || "").trim();
-        const prioridad = (fila[idxPrioridad] || "").trim().toUpperCase();
         const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
 
         const valIds = parseInt(fila[idxIdsAfectados], 10);
@@ -464,14 +462,17 @@ function actualizarKPIs(datos){
             sumaIdsAfectados += valIds;
         }
 
+        const regD1 = (window.registrosD1 || {})[ot] || {};
+        const prioridad = (fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase();
+
         if (prioridad === "ALTA") otsAlta.add(ot);
         if (prioridad === "MEDIA") otsMedia.add(ot);
         if (prioridad === "BAJA") otsBaja.add(ot);
         if (backlog === "CUMPLE") otsCumple.add(ot);
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
 
-        const regD1 = (window.registrosD1 || {})[ot];
-        if (regD1 && (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa")) {
+        // MODIFICACIÓN SOLICITADA: Cuenta exclusivamente cuando el estado de programación sea "Programada"
+        if (regD1.estadoProgramacion === "Programada") {
             otsProgramadas.add(ot);
         }
     });
@@ -530,7 +531,7 @@ function actualizarOpcionesFiltros(datos) {
         if (kpiFiltroActivo === "baja") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "BAJA");
         if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
-        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
         return cumpleTexto && cumpleKpi;
     };
@@ -857,7 +858,7 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
-        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
         return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
     });
