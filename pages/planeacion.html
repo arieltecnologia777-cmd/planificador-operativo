@@ -213,9 +213,16 @@
 
     <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
 
-        <div class="header-title-group">
+        <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; width: 100%;">
             <h2>Planeación Operativa</h2>
             
+            <!-- Buscador trasladado al lado izquierdo de limpiar filtros -->
+            <input
+                id="filtroBusqueda"
+                type="text"
+                placeholder="Buscador general..."
+                style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 220px;">
+
             <button id="btnLimpiarFiltros" class="btn-limpiar-header" title="Restablecer todos los filtros">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -246,105 +253,45 @@
 
     <div class="planeacion-filtros">
 
-        <input
-            id="filtroBusqueda"
-            type="text"
-            placeholder="Buscador">
+        <!-- Nuevo filtro para casos Nuevos / Existentes -->
+        <div class="multi-filtro" id="multiNuevo">
+            <button type="button" id="btnNuevo" class="multi-filtro-btn">
+                <span id="textoNuevo">Nuevo / Existente</span>
+                <span class="multi-filtro-arrow">⌄</span>
+            </button>
+            <div id="listaNuevo" class="multi-filtro-lista"></div>
+        </div>
 
         <div class="multi-filtro" id="multiDepartamento">
-
-            <button
-                type="button"
-                id="btnDepartamento"
-                class="multi-filtro-btn">
-
-                <span id="textoDepartamento">
-                    Departamento
-                </span>
-
-                <span class="multi-filtro-arrow">
-                    ⌄
-                </span>
-
+            <button type="button" id="btnDepartamento" class="multi-filtro-btn">
+                <span id="textoDepartamento">Departamento</span>
+                <span class="multi-filtro-arrow">⌄</span>
             </button>
-
-            <div
-                id="listaDepartamento"
-                class="multi-filtro-lista">
-            </div>
-
+            <div id="listaDepartamento" class="multi-filtro-lista"></div>
         </div>
 
         <div class="multi-filtro" id="multiEstado">
-
-            <button
-                type="button"
-                id="btnEstado"
-                class="multi-filtro-btn">
-
-                <span id="textoEstado">
-                    Estado
-                </span>
-
-                <span class="multi-filtro-arrow">
-                    ⌄
-                </span>
-
+            <button type="button" id="btnEstado" class="multi-filtro-btn">
+                <span id="textoEstado">Estado</span>
+                <span class="multi-filtro-arrow">⌄</span>
             </button>
-
-            <div
-                id="listaEstado"
-                class="multi-filtro-lista">
-            </div>
-
+            <div id="listaEstado" class="multi-filtro-lista"></div>
         </div>
 
         <div class="multi-filtro" id="multiAfectacion">
-
-            <button
-                type="button"
-                id="btnAfectacion"
-                class="multi-filtro-btn">
-
-                <span id="textoAfectacion">
-                    Afectación
-                </span>
-
-                <span class="multi-filtro-arrow">
-                    ⌄
-                </span>
-
+            <button type="button" id="btnAfectacion" class="multi-filtro-btn">
+                <span id="textoAfectacion">Afectación</span>
+                <span class="multi-filtro-arrow">⌄</span>
             </button>
-
-            <div
-                id="listaAfectacion"
-                class="multi-filtro-lista">
-            </div>
-
+            <div id="listaAfectacion" class="multi-filtro-lista"></div>
         </div>
 
         <div class="multi-filtro" id="multiStoppers">
-
-            <button
-                type="button"
-                id="btnStoppers"
-                class="multi-filtro-btn">
-
-                <span id="textoStoppers">
-                    Stoppers
-                </span>
-
-                <span class="multi-filtro-arrow">
-                    ⌄
-                </span>
-
+            <button type="button" id="btnStoppers" class="multi-filtro-btn">
+                <span id="textoStoppers">Stoppers</span>
+                <span class="multi-filtro-arrow">⌄</span>
             </button>
-
-            <div
-                id="listaStoppers"
-                class="multi-filtro-lista">
-            </div>
-
+            <div id="listaStoppers" class="multi-filtro-lista"></div>
         </div>
 
         <div class="multi-filtro" id="multiDiasOT">
@@ -356,27 +303,11 @@
         </div>
 
         <div class="multi-filtro" id="multiRango">
-
-            <button
-                type="button"
-                id="btnRango"
-                class="multi-filtro-btn">
-
-                <span id="textoRango">
-                    Rango
-                </span>
-
-                <span class="multi-filtro-arrow">
-                    ⌄
-                </span>
-
+            <button type="button" id="btnRango" class="multi-filtro-btn">
+                <span id="textoRango">Rango</span>
+                <span class="multi-filtro-arrow">⌄</span>
             </button>
-
-            <div
-                id="listaRango"
-                class="multi-filtro-lista">
-            </div>
-
+            <div id="listaRango" class="multi-filtro-lista"></div>
         </div>
 
        <div class="multi-filtro" id="multiFechaProg">
