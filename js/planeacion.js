@@ -9,6 +9,7 @@ let encabezadosGlobal = [];
 window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
+let nuevosSeleccionados = []; // Filtro para Nuevo/Existente
 let departamentosSeleccionados = [];
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
@@ -183,10 +184,18 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
+function esCasoNuevo(otVal) {
+    return !window.registrosD1[otVal] || (
+        !window.registrosD1[otVal].estadoGestion && 
+        !window.registrosD1[otVal].estadoProgramacion && 
+        !window.registrosD1[otVal].observacion
+    );
+}
+
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 11) {
-        const thEstadoProg = ths[12]; // Columna Estado programación (índice 12)
+        const thEstadoProg = ths[12]; 
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
@@ -203,7 +212,7 @@ function inicializarBotonAgruparColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [7, 8, 9, 10, 11]; // Columnas marcadas en rojo: IDs afectados, Días OT, Rango, Prioridad, Stoppers
+    const indicesGrupo = [7, 8, 9, 10, 11];
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -269,12 +278,8 @@ function pintarTabla(datos){
         const otVal = String(fila[idxOT] || "").trim();
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
-        const esNuevo = !window.registrosD1[otVal] || (
-            !window.registrosD1[otVal].estadoGestion && 
-            !window.registrosD1[otVal].estadoProgramacion && 
-            !window.registrosD1[otVal].observacion
-        );
-        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">Sí</span>` : `<span class="badge-existente">No</span>`;
+        const nuevo = esCasoNuevo(otVal);
+        const htmlBadgeNuevo = nuevo ? `<span class="badge-nuevo">Sí</span>` : `<span class="badge-existente">No</span>`;
 
         let fechaTipo = "text";
         let fechaDisabled = "disabled";
@@ -536,9 +541,11 @@ function actualizarOpcionesFiltros(datos) {
             const regD1 = (window.registrosD1 || {})[otVal] || {};
             const estG = regD1.estadoGestion || "";
             const fechaProgVal = regD1.fechaProgramacion || "";
+            const esN = esCasoNuevo(otVal) ? "Sí" : "No";
 
             if (!coincideBase(fila)) return false;
 
+            if (excluirCampo !== "nuevo" && nuevosSeleccionados.length > 0 && !nuevosSeleccionados.includes(esN)) return false;
             if (excluirCampo !== "depto" && departamentosSeleccionados.length > 0 && !departamentosSeleccionados.includes(fila[idxDepto])) return false;
             if (excluirCampo !== "estado" && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
             if (excluirCampo !== "afectacion" && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(fila[idxAfectacion])) return false;
@@ -551,6 +558,7 @@ function actualizarOpcionesFiltros(datos) {
         });
     };
 
+    const datosParaNuevo = filtrarContexto("nuevo");
     const datosParaDepto = filtrarContexto("depto");
     const datosParaEstado = filtrarContexto("estado");
     const datosParaAfectacion = filtrarContexto("afectacion");
@@ -559,6 +567,7 @@ function actualizarOpcionesFiltros(datos) {
     const datosParaRango = filtrarContexto("rango");
     const datosParaFechaProg = filtrarContexto("fechaProg");
 
+    nuevosSeleccionados = nuevosSeleccionados.filter(val => datosParaNuevo.some(f => (esCasoNuevo(f[idxOT]) ? "Sí" : "No") === val));
     departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
     estadosGestionSeleccionados = estadosGestionSeleccionados.filter(val => datosParaEstado.some(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
@@ -575,6 +584,9 @@ function actualizarOpcionesFiltros(datos) {
             return (reg.fechaProgramacion || "") === val;
         });
     });
+
+    const txtNuevo = document.getElementById("textoNuevo");
+    if (txtNuevo) txtNuevo.textContent = nuevosSeleccionados.length ? `Nuevo (${nuevosSeleccionados.length})` : "Nuevo / Existente";
 
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
@@ -596,6 +608,25 @@ function actualizarOpcionesFiltros(datos) {
 
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
+
+    const nEl = document.getElementById("listaNuevo");
+    if(nEl) {
+        const nuevosDisp = ["Sí", "No"];
+        nEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Nuevo', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Nuevo', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarNuevo" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarNuevo">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosNuevos"> (Seleccionar todo)</label>
+        ` + nuevosDisp.map(v => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkNuevo" ${nuevosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
+        `).join("");
+    }
 
     const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
@@ -776,6 +807,7 @@ function aplicarFiltros(){
     const filtroBusquedaEl = document.getElementById("filtroBusqueda");
     const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
 
+    const nuevosFiltro = nuevosSeleccionados;
     const deptos = departamentosSeleccionados;
     const afectacionesFiltro = afectacionesSeleccionadas;
     const stoppersFiltro = stoppersSeleccionados;
@@ -801,6 +833,7 @@ function aplicarFiltros(){
         const estG = regD1.estadoGestion || "";
         const fechaProgVal = regD1.fechaProgramacion || "";
         const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const esN = esCasoNuevo(otVal) ? "Sí" : "No";
 
         if (otsModificadasRecientemente.has(otVal)) {
             return true;
@@ -811,6 +844,7 @@ function aplicarFiltros(){
             String(fila[idxOT] || "").toLowerCase().includes(texto) ||
             String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
 
+        const cumpleNuevo = nuevosFiltro.length === 0 || nuevosFiltro.includes(esN);
         const cumpleDepto = deptos.length === 0 || deptos.includes(fila[idxDepto]);
         const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(fila[idxAfectacion]);
         const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
@@ -825,7 +859,7 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
 
-        return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
     });
 
     if (ordenActualColumna !== null) {
@@ -833,7 +867,10 @@ function aplicarFiltros(){
             let valA = "";
             let valB = "";
 
-            if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
+            if (ordenActualColumna === "Nuevo") {
+                valA = esCasoNuevo(a[idxOT]) ? "Sí" : "No";
+                valB = esCasoNuevo(b[idxOT]) ? "Sí" : "No";
+            } else if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
                 const regA = (window.registrosD1 || {})[a[idxOT]] || {};
                 const regB = (window.registrosD1 || {})[b[idxOT]] || {};
                 valA = String(regA[ordenActualColumna] || "").trim();
@@ -861,6 +898,7 @@ function aplicarFiltros(){
 }
 
 function resetearTodosLosFiltros() {
+    nuevosSeleccionados = [];
     departamentosSeleccionados = [];
     afectacionesSeleccionadas = [];
     stoppersSeleccionados = [];
@@ -910,6 +948,18 @@ document.addEventListener("input", (e) => {
 
 document.addEventListener("change", (e) => {
     const target = e.target;
+
+    if (target.classList.contains("chkNuevo")) {
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosNuevos") {
+        document.querySelectorAll(".chkNuevo").forEach(chk => chk.checked = target.checked);
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
 
     if (target.classList.contains("chkDepartamento")) {
         departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
@@ -1101,6 +1151,13 @@ document.addEventListener("click", (e) => {
         return;
     }
 
+    if(target.id === "btnLimpiarNuevo") {
+        document.querySelectorAll(".chkNuevo").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosNuevos");
+        if(chkAll) chkAll.checked = false;
+        nuevosSeleccionados = [];
+        aplicarFiltros();
+    }
     if(target.id === "btnLimpiarDepartamento") {
         document.querySelectorAll(".chkDepartamento").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodosDeptos");
@@ -1152,6 +1209,7 @@ document.addEventListener("click", (e) => {
     }
 
     const dropdowns = [
+        { btn: "btnNuevo", lista: "listaNuevo" },
         { btn: "btnDepartamento", lista: "listaDepartamento" },
         { btn: "btnAfectacion", lista: "listaAfectacion" },
         { btn: "btnStoppers", lista: "listaStoppers" },
