@@ -98,7 +98,7 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
-    /* Estilos seguros para redimensionar ancho de columnas */
+    /* Estilos mejorados para redimensionar el ancho de las columnas */
     .planeacion-table th {
         position: relative;
         user-select: none;
@@ -107,10 +107,10 @@ styleGrupoExcel.innerHTML = `
         position: absolute;
         top: 0;
         right: 0;
-        width: 6px;
+        width: 8px;
         cursor: col-resize;
         user-select: none;
-        z-index: 20;
+        z-index: 25;
         height: 100%;
     }
     .table-resizer:hover, .table-resizer.resizing {
@@ -213,7 +213,7 @@ function esCasoNuevo(otVal) {
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
-        const thEstadoProg = ths[12]; // Columna Estado programación (índice 12)
+        const thEstadoProg = ths[12]; 
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
@@ -227,10 +227,10 @@ function inicializarBotonAgruparColumnas() {
     }
 }
 
-// Lógica de redimensionamiento para arrastrar los bordes de los encabezados
+// Lógica mejorada de redimensionamiento para actualizar celdas y encabezado en tiempo real
 function inicializarRedimensionamientoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    ths.forEach(th => {
+    ths.forEach((th, index) => {
         if (th.querySelector('.table-resizer')) return; 
         const resizer = document.createElement('div');
         resizer.className = 'table-resizer';
@@ -240,14 +240,29 @@ function inicializarRedimensionamientoColumnas() {
         let w = 0;
 
         resizer.addEventListener('mousedown', function(e) {
-            e.stopPropagation(); // Evitar que dispare otros eventos del encabezado
+            e.stopPropagation();
             x = e.clientX;
             w = th.offsetWidth;
             resizer.classList.add('resizing');
 
             function mouseMoveHandler(e) {
                 const dx = e.clientX - x;
-                th.style.width = `${Math.max(50, w + dx)}px`;
+                const nuevoAncho = Math.max(50, w + dx);
+                
+                // Aplicar ancho fijo al encabezado y a todas las celdas de esa columna en el body
+                th.style.width = `${nuevoAncho}px`;
+                th.style.minWidth = `${nuevoAncho}px`;
+                th.style.maxWidth = `${nuevoAncho}px`;
+
+                const filas = document.querySelectorAll(".planeacion-table tbody tr");
+                filas.forEach(fila => {
+                    const celda = fila.children[index];
+                    if (celda) {
+                        celda.style.width = `${nuevoAncho}px`;
+                        celda.style.minWidth = `${nuevoAncho}px`;
+                        celda.style.maxWidth = `${nuevoAncho}px`;
+                    }
+                });
             }
 
             function mouseUpHandler() {
@@ -265,7 +280,7 @@ function inicializarRedimensionamientoColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [7, 8, 9, 10, 11]; // Columnas agrupadas que se ocultan (IDs afectados, Días OT, Rango, Prioridad, Stoppers)
+    const indicesGrupo = [7, 8, 9, 10, 11];
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -428,7 +443,7 @@ function pintarTabla(datos){
 
     inicializarBotonAgruparColumnas();
     aplicarEstadoGrupoColumnas();
-    inicializarRedimensionamientoColumnas(); // Activa las líneas divisorias para arrastrar y cambiar el ancho
+    inicializarRedimensionamientoColumnas(); // Activa el ajuste dinámico por arrastre
 }
 
 async function cargarPlaneacion(){
