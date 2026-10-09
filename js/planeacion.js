@@ -194,15 +194,15 @@ function esCasoNuevo(otVal) {
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    if (ths.length > 11) {
-        const thEstadoProg = ths[12]; 
-        let btn = thEstadoProg.querySelector(".btn-excel-grupo");
+    if (ths.length > 7) {
+        const thIDsAfectados = ths[7]; // Columna "IDs afectados" (inicio del bloque colapsable)
+        let btn = thIDsAfectados.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            thEstadoProg.insertBefore(btn, thEstadoProg.firstChild);
+            thIDsAfectados.insertBefore(btn, thIDsAfectados.firstChild);
         }
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
@@ -212,7 +212,7 @@ function inicializarBotonAgruparColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [7, 8, 9, 10, 11];
+    const indicesGrupo = [7, 8, 9, 10, 11]; // Índices correspondientes a IDs afectados, Días OT, Rango, Prioridad, Stoppers
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -893,7 +893,6 @@ function aplicarFiltros(){
 
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
-    // CORRECCIÓN: Ahora actualiza KPIs y Total IDs Afectados basándose en los datos filtrados en tiempo real
     actualizarKPIs(resultado);
     actualizarOpcionesFiltros(datosGlobal);
 }
@@ -1024,7 +1023,7 @@ document.addEventListener("change", (e) => {
 
     if (target.classList.contains("chkDiasOT")) {
         diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
-        aplicarFilros();
+        aplicarFiltros();
         return;
     }
     if (target.id === "chkTodosDiasOT") {
