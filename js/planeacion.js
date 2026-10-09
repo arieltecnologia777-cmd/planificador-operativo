@@ -19,13 +19,12 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false;
 
-// Variables para el control del ordenamiento superior
-let ordenColumnaSeleccionada = "";
-let ordenDireccionTipo = "asc";
+// Variables para el ordenamiento integrado en filtros
+let ordenActualColumna = null;
+let ordenDireccionAsc = true;
 
-// Estilos limpios para el botón de agrupar y el nuevo contenedor de ordenamiento superior
-const styleExcelHeader = document.createElement('style');
-styleExcelHeader.innerHTML = `
+const styleGrupoExcel = document.createElement('style');
+styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
@@ -49,30 +48,26 @@ styleExcelHeader.innerHTML = `
     .btn-excel-grupo:hover {
         background: #2c5282;
     }
-    .panel-ordenamiento-superior {
+    .filtro-sort-header {
+        padding: 4px 6px 6px 6px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 6px;
+        font-size: 0.75rem;
         display: flex;
-        align-items: center;
-        gap: 6px;
+        justify-content: space-around;
         background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.8rem;
-    }
-    .panel-ordenamiento-superior select {
-        padding: 3px 6px;
-        border: 1px solid #cbd5e0;
         border-radius: 3px;
-        font-size: 0.8rem;
-        background: #ffffff;
-        color: #2d3748;
-        outline: none;
     }
-    .panel-ordenamiento-superior select:focus {
-        border-color: #2b6cb0;
+    .filtro-sort-header span {
+        color: #2b6cb0;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .filtro-sort-header span:hover {
+        text-decoration: underline;
     }
 `;
-document.head.appendChild(styleExcelHeader);
+document.head.appendChild(styleGrupoExcel);
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -172,35 +167,6 @@ function inicializarBotonAgruparColumnas() {
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
-
-    // Inyectar el panel de ordenamiento superior junto al botón de limpiar filtros si no existe
-    const headerTitleGroup = document.querySelector(".header-title-group");
-    if (headerTitleGroup && !document.getElementById("panelOrdenSuperior")) {
-        const ordenDiv = document.createElement("div");
-        ordenDiv.id = "panelOrdenSuperior";
-        ordenDiv.className = "panel-ordenamiento-superior";
-        ordenDiv.innerHTML = `
-            <span style="font-weight: 600; color: #4a5568;">Ordenar por:</span>
-            <select id="selectOrdenCampo">
-                <option value="">(Sin ordenar)</option>
-                <option value="ID">ID</option>
-                <option value="Departamento">Departamento</option>
-                <option value="Municipio">Municipio</option>
-                <option value="OT">OT</option>
-                <option value="Tipo de afectación">Afectación</option>
-                <option value="IDs afectados">IDs afectados</option>
-                <option value="Días OT">Días OT</option>
-                <option value="estadoProgramacion">Estado programación</option>
-                <option value="fechaProgramacion">Fecha programación</option>
-                <option value="estadoGestion">Estado gestión</option>
-            </select>
-            <select id="selectOrdenDir">
-                <option value="asc">Ascendente (A-Z / Menor)</option>
-                <option value="desc">Descendente (Z-A / Mayor)</option>
-            </select>
-        `;
-        headerTitleGroup.appendChild(ordenDiv);
-    }
 }
 
 function aplicarEstadoGrupoColumnas() {
@@ -237,6 +203,13 @@ function aplicarEstadoGrupoColumnas() {
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 }
+
+window.ordenarDesdeFiltro = function(campo, asc) {
+    ordenActualColumna = campo;
+    ordenDireccionAsc = asc;
+    document.querySelectorAll(".multi-filtro-lista").forEach(l => l.classList.remove("show"));
+    aplicarFiltros();
+};
 
 function pintarTabla(datos){
     const encabezados = encabezadosGlobal;
@@ -617,6 +590,10 @@ function actualizarOpcionesFiltros(datos) {
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
         dEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('Departamento', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('Departamento', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarDepartamento" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarDepartamento">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDeptos"> (Seleccionar todo)</label>
@@ -629,6 +606,10 @@ function actualizarOpcionesFiltros(datos) {
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
         aEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('Tipo de afectación', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('Tipo de afectación', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarAfectacion" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarAfectacion">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodasAfectaciones"> (Seleccionar todo)</label>
@@ -639,6 +620,10 @@ function actualizarOpcionesFiltros(datos) {
     const sEl = document.getElementById("listaStoppers");
     if(sEl) {
         sEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('Stoppers Dominion', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('Stoppers Dominion', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarStoppers" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarStoppers">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosStoppers"> (Seleccionar todo)</label>
@@ -649,6 +634,10 @@ function actualizarOpcionesFiltros(datos) {
     const rEl = document.getElementById("listaRango");
     if(rEl) {
         rEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('Rango de afectación', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('Rango de afectación', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
@@ -674,6 +663,10 @@ function actualizarOpcionesFiltros(datos) {
     const fpEl = document.getElementById("listaFechaProg");
     if(fpEl) {
         let htmlJerarquico = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('fechaProgramacion', true)">⬆ Antiguas</span>
+                <span onclick="ordenarDesdeFiltro('fechaProgramacion', false)">⬇ Recientes</span>
+            </div>
             <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
             <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
@@ -717,6 +710,10 @@ function actualizarOpcionesFiltros(datos) {
     const bEl = document.getElementById("listaBacklog");
     if(bEl) {
         bEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('Indicador backlog', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('Indicador backlog', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
@@ -727,6 +724,10 @@ function actualizarOpcionesFiltros(datos) {
     const egEl = document.getElementById("listaEstadoGestion") || document.getElementById("listaEstado");
     if(egEl) {
         egEl.innerHTML = `
+            <div class="filtro-sort-header">
+                <span onclick="ordenarDesdeFiltro('estadoGestion', true)">⬆ A-Z</span>
+                <span onclick="ordenarDesdeFiltro('estadoGestion', false)">⬇ Z-A</span>
+            </div>
             <input type="text" id="buscarEstadoGestion" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarEstadoGestion">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosEstadosGestion"> (Seleccionar todo)</label>
@@ -789,19 +790,18 @@ function aplicarFiltros(){
         return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
 
-    // Aplicar Ordenamiento Superior si se seleccionó una columna
-    if (ordenColumnaSeleccionada) {
+    if (ordenActualColumna !== null) {
         resultado.sort((a, b) => {
             let valA = "";
             let valB = "";
 
-            if (ordenColumnaSeleccionada === "estadoProgramacion" || ordenColumnaSeleccionada === "fechaProgramacion" || ordenColumnaSeleccionada === "estadoGestion") {
+            if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
                 const regA = (window.registrosD1 || {})[a[idxOT]] || {};
                 const regB = (window.registrosD1 || {})[b[idxOT]] || {};
-                valA = String(regA[ordenColumnaSeleccionada] || "").trim();
-                valB = String(regB[ordenColumnaSeleccionada] || "").trim();
+                valA = String(regA[ordenActualColumna] || "").trim();
+                valB = String(regB[ordenActualColumna] || "").trim();
             } else {
-                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === ordenColumnaSeleccionada);
+                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === ordenActualColumna);
                 valA = colIdx !== -1 ? String(a[colIdx] || "").trim() : "";
                 valB = colIdx !== -1 ? String(b[colIdx] || "").trim() : "";
             }
@@ -809,10 +809,10 @@ function aplicarFiltros(){
             const numA = parseFloat(valA);
             const numB = parseFloat(valB);
             if (!isNaN(numA) && !isNaN(numB)) {
-                return ordenDireccionTipo === "asc" ? numA - numB : numB - numA;
+                return ordenDireccionAsc ? numA - numB : numB - numA;
             }
 
-            return ordenDireccionTipo === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            return ordenDireccionAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         });
     }
 
@@ -830,13 +830,8 @@ function resetearTodosLosFiltros() {
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
-    ordenColumnaSeleccionada = "";
-    ordenDireccionTipo = "asc";
-
-    const selCampo = document.getElementById("selectOrdenCampo");
-    const selDir = document.getElementById("selectOrdenDir");
-    if (selCampo) selCampo.value = "";
-    if (selDir) selDir.value = "asc";
+    ordenActualColumna = null;
+    ordenDireccionAsc = true;
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
         c.classList.remove("kpi-seleccionado");
@@ -857,20 +852,24 @@ function resetearTodosLosFiltros() {
     aplicarFiltros();
 }
 
+document.addEventListener("input", (e) => {
+    if(e.target.id === "filtroBusqueda") {
+        aplicarFiltros();
+    }
+    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
+        const textoBusq = e.target.value.toLowerCase();
+        const contenedor = e.target.closest("div");
+        if(contenedor) {
+            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
+                const contenido = item.textContent.toLowerCase();
+                item.style.display = contenido.includes(textoBusq) ? "" : "none";
+            });
+        }
+    }
+});
+
 document.addEventListener("change", (e) => {
     const target = e.target;
-
-    // Escuchar cambios en el panel de ordenamiento superior
-    if (target.id === "selectOrdenCampo") {
-        ordenColumnaSeleccionada = target.value;
-        aplicarFiltros();
-        return;
-    }
-    if (target.id === "selectOrdenDir") {
-        ordenDireccionTipo = target.value;
-        aplicarFiltros();
-        return;
-    }
 
     if (target.classList.contains("chkDepartamento")) {
         departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
@@ -985,22 +984,6 @@ document.addEventListener("change", (e) => {
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         guardarOT(filaTabla);
-    }
-});
-
-document.addEventListener("input", (e) => {
-    if(e.target.id === "filtroBusqueda") {
-        aplicarFiltros();
-    }
-    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
-        const textoBusq = e.target.value.toLowerCase();
-        const contenedor = e.target.closest("div");
-        if(contenedor) {
-            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
-                const contenido = item.textContent.toLowerCase();
-                item.style.display = contenido.includes(textoBusq) ? "" : "none";
-            });
-        }
     }
 });
 
