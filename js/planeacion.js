@@ -22,7 +22,7 @@ let grupoColumnasColapsado = false;
 let ordenActualColumna = null;
 let ordenDireccionAsc = true;
 
-// OTs modificadas recientemente que se mantendrán visibles temporalmente para evitar saltos
+// OTs modificadas recientemente que se mantendrán visibles temporalmente
 let otsModificadasRecientemente = new Set();
 
 const styleGrupoExcel = document.createElement('style');
@@ -49,6 +49,16 @@ styleGrupoExcel.innerHTML = `
     }
     .btn-excel-grupo:hover {
         background: #2c5282;
+    }
+    .badge-nuevo {
+        background-color: #48bb78;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: inline-block;
+        text-align: center;
     }
     .filtro-sort-container {
         padding: 4px 6px 6px 6px;
@@ -166,8 +176,8 @@ const TECNICOS = [
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    if (ths.length > 11) {
-        const thEstadoProg = ths[11]; 
+    if (ths.length > 12) {
+        const thEstadoProg = ths[12]; 
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
@@ -184,7 +194,7 @@ function inicializarBotonAgruparColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [6, 7, 8, 9, 10];
+    const indicesGrupo = [7, 8, 9, 10, 11];
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -246,8 +256,15 @@ function pintarTabla(datos){
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
+    let otsAyer = JSON.parse(localStorage.getItem("ots_ayer") || "[]");
+    let otsHoySet = new Set(datos.map(f => String(f[idxOT]).trim()));
+
     planeacionBody.innerHTML = datos.map(fila => {
-        const d1 = (window.registrosD1 || {})[fila[idxOT]] || {};
+        const otVal = String(fila[idxOT] || "").trim();
+        const d1 = (window.registrosD1 || {})[otVal] || {};
+
+        const esNuevo = otsAyer.length > 0 && !otsAyer.includes(otVal);
+        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">🟢 Nuevo</span>` : "";
 
         let fechaTipo = "text";
         let fechaDisabled = "disabled";
@@ -267,6 +284,7 @@ function pintarTabla(datos){
 
         return `
         <tr>
+            <td style="text-align: center;">${htmlBadgeNuevo}</td>
             <td>${fila[idxID] || ""}</td>
             <td>${fila[idxDepto] || ""}</td>
             <td>${fila[idxMunicipio] || ""}</td>
@@ -299,7 +317,7 @@ function pintarTabla(datos){
                         <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
                         
                         <button type="button" class="btn-abrir-modal-obs" 
-                            data-ot="${fila[idxOT] || ""}" 
+                            data-ot="${otVal}" 
                             data-id="${fila[idxID] || ""}" 
                             data-depto="${fila[idxDepto] || ""}" 
                             data-muni="${fila[idxMunicipio] || ""}" 
@@ -340,6 +358,8 @@ function pintarTabla(datos){
         </tr>`;
     }).join("");
 
+    localStorage.setItem("ots_ayer", JSON.stringify(Array.from(otsHoySet)));
+
     inicializarBotonAgruparColumnas();
     aplicarEstadoGrupoColumnas();
 }
@@ -371,8 +391,6 @@ async function cargarPlaneacion(){
     encabezadosGlobal = filas[0];
     datosGlobal = filas.slice(1);
 
-    const datos = datosGlobal;
-
     let registrosD1 = {};
     try {
         const respD1 = await fetch(API_URL);
@@ -383,11 +401,28 @@ async function cargarPlaneacion(){
 
     window.registrosD1 = registrosD1;
 
-    renderizarFiltrosDinamicos(datos);
-    datosFiltradosGlobal = datos;
-    actualizarOpcionesFiltros(datos);
-    pintarTabla(datos);
-    actualizarKPIs(datos);
+    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
+    const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
+
+    Object.values(registrosD1).forEach(reg => {
+        const otReg = String(reg.ot || "").trim();
+        if (otReg && !otsConfiguesSet.has(otReg)) {
+            if (reg.estadoGestion && reg.estadoGestion !== "" || reg.estadoProgramacion && reg.estadoProgramacion !== "") {
+                let filaBase = datosGlobal.find(f => f[idxOT] === otReg);
+                if (!filaBase && datosGlobal.length > 0) {
+                    filaBase = [...datosGlobal[0]];
+                    filaBase[idxOT] = otReg;
+                }
+                if (filaBase) datosGlobal.push(filaBase);
+            }
+        }
+    });
+
+    renderizarFiltrosDinamicos(datosGlobal);
+    datosFiltradosGlobal = datosGlobal;
+    actualizarOpcionesFiltros(datosGlobal);
+    pintarTabla(datosGlobal);
+    actualizarKPIs(datosGlobal);
 }
 
 function actualizarKPIs(datos){
@@ -980,7 +1015,7 @@ document.addEventListener("change", (e) => {
 
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
-        const otMod = filaTabla.children[4].textContent.trim();
+        const otMod = filaTabla.children[5].textContent.trim();
         if (otMod) otsModificadasRecientemente.add(otMod);
         guardarOT(filaTabla);
     }
@@ -1135,13 +1170,13 @@ document.addEventListener("blur", async e => {
     if(!e.target.classList.contains("fecha-input")) return;
     const fila = e.target.closest("tr");
     if(!fila) return;
-    const otMod = fila.children[4].textContent.trim();
+    const otMod = fila.children[5].textContent.trim();
     if (otMod) otsModificadasRecientemente.add(otMod);
     await guardarOT(fila);
 }, true);
 
 async function guardarOT(fila, observacionForzada = null){
-    const ot = fila.children[4].textContent.trim();
+    const ot = fila.children[5].textContent.trim();
     
     const inputFecha = fila.querySelector(".fecha-input");
     let fechaVal = inputFecha?.value || "";
@@ -1495,7 +1530,7 @@ document.addEventListener("click", (e) => {
     if (e.target.id === "btnGuardarObs") {
         const txtArea = document.getElementById("textareaModalObs");
         if (filaActualModal && txtArea) {
-            const ot = filaActualModal.children[4].textContent.trim();
+            const ot = filaActualModal.children[5].textContent.trim();
             const textoConSaltos = txtArea.value;
 
             window.registrosD1[ot] = window.registrosD1[ot] || {};
