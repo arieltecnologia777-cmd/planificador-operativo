@@ -471,7 +471,6 @@ function actualizarKPIs(datos){
         if (backlog === "CUMPLE") otsCumple.add(ot);
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
 
-        // MODIFICACIÓN SOLICITADA: Cuenta exclusivamente cuando el estado de programación sea "Programada"
         if (regD1.estadoProgramacion === "Programada") {
             otsProgramadas.add(ot);
         }
@@ -894,7 +893,7 @@ function aplicarFiltros(){
 
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
-    actualizarKPIs(resultado);
+    actualizarKPIs(datosGlobal); // Actualizado para reflejar la totalidad del dataset
     actualizarOpcionesFiltros(datosGlobal);
 }
 
@@ -1284,6 +1283,9 @@ async function guardarOT(fila, observacionForzada = null){
                 acompanamiento: payload.acompanamiento,
                 updatedAt: new Date().toISOString()
             };
+
+            // ACTUALIZACIÓN INMEDIATA DE KPIS AL CAMBIAR UN ESTADO
+            actualizarKPIs(datosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
