@@ -19,9 +19,13 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false;
 
-// Estilos para el botón de agrupar/desagrupar columnas
-const styleGrupoExcel = document.createElement('style');
-styleGrupoExcel.innerHTML = `
+// Variables para el control del ordenamiento superior
+let ordenColumnaSeleccionada = "";
+let ordenDireccionTipo = "asc";
+
+// Estilos limpios para el botón de agrupar y el nuevo contenedor de ordenamiento superior
+const styleExcelHeader = document.createElement('style');
+styleExcelHeader.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
@@ -45,8 +49,30 @@ styleGrupoExcel.innerHTML = `
     .btn-excel-grupo:hover {
         background: #2c5282;
     }
+    .panel-ordenamiento-superior {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+    .panel-ordenamiento-superior select {
+        padding: 3px 6px;
+        border: 1px solid #cbd5e0;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        background: #ffffff;
+        color: #2d3748;
+        outline: none;
+    }
+    .panel-ordenamiento-superior select:focus {
+        border-color: #2b6cb0;
+    }
 `;
-document.head.appendChild(styleGrupoExcel);
+document.head.appendChild(styleExcelHeader);
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -145,6 +171,35 @@ function inicializarBotonAgruparColumnas() {
         }
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
+    }
+
+    // Inyectar el panel de ordenamiento superior junto al botón de limpiar filtros si no existe
+    const headerTitleGroup = document.querySelector(".header-title-group");
+    if (headerTitleGroup && !document.getElementById("panelOrdenSuperior")) {
+        const ordenDiv = document.createElement("div");
+        ordenDiv.id = "panelOrdenSuperior";
+        ordenDiv.className = "panel-ordenamiento-superior";
+        ordenDiv.innerHTML = `
+            <span style="font-weight: 600; color: #4a5568;">Ordenar por:</span>
+            <select id="selectOrdenCampo">
+                <option value="">(Sin ordenar)</option>
+                <option value="ID">ID</option>
+                <option value="Departamento">Departamento</option>
+                <option value="Municipio">Municipio</option>
+                <option value="OT">OT</option>
+                <option value="Tipo de afectación">Afectación</option>
+                <option value="IDs afectados">IDs afectados</option>
+                <option value="Días OT">Días OT</option>
+                <option value="estadoProgramacion">Estado programación</option>
+                <option value="fechaProgramacion">Fecha programación</option>
+                <option value="estadoGestion">Estado gestión</option>
+            </select>
+            <select id="selectOrdenDir">
+                <option value="asc">Ascendente (A-Z / Menor)</option>
+                <option value="desc">Descendente (Z-A / Mayor)</option>
+            </select>
+        `;
+        headerTitleGroup.appendChild(ordenDiv);
     }
 }
 
@@ -734,6 +789,33 @@ function aplicarFiltros(){
         return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
 
+    // Aplicar Ordenamiento Superior si se seleccionó una columna
+    if (ordenColumnaSeleccionada) {
+        resultado.sort((a, b) => {
+            let valA = "";
+            let valB = "";
+
+            if (ordenColumnaSeleccionada === "estadoProgramacion" || ordenColumnaSeleccionada === "fechaProgramacion" || ordenColumnaSeleccionada === "estadoGestion") {
+                const regA = (window.registrosD1 || {})[a[idxOT]] || {};
+                const regB = (window.registrosD1 || {})[b[idxOT]] || {};
+                valA = String(regA[ordenColumnaSeleccionada] || "").trim();
+                valB = String(regB[ordenColumnaSeleccionada] || "").trim();
+            } else {
+                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === ordenColumnaSeleccionada);
+                valA = colIdx !== -1 ? String(a[colIdx] || "").trim() : "";
+                valB = colIdx !== -1 ? String(b[colIdx] || "").trim() : "";
+            }
+
+            const numA = parseFloat(valA);
+            const numB = parseFloat(valB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return ordenDireccionTipo === "asc" ? numA - numB : numB - numA;
+            }
+
+            return ordenDireccionTipo === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+    }
+
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
     actualizarKPIs(resultado);
@@ -748,6 +830,13 @@ function resetearTodosLosFiltros() {
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
+    ordenColumnaSeleccionada = "";
+    ordenDireccionTipo = "asc";
+
+    const selCampo = document.getElementById("selectOrdenCampo");
+    const selDir = document.getElementById("selectOrdenDir");
+    if (selCampo) selCampo.value = "";
+    if (selDir) selDir.value = "asc";
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
         c.classList.remove("kpi-seleccionado");
@@ -768,24 +857,20 @@ function resetearTodosLosFiltros() {
     aplicarFiltros();
 }
 
-document.addEventListener("input", (e) => {
-    if(e.target.id === "filtroBusqueda") {
-        aplicarFiltros();
-    }
-    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
-        const textoBusq = e.target.value.toLowerCase();
-        const contenedor = e.target.closest("div");
-        if(contenedor) {
-            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
-                const contenido = item.textContent.toLowerCase();
-                item.style.display = contenido.includes(textoBusq) ? "" : "none";
-            });
-        }
-    }
-});
-
 document.addEventListener("change", (e) => {
     const target = e.target;
+
+    // Escuchar cambios en el panel de ordenamiento superior
+    if (target.id === "selectOrdenCampo") {
+        ordenColumnaSeleccionada = target.value;
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "selectOrdenDir") {
+        ordenDireccionTipo = target.value;
+        aplicarFiltros();
+        return;
+    }
 
     if (target.classList.contains("chkDepartamento")) {
         departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
@@ -900,6 +985,22 @@ document.addEventListener("change", (e) => {
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         guardarOT(filaTabla);
+    }
+});
+
+document.addEventListener("input", (e) => {
+    if(e.target.id === "filtroBusqueda") {
+        aplicarFiltros();
+    }
+    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
+        const textoBusq = e.target.value.toLowerCase();
+        const contenedor = e.target.closest("div");
+        if(contenedor) {
+            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
+                const contenido = item.textContent.toLowerCase();
+                item.style.display = contenido.includes(textoBusq) ? "" : "none";
+            });
+        }
     }
 });
 
