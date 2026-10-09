@@ -17,9 +17,14 @@ let fechasProgSeleccionadas = [];
 let backlogsSeleccionados = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
-let grupoColumnasColapsado = false; // Estado para agrupar/ocultar columnas
+let grupoColumnasColapsado = false;
 
-// Estilos limpios y posicionamiento fijo junto al encabezado de Estado programación
+// Variables para el ordenamiento estilo Excel
+let ordenActualColumna = null;
+let ordenDireccionAsc = true;
+let columnaMenuActiva = null;
+
+// Estilos para el botón de agrupar y el menú contextual de ordenamiento tipo Excel
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
@@ -44,6 +49,49 @@ styleGrupoExcel.innerHTML = `
     }
     .btn-excel-grupo:hover {
         background: #2c5282;
+    }
+    .planeacion-table th {
+        position: relative;
+        user-select: none;
+    }
+    .th-sort-icon {
+        font-size: 0.65rem;
+        margin-left: 5px;
+        color: #a0aec0;
+        cursor: pointer;
+    }
+    .th-sort-icon:hover {
+        color: #2b6cb0;
+    }
+    .excel-sort-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #cbd5e0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 4px;
+        z-index: 1000;
+        min-width: 170px;
+        padding: 4px 0;
+        text-align: left;
+    }
+    .excel-sort-menu.show {
+        display: block;
+    }
+    .excel-sort-item {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        color: #2d3748;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .excel-sort-item:hover {
+        background: #edf2f7;
+        color: #1a202c;
     }
 `;
 document.head.appendChild(styleGrupoExcel);
@@ -133,7 +181,6 @@ const TECNICOS = [
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    // El índice 11 corresponde a "Estado programación"
     if (ths.length > 11) {
         const thEstadoProg = ths[11]; 
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
@@ -142,19 +189,38 @@ function inicializarBotonAgruparColumnas() {
             btn.type = "button";
             btn.className = "btn-excel-grupo";
             btn.id = "btnToggleGrupoCols";
-            // Insertar el botón al inicio del contenido de la celda th para que quede justo antes del texto
             thEstadoProg.insertBefore(btn, thEstadoProg.firstChild);
         }
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
+
+    // Agregar icono de menú desplegable e indicador de orden a cada TH
+    ths.forEach((th, idx) => {
+        if (!th.querySelector(".th-sort-icon")) {
+            const icon = document.createElement("span");
+            icon.className = "th-sort-icon";
+            icon.innerHTML = " ▼";
+            th.appendChild(icon);
+        }
+
+        // Crear menú flotante si no existe
+        if (!th.querySelector(".excel-sort-menu")) {
+            const menu = document.createElement("div");
+            menu.className = "excel-sort-menu";
+            menu.innerHTML = `
+                <div class="excel-sort-item" data-sort="asc">⬆ Ordenar A a Z / Menor a Mayor</div>
+                <div class="excel-sort-item" data-sort="desc">⬇ Ordenar Z a A / Mayor a Menor</div>
+                <div class="excel-sort-item" data-sort="clear">✖ Quitar ordenamiento</div>
+            `;
+            th.appendChild(menu);
+        }
+    });
 }
 
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-
-    // Índices de las columnas a agrupar/ocultar: 6 (IDs afectados), 7 (Días OT), 8 (Rango), 9 (Prioridad), 10 (Stoppers)
     const indicesGrupo = [6, 7, 8, 9, 10];
 
     indicesGrupo.forEach(idx => {
@@ -708,7 +774,7 @@ function aplicarFiltros(){
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
 
-    const resultado = datosGlobal.filter(fila => {
+    let resultado = datosGlobal.filter(fila => {
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const estG = regD1.estadoGestion || "";
@@ -740,6 +806,32 @@ function aplicarFiltros(){
         return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
 
+    // Lógica de Ordenamiento con opciones seleccionadas (Ascendente / Descendente)
+    if (ordenActualColumna !== null) {
+        resultado.sort((a, b) => {
+            let valA = "";
+            let valB = "";
+
+            if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "observacion" || ordenActualColumna === "estadoGestion") {
+                const regA = (window.registrosD1 || {})[a[idxOT]] || {};
+                const regB = (window.registrosD1 || {})[b[idxOT]] || {};
+                valA = String(regA[ordenActualColumna] || "").trim();
+                valB = String(regB[ordenActualColumna] || "").trim();
+            } else {
+                valA = String(a[ordenActualColumna] || "").trim();
+                valB = String(b[ordenActualColumna] || "").trim();
+            }
+
+            const numA = parseFloat(valA);
+            const numB = parseFloat(valB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return ordenDireccionAsc ? numA - numB : numB - numA;
+            }
+
+            return ordenDireccionAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+    }
+
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
     actualizarKPIs(resultado);
@@ -754,6 +846,8 @@ function resetearTodosLosFiltros() {
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
+    ordenActualColumna = null;
+    ordenDireccionAsc = true;
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
         c.classList.remove("kpi-seleccionado");
@@ -912,7 +1006,60 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Manejar botón de agrupar/desagrupar columnas con alternancia limpia y segura
+    // Manejar el menú desplegable de ordenamiento tipo Excel en las cabeceras
+    const sortItem = target.closest(".excel-sort-item");
+    if (sortItem) {
+        const th = sortItem.closest("th");
+        const ths = Array.from(document.querySelectorAll(".planeacion-table th"));
+        const colIndex = ths.indexOf(th);
+        
+        let nombreCampoMap = [
+            "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
+            "IDs afectados", "Días OT", "Rango de afectación", "Tipo de prioridad", 
+            "Stoppers Dominion", "estadoProgramacion", "fechaProgramacion", 
+            "observacion", "estadoGestion", "tecnicoAsignado", "acompanamiento", 
+            "Indicador backlog", "Stopper P3", "Tipo facturación", 
+            "Fecha vencimiento FM", "Alerta vencimiento FM"
+        ];
+
+        const campo = nombreCampoMap[colIndex];
+        const tipoOrden = sortItem.getAttribute("data-sort");
+
+        if (tipoOrden === "clear") {
+            ordenActualColumna = null;
+            ordenDireccionAsc = true;
+        } else {
+            ordenActualColumna = campo;
+            ordenDireccionAsc = (tipoOrden === "asc");
+        }
+
+        document.querySelectorAll(".excel-sort-menu").forEach(m => m.classList.remove("show"));
+        columnaMenuActiva = null;
+        aplicarFiltros();
+        return;
+    }
+
+    // Abrir/Cerrar menú de orden al hacer clic en el icono de la cabecera
+    const sortIcon = target.closest(".th-sort-icon");
+    const thClicked = target.closest(".planeacion-table th");
+    if (sortIcon || (thClicked && !target.closest(".btn-excel-grupo") && !target.closest(".excel-sort-menu"))) {
+        e.stopPropagation();
+        const thTarget = sortIcon ? sortIcon.closest("th") : thClicked;
+        const menu = thTarget.querySelector(".excel-sort-menu");
+        
+        document.querySelectorAll(".excel-sort-menu").forEach(m => {
+            if (m !== menu) m.classList.remove("show");
+        });
+
+        if (menu) {
+            menu.classList.toggle("show");
+        }
+        return;
+    } else {
+        document.querySelectorAll(".excel-sort-menu").forEach(m => m.classList.remove("show"));
+    }
+
+    // Manejar botón de agrupar/desagrupar columnas
     const btnGrupo = target.closest("#btnToggleGrupoCols");
     if (btnGrupo) {
         grupoColumnasColapsado = !grupoColumnasColapsado;
@@ -1108,586 +1255,4 @@ async function guardarOT(fila, observacionForzada = null){
             aplicarFiltros();
         }
     } catch (err) {
-        console.error("Error al guardar OT:", err);
-    }
-}
-
-const wrapper = document.querySelector('.planeacion-table-wrapper');
-let scrollTimer;
-if(wrapper) {
-    wrapper.addEventListener('scroll', () => {
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-            const firstRow = wrapper.querySelector('tbody tr');
-            if (!firstRow) return;
-            const rowHeight = firstRow.offsetHeight;
-            const target = Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
-            wrapper.scrollTo({ top: target, behavior: 'smooth' });
-        }, 80);
-    });
-}
-
-window.addEventListener("load", () => {
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
-
-    if (!topScroll || !tableWrapper || !topScrollInner) return;
-
-    function ajustarAnchoBarra() {
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        if (maxScrollTabla > 0) {
-            topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
-        }
-    }
-
-    ajustarAnchoBarra();
-    window.addEventListener("resize", ajustarAnchoBarra);
-    setTimeout(ajustarAnchoBarra, 400);
-
-    let syncing = false;
-
-    topScroll.addEventListener("scroll", () => {
-        if (syncing) return;
-        syncing = true;
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
-        
-        if (maxScrollBarra > 0) {
-            const porcentaje = topScroll.scrollLeft / maxScrollBarra;
-            tableWrapper.scrollLeft = porcentaje * maxScrollTabla;
-        }
-        syncing = false;
-    });
-
-    tableWrapper.addEventListener("scroll", () => {
-        if (syncing) return;
-        syncing = true;
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
-        
-        if (maxScrollTabla > 0 && maxScrollBarra > 0) {
-            const porcentaje = tableWrapper.scrollLeft / maxScrollTabla;
-            topScroll.scrollLeft = porcentaje * maxScrollBarra;
-        }
-        syncing = false;
-    });
-});
-
-function actualizarStickyTabla() {
-    const header = document.querySelector('.planeacion-header');
-    const filtros = document.querySelector('.planeacion-filtros-sticky');
-    if (!header || !filtros) return;
-
-    const alturaHeader = header.offsetHeight;
-    const alturaFiltros = filtros.offsetHeight;
-
-    document.documentElement.style.setProperty(
-        '--sticky-table-top',
-        `${alturaHeader + alturaFiltros}px`
-    );
-}
-
-window.addEventListener('load', actualizarStickyTabla);
-window.addEventListener('resize', actualizarStickyTabla);
-
-function detectarZoom() {
-    const zoom = Math.round(window.devicePixelRatio * 100);
-    document.body.classList.toggle('zoom-alto', zoom > 105);
-}
-window.addEventListener('resize', detectarZoom);
-detectarZoom();
-
-document.addEventListener("click", (e) => {
-    const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
-
-    if (botonZoom) {
-        e.preventDefault();
-        document.body.classList.toggle("modo-ampliado");
-        document.body.classList.toggle("modo-zoom");
-        document.querySelector(".panel")?.classList.toggle("panel-zoom");
-    }
-});
-
-window.exportarPlaneacion = function() {
-    try {
-        if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
-            alert("No hay datos cargados para exportar todavía.");
-            return;
-        }
-
-        const exportRegionEl = document.getElementById("exportRegion");
-        const region = exportRegionEl ? exportRegionEl.value : "TODOS";
-
-        let filas = [...datosGlobal];
-
-        const buscarIndice = (nombre) =>
-            encabezadosGlobal.findIndex(h => String(h).trim() === nombre);
-
-        const idxDepto = buscarIndice("Departamento");
-
-        if (region === "R1" && idxDepto !== -1) {
-            filas = filas.filter(fila =>
-                ["CESAR", "LA GUAJIRA", "SAI"].includes(
-                    String(fila[idxDepto] || "").trim().toUpperCase()
-                )
-            );
-        }
-
-        if (region === "R2" && idxDepto !== -1) {
-            filas = filas.filter(fila =>
-                String(fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
-            );
-        }
-
-        const headers = [
-            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Total_IDs",
-            "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
-            "Estado_Programacion", "Fecha_Programacion", "Observaciones",
-            "Estado_Gestion", "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion",
-            "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
-        ];
-
-        let registrosProcesados = filas.map(fila => {
-            const getValor = (nombre) => {
-                const index = buscarIndice(nombre);
-                return index !== -1 ? (fila[index] ?? "") : "";
-            };
-
-            const otValor = getValor("OT");
-            const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
-
-            let valorFechaExportar = "";
-            let esFechaReal = false;
-            const estadoProg = regD1.estadoProgramacion || "";
-            const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
-            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
-
-            if ((estadoProg === "Programada" || estadoProg === "Cancelada" || estadoProg === "Operativa") && regexFecha.test(fechaStr)) {
-                const [, year, month, day] = fechaStr.match(regexFecha);
-                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
-                esFechaReal = true;
-            } else {
-                if (estadoProg === "Pendiente") {
-                    valorFechaExportar = "En validación";
-                } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
-                    valorFechaExportar = "No aplica";
-                } else {
-                    valorFechaExportar = "⟵ Definir estado";
-                }
-            }
-
-            return {
-                filaOriginal: fila,
-                esFechaReal: esFechaReal,
-                valorFechaExportar: valorFechaExportar,
-                regD1: regD1,
-                otValor: otValor
-            };
-        });
-
-        registrosProcesados.sort((a, b) => {
-            if (a.esFechaReal && !b.esFechaReal) return -1;
-            if (!a.esFechaReal && b.esFechaReal) return 1;
-            return 0;
-        });
-
-        const dataAOA = [];
-        dataAOA.push([...headers]);
-
-        registrosProcesados.forEach(item => {
-            const getValor = (nombre) => {
-                const index = buscarIndice(nombre);
-                return index !== -1 ? (item.filaOriginal[index] ?? "") : "";
-            };
-
-            const limpiarTexto = (t) => t ? String(t).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim() : "";
-
-            dataAOA.push([
-                getValor("ID"), getValor("Departamento"), getValor("Municipio"),
-                getValor("IM"), item.otValor, getValor("Tipo de afectación"),
-                getValor("IDs afectados"), getValor("Días OT"), getValor("Rango de afectación"),
-                getValor("Tipo de prioridad"), getValor("Stoppers Dominion"),
-                limpiarTexto(item.regD1.estadoProgramacion), item.valorFechaExportar,
-                limpiarTexto(item.regD1.observacion), limpiarTexto(item.regD1.estadoGestion),
-                getValor("Indicador backlog"), getValor("Stopper P3"),
-                getValor("Tipo facturación"), getValor("Fecha vencimiento FM"),
-                getValor("Alerta vencimiento FM")
-            ]);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
-
-        if (ws && ws['!ref']) {
-            const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 12;
-
-            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
-                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
-                const celda = ws[celdaRef];
-                if (celda && celda.v instanceof Date) {
-                    celda.t = 'd';
-                    celda.z = 'dd/mm/yyyy';
-                }
-            }
-
-            ws['!autofilter'] = { ref: ws['!ref'] };
-            ws['!freeze'] = { xSplit: 0, ySplit: 1 };
-        }
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
-
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-        XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
-
-    } catch (error) {
-        console.error("❌ Error detallado al exportar:", error);
-        alert("Ocurrió un error al exportar el archivo.");
-    }
-};
-
-let filaActualModal = null;
-
-document.addEventListener("click", (e) => {
-    const btnEditar = e.target.closest(".btn-abrir-modal-obs");
-
-    if (btnEditar) {
-        const fila = btnEditar.closest("tr");
-        filaActualModal = fila;
-        
-        const ot = btnEditar.getAttribute("data-ot");
-        const id = btnEditar.getAttribute("data-id");
-        const depto = btnEditar.getAttribute("data-depto");
-        const muni = btnEditar.getAttribute("data-muni");
-        const afec = btnEditar.getAttribute("data-afec");
-        
-        const inputObs = fila.querySelector(".observacion");
-        const modal = document.getElementById("modalObservacion");
-        const txtArea = document.getElementById("textareaModalObs");
-        
-        const spanOt = document.getElementById("modalValOt");
-        const spanId = document.getElementById("modalValId");
-        const spanDepto = document.getElementById("modalValDepto");
-        const spanMuni = document.getElementById("modalValMuni");
-        const spanAfec = document.getElementById("modalValAfec");
-
-       if (modal && txtArea) {
-            if (spanOt) spanOt.textContent = ot || "--";
-            if (spanId) spanId.textContent = id || "--";
-            if (spanDepto) spanDepto.textContent = depto || "--";
-            if (spanMuni) spanMuni.textContent = muni || "--";
-            if (spanAfec) spanAfec.textContent = afec || "--";
-
-            const registroActual = window.registrosD1[ot] || {};
-            let textoGuardado = registroActual.observacion || inputObs?.value || "";
-
-            if (textoGuardado.includes(" • ")) {
-                textoGuardado = textoGuardado.replace(/\s*•\s*/g, "\n");
-            } else if (textoGuardado.includes(" | ")) {
-                textoGuardado = textoGuardado.replace(/\s*\|\s*/g, "\n");
-            }
-
-            txtArea.value = textoGuardado;
-            modal.style.display = "grid";
-            txtArea.focus();
-        }
-    }
-
-    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs") {
-        const modal = document.getElementById("modalObservacion");
-        if (modal) modal.style.display = "none";
-    }
-
-    if (e.target.id === "btnGuardarObs") {
-        const txtArea = document.getElementById("textareaModalObs");
-        if (filaActualModal && txtArea) {
-            const ot = filaActualModal.children[4].textContent.trim();
-            const textoConSaltos = txtArea.value;
-
-            window.registrosD1[ot] = window.registrosD1[ot] || {};
-            window.registrosD1[ot].observacion = textoConSaltos;
-
-            const inputObs = filaActualModal.querySelector(".observacion");
-            if (inputObs) {
-                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
-            }
-
-            if (typeof guardarOT === "function") {
-                guardarOT(filaActualModal, textoConSaltos);
-            }
-        }
-        const modal = document.getElementById("modalObservacion");
-        if (modal) modal.style.display = "none";
-    }
-});
-
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-        const modal = document.getElementById("modalObservacion");
-        if (modal && modal.style.display === "grid") {
-            modal.style.display = "none";
-        }
-    }
-});
-
-let scrollInterval = null;
-
-function iniciarScroll(direccion) {
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    
-    if (!tableWrapper) return;
-
-    const step = 20;
-    tableWrapper.scrollLeft += direccion * step;
-    if (topScroll) {
-        topScroll.scrollLeft += direccion * step;
-    }
-}
-
-document.addEventListener("mousedown", (e) => {
-    const btnLeft = e.target.closest("#scrollLeftTopBtn");
-    const btnRight = e.target.closest("#scrollRightTopBtn");
-
-    if (btnLeft || btnRight) {
-        const direccion = btnLeft ? -1 : 1;
-        iniciarScroll(direccion);
-        scrollInterval = setInterval(() => {
-            iniciarScroll(direccion);
-        }, 30);
-    }
-});
-
-document.addEventListener("mouseup", () => {
-    if (scrollInterval) {
-        clearInterval(scrollInterval);
-        scrollInterval = null;
-    }
-});
-
-function ajustarAnchoScrollSuperior() {
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
-
-    if (tableWrapper && topScroll && topScrollInner) {
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        const anchoPerfecto = topScroll.clientWidth + maxScrollTabla;
-        topScrollInner.style.width = anchoPerfecto + "px";
-    }
-}
-
-window.addEventListener("load", ajustarAnchoScrollSuperior);
-window.addEventListener("resize", ajustarAnchoScrollSuperior);
-setTimeout(ajustarAnchoScrollSuperior, 300);
-
-document.addEventListener("DOMContentLoaded", () => {
-    const inputExcel = document.getElementById("inputExcelMasivo");
-    const containerProgreso = document.getElementById("containerProgresoMasivo");
-    const textoProgreso = document.getElementById("textoProgreso");
-    const barraProgresoAnimada = document.getElementById("barraProgresoAnimada");
-    const porcentajeProgreso = document.getElementById("porcentajeProgreso");
-
-    if (inputExcel) {
-        inputExcel.addEventListener("change", async (e) => {
-            const archivo = e.target.files[0];
-            if (!archivo) return;
-
-            const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
-            
-            if (!confirmar) {
-                inputExcel.value = "";
-                return;
-            }
-
-            if (containerProgreso) containerProgreso.style.display = "block";
-            if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
-            
-            let porcentajeActual = 0;
-            if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
-            if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
-
-            const intervaloProgreso = setInterval(() => {
-                if (porcentajeActual < 90) {
-                    porcentajeActual += Math.floor(Math.random() * 12) + 4;
-                    if (porcentajeActual > 90) porcentajeActual = 90;
-                    
-                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
-                    if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
-                }
-            }, 120);
-
-            const lector = new FileReader();
-            lector.onload = async function (evt) {
-                try {
-                    const datosBinarios = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(datosBinarios, { type: "array" });
-                    
-                    const nombreHoja = workbook.SheetNames[0];
-                    const hoja = workbook.Sheets[nombreHoja];
-                    const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
-                    
-                    if (filasExcel.length === 0) {
-                        clearInterval(intervaloProgreso);
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        alert("El archivo Excel está vacío.");
-                        inputExcel.value = "";
-                        return;
-                    }
-
-                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
-                    const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-
-                    const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
-                    const idxObs = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n === "OBSERVACION" || n === "OBSERVACIONES";
-                    });
-
-                    const idxFechaProg = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
-                    });
-
-                    const idxEstadoProg = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n.includes("ESTADO") && n.includes("PROGRAMACION");
-                    });
-
-                    if (idxOT === -1) {
-                        clearInterval(intervaloProgreso);
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        alert("El Excel debe contener obligatoriamente la columna 'OT'.");
-                        inputExcel.value = "";
-                        return;
-                    }
-
-                    const formatearFechaExcelAInput = (valorCrudo) => {
-                        if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
-
-                        if (valorCrudo instanceof Date) {
-                            const y = valorCrudo.getFullYear();
-                            const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
-                            const d = String(valorCrudo.getDate()).padStart(2, "0");
-                            return `${y}-${m}-${d}`;
-                        }
-
-                        if (typeof valorCrudo === "number") {
-                            const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
-                            if (fechaObj) {
-                                const y = fechaObj.y;
-                                const m = String(fechaObj.m).padStart(2, "0");
-                                const d = String(fechaObj.d).padStart(2, "0");
-                                return `${y}-${m}-${d}`;
-                            }
-                        }
-
-                        const texto = String(valorCrudo).trim();
-                        if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
-
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
-
-                        const partes = texto.split(/[\/\-]/);
-                        if (partes.length === 3) {
-                            if (partes[2].length === 4) {
-                                const d = partes[0].padStart(2, "0");
-                                const m = partes[1].padStart(2, "0");
-                                const y = partes[2];
-                                return `${y}-${m}-${d}`;
-                            }
-                            if (partes[0].length === 4) {
-                                const y = partes[0];
-                                const m = partes[1].padStart(2, "0");
-                                const d = partes[2].padStart(2, "0");
-                                return `${y}-${m}-${d}`;
-                            }
-                        }
-
-                        return "";
-                    };
-
-                    let actualizados = 0;
-
-                    for (let i = 1; i < filasExcel.length; i++) {
-                        const fila = filasExcel[i];
-                        const otVal = String(fila[idxOT] || "").trim();
-
-                        if (otVal) {
-                            const regD1Actual = window.registrosD1[otVal] || {};
-                            const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
-                            
-                            let fechaVal = "";
-                            if (idxFechaProg !== -1 && fila[idxFechaProg] !== undefined && fila[idxFechaProg] !== null) {
-                                fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
-                            }
-
-                            const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
-                            if (!esFechaValida) {
-                                fechaVal = "";
-                            }
-
-                            let estadoProgVal = regD1Actual.estadoProgramacion || "";
-
-                            if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
-                                estadoProgVal = String(fila[idxEstadoProg]).trim();
-                            } else {
-                                if (esFechaValida) {
-                                    estadoProgVal = "Programada";
-                                } else {
-                                    if (estadoProgVal === "Programada") {
-                                        estadoProgVal = "";
-                                    }
-                                }
-                            }
-
-                            const payload = {
-                                ot: otVal,
-                                estadoProgramacion: estadoProgVal,
-                                fechaProgramacion: fechaVal,
-                                observacion: obsVal,
-                                estadoGestion: regD1Actual.estadoGestion || "",
-                                tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
-                                acompanamiento: regD1Actual.acompanamiento || ""
-                            };
-
-                            try {
-                                const resp = await fetch(API_URL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(payload)
-                                });
-                                const resJson = await resp.json();
-                                if (resJson.ok) {
-                                    window.registrosD1[otVal] = { ...regD1Actual, ...payload };
-                                    actualizados++;
-                                }
-                            } catch (err) {
-                                console.error(`Error al actualizar OT ${otVal}:`, err);
-                            }
-                        }
-                    }
-
-                    clearInterval(intervaloProgreso);
-                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
-                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
-
-                    setTimeout(() => {
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        inputExcel.value = "";
-                        alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
-                        aplicarFiltros();
-                    }, 300);
-
-                } catch (error) {
-                    console.error("Error leyendo el Excel:", error);
-                    clearInterval(intervaloProgreso);
-                    if (containerProgreso) containerProgreso.style.display = "none";
-                    alert("Ocurrió un error al procesar el archivo Excel.");
-                    inputExcel.value = "";
-                }
-            };
-            lector.readAsArrayBuffer(archivo);
-        });
-    }
-});
+        console.
