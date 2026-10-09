@@ -19,12 +19,9 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false;
 
-let ordenActualColumna = null;
-let ordenDireccionAsc = true;
-let filtrosColumnasExcel = {};
-
-const styleExcelHeader = document.createElement('style');
-styleExcelHeader.innerHTML = `
+// Estilos para el botón de agrupar/desagrupar columnas
+const styleGrupoExcel = document.createElement('style');
+styleGrupoExcel.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
@@ -48,76 +45,8 @@ styleExcelHeader.innerHTML = `
     .btn-excel-grupo:hover {
         background: #2c5282;
     }
-    .planeacion-table th {
-        position: relative;
-        user-select: none;
-    }
-    .th-sort-icon {
-        font-size: 0.65rem;
-        margin-left: 5px;
-        color: #a0aec0;
-        cursor: pointer;
-    }
-    .th-sort-icon:hover {
-        color: #2b6cb0;
-    }
-    .th-excel-dropdown {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background: #ffffff;
-        border: 1px solid #a0aec0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border-radius: 4px;
-        z-index: 1000;
-        min-width: 200px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 8px;
-        text-align: left;
-    }
-    .th-excel-dropdown.show {
-        display: block;
-    }
-    .excel-menu-section {
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 6px;
-        margin-bottom: 6px;
-    }
-    .excel-menu-item {
-        font-size: 0.8rem;
-        color: #2d3748;
-        cursor: pointer;
-        padding: 4px 6px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .excel-menu-item:hover {
-        background: #edf2f7;
-    }
-    .excel-checkbox-list {
-        max-height: 140px;
-        overflow-y: auto;
-        font-size: 0.8rem;
-        border: 1px solid #e2e8f0;
-        padding: 4px;
-        margin-top: 4px;
-    }
-    .excel-dropdown-btn {
-        background: #2b6cb0;
-        color: white;
-        border: none;
-        padding: 4px 8px;
-        font-size: 0.75rem;
-        border-radius: 3px;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 6px;
-    }
 `;
-document.head.appendChild(styleExcelHeader);
+document.head.appendChild(styleGrupoExcel);
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -217,105 +146,7 @@ function inicializarBotonAgruparColumnas() {
         btn.textContent = grupoColumnasColapsado ? "+" : "-";
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
-
-    ths.forEach((th, idx) => {
-        if (!th.querySelector(".th-sort-icon")) {
-            const icon = document.createElement("span");
-            icon.className = "th-sort-icon";
-            icon.innerHTML = " ▼";
-            th.appendChild(icon);
-        }
-
-        if (!th.querySelector(".th-excel-dropdown")) {
-            const dropdown = document.createElement("div");
-            dropdown.className = "th-excel-dropdown";
-            th.appendChild(dropdown);
-        }
-    });
 }
-
-function actualizarMenusExcelCabeceras() {
-    const ths = document.querySelectorAll(".planeacion-table th");
-    let nombreCampoMap = [
-        "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
-        "IDs afectados", "Días OT", "Rango de afectación", "Tipo de prioridad", 
-        "Stoppers Dominion", "estadoProgramacion", "fechaProgramacion", 
-        "observacion", "estadoGestion", "tecnicoAsignado", "acompanamiento", 
-        "Indicador backlog", "Stopper P3", "Tipo facturación", 
-        "Fecha vencimiento FM", "Alerta vencimiento FM"
-    ];
-
-    ths.forEach((th, idx) => {
-        const campo = nombreCampoMap[idx];
-        const dropdown = th.querySelector(".th-excel-dropdown");
-        if (!dropdown || !campo) return;
-
-        let valoresUnicos = new Set();
-        datosGlobal.forEach(fila => {
-            let val = "";
-            if (["estadoProgramacion", "fechaProgramacion", "observacion", "estadoGestion"].includes(campo)) {
-                const reg = (window.registrosD1 || {})[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {};
-                val = String(reg[campo] || "").trim();
-            } else {
-                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === campo);
-                val = colIdx !== -1 ? String(fila[colIdx] || "").trim() : "";
-            }
-            if (val) valoresUnicos.add(val);
-        });
-
-        const listaValores = Array.from(valoresUnicos).sort();
-        const ocultasSeleccionadas = filtrosColumnasExcel[campo] || [];
-
-        dropdown.innerHTML = `
-            <div class="excel-menu-section">
-                <div class="excel-menu-item" onclick="ejecutarExcelSort(event, '${campo}', true)">⬆ Ordenar de A a Z</div>
-                <div class="excel-menu-item" onclick="ejecutarExcelSort(event, '${campo}', false)">⬇ Ordenar de Z a A</div>
-            </div>
-            <div style="font-size: 0.75rem; font-weight: bold; color: #718096; margin-bottom: 2px;">Filtrar por valores:</div>
-            <div class="excel-checkbox-list">
-                <label class="excel-menu-item" style="font-weight: bold;">
-                    <input type="checkbox" class="excel-chk-all" data-campo="${campo}" ${ocultasSeleccionadas.length === 0 ? "checked" : ""}> (Seleccionar todo)
-                </label>
-                ${listaValores.map(v => `
-                    <label class="excel-menu-item">
-                        <input type="checkbox" class="excel-chk-val" data-campo="${campo}" value="${v}" ${!ocultasSeleccionadas.includes(v) ? "checked" : ""}> ${v}
-                    </label>
-                `).join("")}
-            </div>
-            <button type="button" class="excel-dropdown-btn" onclick="aplicarFiltrosExcelColumna(event, '${campo}')">Aplicar filtro</button>
-        `;
-    });
-}
-
-window.ejecutarExcelSort = function(event, campo, asc) {
-    event.stopPropagation();
-    ordenActualColumna = campo;
-    ordenDireccionAsc = asc;
-    document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
-    aplicarFiltros();
-};
-
-window.aplicarFiltrosExcelColumna = function(event, campo) {
-    event.stopPropagation();
-    const dropdown = event.target.closest(".th-excel-dropdown");
-    const chks = dropdown.querySelectorAll(".excel-chk-val");
-    let excluidos = [];
-
-    chks.forEach(chk => {
-        if (!chk.checked) {
-            excluidos.push(chk.value);
-        }
-    });
-
-    if (excluidos.length > 0) {
-        filtrosColumnasExcel[campo] = excluidos;
-    } else {
-        delete filtrosColumnasExcel[campo];
-    }
-
-    dropdown.classList.remove("show");
-    aplicarFiltros();
-};
 
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
@@ -470,7 +301,6 @@ function pintarTabla(datos){
     }).join("");
 
     inicializarBotonAgruparColumnas();
-    actualizarMenusExcelCabeceras();
     aplicarEstadoGrupoColumnas();
 }
 
@@ -850,8 +680,6 @@ function actualizarOpcionesFiltros(datos) {
 }
 
 function aplicarFiltros(){
-    actualizarOpcionesFiltros(datosGlobal);
-
     const filtroBusquedaEl = document.getElementById("filtroBusqueda");
     const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
 
@@ -895,22 +723,6 @@ function aplicarFiltros(){
         const cumpleBacklog = backlogsFiltro.length === 0 || backlogsFiltro.includes(fila[idxBacklog]);
         const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
 
-        let pasaFiltrosExcel = true;
-        for (const [campo, excluidos] of Object.entries(filtrosColumnasExcel)) {
-            let val = "";
-            if (["estadoProgramacion", "fechaProgramacion", "observacion", "estadoGestion"].includes(campo)) {
-                const reg = (window.registrosD1 || {})[otVal] || {};
-                val = String(reg[campo] || "").trim();
-            } else {
-                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === campo);
-                val = colIdx !== -1 ? String(fila[colIdx] || "").trim() : "";
-            }
-            if (excluidos.includes(val)) {
-                pasaFiltrosExcel = false;
-                break;
-            }
-        }
-
         let cumpleKpi = true;
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
@@ -919,33 +731,8 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
 
-        return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi && pasaFiltrosExcel;
+        return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
     });
-
-    if (ordenActualColumna !== null) {
-        resultado.sort((a, b) => {
-            let valA = "";
-            let valB = "";
-
-            if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "observacion" || ordenActualColumna === "estadoGestion") {
-                const regA = (window.registrosD1 || {})[a[idxOT]] || {};
-                const regB = (window.registrosD1 || {})[b[idxOT]] || {};
-                valA = String(regA[ordenActualColumna] || "").trim();
-                valB = String(regB[ordenActualColumna] || "").trim();
-            } else {
-                valA = String(a[ordenActualColumna] || "").trim();
-                valB = String(b[ordenActualColumna] || "").trim();
-            }
-
-            const numA = parseFloat(valA);
-            const numB = parseFloat(valB);
-            if (!isNaN(numA) && !isNaN(numB)) {
-                return ordenDireccionAsc ? numA - numB : numB - numA;
-            }
-
-            return ordenDireccionAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        });
-    }
 
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
@@ -961,9 +748,6 @@ function resetearTodosLosFiltros() {
     backlogsSeleccionados = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
-    ordenActualColumna = null;
-    ordenDireccionAsc = true;
-    filtrosColumnasExcel = {};
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
         c.classList.remove("kpi-seleccionado");
@@ -1002,12 +786,6 @@ document.addEventListener("input", (e) => {
 
 document.addEventListener("change", (e) => {
     const target = e.target;
-
-    if (target.classList.contains("excel-chk-all")) {
-        const dropdown = target.closest(".th-excel-dropdown");
-        dropdown.querySelectorAll(".excel-chk-val").forEach(chk => chk.checked = target.checked);
-        return;
-    }
 
     if (target.classList.contains("chkDepartamento")) {
         departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
@@ -1127,29 +905,6 @@ document.addEventListener("change", (e) => {
 
 document.addEventListener("click", (e) => {
     const target = e.target;
-
-    if (target.closest(".th-excel-dropdown")) {
-        return;
-    }
-
-    const sortIcon = target.closest(".th-sort-icon");
-    const thClicked = target.closest(".planeacion-table th");
-    if (sortIcon || (thClicked && !target.closest(".btn-excel-grupo"))) {
-        e.stopPropagation();
-        const thTarget = sortIcon ? sortIcon.closest("th") : thClicked;
-        const dropdown = thTarget.querySelector(".th-excel-dropdown");
-        
-        document.querySelectorAll(".th-excel-dropdown").forEach(m => {
-            if (m !== dropdown) m.classList.remove("show");
-        });
-
-        if (dropdown) {
-            dropdown.classList.toggle("show");
-        }
-        return;
-    } else {
-        document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
-    }
 
     const btnGrupo = target.closest("#btnToggleGrupoCols");
     if (btnGrupo) {
