@@ -1,7 +1,7 @@
 (function () {
     const URL_WORKER_GEMINI = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/gemini";
 
-    // 1. Inyectar los estilos CSS directamente para el widget de chat
+    // 1. Inyectar los estilos CSS del widget de chat
     const estilosChat = document.createElement('style');
     estilosChat.innerHTML = `
         .asistente-chat-widget {
@@ -118,7 +118,7 @@
     `;
     document.head.appendChild(estilosChat);
 
-    // 2. Crear los elementos HTML del chat flotante
+    // 2. Crear el HTML del widget de chat
     const contenedorWidget = document.createElement('div');
     contenedorWidget.className = 'asistente-chat-widget';
     contenedorWidget.innerHTML = `
@@ -131,17 +131,17 @@
                 <button type="button" class="asistente-cerrar" id="btnCerrarAsistente">&times;</button>
             </div>
             <div class="asistente-mensajes" id="mensajesAsistente">
-                <div class="asistente-msg ia">¡Hola! Soy tu asistente exclusivo para la Planeación Operativa. ¿En qué te puedo colaborar hoy?</div>
+                <div class="asistente-msg ia">¡Hola! Ya estoy configurado con acciones web. ¿Qué deseas hacer hoy?</div>
             </div>
             <div class="asistente-input-box">
-                <input type="text" id="inputPreguntaIA" placeholder="Escribe tu consulta...">
+                <input type="text" id="inputPreguntaIA" placeholder="Escribe tu comando o consulta...">
                 <button type="button" id="btnEnviarIA">Enviar</button>
             </div>
         </div>
     `;
     document.body.appendChild(contenedorWidget);
 
-    // 3. Lógica de interacción
+    // 3. Referencias del DOM
     const btnToggle = document.getElementById('btnToggleAsistente');
     const ventana = document.getElementById('ventanaAsistente');
     const btnCerrar = document.getElementById('btnCerrarAsistente');
@@ -151,26 +151,59 @@
 
     btnToggle.addEventListener('click', () => {
         ventana.classList.toggle('activo');
-        if (ventana.classList.contains('activo')) {
-            inputPregunta.focus();
-        }
+        if (ventana.classList.contains('activo')) inputPregunta.focus();
     });
 
-    btnCerrar.addEventListener('click', () => {
-        ventana.classList.remove('activo');
-    });
+    btnCerrar.addEventListener('click', () => ventana.classList.remove('activo'));
+
+    // --- MOTOR DE EJECUCIÓN DE ACCIONES (FUNCTION CALLING) ---
+    function ejecutarAccionEnInterfaz(nombreAccion, parametros) {
+        console.log("Ejecutando acción de IA:", nombreAccion, parametros);
+
+        switch (nombreAccion) {
+            case 'filtrarTecnico':
+                // Aquí buscas tu input o selector de técnico en tu web y le asignas el valor
+                const inputFiltroTecnico = document.querySelector('#filtroTecnico') || document.querySelector('input[name="tecnico"]');
+                if (inputFiltroTecnico) {
+                    inputFiltroTecnico.value = parametros.valor || '';
+                    inputFiltroTecnico.dispatchEvent(new Event('input', { bubbles: true }));
+                    inputFiltroTecnico.dispatchEvent(new Event('change', { bubbles: true }));
+                    agregarMensaje(`✅ Filtrado aplicado por el técnico: ${parametros.valor}`, 'ia');
+                } else {
+                    agregarMensaje(`⚠️ No encontré el campo de filtro de técnico en la pantalla.`, 'ia');
+                }
+                break;
+
+            case 'buscarOT':
+                const inputBusqueda = document.querySelector('#buscadorOT') || document.querySelector('input[type="search"]');
+                if (inputBusqueda) {
+                    inputBusqueda.value = parametros.valor || '';
+                    inputBusqueda.dispatchEvent(new Event('input', { bubbles: true }));
+                    agregarMensaje(`✅ Buscando la OT: ${parametros.valor}`, 'ia');
+                } else {
+                    agregarMensaje(`⚠️ No encontré la barra de búsqueda en la pantalla.`, 'ia');
+                }
+                break;
+
+            case 'limpiarFiltros':
+                location.reload(); // Ejemplo básico para resetear vista
+                break;
+
+            default:
+                agregarMensaje(`⚙️ Acción recibida: ${nombreAccion} (${JSON.stringify(parametros)})`, 'ia');
+                break;
+        }
+    }
 
     async function enviarMensaje() {
         const texto = inputPregunta.value.trim();
         if (!texto) return;
 
-        // Mostrar mensaje del usuario en el chat
         agregarMensaje(texto, 'usuario');
         inputPregunta.value = '';
         contenedorMensajes.scrollTop = contenedorMensajes.scrollHeight;
 
-        // Mensaje temporal de "escribiendo..."
-        const idCarga = agregarMensaje('Analizando...', 'ia');
+        const idCarga = agregarMensaje('Pensando y ejecutando...', 'ia');
 
         try {
             const respuesta = await fetch(URL_WORKER_GEMINI, {
@@ -180,14 +213,18 @@
             });
 
             const resultado = await respuesta.json();
-            
-            // Remover mensaje de carga
             idCarga.remove();
 
             if (resultado.ok) {
-                agregarMensaje(resultado.response, 'ia');
+                if (resultado.tipoRespuesta === 'accion') {
+                    // ¡Aquí ocurre la magia de la Opción 2!
+                    agregarMensaje(resultado.response, 'ia');
+                    ejecutarAccionEnInterfaz(resultado.accion, resultado.parametros);
+                } else {
+                    agregarMensaje(resultado.response, 'ia');
+                }
             } else {
-                agregarMensaje('⚠️ Ocurrió un error al procesar tu solicitud.', 'ia');
+                agregarMensaje('⚠️ Error: ' + (resultado.error || 'Desconocido'), 'ia');
             }
         } catch (error) {
             idCarga.remove();
@@ -207,9 +244,7 @@
 
     btnEnviar.addEventListener('click', enviarMensaje);
     inputPregunta.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            enviarMensaje();
-        }
+        if (e.key === 'Enter') enviarMensaje();
     });
 
 })();
