@@ -893,7 +893,8 @@ function aplicarFiltros(){
 
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
-    actualizarKPIs(datosGlobal);
+    // CORRECCIÓN: Ahora actualiza KPIs y Total IDs Afectados basándose en los datos filtrados en tiempo real
+    actualizarKPIs(resultado);
     actualizarOpcionesFiltros(datosGlobal);
 }
 
@@ -1023,7 +1024,7 @@ document.addEventListener("change", (e) => {
 
     if (target.classList.contains("chkDiasOT")) {
         diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
-        aplicarFiltros();
+        aplicarFilros();
         return;
     }
     if (target.id === "chkTodosDiasOT") {
@@ -1284,7 +1285,7 @@ async function guardarOT(fila, observacionForzada = null){
                 updatedAt: new Date().toISOString()
             };
 
-            actualizarKPIs(datosGlobal);
+            actualizarKPIs(datosFiltradosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
@@ -1388,7 +1389,6 @@ document.addEventListener("click", (e) => {
     }
 });
 
-// EXPORTACIÓN ACTUALIZADA: Incluye absolutamente todas las columnas y respeta el orden idéntico de la tabla web
 window.exportarPlaneacion = function() {
     try {
         if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
@@ -1522,7 +1522,7 @@ window.exportarPlaneacion = function() {
 
         if (ws && ws['!ref']) {
             const rango = XLSX.utils.decode_range(ws['!ref']);
-            const colFechaIdx = 13; // Índice de la columna Fecha programación
+            const colFechaIdx = 13;
 
             for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
                 const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
