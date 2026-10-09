@@ -234,6 +234,7 @@ function pintarTabla(datos){
     const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxRangoAfectacion = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxStoppersDominion = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxStopperP3 = encabezados.findIndex(h => h.trim() === "Stopper P3");
     const idxTipoFacturacion = encabezados.findIndex(h => h.trim() === "Tipo facturación");
     const idxFechaFM = encabezados.findIndex(h => h.trim() === "Fecha vencimiento FM");
@@ -582,7 +583,7 @@ function actualizarOpcionesFiltros(datos) {
     const txtStop = document.getElementById("textoStoppers");
     if (txtStop) txtStop.textContent = stoppersSeleccionados.length === 0 ? "Stoppers" : `Stoppers (${stoppersSeleccionados.length})`;
 
-    const txtDiasOT = document.getElementById("textoDiasOT") || document.getElementById("textoBacklog");
+    const txtDiasOT = document.getElementById("textoDiasOT");
     if (txtDiasOT) txtDiasOT.textContent = diasOtSeleccionados.length === 0 ? "Días OT" : `Días OT (${diasOtSeleccionados.length})`;
 
     const txtRang = document.getElementById("textoRango");
@@ -647,23 +648,6 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const diasOtDisp = [...new Set(datosParaDiasOT.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
-    const diasEl = document.getElementById("listaDiasOT") || document.getElementById("listaBacklog");
-    if(diasEl) {
-        diasEl.innerHTML = `
-            <div class="filtro-sort-container">
-                <div class="filtro-sort-title">⇅ Ordenar</div>
-                <div class="filtro-sort-header">
-                    <span onclick="ordenarDesdeFiltro('Días OT', true)">Menor a Mayor</span>
-                    <span onclick="ordenarDesdeFiltro('Días OT', false)">Mayor a Menor</span>
-                </div>
-            </div>
-            <input type="text" id="buscarDiasOT" class="buscar-multifiltro" placeholder="Buscar...">
-            <div class="multi-filtro-reset" id="btnLimpiarDiasOT">✖ Borrar filtro</div>
-            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDiasOT"> (Seleccionar todo)</label>
-        ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
-    }
-
     const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
     const rEl = document.getElementById("listaRango");
     if(rEl) {
@@ -679,6 +663,23 @@ function actualizarOpcionesFiltros(datos) {
             <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const diasOtDisp = [...new Set(datosParaDiasOT.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasEl = document.getElementById("listaDiasOT");
+    if(diasEl) {
+        diasEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Días OT', true)">Menor a Mayor</span>
+                    <span onclick="ordenarDesdeFiltro('Días OT', false)">Mayor a Menor</span>
+                </div>
+            </div>
+            <input type="text" id="buscarDiasOT" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarDiasOT">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDiasOT"> (Seleccionar todo)</label>
+        ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
