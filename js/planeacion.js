@@ -22,7 +22,6 @@ let grupoColumnasColapsado = false;
 let ordenActualColumna = null;
 let ordenDireccionAsc = true;
 
-// OTs modificadas recientemente que se mantendrán visibles temporalmente
 let otsModificadasRecientemente = new Set();
 
 const styleGrupoExcel = document.createElement('style');
@@ -59,6 +58,11 @@ styleGrupoExcel.innerHTML = `
         font-weight: bold;
         display: inline-block;
         text-align: center;
+    }
+    .badge-existente {
+        color: #a0aec0;
+        font-size: 0.85rem;
+        font-weight: bold;
     }
     .filtro-sort-container {
         padding: 4px 6px 6px 6px;
@@ -177,7 +181,7 @@ const TECNICOS = [
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
-        const thEstadoProg = ths[12]; 
+        const thEstadoProg = ths[13]; 
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
@@ -194,7 +198,7 @@ function inicializarBotonAgruparColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [7, 8, 9, 10, 11];
+    const indicesGrupo = [8, 9, 10, 11, 12]; // Ajustado al desplazamiento de la columna Nuevo al lado de Afectación
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -260,13 +264,12 @@ function pintarTabla(datos){
         const otVal = String(fila[idxOT] || "").trim();
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
-        // Verificamos directamente contra D1: Si la OT no tiene ningún registro guardado en la base de datos, es un caso nuevo
         const esNuevo = !window.registrosD1[otVal] || (
             !window.registrosD1[otVal].estadoGestion && 
             !window.registrosD1[otVal].estadoProgramacion && 
             !window.registrosD1[otVal].observacion
         );
-        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">🟢 Nuevo</span>` : "";
+        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">🟢 Nuevo</span>` : `<span class="badge-existente">-</span>`;
 
         let fechaTipo = "text";
         let fechaDisabled = "disabled";
@@ -286,13 +289,13 @@ function pintarTabla(datos){
 
         return `
         <tr>
-            <td style="text-align: center;">${htmlBadgeNuevo}</td>
             <td>${fila[idxID] || ""}</td>
             <td>${fila[idxDepto] || ""}</td>
             <td>${fila[idxMunicipio] || ""}</td>
             <td>${fila[idxIM] || ""}</td>
             <td>${fila[idxOT] || ""}</td>
             <td>${fila[idxAfectacion] || ""}</td>
+            <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
             <td class="${ocultarClase}">${fila[idxIdsAfectados] || ""}</td>
             <td class="${ocultarClase}">${fila[idxDias] || ""}</td>
             <td class="${ocultarClase}">${fila[idxRangoAfectacion] || ""}</td>
@@ -1015,7 +1018,7 @@ document.addEventListener("change", (e) => {
 
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
-        const otMod = filaTabla.children[5].textContent.trim();
+        const otMod = filaTabla.children[4].textContent.trim(); // OT está en la columna 4 (índice 4)
         if (otMod) otsModificadasRecientemente.add(otMod);
         guardarOT(filaTabla);
     }
@@ -1170,13 +1173,13 @@ document.addEventListener("blur", async e => {
     if(!e.target.classList.contains("fecha-input")) return;
     const fila = e.target.closest("tr");
     if(!fila) return;
-    const otMod = fila.children[5].textContent.trim();
+    const otMod = fila.children[4].textContent.trim();
     if (otMod) otsModificadasRecientemente.add(otMod);
     await guardarOT(fila);
 }, true);
 
 async function guardarOT(fila, observacionForzada = null){
-    const ot = fila.children[5].textContent.trim();
+    const ot = fila.children[4].textContent.trim();
     
     const inputFecha = fila.querySelector(".fecha-input");
     let fechaVal = inputFecha?.value || "";
@@ -1530,7 +1533,7 @@ document.addEventListener("click", (e) => {
     if (e.target.id === "btnGuardarObs") {
         const txtArea = document.getElementById("textareaModalObs");
         if (filaActualModal && txtArea) {
-            const ot = filaActualModal.children[5].textContent.trim();
+            const ot = filaActualModal.children[4].textContent.trim();
             const textoConSaltos = txtArea.value;
 
             window.registrosD1[ot] = window.registrosD1[ot] || {};
