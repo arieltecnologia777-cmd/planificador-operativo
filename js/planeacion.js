@@ -52,7 +52,7 @@ styleGrupoExcel.innerHTML = `
     .badge-nuevo {
         background-color: #48bb78;
         color: white;
-        padding: 2px 6px;
+        padding: 2px 8px;
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: bold;
@@ -60,9 +60,14 @@ styleGrupoExcel.innerHTML = `
         text-align: center;
     }
     .badge-existente {
-        color: #a0aec0;
-        font-size: 0.85rem;
-        font-weight: bold;
+        background-color: #e2e8f0;
+        color: #4a5568;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: inline-block;
+        text-align: center;
     }
     .filtro-sort-container {
         padding: 4px 6px 6px 6px;
@@ -180,8 +185,8 @@ const TECNICOS = [
 
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
-    if (ths.length > 12) {
-        const thEstadoProg = ths[13]; 
+    if (ths.length > 11) {
+        const thEstadoProg = ths[12]; // Columna Estado programación (índice 12)
         let btn = thEstadoProg.querySelector(".btn-excel-grupo");
         if (!btn) {
             btn = document.createElement("button");
@@ -198,7 +203,7 @@ function inicializarBotonAgruparColumnas() {
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     const filas = document.querySelectorAll(".planeacion-table tbody tr");
-    const indicesGrupo = [8, 9, 10, 11, 12]; // Ajustado al desplazamiento de la columna Nuevo al lado de Afectación
+    const indicesGrupo = [7, 8, 9, 10, 11]; // Columnas marcadas en rojo: IDs afectados, Días OT, Rango, Prioridad, Stoppers
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
@@ -269,7 +274,7 @@ function pintarTabla(datos){
             !window.registrosD1[otVal].estadoProgramacion && 
             !window.registrosD1[otVal].observacion
         );
-        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">🟢 Nuevo</span>` : `<span class="badge-existente">-</span>`;
+        const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">Sí</span>` : `<span class="badge-existente">No</span>`;
 
         let fechaTipo = "text";
         let fechaDisabled = "disabled";
@@ -1018,7 +1023,7 @@ document.addEventListener("change", (e) => {
 
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
-        const otMod = filaTabla.children[4].textContent.trim(); // OT está en la columna 4 (índice 4)
+        const otMod = filaTabla.children[4].textContent.trim();
         if (otMod) otsModificadasRecientemente.add(otMod);
         guardarOT(filaTabla);
     }
