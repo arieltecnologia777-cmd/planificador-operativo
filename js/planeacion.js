@@ -268,8 +268,8 @@ function actualizarMenusExcelCabeceras() {
 
         dropdown.innerHTML = `
             <div class="excel-menu-section">
-                <div class="excel-menu-item" onclick="ejecutarExcelSort('${campo}', true)">⬆ Ordenar de A a Z</div>
-                <div class="excel-menu-item" onclick="ejecutarExcelSort('${campo}', false)">⬇ Ordenar de Z a A</div>
+                <div class="excel-menu-item" onclick="ejecutarExcelSort(event, '${campo}', true)">⬆ Ordenar de A a Z</div>
+                <div class="excel-menu-item" onclick="ejecutarExcelSort(event, '${campo}', false)">⬇ Ordenar de Z a A</div>
             </div>
             <div style="font-size: 0.75rem; font-weight: bold; color: #718096; margin-bottom: 2px;">Filtrar por valores:</div>
             <div class="excel-checkbox-list">
@@ -287,7 +287,8 @@ function actualizarMenusExcelCabeceras() {
     });
 }
 
-window.ejecutarExcelSort = function(campo, asc) {
+window.ejecutarExcelSort = function(event, campo, asc) {
+    event.stopPropagation();
     ordenActualColumna = campo;
     ordenDireccionAsc = asc;
     document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
@@ -1127,7 +1128,6 @@ document.addEventListener("change", (e) => {
 document.addEventListener("click", (e) => {
     const target = e.target;
 
-    // Permitir clics dentro del menú Excel flotante sin cerrarlo de golpe
     if (target.closest(".th-excel-dropdown")) {
         return;
     }
