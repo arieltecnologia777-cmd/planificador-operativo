@@ -19,12 +19,14 @@ let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false;
 
+// Estado de ordenamiento y filtros por columna estilo Excel
 let ordenActualColumna = null;
 let ordenDireccionAsc = true;
-let columnaMenuActiva = null;
+let filtrosColumnasExcel = {}; // Guarda los valores desmarcados por columna
 
-const styleGrupoExcel = document.createElement('style');
-styleGrupoExcel.innerHTML = `
+// Estilos para el menú tipo Excel en las cabeceras
+const styleExcelHeader = document.createElement('style');
+styleExcelHeader.innerHTML = `
     .col-grupo-oculta {
         display: none !important;
     }
@@ -52,47 +54,63 @@ styleGrupoExcel.innerHTML = `
         position: relative;
         user-select: none;
     }
-    .th-sort-icon {
-        font-size: 0.65rem;
-        margin-left: 5px;
-        color: #a0aec0;
-        cursor: pointer;
-    }
-    .th-sort-icon:hover {
-        color: #2b6cb0;
-    }
-    .excel-sort-menu {
-        display: none;
+    .th-excel-dropdown {
         position: absolute;
         top: 100%;
-        right: 0;
+        left: 0;
         background: #ffffff;
-        border: 1px solid #cbd5e0;
+        border: 1px solid #a0aec0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         border-radius: 4px;
         z-index: 1000;
-        min-width: 170px;
-        padding: 4px 0;
+        min-width: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 8px;
+        display: none;
         text-align: left;
     }
-    .excel-sort-menu.show {
+    .th-excel-dropdown.show {
         display: block;
     }
-    .excel-sort-item {
-        padding: 8px 12px;
-        font-size: 0.85rem;
+    .excel-menu-section {
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+    }
+    .excel-menu-item {
+        font-size: 0.8rem;
         color: #2d3748;
         cursor: pointer;
+        padding: 4px 6px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
-    .excel-sort-item:hover {
+    .excel-menu-item:hover {
         background: #edf2f7;
-        color: #1a202c;
+    }
+    .excel-checkbox-list {
+        max-height: 140px;
+        overflow-y: auto;
+        font-size: 0.8rem;
+        border: 1px solid #e2e8f0;
+        padding: 4px;
+        margin-top: 4px;
+    }
+    .excel-dropdown-btn {
+        background: #2b6cb0;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 6px;
     }
 `;
-document.head.appendChild(styleGrupoExcel);
+document.head.appendChild(styleExcelHeader);
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -193,26 +211,98 @@ function inicializarBotonAgruparColumnas() {
         btn.title = grupoColumnasColapsado ? "Expandir columnas agrupadas" : "Ocultar/Agrupar columnas";
     }
 
+    // Construir menús de Excel en cada cabecera
     ths.forEach((th, idx) => {
-        if (!th.querySelector(".th-sort-icon")) {
-            const icon = document.createElement("span");
-            icon.className = "th-sort-icon";
-            icon.innerHTML = " ▼";
-            th.appendChild(icon);
-        }
-
-        if (!th.querySelector(".excel-sort-menu")) {
-            const menu = document.createElement("div");
-            menu.className = "excel-sort-menu";
-            menu.innerHTML = `
-                <div class="excel-sort-item" data-sort="asc">⬆ Ordenar A a Z / Menor a Mayor</div>
-                <div class="excel-sort-item" data-sort="desc">⬇ Ordenar Z a A / Mayor a Menor</div>
-                <div class="excel-sort-item" data-sort="clear">✖ Quitar ordenamiento</div>
-            `;
-            th.appendChild(menu);
+        let dropdown = th.querySelector(".th-excel-dropdown");
+        if (!dropdown) {
+            dropdown = document.createElement("div");
+            dropdown.className = "th-excel-dropdown";
+            th.appendChild(dropdown);
         }
     });
 }
+
+function actualizarMenusExcelCabeceras() {
+    const ths = document.querySelectorAll(".planeacion-table th");
+    let nombreCampoMap = [
+        "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
+        "IDs afectados", "Días OT", "Rango de afectación", "Tipo de prioridad", 
+        "Stoppers Dominion", "estadoProgramacion", "fechaProgramacion", 
+        "observacion", "estadoGestion", "tecnicoAsignado", "acompanamiento", 
+        "Indicador backlog", "Stopper P3", "Tipo facturación", 
+        "Fecha vencimiento FM", "Alerta vencimiento FM"
+    ];
+
+    ths.forEach((th, idx) => {
+        const campo = nombreCampoMap[idx];
+        const dropdown = th.querySelector(".th-excel-dropdown");
+        if (!dropdown || !campo) return;
+
+        // Obtener valores únicos actuales para esta columna
+        let valoresUnicos = new Set();
+        datosGlobal.forEach(fila => {
+            let val = "";
+            if (["estadoProgramacion", "fechaProgramacion", "observacion", "estadoGestion"].includes(campo)) {
+                const reg = (window.registrosD1 || {})[fila[encabezadosGlobal.findIndex(h => h.trim() === "OT")]] || {};
+                val = String(reg[campo] || "").trim();
+            } else {
+                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === campo);
+                val = colIdx !== -1 ? String(fila[colIdx] || "").trim() : "";
+            }
+            if (val) valoresUnicos.add(val);
+        });
+
+        const listaValores = Array.from(valoresUnicos).sort();
+        const ocultasSeleccionadas = filtrosColumnasExcel[campo] || [];
+
+        dropdown.innerHTML = `
+            <div class="excel-menu-section">
+                <div class="excel-menu-item" onclick="ejecutarExcelSort('${campo}', true)">⬆ Ordenar de A a Z</div>
+                <div class="excel-menu-item" onclick="ejecutarExcelSort('${campo}', false)">⬇ Ordenar de Z a A</div>
+            </div>
+            <div style="font-size: 0.75rem; font-weight: bold; color: #718096; margin-bottom: 2px;">Filtrar por valores:</div>
+            <div class="excel-checkbox-list">
+                <label class="excel-menu-item" style="font-weight: bold;">
+                    <input type="checkbox" class="excel-chk-all" data-campo="${campo}" ${ocultasSeleccionadas.length === 0 ? "checked" : ""}> (Seleccionar todo)
+                </label>
+                ${listaValores.map(v => `
+                    <label class="excel-menu-item">
+                        <input type="checkbox" class="excel-chk-val" data-campo="${campo}" value="${v}" ${!ocultasSeleccionadas.includes(v) ? "checked" : ""}> ${v}
+                    </label>
+                `).join("")}
+            </div>
+            <button type="button" class="excel-dropdown-btn" onclick="aplicarFiltrosExcelColumna('${campo}')">Aplicar filtro</button>
+        `;
+    });
+}
+
+window.ejecutarExcelSort = function(campo, asc) {
+    ordenActualColumna = campo;
+    ordenDireccionAsc = asc;
+    document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
+    aplicarFiltros();
+};
+
+window.aplicarFiltrosExcelColumna = function(campo) {
+    const dropdown = event.target.closest(".th-excel-dropdown");
+    const chks = dropdown.querySelectorAll(".excel-chk-val");
+    let excluidos = [];
+
+    chks.forEach(chk => {
+        if (!chk.checked) {
+            excluidos.push(chk.value);
+        }
+    });
+
+    if (excluidos.length > 0) {
+        filtrosColumnasExcel[campo] = excluidos;
+    } else {
+        delete filtrosColumnasExcel[campo];
+    }
+
+    document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
+    aplicarFiltros();
+};
 
 function aplicarEstadoGrupoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
@@ -367,6 +457,7 @@ function pintarTabla(datos){
     }).join("");
 
     inicializarBotonAgruparColumnas();
+    actualizarMenusExcelCabeceras();
     aplicarEstadoGrupoColumnas();
 }
 
@@ -791,6 +882,23 @@ function aplicarFiltros(){
         const cumpleBacklog = backlogsFiltro.length === 0 || backlogsFiltro.includes(fila[idxBacklog]);
         const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
 
+        // Filtros particulares de columnas estilo Excel
+        let pasaFiltrosExcel = true;
+        for (const [campo, excluidos] of Object.entries(filtrosColumnasExcel)) {
+            let val = "";
+            if (["estadoProgramacion", "fechaProgramacion", "observacion", "estadoGestion"].includes(campo)) {
+                const reg = (window.registrosD1 || {})[otVal] || {};
+                val = String(reg[campo] || "").trim();
+            } else {
+                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === campo);
+                val = colIdx !== -1 ? String(fila[colIdx] || "").trim() : "";
+            }
+            if (excluidos.includes(val)) {
+                pasaFiltrosExcel = false;
+                break;
+            }
+        }
+
         let cumpleKpi = true;
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
@@ -799,7 +907,7 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada" || regD1.estadoProgramacion === "Operativa");
 
-        return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleFechaProg && cumpleBacklog && cumpleEstGestion && cumpleKpi && pasaFiltrosExcel;
     });
 
     if (ordenActualColumna !== null) {
@@ -843,6 +951,7 @@ function resetearTodosLosFiltros() {
     kpiFiltroActivo = null;
     ordenActualColumna = null;
     ordenDireccionAsc = true;
+    filtrosColumnasExcel = {};
 
     document.querySelectorAll(".kpi-card, .card").forEach(c => {
         c.classList.remove("kpi-seleccionado");
@@ -881,6 +990,13 @@ document.addEventListener("input", (e) => {
 
 document.addEventListener("change", (e) => {
     const target = e.target;
+
+    // Manejar marcar/desmarcar "Seleccionar todo" dentro del menú Excel de la cabecera
+    if (target.classList.contains("excel-chk-all")) {
+        const dropdown = target.closest(".th-excel-dropdown");
+        dropdown.querySelectorAll(".excel-chk-val").forEach(chk => chk.checked = target.checked);
+        return;
+    }
 
     if (target.classList.contains("chkDepartamento")) {
         departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
@@ -1027,28 +1143,28 @@ document.addEventListener("click", (e) => {
             ordenDireccionAsc = (tipoOrden === "asc");
         }
 
-        document.querySelectorAll(".excel-sort-menu").forEach(m => m.classList.remove("show"));
+        document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
         aplicarFiltros();
         return;
     }
 
     const sortIcon = target.closest(".th-sort-icon");
     const thClicked = target.closest(".planeacion-table th");
-    if (sortIcon || (thClicked && !target.closest(".btn-excel-grupo") && !target.closest(".excel-sort-menu"))) {
+    if (sortIcon || (thClicked && !target.closest(".btn-excel-grupo") && !target.closest(".th-excel-dropdown"))) {
         e.stopPropagation();
         const thTarget = sortIcon ? sortIcon.closest("th") : thClicked;
-        const menu = thTarget.querySelector(".excel-sort-menu");
+        const dropdown = thTarget.querySelector(".th-excel-dropdown");
         
-        document.querySelectorAll(".excel-sort-menu").forEach(m => {
-            if (m !== menu) m.classList.remove("show");
+        document.querySelectorAll(".th-excel-dropdown").forEach(m => {
+            if (m !== dropdown) m.classList.remove("show");
         });
 
-        if (menu) {
-            menu.classList.toggle("show");
+        if (dropdown) {
+            dropdown.classList.toggle("show");
         }
         return;
     } else {
-        document.querySelectorAll(".excel-sort-menu").forEach(m => m.classList.remove("show"));
+        document.querySelectorAll(".th-excel-dropdown").forEach(m => m.classList.remove("show"));
     }
 
     const btnGrupo = target.closest("#btnToggleGrupoCols");
@@ -1172,7 +1288,6 @@ document.addEventListener("click", (e) => {
 
     const dropdowns = [
         { btn: "btnDepartamento", lista: "listaDepartamento" },
-        { btn: "btnPrioridad", lista: "listaPrioridad" },
         { btn: "btnAfectacion", lista: "listaAfectacion" },
         { btn: "btnStoppers", lista: "listaStoppers" },
         { btn: "btnRango", lista: "listaRango" },
