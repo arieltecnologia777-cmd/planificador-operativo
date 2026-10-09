@@ -256,14 +256,16 @@ function pintarTabla(datos){
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
-    let otsAyer = JSON.parse(localStorage.getItem("ots_ayer") || "[]");
-    let otsHoySet = new Set(datos.map(f => String(f[idxOT]).trim()));
-
     planeacionBody.innerHTML = datos.map(fila => {
         const otVal = String(fila[idxOT] || "").trim();
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
-        const esNuevo = otsAyer.length > 0 && !otsAyer.includes(otVal);
+        // Verificamos directamente contra D1: Si la OT no tiene ningún registro guardado en la base de datos, es un caso nuevo
+        const esNuevo = !window.registrosD1[otVal] || (
+            !window.registrosD1[otVal].estadoGestion && 
+            !window.registrosD1[otVal].estadoProgramacion && 
+            !window.registrosD1[otVal].observacion
+        );
         const htmlBadgeNuevo = esNuevo ? `<span class="badge-nuevo">🟢 Nuevo</span>` : "";
 
         let fechaTipo = "text";
@@ -357,8 +359,6 @@ function pintarTabla(datos){
             <td>${fila[idxAlertaFM] || ""}</td>
         </tr>`;
     }).join("");
-
-    localStorage.setItem("ots_ayer", JSON.stringify(Array.from(otsHoySet)));
 
     inicializarBotonAgruparColumnas();
     aplicarEstadoGrupoColumnas();
