@@ -13,7 +13,7 @@ let departamentosSeleccionados = [];
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
-let diasOtSeleccionados = []; // Reemplaza backlog
+let diasOtSeleccionados = [];
 let fechasProgSeleccionadas = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
@@ -234,7 +234,6 @@ function pintarTabla(datos){
     const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxRangoAfectacion = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxStoppersDominion = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
-    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxStopperP3 = encabezados.findIndex(h => h.trim() === "Stopper P3");
     const idxTipoFacturacion = encabezados.findIndex(h => h.trim() === "Tipo facturación");
     const idxFechaFM = encabezados.findIndex(h => h.trim() === "Fecha vencimiento FM");
@@ -494,8 +493,8 @@ function actualizarOpcionesFiltros(datos) {
         return coincideBase(fila) &&
             (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
             (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
             (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
             (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
     });
 
@@ -506,8 +505,8 @@ function actualizarOpcionesFiltros(datos) {
         return coincideBase(fila) &&
             (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
             (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
             (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
             (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
     });
 
@@ -518,20 +517,8 @@ function actualizarOpcionesFiltros(datos) {
         return coincideBase(fila) &&
             (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
             (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
             (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(fila[idxRango])) &&
-            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
-            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
-    });
-
-    const datosParaRango = datosGlobal.filter(fila => {
-        const otVal = fila[idxOT];
-        const regD1 = (window.registrosD1 || {})[otVal] || {};
-        const fechaProgVal = regD1.fechaProgramacion || "";
-        return coincideBase(fila) &&
-            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
-            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
-            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
-            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
             (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
     });
 
@@ -547,25 +534,37 @@ function actualizarOpcionesFiltros(datos) {
             (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
     });
 
+    const datosParaRango = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        return coincideBase(fila) &&
+            (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(fila[idxDepto])) &&
+            (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(fila[idxAfectacion])) &&
+            (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(fila[idxStoppers])) &&
+            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(fila[idxDiasOT])) &&
+            (fechasProgSeleccionadas.length === 0 || fechasProgSeleccionadas.includes(fechaProgVal));
+    });
+
     const datosParaFechaProg = datosGlobal.filter(fila => {
         const depart = fila[idxDepto];
         const afec = fila[idxAfectacion];
         const stop = fila[idxStoppers];
-        const rang = fila[idxRango];
         const dias = fila[idxDiasOT];
+        const rang = fila[idxRango];
         return coincideBase(fila) &&
             (departamentosSeleccionados.length === 0 || departamentosSeleccionados.includes(depart)) &&
             (afectacionesSeleccionadas.length === 0 || afectacionesSeleccionadas.includes(afec)) &&
             (stoppersSeleccionados.length === 0 || stoppersSeleccionados.includes(stop)) &&
-            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(rang)) &&
-            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(dias));
+            (diasOtSeleccionados.length === 0 || diasOtSeleccionados.includes(dias)) &&
+            (rangosSeleccionados.length === 0 || rangosSeleccionados.includes(rang));
     });
 
     departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
     afectacionesSeleccionadas = afectacionesSeleccionadas.filter(val => datosParaAfectacion.some(f => f[idxAfectacion] === val));
     stoppersSeleccionados = stoppersSeleccionados.filter(val => datosParaStoppers.some(f => f[idxStoppers] === val));
-    rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
     diasOtSeleccionados = diasOtSeleccionados.filter(val => datosParaDiasOT.some(f => f[idxDiasOT] === val));
+    rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
     
     fechasProgSeleccionadas = fechasProgSeleccionadas.filter(val => {
         return datosParaFechaProg.some(f => {
@@ -583,11 +582,11 @@ function actualizarOpcionesFiltros(datos) {
     const txtStop = document.getElementById("textoStoppers");
     if (txtStop) txtStop.textContent = stoppersSeleccionados.length === 0 ? "Stoppers" : `Stoppers (${stoppersSeleccionados.length})`;
 
-    const txtRang = document.getElementById("textoRango");
-    if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
-
     const txtDiasOT = document.getElementById("textoDiasOT") || document.getElementById("textoBacklog");
     if (txtDiasOT) txtDiasOT.textContent = diasOtSeleccionados.length === 0 ? "Días OT" : `Días OT (${diasOtSeleccionados.length})`;
+
+    const txtRang = document.getElementById("textoRango");
+    if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
 
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
@@ -648,23 +647,6 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
-    const rEl = document.getElementById("listaRango");
-    if(rEl) {
-        rEl.innerHTML = `
-            <div class="filtro-sort-container">
-                <div class="filtro-sort-title">⇅ Ordenar</div>
-                <div class="filtro-sort-header">
-                    <span onclick="ordenarDesdeFiltro('Rango de afectación', true)">A-Z</span>
-                    <span onclick="ordenarDesdeFiltro('Rango de afectación', false)">Z-A</span>
-                </div>
-            </div>
-            <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
-            <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
-            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
-        ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
-    }
-
     const diasOtDisp = [...new Set(datosParaDiasOT.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
     const diasEl = document.getElementById("listaDiasOT") || document.getElementById("listaBacklog");
     if(diasEl) {
@@ -680,6 +662,23 @@ function actualizarOpcionesFiltros(datos) {
             <div class="multi-filtro-reset" id="btnLimpiarDiasOT">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDiasOT"> (Seleccionar todo)</label>
         ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rEl = document.getElementById("listaRango");
+    if(rEl) {
+        rEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
+        ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
