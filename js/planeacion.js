@@ -208,17 +208,17 @@ const TECNICOS = [
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
     
-    // Si no está registrado en D1 o no tiene fecha de creación, se asume nuevo
-    if (!reg || !reg.createdAt) {
-        return true;
-    }
-
-    const hoy = new Date().toISOString().split('T')[0];
+    // Si la OT no tiene un registro en D1, es totalmente nueva ("Sí")
+    if (!reg) return true;
     
-    // Compara la fecha real guardada en D1 con el día de hoy
-    return reg.createdAt.startsWith(hoy);
+    // Si ya tiene algún estado de gestión, programación u observación guardada, 
+    // ya fue gestionada, por lo que pasa a ser existente ("No")
+    if (reg.estadoGestion || reg.estadoProgramacion || reg.observacion) {
+        return false;
+    }
+    
+    return false;
 }
-
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
