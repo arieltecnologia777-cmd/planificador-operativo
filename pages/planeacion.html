@@ -15,12 +15,18 @@
 
     <aside class="sidebar">
 
-        <div class="logo-box">
-            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
-            <div class="logo-text">
-                <h3>Planeación</h3>
-                <span>Gestión de programación</span>
+        <div class="logo-box" style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
+                <div class="logo-text">
+                    <h3>Planeación</h3>
+                    <span>Gestión de programación</span>
+                </div>
             </div>
+            <!-- Botón hamburguesa para colapsar/ocultar el sidebar -->
+            <button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
+                ☰
+            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -315,6 +321,16 @@
 <script src="../js/planeacion.js"></script>
 <script src="../js/settings.js"></script>
 
+<!-- Script para controlar el botón de hamburguesa (colapsar/expandir sidebar) -->
+<script>
+    document.addEventListener("click", (e) => {
+        const btnToggle = e.target.closest("#btnToggleSidebar");
+        if (btnToggle) {
+            document.body.classList.toggle("sidebar-colapsado");
+        }
+    });
+</script>
+
 <!-- Modal de Observaciones -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content">
@@ -338,6 +354,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal 1: Contraseña de Administrador -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
@@ -431,7 +448,8 @@
         </div>
     </div>
 </div>
-    <!-- Modal de Confirmación de Clave Segura -->
+
+<!-- Modal de Confirmación de Clave Segura -->
 <div id="modalClaveSegura" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
@@ -448,5 +466,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>
