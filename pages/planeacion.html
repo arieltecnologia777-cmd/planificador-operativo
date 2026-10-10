@@ -185,9 +185,8 @@
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <!-- KPI IDs Afectados ampliado -->
-                        <div class="kpi-ids-afectados-widget" style="padding: 12px 24px; height: 56px; border-radius: 18px;">
-                            <div class="kpi-ids-icon" style="width: 40px; height: 40px; border-radius: 12px; font-size: 1.1rem;">#</div>
+                        <!-- KPI IDs Afectados ampliado pero sin el símbolo extra -->
+                        <div class="kpi-ids-afectados-widget" style="padding: 12px 20px; height: 56px; border-radius: 18px;">
                             <div class="kpi-ids-content">
                                 <span class="kpi-ids-label" style="font-size: 0.72rem;">Total IDs Afectados</span>
                                 <span id="totalIdsAfectados" class="kpi-ids-value" style="font-size: 1.35rem;">0</span>
@@ -259,6 +258,7 @@
                         <div id="listaRango" class="multi-filtro-lista"></div>
                     </div>
 
+                    <!-- Filtro en cascada de Incumple Backlog ubicado junto a Fecha Programación -->
                     <div class="multi-filtro" id="multiBacklog">
                         <button type="button" id="btnBacklog" class="multi-filtro-btn">
                             <span id="textoBacklog">Incumple Backlog</span>
