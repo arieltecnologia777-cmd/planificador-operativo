@@ -2094,16 +2094,15 @@ width:160px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Cuando está colapsado, el sidebar se desplaza casi por completo dejando visible solo una pestaña vertical de arriba a abajo */
+/* Cuando está colapsado, el sidebar se oculta por completo fuera de la pantalla */
 body.sidebar-colapsado .sidebar {
-    transform: translateX(-250px); /* Deja asomar una franja vertical translúcida de unos 30px */
-    opacity: 0.95;
-    pointer-events: auto; /* Permite hacer clic en la franja para abrir */
-    box-shadow: 5px 0 25px rgba(15, 23, 42, 0.1);
+    transform: translateX(-310px);
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA EN SU TAMAÑO NORMAL DENTRO DE LA PESTAÑA
+   BOTÓN HAMBURGUESA Y PESTAÑA TIPO TARJETA VERTICAL DE ARRIBA A ABAJO
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
@@ -2130,26 +2129,35 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, la hamburguesa se queda integrada en la franja vertical que se asoma a la izquierda */
+/* Cuando el sidebar se oculta, la hamburguesa se transforma en una pestaña/tarjeta vertical completa que recorre de arriba a abajo */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 130px;
-    left: 20px; /* Se queda posicionada justo en la franja visible del sidebar */
-    width: 42px;  /* Mantiene su tamaño normal y simétrico */
-    height: 42px;
-    border-radius: 12px;
-    background: #2563eb !important;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-    animation: pulsoAzul 2s infinite ease-in-out;
+    top: 16px; /* Inicia alineada con el margen superior */
+    left: 0px; /* Anclada al borde izquierdo de la pantalla */
+    width: 32px;  /* Ancho de la pestaña tipo tarjeta */
+    height: calc((100vh - 32px) / 0.9); /* Ocupa exactamente la misma altura vertical del sidebar */
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    background: rgba(255, 255, 255, 0.75) !important; /* Efecto vidrio tipo tarjeta */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-left: none;
+    box-shadow: 6px 0 25px rgba(15, 23, 42, 0.12);
+    color: #2563eb !important; /* Icono de hamburguesa en azul corporativo para que resalte sobre el vidrio */
+    font-size: 1.2rem;
+    animation: pulsoTarjetaVertical 2s infinite ease-in-out;
 }
 
-@keyframes pulsoAzul {
+@keyframes pulsoTarjetaVertical {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
+        box-shadow: 6px 0 20px rgba(37, 99, 235, 0.2);
     }
-    70% {
-        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    50% {
+        box-shadow: 6px 0 30px rgba(37, 99, 235, 0.5);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 6px 0 20px rgba(37, 99, 235, 0.2);
     }
 }
