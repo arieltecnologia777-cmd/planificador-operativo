@@ -1,3 +1,6 @@
+// Variable de control para evitar ejecuciones duplicadas
+let procesandoCambioFecha = false;
+
 document.addEventListener("click", async (e) => {
     const target = e.target;
 
@@ -24,7 +27,6 @@ document.addEventListener("click", async (e) => {
 
         if (pass === "admin777") {
             document.getElementById("modalAdminPassword").style.display = "none";
-            // Abre el menú de opciones avanzadas
             document.getElementById("modalAdminTools").style.display = "grid";
         } else {
             alert("Contraseña incorrecta.");
@@ -56,6 +58,9 @@ document.addEventListener("click", async (e) => {
 
     // 7. Guardar la nueva fecha forzada para la OT en el servidor
     if (target.closest("#btnAdminGuardarFecha")) {
+        // Evitar doble ejecución si ya se está procesando
+        if (procesandoCambioFecha) return;
+
         const inputOt = document.getElementById("adminInputOt");
         const inputFecha = document.getElementById("adminInputFecha");
 
@@ -70,6 +75,7 @@ document.addEventListener("click", async (e) => {
         const confirmar = window.confirm(`¿Estás seguro de cambiar la fecha de creación de la OT ${otVal} a ${fechaVal}?`);
         if (!confirmar) return;
 
+        procesandoCambioFecha = true;
         const regActual = window.registrosD1[otVal] || {};
 
         const payload = {
@@ -84,7 +90,7 @@ document.addEventListener("click", async (e) => {
         };
 
         try {
-            const resp = await API_URL && await fetch(API_URL, {
+            const resp = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -112,6 +118,8 @@ document.addEventListener("click", async (e) => {
         } catch (err) {
             console.error("Error:", err);
             alert("Ocurrió un error de red al intentar actualizar la OT.");
+        } finally {
+            procesandoCambioFecha = false;
         }
         return;
     }
