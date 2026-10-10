@@ -209,9 +209,10 @@ function esCasoNuevo(otVal) {
     if (!reg.createdAt) return false;
 
     const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
-    
-    // Usamos la fecha real de hoy del navegador sin simulaciones
-    const hoy = new Date().toLocaleDateString('en-CA');
+
+    // --- PRUEBA DE 1 MINUTO ---
+    const hoy = "2026-10-09"; // Simulamos que hoy es ayer
+    // ---------------------------
 
     return fechaCreacionD1 === hoy;
 }
