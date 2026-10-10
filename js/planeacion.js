@@ -202,15 +202,14 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Lógica limpia: Es nueva si no tiene registros previos de gestión o programación en D1
+// Lógica robusta: Si no está en D1 es nueva. Si la modificaste recientemente hoy, mantiene el "Sí".
 function esCasoNuevo(otVal) {
-    const reg = (window.registrosD1 || {})[otVal];
-    
-    if (reg && (reg.estadoGestion || reg.estadoProgramacion || reg.observacion)) {
-        return false;
+    if (otsModificadasRecientemente.has(otVal)) {
+        return true;
     }
 
-    return !reg;
+    const reg = (window.registrosD1 || {})[otVal];
+    return !reg || (!reg.estadoGestion && !reg.estadoProgramacion && !reg.observacion);
 }
 
 function inicializarBotonAgruparColumnas() {
@@ -1146,7 +1145,9 @@ document.addEventListener("change", (e) => {
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         const otMod = filaTabla.children[4].textContent.trim();
-        if (otMod) otsModificadasRecientemente.add(otMod);
+        if (otMod) {
+            otsModificadasRecientemente.add(otMod); // Registra en memoria de sesión que esta OT fue tocada y debe seguir siendo nueva hoy
+        }
         guardarOT(filaTabla);
     }
 });
@@ -1309,7 +1310,9 @@ document.addEventListener("blur", async e => {
     const fila = e.target.closest("tr");
     if(!fila) return;
     const otMod = fila.children[4].textContent.trim();
-    if (otMod) otsModificadasRecientemente.add(otMod);
+    if (otMod) {
+        otsModificadasRecientemente.add(otMod);
+    }
     await guardarOT(fila);
 }, true);
 
