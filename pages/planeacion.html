@@ -21,16 +21,15 @@
         class="logo-img"
         alt="Dominion">
 
-    <div class="logo-text">
-
-        <h3>
-            Planeación
-        </h3>
-
-        <span>
-            Gestión de programación
-        </span>
-
+    <div class="logo-text" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <div>
+            <h3>Planeación</h3>
+            <span>Gestión de programación</span>
+        </div>
+        <!-- Botón de configuración/admin discreto arriba en el logo-box -->
+        <button type="button" id="btnAbrirModalAdmin" title="Configuración Admin: Forzar Fecha OT" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'">
+            ⚙️
+        </button>
     </div>
 
 </div>
@@ -65,21 +64,7 @@
                 Reportes
             </a>
 
-            <!-- SECCIÓN ADMIN EN EL SIDEBAR: FORZAR FECHA DE CREACIÓN DE OT -->
-            <div class="sidebar-admin-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background: #edf2f7; border-radius: 6px; border: 1px solid #cbd5e0;">
-                <h4 style="font-size: 0.8rem; color: #2d3748; margin-bottom: 6px; font-weight: bold;">🛠️ Admin: Forzar Fecha OT</h4>
-                <div style="margin-bottom: 5px;">
-                    <label style="font-size: 0.7rem; color: #4a5568; display: block; margin-bottom: 2px;">Número de OT:</label>
-                    <input type="text" id="adminInputOt" placeholder="Ej. 12345678" style="width: 100%; padding: 4px; font-size: 0.75rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                <div style="margin-bottom: 6px;">
-                    <label style="font-size: 0.7rem; color: #4a5568; display: block; margin-bottom: 2px;">Fecha de Creación Real:</label>
-                    <input type="date" id="adminInputFecha" style="width: 100%; padding: 4px; font-size: 0.75rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                <button type="button" id="btnAdminGuardarFecha" style="background: #2b6cb0; color: white; border: none; width: 100%; padding: 5px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Actualizar Fecha OT</button>
-            </div>
-
-            <div class="export-box">
+            <div class="export-box" style="margin-top: 15px;">
 
     <label>
         Exportar Planeación
@@ -415,6 +400,7 @@
  <script src="../js/app.js"></script>
  <script src="../js/planeacion.js"></script>
 
+<!-- MODAL DE OBSERVACIONES -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content">
         <div class="obs-modal-header">
@@ -437,5 +423,30 @@
         </div>
     </div>
 </div>
+
+<!-- NUEVO MODAL ADMIN: FORZAR FECHA DE CREACIÓN DE OT -->
+<div id="modalAdminFecha" class="obs-modal-overlay" style="display: none;">
+    <div class="obs-modal-content" style="max-width: 400px;">
+        <div class="obs-modal-header">
+            <h3>🛠️ Admin: Forzar Fecha OT</h3>
+            <button type="button" id="cerrarModalAdmin" class="obs-modal-close">&times;</button>
+        </div>
+        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <label style="font-size: 0.85rem; font-weight: bold; color: #2d3748; display: block; margin-bottom: 4px;">Número de OT:</label>
+                <input type="text" id="adminInputOt" placeholder="Ej. OT0000001" style="width: 100%; padding: 8px; font-size: 0.9rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; font-weight: bold; color: #2d3748; display: block; margin-bottom: 4px;">Fecha de Creación Real:</label>
+                <input type="date" id="adminInputFecha" style="width: 100%; padding: 8px; font-size: 0.9rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
+            </div>
+        </div>
+        <div class="obs-modal-footer">
+            <button type="button" id="btnCancelarAdmin" class="obs-btn-secundario">Cancelar</button>
+            <button type="button" id="btnAdminGuardarFecha" class="obs-btn-principal">Actualizar Fecha OT</button>
+        </div>
+    </div>
+</div>
+
  </body>
  </html>
