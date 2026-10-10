@@ -1963,30 +1963,32 @@ width:160px;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
     transform: translateY(-2px);
 }
-/* Widget compacto para IDs afectados en la esquina superior derecha */
+/* ==========================================
+   WIDGET KPI "TOTAL IDS AFECTADOS" AMPLIADO
+   ========================================== */
 .kpi-ids-afectados-widget {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     background: #ffffff;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 6px 14px;
-    box-shadow: var(--shadow);
-    margin-left: auto; /* Lo empuja hacia la derecha de la barra de filtros */
+    border-radius: 16px;
+    padding: 10px 20px;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
+    margin-left: auto;
     flex: none;
-    height: 42px; /* Mantiene la misma altura de los inputs de filtros */
+    height: 48px; /* Altura optimizada y más imponente */
 }
 
 .kpi-ids-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: #eff6ff;
     color: #2563eb;
     display: grid;
     place-items: center;
-    font-size: 0.85rem;
+    font-size: 1rem;
     flex: none;
 }
 
@@ -1994,19 +1996,19 @@ width:160px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .kpi-ids-label {
-    font-size: 0.62rem;
-    font-weight: 700;
+    font-size: 0.68rem;
+    font-weight: 800;
     text-transform: uppercase;
     color: var(--muted);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
 }
 
 .kpi-ids-value {
-    font-size: 0.95rem;
+    font-size: 1.25rem; /* Número más grande y llamativo */
     font-weight: 900;
     color: #0f172a;
 }
