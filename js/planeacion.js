@@ -574,11 +574,7 @@ function renderizarFiltrosDinamicos(datos) {
 }
 
 function actualizarOpcionesFiltros(datos) {
-    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
-    const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
-
     const encabezados = encabezadosGlobal;
-    const idxID = encabezados.findIndex(h => h.trim() === "ID");
     const idxOT = encabezados.findIndex(h => h.trim() === "OT");
     const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
     const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
@@ -586,78 +582,6 @@ function actualizarOpcionesFiltros(datos) {
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
-    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
-
-    const coincideBase = (fila) => {
-        const otVal = fila[idxOT];
-        const regD1 = (window.registrosD1 || {})[otVal] || {};
-        const backlogVal = (fila[idxBacklog] || "").trim().toUpperCase();
-
-        const cumpleTexto = !texto || 
-            String(fila[idxID] || "").toLowerCase().includes(texto) ||
-            String(fila[idxOT] || "").toLowerCase().includes(texto) ||
-            String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
-
-        let cumpleKpi = true;
-        if (kpiFiltroActivo === "alta") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "ALTA");
-        if (kpiFiltroActivo === "media") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "MEDIA");
-        if (kpiFiltroActivo === "baja") cumpleKpi = ((fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase() === "BAJA");
-        if (kpiFiltroActivo === "cumple") cumpleKpi = (backlogVal === "CUMPLE");
-        if (kpiFiltroActivo === "nocumple") cumpleKpi = (backlogVal === "NO CUMPLE");
-        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
-
-        return cumpleTexto && cumpleKpi;
-    };
-
-    const filtrarContexto = (excluirCampo = "") => {
-        return datosGlobal.filter(fila => {
-            const otVal = fila[idxOT];
-            const regD1 = (window.registrosD1 || {})[otVal] || {};
-            const estG = regD1.estadoGestion || "";
-            const fechaProgVal = regD1.fechaProgramacion || "";
-            const esN = esCasoNuevo(otVal) ? "Sí" : "No";
-
-            if (!coincideBase(fila)) return false;
-
-            if (excluirCampo !== "nuevo" && nuevosSeleccionados.length > 0 && !nuevosSeleccionados.includes(esN)) return false;
-            if (excluirCampo !== "depto" && departamentosSeleccionados.length > 0 && !departamentosSeleccionados.includes(fila[idxDepto])) return false;
-            if (excluirCampo !== "estado" && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
-            if (excluirCampo !== "afectacion" && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(fila[idxAfectacion])) return false;
-            if (excluirCampo !== "stoppers" && stoppersSeleccionados.length > 0 && !stoppersSeleccionados.includes(fila[idxStoppers])) return false;
-            if (excluirCampo !== "diasOT" && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(fila[idxDiasOT])) return false;
-            if (excluirCampo !== "rango" && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(fila[idxRango])) return false;
-            if (excluirCampo !== "fechaProg" && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
-
-            return true;
-        });
-    };
-
-    const datosParaNuevo = filtrarContexto("nuevo");
-    const datosParaDepto = filtrarContexto("depto");
-    const datosParaEstado = filtrarContexto("estado");
-    const datosParaAfectacion = filtrarContexto("afectacion");
-    const datosParaStoppers = filtrarContexto("stoppers");
-    const datosParaDiasOT = filtrarContexto("diasOT");
-    const datosParaRango = filtrarContexto("rango");
-    const datosParaFechaProg = filtrarContexto("fechaProg");
-
-    nuevosSeleccionados = nuevosSeleccionados.filter(val => datosParaNuevo.some(f => (esCasoNuevo(f[idxOT]) ? "Sí" : "No") === val));
-    departamentosSeleccionados = departamentosSeleccionados.filter(dep => datosParaDepto.some(f => f[idxDepto] === dep));
-    estadosGestionSeleccionados = estadosGestionSeleccionados.filter(val => datosParaEstado.some(f => {
-        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
-        return (reg.estadoGestion || "") === val;
-    }));
-    afectacionesSeleccionadas = afectacionesSeleccionadas.filter(val => datosParaAfectacion.some(f => f[idxAfectacion] === val));
-    stoppersSeleccionados = stoppersSeleccionados.filter(val => datosParaStoppers.some(f => f[idxStoppers] === val));
-    diasOtSeleccionados = diasOtSeleccionados.filter(val => datosParaDiasOT.some(f => f[idxDiasOT] === val));
-    rangosSeleccionados = rangosSeleccionados.filter(val => datosParaRango.some(f => f[idxRango] === val));
-    
-    fechasProgSeleccionadas = fechasProgSeleccionadas.filter(val => {
-        return datosParaFechaProg.some(f => {
-            const reg = (window.registrosD1 || {})[f[idxOT]] || {};
-            return (reg.fechaProgramacion || "") === val;
-        });
-    });
 
     const txtNuevo = document.getElementById("textoNuevo");
     if (txtNuevo) txtNuevo.textContent = nuevosSeleccionados.length ? `Nuevo (${nuevosSeleccionados.length})` : "Nuevo / Existente";
@@ -702,7 +626,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
+    const deptosDisp = [...new Set(datosGlobal.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
         dEl.innerHTML = `
@@ -721,7 +645,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const estadosDisp = [...new Set(datosParaEstado.map(f => {
+    const estadosDisp = [...new Set(datosGlobal.map(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         return reg.estadoGestion || "";
     }))].filter(Boolean).sort();
@@ -743,7 +667,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const afecDisp = [...new Set(datosParaAfectacion.map(f => f[idxAfectacion]))].filter(Boolean).sort();
+    const afecDisp = [...new Set(datosGlobal.map(f => f[idxAfectacion]))].filter(Boolean).sort();
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
         aEl.innerHTML = `
@@ -760,7 +684,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + afecDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const stopDisp = [...new Set(datosParaStoppers.map(f => f[idxStoppers]))].filter(Boolean).sort();
+    const stopDisp = [...new Set(datosGlobal.map(f => f[idxStoppers]))].filter(Boolean).sort();
     const sEl = document.getElementById("listaStoppers");
     if(sEl) {
         sEl.innerHTML = `
@@ -777,7 +701,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const diasOtDisp = [...new Set(datosParaDiasOT.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasOtDisp = [...new Set(datosGlobal.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
     const diasEl = document.getElementById("listaDiasOT");
     if(diasEl) {
         diasEl.innerHTML = `
@@ -794,7 +718,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rangDisp = [...new Set(datosGlobal.map(f => f[idxRango]))].filter(Boolean).sort();
     const rEl = document.getElementById("listaRango");
     if(rEl) {
         rEl.innerHTML = `
@@ -814,7 +738,7 @@ function actualizarOpcionesFiltros(datos) {
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const arbolFechas = {};
     
-    datosParaFechaProg.forEach(f => {
+    datosGlobal.forEach(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         const fechaVal = reg.fechaProgramacion;
         if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
