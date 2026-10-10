@@ -2,6 +2,22 @@
 let procesandoCambioFecha = false;
 let ejecutandoClickGlobal = false;
 
+// Variables temporales para el modal de clave segura
+let callbackClaveSegura = null;
+
+function solicitarClaveSegura(mensaje, callback) {
+    const modal = document.getElementById("modalClaveSegura");
+    const input = document.getElementById("inputClaveSegura");
+    const texto = document.getElementById("textoMensajeClave");
+    
+    if (texto) texto.textContent = mensaje;
+    if (input) input.value = "";
+    if (modal) modal.style.display = "grid";
+    if (input) input.focus();
+    
+    callbackClaveSegura = callback;
+}
+
 document.addEventListener("click", async (e) => {
     // Evita doble ejecución si el evento se propaga rápidamente o hay scripts duplicados
     if (ejecutandoClickGlobal) return;
@@ -20,7 +36,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 2. Botones para cerrar el modal de contraseña
+    // 2. Botones para cerrar el modal de contraseña inicial
     if (target.closest("#cerrarModalPassword, #btnCancelarPassword")) {
         document.getElementById("modalAdminPassword").style.display = "none";
         return;
@@ -84,7 +100,6 @@ document.addEventListener("click", async (e) => {
 
     // 7. Guardar la nueva fecha forzada para la OT en el servidor
     if (target.closest("#btnAdminGuardarFecha")) {
-        // Evitar doble ejecución si ya se está procesando
         if (procesandoCambioFecha) return;
 
         const inputOt = document.getElementById("adminInputOt");
@@ -164,43 +179,42 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 10. Ejecutar Borrado Masivo validado de forma segura por Cloudflare (Doble candado vía prompt)
+    // 10. Ejecutar Borrado Masivo utilizando el modal seguro con puntos ocultos
     if (target.closest("#btnAdminBorrarMasivo")) {
-        const claveSeguridad = window.prompt("⚠️ DOBLE CANDADO DE SEGURIDAD:\nPara vaciar toda la tabla de planeación, ingresa la clave de administrador:");
-        
-        if (!claveSeguridad) {
-            alert("Acción cancelada.");
-            return;
-        }
+        solicitarClaveSegura("⚠️ DOBLE CANDADO: Ingresa la clave para vaciar toda la tabla:", async (claveSeguridad) => {
+            if (!claveSeguridad) return;
 
-        try {
-            const resp = await fetch(API_URL, {
-                method: "DELETE",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-admin-password": claveSeguridad 
-                }
-            });
-            const resultado = await resp.json();
+            try {
+                const resp = await fetch(API_URL, {
+                    method: "DELETE",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-admin-password": claveSeguridad 
+                    }
+                });
+                const resultado = await resp.json();
 
-            if (resultado.ok) {
-                window.registrosD1 = {};
-                alert("¡Se han borrado todos los registros exitosamente en el servidor!");
-                document.getElementById("modalAdminBorrar").style.display = "none";
-                if (typeof aplicarFiltros === "function") {
-                    aplicarFiltros();
+                if (resultado.ok) {
+                    window.registrosD1 = {};
+                    alert("¡Se han borrado todos los registros exitosamente en el servidor!");
+                    document.getElementById("modalAdminBorrar").style.display = "none";
+                    if (typeof cargarPlaneacion === "function") {
+                        cargarPlaneacion();
+                    } else if (typeof aplicarFiltros === "function") {
+                        aplicarFiltros();
+                    }
+                } else {
+                    alert(resultado.error || "Clave incorrecta o error en el servidor.");
                 }
-            } else {
-                alert(resultado.error || "Clave incorrecta o error en el servidor.");
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Ocurrió un error de red al intentar vaciar la tabla.");
             }
-        } catch (err) {
-            console.error("Error:", err);
-            alert("Ocurrió un error de red al intentar vaciar la tabla.");
-        }
+        });
         return;
     }
 
-    // 11. Ejecutar Borrado por OT Individual (Protegido también con la clave de admin enviada al Worker)
+    // 11. Ejecutar Borrado por OT Individual utilizando el modal seguro con puntos ocultos
     if (target.closest("#btnAdminBorrarOt")) {
         const inputOtBorrar = document.getElementById("adminInputOtBorrar");
         const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
@@ -210,45 +224,79 @@ document.addEventListener("click", async (e) => {
             return;
         }
 
-        const claveSeguridad = window.prompt(`⚠️ Para eliminar la OT ${otVal}, ingresa la clave de administrador:`);
-        if (!claveSeguridad) return;
+        solicitarClaveSegura(`⚠️ Ingresa la clave para eliminar la OT ${otVal}:`, async (claveSeguridad) => {
+            if (!claveSeguridad) return;
 
-        try {
-            const resp = await fetch(`${API_URL}?ot=${encodeURIComponent(otVal)}`, {
-                method: "DELETE",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-admin-password": claveSeguridad
-                }
-            });
-            const resultado = await resp.json();
+            try {
+                const resp = await fetch(`${API_URL}?ot=${encodeURIComponent(otVal)}`, {
+                    method: "DELETE",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-admin-password": claveSeguridad
+                    }
+                });
+                const resultado = await resp.json();
 
-            if (resultado.ok) {
-                delete window.registrosD1[otVal];
-                alert(`¡Éxito! La OT ${otVal} fue eliminada del servidor.`);
-                inputOtBorrar.value = "";
-                document.getElementById("modalAdminBorrar").style.display = "none";
-                if (typeof aplicarFiltros === "function") {
-                    aplicarFiltros();
+                if (resultado.ok) {
+                    delete window.registrosD1[otVal];
+                    if (typeof otsModificadasRecientemente !== "undefined") {
+                        otsModificadasRecientemente.delete(otVal);
+                    }
+
+                    alert(`¡Éxito! La OT ${otVal} fue eliminada del servidor.`);
+                    inputOtBorrar.value = "";
+                    document.getElementById("modalAdminBorrar").style.display = "none";
+                    
+                    // Forzar recarga completa para que desaparezca de la tabla
+                    if (typeof cargarPlaneacion === "function") {
+                        cargarPlaneacion();
+                    } else if (typeof aplicarFiltros === "function") {
+                        aplicarFiltros();
+                    }
+                } else {
+                    alert(resultado.error || "Clave incorrecta o error al eliminar la OT.");
                 }
-            } else {
-                alert(resultado.error || "Clave incorrecta o error al eliminar la OT.");
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Ocurrió un error de red al intentar eliminar la OT.");
             }
-        } catch (err) {
-            console.error("Error:", err);
-            alert("Ocurrió un error de red al intentar eliminar la OT.");
+        });
+        return;
+    }
+
+    // Botones para cerrar o confirmar el modal de clave segura
+    if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
+        document.getElementById("modalClaveSegura").style.display = "none";
+        callbackClaveSegura = null;
+        return;
+    }
+
+    if (target.closest("#btnConfirmarClave")) {
+        const input = document.getElementById("inputClaveSegura");
+        const pass = input ? input.value.trim() : "";
+        document.getElementById("modalClaveSegura").style.display = "none";
+        
+        if (typeof callbackClaveSegura === "function") {
+            callbackClaveSegura(pass);
+            callbackClaveSegura = null;
         }
         return;
     }
 });
 
-// Permitir presionar "Enter" en el campo de contraseña para iniciar sesión rápido
+// Permitir presionar "Enter" en los campos de contraseña
 document.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         const modalPass = document.getElementById("modalAdminPassword");
         if (modalPass && modalPass.style.display === "grid") {
             const btnVerificar = document.getElementById("btnVerificarPassword");
             if (btnVerificar) btnVerificar.click();
+        }
+
+        const modalClave = document.getElementById("modalClaveSegura");
+        if (modalClave && modalClave.style.display === "grid") {
+            const btnConfirmar = document.getElementById("btnConfirmarClave");
+            if (btnConfirmar) btnConfirmar.click();
         }
     }
 });
