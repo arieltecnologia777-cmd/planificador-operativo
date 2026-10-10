@@ -55,7 +55,7 @@
             </a>
 
             <div class="export-box">
-                <!-- Botón de Herramientas Avanzadas ubicado arriba de exportar, con el color y estilo exactos -->
+                <!-- Botón de Herramientas Avanzadas ubicado arriba de exportar -->
                 <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     ⚙️ Herramientas Avanzadas
                 </button>
@@ -70,23 +70,6 @@
                 <button id="btnExportarExcel" onclick="exportarPlaneacion()">
                     📥 Exportar Excel
                 </button>
-
-                <div class="carga-masiva-container" style="margin-top: 10px;">
-                    <label for="inputExcelMasivo" class="btn-subir-excel" style="cursor: pointer; background: #28a745; color: white; padding: 10px 12px; border-radius: 4px; font-size: 0.9rem; display: block; text-align: center;">
-                        📂 Subir Excel Masivo
-                    </label>
-                    <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
-                </div>
-
-                <div id="containerProgresoMasivo" class="progreso-masivo-container">
-                    <div class="progreso-masivo-header">
-                        <span id="textoProgreso">Procesando archivo...</span>
-                        <span id="porcentajeProgreso">0%</span>
-                    </div>
-                    <div class="progreso-masivo-track">
-                        <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%;"></div>
-                    </div>
-                </div>
             </div>
         </nav>
 
@@ -184,20 +167,20 @@
                         </button>
                     </div>
 
-                   <div style="display: flex; align-items: center; gap: 14px; margin-right: 16px;">
-    <!-- KPI IDs Afectados -->
-    <div class="kpi-ids-afectados-widget" style="padding: 10px 22px; height: 50px;">
-        <div class="kpi-ids-content">
-            <span class="kpi-ids-label">Total IDs Afectados</span>
-            <span id="totalIdsAfectados" class="kpi-ids-value" style="font-size: 1.25rem;">0</span>
-        </div>
-    </div>
+                    <div style="display: flex; align-items: center; gap: 14px; margin-right: 16px;">
+                        <!-- KPI IDs Afectados -->
+                        <div class="kpi-ids-afectados-widget" style="padding: 10px 22px; height: 50px;">
+                            <div class="kpi-ids-content">
+                                <span class="kpi-ids-label">Total IDs Afectados</span>
+                                <span id="totalIdsAfectados" class="kpi-ids-value" style="font-size: 1.25rem;">0</span>
+                            </div>
+                        </div>
 
-    <!-- Botón de zoom desplazado hacia adentro -->
-    <button id="btnZoom" class="expand-btn" title="Zoom / Pantalla completa" style="width: 46px; height: 46px; min-width: 46px; border-radius: 12px; font-size: 1.2rem; display: grid; place-items: center;">
-        ⛶
-    </button>
-</div>
+                        <!-- Botón de zoom desplazado hacia adentro para no desbordarse -->
+                        <button id="btnZoom" class="expand-btn" title="Zoom / Pantalla completa" style="width: 46px; height: 46px; min-width: 46px; border-radius: 12px; font-size: 1.2rem; display: grid; place-items: center;">
+                            ⛶
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -382,13 +365,31 @@
     </div>
 </div>
 
+<!-- Modal de Herramientas Avanzadas con la Carga Masiva integrada -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 450px;">
         <div class="obs-modal-header">
             <h3>⚙️ Herramientas Avanzadas</h3>
             <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
         </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="carga-masiva-container">
+                <label for="inputExcelMasivo" class="btn-subir-excel" style="cursor: pointer; background: #28a745; color: white; padding: 12px; border-radius: 4px; font-size: 1rem; display: block; text-align: center; font-weight: 500;">
+                    📂 Subir Excel Masivo (Actualización)
+                </label>
+                <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
+            </div>
+
+            <div id="containerProgresoMasivo" class="progreso-masivo-container" style="display: none;">
+                <div class="progreso-masivo-header">
+                    <span id="textoProgreso">Procesando archivo...</span>
+                    <span id="porcentajeProgreso">0%</span>
+                </div>
+                <div class="progreso-masivo-track">
+                    <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%;"></div>
+                </div>
+            </div>
+
             <button type="button" id="btnAbrirForzarFecha" style="padding: 12px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; text-align: left;">
                 📅 Forzar Fecha de Creación (OT)
             </button>
