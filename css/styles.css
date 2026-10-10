@@ -2110,7 +2110,7 @@ body.sidebar-colapsado .sidebar {
 .btn-sidebar-toggle {
     position: fixed;
     top: 130px; 
-    left: 280px; /* Exactamente en el borde derecho del sidebar de 280px */
+    left: calc(280px / 0.90); /* Compensa exactamente el zoom de 0.90 para quedar al borde exacto */
     z-index: 99999;
     background: #2563eb !important; 
     color: #ffffff !important; 
