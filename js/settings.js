@@ -144,11 +144,12 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 10. Ejecutar Borrado Masivo ( DELETE FROM planeacion; )
+    // 10. Ejecutar Borrado Masivo con doble candado (Solicita clave de administrador nuevamente)
     if (target.closest("#btnAdminBorrarMasivo")) {
-        const confirmarDoble = window.prompt("⚠️ PELIGRO: Esto borrará TODA la tabla de planeación en el servidor.\nEscribe 'BORRAR TODO' para confirmar:");
-        if (confirmarDoble !== "BORRAR TODO") {
-            alert("Acción cancelada.");
+        const claveSeguridad = window.prompt("⚠️ DOBLE CANDADO DE SEGURIDAD:\nPara vaciar toda la tabla de planeación, ingresa la clave de administrador:");
+        
+        if (claveSeguridad !== "admin777") {
+            alert("Clave incorrecta. Acción cancelada y protegida.");
             return;
         }
 
