@@ -205,21 +205,16 @@ const TECNICOS = [
 // Lógica limpia basada en la base de datos D1 (createdAt)
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
-    
-    // Si la OT no existe en D1, es nueva ("Sí")
     if (!reg) return true;
-
-    // Si tiene un registro en D1 pero createdAt está vacío (registros antiguos), se queda como "No"
     if (!reg.createdAt) return false;
 
-    // Extraemos solo la fecha (YYYY-MM-DD) de createdAt de la base de datos
     const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
     
-    // Obtenemos la fecha actual exacta del navegador en formato YYYY-MM-DD
-    const hoy = new Date().toLocaleDateString('en-CA');
+    // --- TRUCO DE PRUEBA ---
+    // Forzamos manualmente una fecha de "hoy" diferente para simular que ya pasó el tiempo
+    const hoy = "2026-10-01"; // Simulamos que hoy es 1 de octubre, por lo que las OTs de hoy (10 de octubre) quedarán en "No"
+    // -----------------------
 
-    // Si la fecha de creación en D1 coincide con el día de hoy, ES NUEVA ("Sí").
-    // Al escribir, la base de datos mantiene el createdAt original, por lo que SEGUIRÁ SIENDO "SÍ".
     return fechaCreacionD1 === hoy;
 }
 function inicializarBotonAgruparColumnas() {
