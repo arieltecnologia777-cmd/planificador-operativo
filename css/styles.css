@@ -40,34 +40,6 @@ button{
     zoom:0.90;
 }
 
-/* ==========================================
-   SIDEBAR FLOTANTE CON EFECTO VIDRIO (GLASSMORPHISM)
-   ========================================== */
-.sidebar {
-    position: fixed !important;
-    top: 16px;
-    left: 16px;
-    height: calc((100vh - 32px) / 0.9) !important;
-    width: 280px;
-    background: rgba(255, 255, 255, 0.75) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
-    border-radius: 24px;
-    z-index: 99998;
-    padding: 16px;
-    overflow-y: auto;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
-
-/* Ocultar sidebar cuando está colapsado */
-body.sidebar-colapsado .sidebar {
-    transform: translateX(-115%);
-    opacity: 0;
-    pointer-events: none;
-}
-
 .logo-box{
     background:rgba(255, 255, 255, 0.9);
     border:1px solid var(--border);
@@ -2099,27 +2071,55 @@ width:160px;
     background: linear-gradient(90deg, #007bff, #00d2ff);
     border-radius: 4px;
     transition: width 0.2s ease-out; /* Transición fluida al avanzar */
+    
 }
 /* ==========================================
-   BOTÓN HAMBURGUESA UBICADO AL LADO (ARRIBA A LA IZQUIERDA)
+   SIDEBAR CON EFECTO VIDRIO MÁS TRASLÚCIDO (GLASSMORPHISM)
+   ========================================== */
+.sidebar {
+    position: fixed !important;
+    top: 16px;
+    left: 16px;
+    height: calc((100vh - 32px) / 0.9) !important;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.45) !important; /* Mayor transparencia */
+    backdrop-filter: blur(20px); /* Desenfoque más intenso para acentuar el efecto vidrio */
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    border-radius: 24px;
+    z-index: 99998;
+    padding: 16px;
+    overflow-y: auto;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+body.sidebar-colapsado .sidebar {
+    transform: translateX(-115%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ==========================================
+   BOTÓN HAMBURGUESA INTEGRADO AL LADO
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 20px;
-    left: 308px; /* Ubicado exactamente al lado del sidebar flotante de 280px + márgenes */
+    top: 16px;
+    left: 304px; /* Ubicado exactamente junto al borde derecho del sidebar */
     z-index: 99999;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     color: var(--text);
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     display: grid;
     place-items: center;
     cursor: pointer;
     font-size: 1.2rem;
-    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -2130,7 +2130,7 @@ width:160px;
     transform: scale(1.05);
 }
 
-/* Cuando el sidebar se oculta, el botón hamburguesa se desliza hacia la esquina superior izquierda para permitir abrirlo */
 body.sidebar-colapsado .btn-sidebar-toggle {
     left: 16px;
+    background: rgba(255, 255, 255, 0.85);
 }
