@@ -2094,9 +2094,9 @@ width:160px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Cuando está colapsado, el sidebar se oculta por completo */
+/* Cuando está colapsado, el sidebar se oculta por completo pero dejamos una pequeña pestaña translúcida flotando en la orilla */
 body.sidebar-colapsado .sidebar {
-    transform: translateX(-295px);
+    transform: translateX(-295px); /* Lo desplaza fuera de la vista dejando solo la pestaña libre */
     opacity: 0;
     pointer-events: none;
 }
@@ -2129,36 +2129,31 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* ==========================================
-   PESTAÑA / TARJETA VERTICAL PROPORCIONAL AL SIDEBAR
-   ========================================== */
+/* Cuando el sidebar se oculta, este botón se convierte en una elegante pestaña/badge vertical en la orilla izquierda */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 32px; /* Separada estéticamente del borde superior */
-    left: 16px; /* Separada del borde izquierdo de la pantalla */
-    width: 28px;  /* Ancho sutil y elegante */
-    height: calc(100vh - 64px); /* Casi la misma altura total del sidebar, respetando un margen arriba y abajo */
-    border-radius: 20px; /* Bordes redondeados de tarjeta completa */
-    background: rgba(37, 99, 235, 0.88) !important; /* Azul corporativo con efecto vidrio */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.35);
-    color: #ffffff !important;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: pulsoTarjetaSidebar 2s infinite ease-in-out;
+    top: 130px;
+    left: 0px; /* Se ancla perfectamente al borde de la pantalla */
+    width: 32px; /* Ancho de la pestaña tipo badge */
+    height: 56px; /* Altura estilizada de pestaña */
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+    background: rgba(37, 99, 235, 0.9) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 4px 15px rgba(37, 99, 235, 0.3);
+    font-size: 1rem;
+    animation: pulsoPestaña 2s infinite ease-in-out;
 }
 
-@keyframes pulsoTarjetaSidebar {
+@keyframes pulsoPestaña {
     0% {
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0.8);
     }
-    50% {
-        box-shadow: 0 15px 40px rgba(37, 99, 235, 0.65);
+    70% {
+        box-shadow: 2px 0 0 10px rgba(37, 99, 235, 0);
     }
     100% {
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0);
     }
 }
