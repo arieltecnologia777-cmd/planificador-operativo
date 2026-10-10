@@ -1,7 +1,7 @@
 :root{
     --bg:#f3f6fb;
     --card:#ffffff;
-    --sidebar:#ffffff;
+    --sidebar:rgba(255, 255, 255, 0.82); /* Efecto traslúcido */
     --text:#172554;
     --muted:#64748b;
     --primary:#2563eb;
@@ -37,13 +37,17 @@ button{
     grid-template-columns:260px minmax(0,1fr);
     min-height:100vh;
     zoom:0.90;
+    transition: grid-template-columns 0.3s ease;
 }
+
 /* =========================
-   SIDEBAR
+   SIDEBAR CON EFECTO VIDRIO
 ========================= */
 
 .sidebar{
-    background:var(--sidebar);
+    background:var(--sidebar) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-right:1px solid var(--border);
     box-shadow:var(--shadow);
     height:calc(100vh / 0.9);
@@ -51,21 +55,33 @@ button{
     top:0;
     padding:16px;
     z-index:10;
+    transition: transform 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 }
 
+/* Comportamiento al colapsar */
+body.sidebar-colapsado .layout {
+    grid-template-columns: 0px minmax(0, 1fr) !important;
+}
+
+body.sidebar-colapsado .sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+}
 
 .logo-box{
-    background:#fff;
+    background:rgba(255, 255, 255, 0.9);
     border:1px solid var(--border);
     border-radius:18px;
-
     padding:14px;
-
     display:flex;
     align-items:center;
     gap:14px;
-
     margin-bottom:20px;
+    backdrop-filter: blur(4px);
 }
 
 .logo-img{
@@ -117,7 +133,6 @@ button{
     font-size:.92rem;
 }
 
-/* Efecto hover sutil unificado para botones del sidebar */
 .sidebar-nav a:hover,
 #btnAbrirConfig:hover {
     background:#f1f5f9;
@@ -168,12 +183,10 @@ button{
     margin-bottom:16px;
     overflow:hidden;
     isolation:isolate;
-
     background-image:url("../assets/banner.jpg");
     background-size:cover;
     background-position:98% center;
     background-repeat:no-repeat;
-
     border:1px solid #d4e3f6;
     border-radius:18px;
     padding:25px 28px;
@@ -185,15 +198,7 @@ button{
     content:"";
     position:absolute;
     inset:0;
-
-    background:
-    linear-gradient(
-        90deg,
-        rgba(4,37,95,.72),
-        rgba(4,37,95,.35),
-        rgba(4,37,95,.10)
-    );
-
+    background:linear-gradient(90deg,rgba(4,37,95,.72),rgba(4,37,95,.35),rgba(4,37,95,.10));
     z-index:1;
 }
 
@@ -202,7 +207,6 @@ button{
     z-index:3;
     display:flex;
     flex-direction:column;
-
     height:150px;
 }
 
@@ -210,24 +214,16 @@ button{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-
     width:auto;
     max-width:max-content;
-
     gap:7px;
     padding:5px 12px;
-
     border-radius:20px;
-
     background:rgba(24,201,255,.9);
-
     color:#fff;
-
     font-size:.67rem;
     font-weight:800;
-
     letter-spacing:.03em;
-
     margin-bottom:2px;
     margin-top:-12px;
 }
@@ -257,11 +253,9 @@ button{
 
 .hero-update{
     margin-top:auto;
-
     display:flex;
     align-items:center;
     gap:7px;
-
     font-size:.69rem;
     color:rgba(255,255,255,.9);
 }
@@ -271,18 +265,12 @@ button{
 
 .hero-slogan-text{
     position:absolute;
-
     right:7px;
     bottom:1px;
-
     color:rgba(255,255,255,.92);
-
     font-size:.86rem;
-
     font-weight:500;
-
     text-align:right;
-
     z-index:5;
 }
 
@@ -472,7 +460,6 @@ button{
 .kpi-indigo .kpi-icon{
     background:#4f46e5;
 }
-
 
 /* =========================
    PANELS
@@ -1917,7 +1904,6 @@ width:160px;
     background: #1d4ed8;
 }
 
-/* Estilo del botón lápiz integrado al lado del input */
 .obs-edit-wrapper {
     display: flex;
     align-items: center;
@@ -1944,7 +1930,7 @@ width:160px;
     color: #fff;
     border-color: #2563eb;
 }
-/* Estilo ordenado para los datos del sitio en el modal */
+
 .obs-modal-subtitle {
     margin: 0 0 12px 0;
     font-size: 0.85rem;
@@ -1962,7 +1948,7 @@ width:160px;
     color: #0f172a;
     font-weight: 600;
 }
-/* Cuando hay un KPI activo, las tarjetas no seleccionadas se ponen grises */
+
 .kpi-container-activo .kpi-card:not(.kpi-seleccionado),
 .kpi-container-activo .card:not(.kpi-seleccionado) {
     opacity: 0.45;
@@ -1970,7 +1956,6 @@ width:160px;
     transition: all 0.25s ease;
 }
 
-/* La tarjeta seleccionada resalta con total claridad */
 .kpi-seleccionado {
     opacity: 1 !important;
     filter: none !important;
@@ -1978,7 +1963,7 @@ width:160px;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
     transform: translateY(-2px);
 }
-/* Widget compacto para IDs afectados en la esquina superior derecha */
+
 .kpi-ids-afectados-widget {
     display: inline-flex;
     align-items: center;
@@ -1988,9 +1973,9 @@ width:160px;
     border-radius: 14px;
     padding: 6px 14px;
     box-shadow: var(--shadow);
-    margin-left: auto; /* Lo empuja hacia la derecha de la barra de filtros */
+    margin-left: auto;
     flex: none;
-    height: 42px; /* Mantiene la misma altura de los inputs de filtros */
+    height: 42px;
 }
 
 .kpi-ids-icon {
@@ -2025,38 +2010,19 @@ width:160px;
     font-weight: 900;
     color: #0f172a;
 }
-/* Eliminar el efecto fantasma / parpadeo en las tablas con scroll sincronizado */
+
 .planeacion-table-wrapper, .planeacion-scroll-top {
     transform: translateZ(0);
     will-change: scroll-position;
     backface-visibility: hidden;
 }
-/* Eliminar efecto fantasma / parpadeo en la barra de desplazamiento inferior de la tabla */
-.planeacion-table-wrapper {
-    transform: translateZ(0);
-    will-change: scroll-position;
-    backface-visibility: hidden;
-}
-/* Estabilizar celdas fijas para eliminar el parpadeo al hacer scroll */
-.planeacion-table th:nth-child(1),
-.planeacion-table td:nth-child(1),
-.planeacion-table th:nth-child(2),
-.planeacion-table td:nth-child(2),
-.planeacion-table th:nth-child(3),
-.planeacion-table td:nth-child(3) {
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-/* Cambiar el cursor a manito en las tarjetas de KPIs que funcionan como filtros */
+
 .kpi-card, .card {
     cursor: pointer;
 }
 
-/* ==========================================
-   NUEVA BARRA DE PROGRESO PROGRESIVA PARA CARGA MASIVA
-   ========================================== */
 .progreso-masivo-container {
-    display: none; /* Se mostrará correctamente cuando JS lo altere a block */
+    display: none;
     margin-top: 10px;
     width: 100%;
 }
@@ -2080,21 +2046,23 @@ width:160px;
 }
 
 .progreso-masivo-barra {
-    width: 0%; /* Inicia en 0% para el llenado progresivo mediante JS */
+    width: 0%;
     height: 100%;
     background: linear-gradient(90deg, #007bff, #00d2ff);
     border-radius: 4px;
-    transition: width 0.2s ease-out; /* Transición fluida al avanzar */
+    transition: width 0.2s ease-out;
 }
+
 /* ==========================================
-   BOTÓN HAMBURGUESA FLOTANTE EN EL BORDE DEL SIDEBAR
+   BOTÓN HAMBURGUESA FLOTANTE AL LADO DEL SIDEBAR
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 24px;
-    left: 232px; /* Alineado al borde derecho del sidebar de 260px (260px - 28px de ancho del botón) */
+    top: 20px;
+    left: 232px; /* Ubicado exactamente al borde derecho del sidebar colapsable */
     z-index: 99999;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     color: var(--text);
     width: 36px;
@@ -2105,7 +2073,7 @@ width:160px;
     cursor: pointer;
     font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-sidebar-toggle:hover {
@@ -2114,10 +2082,7 @@ width:160px;
     border-color: var(--primary);
 }
 
-/* Cuando el sidebar se oculta, el botón se mueve hacia la esquina superior izquierda de la pantalla para poder abrirlo */
+/* Cuando el sidebar se oculta, el botón se desliza hacia la esquina superior izquierda */
 body.sidebar-colapsado .btn-sidebar-toggle {
     left: 16px;
-    background: #ffffff;
-    border-color: var(--primary);
-    color: var(--primary);
 }
