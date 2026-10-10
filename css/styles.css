@@ -2074,7 +2074,7 @@ width:160px;
     
 }
 /* ==========================================
-   SIDEBAR FLOTANTE CON EFECTO VIDRIO
+   SIDEBAR TIPO PANEL FLOTANTE CON EFECTO VIDRIO
    ========================================== */
 .sidebar {
     position: fixed !important;
@@ -2082,10 +2082,10 @@ width:160px;
     left: 16px;
     height: calc((100vh - 32px) / 0.9) !important;
     width: 280px;
-    background: rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
     border-radius: 24px;
     z-index: 99998;
@@ -2094,21 +2094,20 @@ width:160px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Cuando está colapsado, se esconde casi todo pero se deja una pestaña de 18px asomándose en la línea roja */
+/* Cuando está colapsado, el sidebar se oculta por completo pero dejamos una pequeña pestaña translúcida flotando en la orilla */
 body.sidebar-colapsado .sidebar {
-    transform: translateX(-268px); 
-    opacity: 0.92;
-    pointer-events: auto; /* Permite hacer clic en la pestaña asomada si se desea */
-    box-shadow: 5px 0 25px rgba(15, 23, 42, 0.08);
+    transform: translateX(-295px); /* Lo desplaza fuera de la vista dejando solo la pestaña libre */
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA DINÁMICO (ACOMPAÑA AL SIDEBAR)
+   PESTAÑA / BADGE LATERAL Y BOTÓN HAMBURGUESA INTEGRADO
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
     top: 130px; 
-    left: 274px; /* Cuando el menú está abierto, se ubica justo al borde derecho */
+    left: 274px; /* Cuando el menú está abierto, se ubica al borde derecho del sidebar */
     z-index: 99999;
     background: #2563eb !important; 
     color: #ffffff !important; 
@@ -2130,21 +2129,31 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, la hamburguesa se queda exactamente en la orilla de la pestaña que se asoma */
+/* Cuando el sidebar se oculta, este botón se convierte en una elegante pestaña/badge vertical en la orilla izquierda */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    left: 14px; /* Posicionada exactamente sobre el borde izquierdo donde se asoma el menú */
-    background: #2563eb !important;
-    animation: pulsoAzul 2s infinite ease-in-out;
+    top: 130px;
+    left: 0px; /* Se ancla perfectamente al borde de la pantalla */
+    width: 32px; /* Ancho de la pestaña tipo badge */
+    height: 56px; /* Altura estilizada de pestaña */
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+    background: rgba(37, 99, 235, 0.9) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 4px 15px rgba(37, 99, 235, 0.3);
+    font-size: 1rem;
+    animation: pulsoPestaña 2s infinite ease-in-out;
 }
 
-@keyframes pulsoAzul {
+@keyframes pulsoPestaña {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
+        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0.8);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+        box-shadow: 2px 0 0 10px rgba(37, 99, 235, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0);
     }
 }
