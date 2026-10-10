@@ -49,14 +49,12 @@
                 Reportes
             </a>
 
-            <!-- Botón de Herramientas Avanzadas (Estilo UI/UX consistente, ubicado arriba de exportar) -->
-            <div class="config-section" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-                <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <!-- Botón de Herramientas Avanzadas (Ubicado arriba de exportar, con el color y estilo deseado) -->
+            <div class="export-box" style="margin-top: 15px;">
+                <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     ⚙️ Herramientas Avanzadas
                 </button>
-            </div>
 
-            <div class="export-box" style="margin-top: 15px;">
                 <label>Exportar Planeación</label>
                 <select id="exportRegion">
                     <option value="TODOS">Todos</option>
@@ -311,7 +309,7 @@
 
 </div>
 
-<!-- Scripts de la aplicación -->
+<!-- Scripts de la aplicación (settings.js incluido correctamente) -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/planeacion.js"></script>
