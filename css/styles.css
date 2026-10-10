@@ -2094,15 +2094,15 @@ width:160px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Cuando está colapsado, el sidebar se oculta por completo pero dejamos una pequeña pestaña translúcida flotando en la orilla */
+/* Cuando está colapsado, el sidebar se oculta por completo */
 body.sidebar-colapsado .sidebar {
-    transform: translateX(-295px); /* Lo desplaza fuera de la vista dejando solo la pestaña libre */
+    transform: translateX(-295px);
     opacity: 0;
     pointer-events: none;
 }
 
 /* ==========================================
-   PESTAÑA / BADGE LATERAL Y BOTÓN HAMBURGUESA INTEGRADO
+   PESTAÑA VERTICAL TIPO BADGE Y EFECTO LLAMATIVO
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
@@ -2129,31 +2129,32 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, este botón se convierte en una elegante pestaña/badge vertical en la orilla izquierda */
+/* Cuando el sidebar se oculta, se convierte en una pestaña vertical alargada (de arriba hacia abajo) en la orilla */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 130px;
-    left: 0px; /* Se ancla perfectamente al borde de la pantalla */
-    width: 32px; /* Ancho de la pestaña tipo badge */
-    height: 56px; /* Altura estilizada de pestaña */
+    top: 100px;
+    left: 0px; /* Anclado al borde izquierdo de la pantalla */
+    width: 26px;  /* Ancho sutil y elegante de pestaña */
+    height: 110px; /* Altura alargada verticalmente para mayor presencia */
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-    background: rgba(37, 99, 235, 0.9) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 4px 4px 15px rgba(37, 99, 235, 0.3);
-    font-size: 1rem;
-    animation: pulsoPestaña 2s infinite ease-in-out;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
+    backdrop-filter: blur(12px);
+    border-left: none;
+    box-shadow: 6px 0 25px rgba(37, 99, 235, 0.5);
+    font-size: 1.1rem;
+    animation: pulsoPestañaLlamativa 1.8s infinite ease-in-out;
 }
 
-@keyframes pulsoPestaña {
+@keyframes pulsoPestañaLlamativa {
     0% {
-        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0.8);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7), inset 0 0 0 rgba(255, 255, 255, 0);
     }
-    70% {
-        box-shadow: 2px 0 0 10px rgba(37, 99, 235, 0);
+    50% {
+        box-shadow: 0 0 0 12px rgba(37, 99, 235, 0), inset 2px 0 8px rgba(255, 255, 255, 0.4);
     }
     100% {
-        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0), inset 0 0 0 rgba(255, 255, 255, 0);
     }
 }
