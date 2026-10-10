@@ -2094,15 +2094,16 @@ width:160px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
-/* Cuando está colapsado, el sidebar se oculta por completo */
+/* Cuando está colapsado, el sidebar se desplaza casi por completo dejando visible solo una pestaña vertical de arriba a abajo */
 body.sidebar-colapsado .sidebar {
-    transform: translateX(-295px);
-    opacity: 0;
-    pointer-events: none;
+    transform: translateX(-250px); /* Deja asomar una franja vertical translúcida de unos 30px */
+    opacity: 0.95;
+    pointer-events: auto; /* Permite hacer clic en la franja para abrir */
+    box-shadow: 5px 0 25px rgba(15, 23, 42, 0.1);
 }
 
 /* ==========================================
-   PESTAÑA VERTICAL TIPO BADGE Y EFECTO LLAMATIVO
+   BOTÓN HAMBURGUESA EN SU TAMAÑO NORMAL DENTRO DE LA PESTAÑA
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
@@ -2129,32 +2130,26 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, se convierte en una pestaña vertical alargada (de arriba hacia abajo) en la orilla */
+/* Cuando el sidebar se oculta, la hamburguesa se queda integrada en la franja vertical que se asoma a la izquierda */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 100px;
-    left: 0px; /* Anclado al borde izquierdo de la pantalla */
-    width: 26px;  /* Ancho sutil y elegante de pestaña */
-    height: 110px; /* Altura alargada verticalmente para mayor presencia */
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
-    backdrop-filter: blur(12px);
-    border-left: none;
-    box-shadow: 6px 0 25px rgba(37, 99, 235, 0.5);
-    font-size: 1.1rem;
-    animation: pulsoPestañaLlamativa 1.8s infinite ease-in-out;
+    top: 130px;
+    left: 20px; /* Se queda posicionada justo en la franja visible del sidebar */
+    width: 42px;  /* Mantiene su tamaño normal y simétrico */
+    height: 42px;
+    border-radius: 12px;
+    background: #2563eb !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    animation: pulsoAzul 2s infinite ease-in-out;
 }
 
-@keyframes pulsoPestañaLlamativa {
+@keyframes pulsoAzul {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7), inset 0 0 0 rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.6);
     }
-    50% {
-        box-shadow: 0 0 0 12px rgba(37, 99, 235, 0), inset 2px 0 8px rgba(255, 255, 255, 0.4);
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0), inset 0 0 0 rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
     }
 }
