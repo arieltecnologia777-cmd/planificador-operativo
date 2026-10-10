@@ -26,7 +26,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 3. Verificar contraseña enviándola al servidor (Cloudflare Worker)
+    // 3. Verificar contraseña estrictamente contra Cloudflare Worker
     if (target.closest("#btnVerificarPassword")) {
         const inputPass = document.getElementById("inputAdminPassword");
         const pass = inputPass ? inputPass.value.trim() : "";
@@ -36,14 +36,28 @@ document.addEventListener("click", async (e) => {
             return;
         }
 
-        // Validación segura en el backend: si abres herramientas de admin, validamos contra Cloudflare
         try {
-            document.getElementById("modalAdminPassword").style.display = "none";
-            document.getElementById("modalAdminTools").style.display = "grid";
-            if (inputPass) inputPass.value = "";
+            const resp = await fetch(`${API_URL}/verificar`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pass })
+            });
+            const resultado = await resp.json();
+
+            if (resultado.ok) {
+                document.getElementById("modalAdminPassword").style.display = "none";
+                document.getElementById("modalAdminTools").style.display = "grid";
+                if (inputPass) inputPass.value = "";
+            } else {
+                alert("Contraseña incorrecta.");
+                inputPass.value = "";
+                inputPass.focus();
+            }
         } catch (err) {
             console.error("Error:", err);
-            alert("Ocurrió un error.");
+            alert("Error de red al verificar la contraseña con el servidor.");
+            inputPass.value = "";
+            inputPass.focus();
         }
         return;
     }
@@ -160,7 +174,6 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            // Enviamos la clave de forma segura en el header 'x-admin-password' hacia Cloudflare
             const resp = await fetch(API_URL, {
                 method: "DELETE",
                 headers: { 
