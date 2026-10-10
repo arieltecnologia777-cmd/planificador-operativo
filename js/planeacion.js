@@ -520,15 +520,21 @@ function actualizarKPIs(datos){
     const otsNoCumple = new Set();
     const otsProgramadas = new Set();
     
+    // Usamos un mapa o Set para evitar duplicar OTs al sumar los IDs afectados
+    const otsProcesadasIds = new Set();
     let sumaIdsAfectados = 0;
 
     datos.forEach(fila => {
         const ot = (fila[idxOT] || "").trim();
         const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
 
-        const valIds = parseInt(fila[idxIdsAfectados], 10);
-        if (!isNaN(valIds)) {
-            sumaIdsAfectados += valIds;
+        // Suma única por OT para evitar duplicados en IDs afectados
+        if (ot && !otsProcesadasIds.has(ot)) {
+            otsProcesadasIds.add(ot);
+            const valIds = parseInt(fila[idxIdsAfectados], 10);
+            if (!isNaN(valIds)) {
+                sumaIdsAfectados += valIds;
+            }
         }
 
         const regD1 = (window.registrosD1 || {})[ot] || {};
