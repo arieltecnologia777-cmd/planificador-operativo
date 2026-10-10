@@ -129,6 +129,90 @@ document.addEventListener("click", async (e) => {
         }
         return;
     }
+
+    // 8. Desde el menú de herramientas, abrir la sección de borrado (Eliminar Data)
+    if (target.closest("#btnAbrirBorrarData")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        document.getElementById("modalAdminBorrar").style.display = "grid";
+        return;
+    }
+
+    // 9. Volver del modal de borrado al menú de herramientas
+    if (target.closest("#btnVolverToolsBorrar, #cerrarModalBorrar")) {
+        document.getElementById("modalAdminBorrar").style.display = "none";
+        document.getElementById("modalAdminTools").style.display = "grid";
+        return;
+    }
+
+    // 10. Ejecutar Borrado Masivo ( DELETE FROM planeacion; )
+    if (target.closest("#btnAdminBorrarMasivo")) {
+        const confirmarDoble = window.prompt("⚠️ PELIGRO: Esto borrará TODA la tabla de planeación en el servidor.\nEscribe 'BORRAR TODO' para confirmar:");
+        if (confirmarDoble !== "BORRAR TODO") {
+            alert("Acción cancelada.");
+            return;
+        }
+
+        try {
+            const resp = await fetch(API_URL, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+            const resultado = await resp.json();
+
+            if (resultado.ok) {
+                window.registrosD1 = {};
+                alert("¡Se han borrado todos los registros exitosamente!");
+                document.getElementById("modalAdminBorrar").style.display = "none";
+                if (typeof aplicarFiltros === "function") {
+                    aplicarFiltros();
+                }
+            } else {
+                alert("Error al intentar vaciar la tabla en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Ocurrió un error de red al intentar vaciar la tabla.");
+        }
+        return;
+    }
+
+    // 11. Ejecutar Borrado por OT Individual ( DELETE FROM planeacion WHERE ot = '...' )
+    if (target.closest("#btnAdminBorrarOt")) {
+        const inputOtBorrar = document.getElementById("adminInputOtBorrar");
+        const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
+
+        if (!otVal) {
+            alert("Por favor ingresa el número de la OT que deseas eliminar.");
+            return;
+        }
+
+        const confirmar = window.confirm(`¿Estás completamente seguro de eliminar el registro de la OT ${otVal}?`);
+        if (!confirmar) return;
+
+        try {
+            const resp = await fetch(`${API_URL}?ot=${encodeURIComponent(otVal)}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+            const resultado = await resp.json();
+
+            if (resultado.ok) {
+                delete window.registrosD1[otVal];
+                alert(`¡Éxito! La OT ${otVal} fue eliminada del servidor.`);
+                inputOtBorrar.value = "";
+                document.getElementById("modalAdminBorrar").style.display = "none";
+                if (typeof aplicarFiltros === "function") {
+                    aplicarFiltros();
+                }
+            } else {
+                alert("Error al eliminar la OT en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Ocurrió un error de red al intentar eliminar la OT.");
+        }
+        return;
+    }
 });
 
 // Permitir presionar "Enter" en el campo de contraseña para iniciar sesión rápido
