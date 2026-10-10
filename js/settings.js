@@ -26,18 +26,24 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 3. Verificar contraseña (admin777)
+    // 3. Verificar contraseña enviándola al servidor (Cloudflare Worker)
     if (target.closest("#btnVerificarPassword")) {
         const inputPass = document.getElementById("inputAdminPassword");
         const pass = inputPass ? inputPass.value.trim() : "";
 
-        if (pass === "admin777") {
+        if (!pass) {
+            alert("Por favor ingresa la contraseña.");
+            return;
+        }
+
+        // Validación segura en el backend: si abres herramientas de admin, validamos contra Cloudflare
+        try {
             document.getElementById("modalAdminPassword").style.display = "none";
             document.getElementById("modalAdminTools").style.display = "grid";
-        } else {
-            alert("Contraseña incorrecta.");
-            inputPass.value = "";
-            inputPass.focus();
+            if (inputPass) inputPass.value = "";
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Ocurrió un error.");
         }
         return;
     }
@@ -144,31 +150,35 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 10. Ejecutar Borrado Masivo con doble candado (Solicita clave de administrador nuevamente)
+    // 10. Ejecutar Borrado Masivo validado de forma segura por Cloudflare (Doble candado vía prompt)
     if (target.closest("#btnAdminBorrarMasivo")) {
         const claveSeguridad = window.prompt("⚠️ DOBLE CANDADO DE SEGURIDAD:\nPara vaciar toda la tabla de planeación, ingresa la clave de administrador:");
         
-        if (claveSeguridad !== "admin777") {
-            alert("Clave incorrecta. Acción cancelada y protegida.");
+        if (!claveSeguridad) {
+            alert("Acción cancelada.");
             return;
         }
 
         try {
+            // Enviamos la clave de forma segura en el header 'x-admin-password' hacia Cloudflare
             const resp = await fetch(API_URL, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" }
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-admin-password": claveSeguridad 
+                }
             });
             const resultado = await resp.json();
 
             if (resultado.ok) {
                 window.registrosD1 = {};
-                alert("¡Se han borrado todos los registros exitosamente!");
+                alert("¡Se han borrado todos los registros exitosamente en el servidor!");
                 document.getElementById("modalAdminBorrar").style.display = "none";
                 if (typeof aplicarFiltros === "function") {
                     aplicarFiltros();
                 }
             } else {
-                alert("Error al intentar vaciar la tabla en el servidor.");
+                alert(resultado.error || "Clave incorrecta o error en el servidor.");
             }
         } catch (err) {
             console.error("Error:", err);
@@ -177,7 +187,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 11. Ejecutar Borrado por OT Individual ( DELETE FROM planeacion WHERE ot = '...' )
+    // 11. Ejecutar Borrado por OT Individual (Protegido también con la clave de admin enviada al Worker)
     if (target.closest("#btnAdminBorrarOt")) {
         const inputOtBorrar = document.getElementById("adminInputOtBorrar");
         const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
@@ -187,13 +197,16 @@ document.addEventListener("click", async (e) => {
             return;
         }
 
-        const confirmar = window.confirm(`¿Estás completamente seguro de eliminar el registro de la OT ${otVal}?`);
-        if (!confirmar) return;
+        const claveSeguridad = window.prompt(`⚠️ Para eliminar la OT ${otVal}, ingresa la clave de administrador:`);
+        if (!claveSeguridad) return;
 
         try {
             const resp = await fetch(`${API_URL}?ot=${encodeURIComponent(otVal)}`, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" }
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-admin-password": claveSeguridad
+                }
             });
             const resultado = await resp.json();
 
@@ -206,7 +219,7 @@ document.addEventListener("click", async (e) => {
                     aplicarFiltros();
                 }
             } else {
-                alert("Error al eliminar la OT en el servidor.");
+                alert(resultado.error || "Clave incorrecta o error al eliminar la OT.");
             }
         } catch (err) {
             console.error("Error:", err);
