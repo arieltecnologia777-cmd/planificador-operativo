@@ -11,22 +11,21 @@
 
 <body>
 
+<!-- Botón hamburguesa flotante fijo en la pantalla -->
+<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
+    ☰
+</button>
+
 <div class="layout">
 
     <aside class="sidebar">
 
-        <div class="logo-box" style="display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
-                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
-                <div class="logo-text">
-                    <h3>Planeación</h3>
-                    <span>Gestión de programación</span>
-                </div>
+        <div class="logo-box">
+            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
+            <div class="logo-text">
+                <h3>Planeación</h3>
+                <span>Gestión de programación</span>
             </div>
-            <!-- Botón hamburguesa para colapsar/ocultar el sidebar -->
-            <button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-                ☰
-            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -321,7 +320,7 @@
 <script src="../js/planeacion.js"></script>
 <script src="../js/settings.js"></script>
 
-<!-- Script para controlar el botón de hamburguesa (colapsar/expandir sidebar) -->
+<!-- Script para controlar el botón de hamburguesa -->
 <script>
     document.addEventListener("click", (e) => {
         const btnToggle = e.target.closest("#btnToggleSidebar");
@@ -331,7 +330,7 @@
     });
 </script>
 
-<!-- Modal de Observaciones -->
+<!-- Modales -->
 <div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content">
         <div class="obs-modal-header">
@@ -355,7 +354,6 @@
     </div>
 </div>
 
-<!-- Modal 1: Contraseña de Administrador -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
@@ -373,7 +371,6 @@
     </div>
 </div>
 
-<!-- Modal 2: Menú de Herramientas de Administrador -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 450px;">
         <div class="obs-modal-header">
@@ -394,7 +391,6 @@
     </div>
 </div>
 
-<!-- Modal 3: Forzar Fecha OT -->
 <div id="modalAdminFecha" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 450px;">
         <div class="obs-modal-header">
@@ -418,7 +414,6 @@
     </div>
 </div>
 
-<!-- Modal 4: Opciones de Borrado Masivo o Individual -->
 <div id="modalAdminBorrar" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 480px;">
         <div class="obs-modal-header">
@@ -426,7 +421,6 @@
             <button type="button" id="cerrarModalBorrar" class="obs-modal-close">&times;</button>
         </div>
         <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 20px;">
-            <!-- Sección Borrado Individual -->
             <div style="background: #fff5f5; padding: 12px; border-radius: 6px; border: 1px solid #feb2b2;">
                 <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #c53030; font-size: 0.9rem;">Borrar Registro Individual (OT):</label>
                 <div style="display: flex; gap: 8px;">
@@ -435,7 +429,6 @@
                 </div>
             </div>
 
-            <!-- Sección Borrado Masivo -->
             <div style="background: #fff5f5; padding: 12px; border-radius: 6px; border: 1px solid #feb2b2; text-align: center;">
                 <p style="font-size: 0.85rem; color: #c53030; margin-bottom: 10px;">Acción de alto riesgo: Vacía por completo la tabla de planeación en la base de datos.</p>
                 <button type="button" id="btnAdminBorrarMasivo" style="width: 100%; padding: 10px; background: #9b2c2c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
@@ -449,7 +442,6 @@
     </div>
 </div>
 
-<!-- Modal de Confirmación de Clave Segura -->
 <div id="modalClaveSegura" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
