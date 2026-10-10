@@ -2105,12 +2105,12 @@ body.sidebar-colapsado .sidebar {
     pointer-events: none;
 }
 /* ==========================================
-   PESTAÑA / BADGE LATERAL Y BOTÓN HAMBURGUESA INTEGRADO
+   BOTÓN HAMBURGUESA CUANDO EL SIDEBAR ESTÁ ABIERTO
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
     top: 130px; 
-    left: 274px; /* Cuando el menú está abierto, se ubica al borde derecho del sidebar */
+    left: 274px; /* Pegado justo al borde derecho del sidebar de 280px de ancho */
     z-index: 99999;
     background: #2563eb !important; 
     color: #ffffff !important; 
@@ -2125,13 +2125,6 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.btn-sidebar-toggle:hover {
-    background: #1d4ed8 !important;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-}
-
 /* ==========================================
    PESTAÑA / TARJETA VERTICAL CON EFECTO VIDRIO AZULADO
    ========================================== */
