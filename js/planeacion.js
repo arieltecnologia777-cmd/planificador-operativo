@@ -202,27 +202,17 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Función optimizada: permite editar el estado u observaciones sin perder la etiqueta "Sí" si es del día de hoy
+// Lógica inteligente: Permite editar hoy sin perder el "Sí", pero expira automáticamente mañana
 function esCasoNuevo(otVal) {
-    const reg = (window.registrosD1 || {})[otVal];
-    const claveStorage = `ot_creada_${otVal}`;
+    const claveStorage = `ot_fecha_ingreso_${otVal}`;
     const hoy = new Date().toISOString().split('T')[0];
 
-    const esVirgenD1 = !reg || (!reg.estadoGestion && !reg.estadoProgramacion && !reg.observacion);
-
-    if (esVirgenD1) {
-        if (!localStorage.getItem(claveStorage)) {
-            localStorage.setItem(claveStorage, hoy);
-        }
-        return true;
+    if (!localStorage.getItem(claveStorage)) {
+        localStorage.setItem(claveStorage, hoy);
     }
 
-    const fechaCreacionLocal = localStorage.getItem(claveStorage);
-    if (fechaCreacionLocal === hoy) {
-        return true;
-    }
-
-    return false;
+    const fechaIngreso = localStorage.getItem(claveStorage);
+    return fechaIngreso === hoy;
 }
 
 function inicializarBotonAgruparColumnas() {
