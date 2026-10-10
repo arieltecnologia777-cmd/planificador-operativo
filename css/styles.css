@@ -33,24 +33,38 @@ button{
 }
 
 .layout{
-    display:grid;
-    grid-template-columns:260px minmax(0,1fr);
+    display:block !important;
+    position:relative;
     min-height:100vh;
     zoom:0.90;
 }
 /* =========================
-   SIDEBAR
+   SIDEBAR FLOTANTE (ESTILO OVERLAY)
 ========================= */
 
 .sidebar{
-    background:var(--sidebar);
-    border-right:1px solid var(--border);
-    box-shadow:var(--shadow);
-    height:calc(100vh / 0.9);
-    position:sticky;
-    top:0;
+    position:fixed !important;
+    top:12px;
+    left:12px;
+    height:calc((100vh - 24px) / 0.9) !important;
+    width:280px;
+    background:rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(15, 23, 42, 0.15);
+    z-index:99998;
     padding:16px;
-    z-index:10;
+    overflow-y:auto;
+    transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+/* Estado oculto del sidebar */
+body.sidebar-colapsado .sidebar {
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 
@@ -143,6 +157,8 @@ button{
 ========================= */
 
 .main-content{
+    width:100% !important;
+    margin:0 !important;
     padding:16px 18px 30px;
     min-width:0;
 }
@@ -2086,38 +2102,32 @@ width:160px;
     border-radius: 4px;
     transition: width 0.2s ease-out; /* Transición fluida al avanzar */
 }
+
 /* ==========================================
-   BOTÓN HAMBURGUESA FLOTANTE EN EL BORDE DEL SIDEBAR
+   BOTÓN HAMBURGUESA FLOTANTE FIJO ARRIBA A LA DERECHA
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 24px;
-    left: 232px; /* Alineado al borde derecho del sidebar de 260px (260px - 28px de ancho del botón) */
+    top: 20px;
+    right: 24px;
     z-index: 99999;
     background: #ffffff;
     border: 1px solid var(--border);
     color: var(--text);
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: grid;
     place-items: center;
     cursor: pointer;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
+    transition: all 0.2s ease;
 }
 
 .btn-sidebar-toggle:hover {
     background: var(--primary);
     color: #fff;
     border-color: var(--primary);
-}
-
-/* Cuando el sidebar se oculta, el botón se mueve hacia la esquina superior izquierda de la pantalla para poder abrirlo */
-body.sidebar-colapsado .btn-sidebar-toggle {
-    left: 16px;
-    background: #ffffff;
-    border-color: var(--primary);
-    color: var(--primary);
+    transform: scale(1.05);
 }
