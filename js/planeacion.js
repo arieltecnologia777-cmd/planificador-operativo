@@ -1327,7 +1327,6 @@ async function guardarOT(fila, observacionForzada = null){
     const inputObs = fila.querySelector(".observacion");
     const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
 
-    // Calculamos la fecha local exacta de tu navegador (ej: "2026-10-09")
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
     const payload = {
@@ -1338,7 +1337,7 @@ async function guardarOT(fila, observacionForzada = null){
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
-        fechaLocal: fechaLocalHoy // <--- Mandamos la fecha local limpia
+        fechaLocal: fechaLocalHoy
     };
 
     try {
@@ -1585,7 +1584,7 @@ window.exportarPlaneacion = function() {
                 item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion), 
                 limpiarTexto(item.regD1.estadoGestion),
-                limpiarTexto(item.regD1.tecnicoAsignado),
+                limpiarTexto(item.regD1.tecnicoAsigned),
                 limpiarTexto(item.regD1.acompanamiento),
                 getValor("Indicador backlog"), 
                 getValor("Stopper P3"),
@@ -1968,64 +1967,5 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             lector.readAsArrayBuffer(archivo);
         });
-    }
-});
-document.addEventListener("click", async (e) => {
-    if (e.target && e.target.id === "btnAdminGuardarFecha") {
-        const inputOt = document.getElementById("adminInputOt");
-        const inputFecha = document.getElementById("adminInputFecha");
-
-        const otVal = inputOt ? inputOt.value.trim() : "";
-        const fechaVal = inputFecha ? inputFecha.value : "";
-
-        if (!otVal || !fechaVal) {
-            alert("Por favor ingresa tanto el número de la OT como la fecha correcta.");
-            return;
-        }
-
-        const confirmar = window.confirm(`¿Estás seguro de cambiar la fecha de creación de la OT ${otVal} a ${fechaVal}?`);
-        if (!confirmar) return;
-
-        // Buscamos si ya existe el registro local para no perder sus otros estados
-        const regActual = window.registrosD1[otVal] || {};
-
-        const payload = {
-            ot: otVal,
-            estadoProgramacion: regActual.estadoProgramacion || "",
-            fechaProgramacion: regActual.fechaProgramacion || "",
-            observacion: regActual.observacion || "",
-            estadoGestion: regActual.estadoGestion || "",
-            tecnicoAsignado: regActual.tecnicoAsignado || "",
-            acompanamiento: regActual.acompanamiento || "",
-            customCreatedAt: fechaVal // <--- Aquí mandamos la fecha personalizada de admin
-        };
-
-        try {
-            const resp = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const resultado = await resp.json();
-
-            if (resultado.ok) {
-                // Actualizamos el objeto en memoria
-                window.registrosD1[otVal] = {
-                    ...regActual,
-                    ot: otVal,
-                    createdAt: resultado.createdAt
-                };
-                
-                alert(`¡Éxito! La OT ${otVal} ahora tiene fecha de creación ${resultado.createdAt}.`);
-                inputOt.value = "";
-                inputFecha.value = "";
-                aplicarFiltros(); // Refresca la tabla para que se actualice el indicador Sí/No
-            } else {
-                alert("Error al actualizar la fecha en el servidor.");
-            }
-        } catch (err) {
-            console.error("Error:", err);
-            alert("Ocurrió un error de red al intentar actualizar la OT.");
-        }
     }
 });
