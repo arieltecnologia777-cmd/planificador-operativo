@@ -5,7 +5,7 @@ document.addEventListener("click", async (e) => {
     const target = e.target;
 
     // 1. Clic en el botón del sidebar "Herramientas Avanzadas" -> Abre modal de contraseña
-    if (target.closest("#btnAbrirModalAdmin")) {
+    if (target.closest("#btnAbrirConfig")) {
         const modalPass = document.getElementById("modalAdminPassword");
         const inputPass = document.getElementById("inputAdminPassword");
         if (inputPass) inputPass.value = "";
