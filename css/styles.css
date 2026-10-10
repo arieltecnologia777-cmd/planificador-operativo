@@ -117,8 +117,10 @@ button{
     font-size:.92rem;
 }
 
-.sidebar-nav a:hover{
-    background:#f8fafc;
+/* Efecto hover sutil unificado para botones del sidebar */
+.sidebar-nav a:hover,
+#btnAbrirConfig:hover {
+    background:#f1f5f9;
     border-color:var(--border);
     transform:translateX(3px);
 }
@@ -1183,10 +1185,12 @@ min-width:220px;
     padding:10px 12px;
     border-bottom:1px solid #edf1f5;
     font-size:.90rem;
+    transition: background-color 0.15s ease;
 }
 
-.planeacion-table tr:hover{
-    background:#fafcff;
+/* EFECTO HOVER SUTIL EN TODA LA FILA DE LA TABLA */
+.planeacion-table tbody tr:hover td {
+    background-color: #f1f5f9 !important;
 }
 
 .editable-col{
@@ -1535,11 +1539,20 @@ min-width:220px;
     color:#fff;
     font-weight:700;
     cursor:pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
-#btnExportarExcel:hover{
+/* Efecto hover sutil para el botón de exportar excel y subida masiva */
+#btnExportarExcel:hover,
+.btn-subir-excel:hover {
     background:#1d4ed8;
+    transform:translateX(2px);
 }
+
+.btn-subir-excel {
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
 .expand-btn{
     border:0;
     width:40px;
