@@ -203,16 +203,20 @@ const TECNICOS = [
 ];
 
 // Lógica inteligente: Permite editar hoy sin perder el "Sí", pero expira automáticamente mañana
+// Función nueva basada en la base de datos D1 (sin localStorage)
+// Función nueva basada en la base de datos D1 (sin localStorage)
 function esCasoNuevo(otVal) {
-    const claveStorage = `ot_fecha_ingreso_${otVal}`;
-    const hoy = new Date().toISOString().split('T')[0];
-
-    if (!localStorage.getItem(claveStorage)) {
-        localStorage.setItem(claveStorage, hoy);
+    const reg = (window.registrosD1 || {})[otVal];
+    
+    // Si no está registrado en D1 o no tiene fecha de creación, se asume nuevo
+    if (!reg || !reg.createdAt) {
+        return true;
     }
 
-    const fechaIngreso = localStorage.getItem(claveStorage);
-    return fechaIngreso === hoy;
+    const hoy = new Date().toISOString().split('T')[0];
+    
+    // Compara la fecha real guardada en D1 con el día de hoy
+    return reg.createdAt.startsWith(hoy);
 }
 
 function inicializarBotonAgruparColumnas() {
