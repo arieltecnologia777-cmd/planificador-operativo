@@ -1,7 +1,13 @@
 // Variable de control para evitar ejecuciones duplicadas
 let procesandoCambioFecha = false;
+let ejecutandoClickGlobal = false;
 
 document.addEventListener("click", async (e) => {
+    // Evita doble ejecución si el evento se propaga rápidamente o hay scripts duplicados
+    if (ejecutandoClickGlobal) return;
+    ejecutandoClickGlobal = true;
+    setTimeout(() => { ejecutandoClickGlobal = false; }, 100);
+
     const target = e.target;
 
     // 1. Clic en el botón del sidebar "Herramientas Avanzadas" -> Abre modal de contraseña
