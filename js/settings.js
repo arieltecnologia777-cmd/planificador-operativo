@@ -1,506 +1,129 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planeación Operativa</title>
-
-    <link rel="stylesheet" href="../css/styles.css">
-</head>
-
-<body>
-
-<div class="layout">
-
-    <aside class="sidebar">
-
-        <div class="logo-box">
-
-    <img src="../assets/dominion_logo.png"
-        class="logo-img"
-        alt="Dominion">
-
-    <div class="logo-text">
-
-        <h3>
-            Planeación
-        </h3>
-
-        <span>
-            Gestión de programación
-        </span>
-
-    </div>
-
-</div>
-        <nav class="sidebar-nav">
-
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-    <span class="nav-icon" >📊</span>
-    Dashboard
-</a>
-            <a href="#" class="active">
-                <span class="nav-icon">📅</span>
-                Planeación
-            </a>
-
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📋</span>
-                Seguimiento
-            </a>
-
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
-                Centros Digitales
-            </a>
-
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
-                Mapa
-            </a>
-
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
-                Reportes
-            </a>
-
-            <div class="export-box" style="margin-top: 15px;">
-
-    <label>
-        Exportar Planeación
-    </label>
-
-    <select id="exportRegion">
-        <option value="TODOS">Todos</option>
-        <option value="R1">R1</option>
-        <option value="R2">R2</option>
-    </select>
-
-   <button id="btnExportarExcel" onclick="exportarPlaneacion()">
-    📥 Exportar Excel
-</button>
-
-    <div class="carga-masiva-container" style="margin-top: 10px;">
-        <label for="inputExcelMasivo" class="btn-subir-excel" style="cursor: pointer; background: #28a745; color: white; padding: 10px 12px; border-radius: 4px; font-size: 0.9rem; display: block; text-align: center;">
-            📂 Subir Excel Masivo
-        </label>
-        <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
-    </div>
-<div id="containerProgresoMasivo" class="progreso-masivo-container">
-    <div class="progreso-masivo-header">
-        <span id="textoProgreso">Procesando archivo...</span>
-        <span id="porcentajeProgreso">0%</span>
-    </div>
-    <div class="progreso-masivo-track">
-        <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%;"></div>
-    </div>
-</div>
-</div>
-
-            <!-- SECCIÓN DE CONFIGURACIÓN -->
-            <div class="config-box" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                <label style="font-weight: bold; color: #2d3748; display: block; margin-bottom: 8px; font-size: 0.85rem;">
-                    Configuración
-                </label>
-                <button type="button" id="btnAbrirModalAdmin" style="background: #e2e8f0; color: #2d3748; border: none; width: 100%; padding: 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='#cbd5e0'" onmouseout="this.style.background='#e2e8f0'">
-                    ⚙️ Herramientas Avanzadas
-                </button>
-            </div>
-
-        </nav>
-
-    </aside>
-
-    <main class="main-content">
-
-        <header class="hero">
-
-            <div class="hero-content">
-
-                <div class="hero-badge">
-                    <span></span>
-                    PLANEACIÓN
-                </div>
-
-                <h1>Planeación Operativa</h1>
-
-                <p>
-                    Programación, seguimiento y gestión de órdenes de trabajo.
-                </p>
-
-            </div>
-
-        </header>
-
-        <section id="kpis">
-
-            <div class="card kpi-card kpi-red">
-    <div class="kpi-top">
-        <span class="kpi-icon">!</span>
-        <h3>Alta Prioridad</h3>
-    </div>
-
-    <span class="kpi-value" id="kpiAltaPlaneacion">--</span>
-
-    <div class="kpi-trend">
-        Requieren atención inmediata
-    </div>
-</div>
-
-            <div class="card kpi-card kpi-green">
-                <div class="kpi-top">
-    <span class="kpi-icon">▲</span>
-    <h3>Media Prioridad</h3>
-</div>
-
-<span class="kpi-value" id="kpiMediaPlaneacion">--</span>
-
-<div class="kpi-trend">
-    Seguimiento requerido
-</div>
-            </div>
-
-            <div class="card kpi-card kpi-cyan">
-                <div class="kpi-top">
-    <span class="kpi-icon">▼</span>
-    <h3>Baja Prioridad</h3>
-</div>
-
-<span class="kpi-value" id="kpiBajaPlaneacion">--</span>
-
-<div class="kpi-trend">
-    Gestión ordinaria
-</div>
-            </div>
-
-            <div class="card kpi-card kpi-green">
-    <div class="kpi-top">
-        <span class="kpi-icon">✓</span>
-        <h3>Cumple Backlog</h3>
-    </div>
-
-<span class="kpi-value" id="kpiCumpleBacklog">--</span>
-
-<div class="kpi-trend">
-    Dentro del objetivo
-</div>
-            </div>
-
-           <div class="card kpi-card kpi-red">
-    <div class="kpi-top">
-        <span class="kpi-icon">!</span>
-        <h3>Incumple Backlog</h3>
-    </div>
-
-    <span class="kpi-value" id="kpiNoCumpleBacklog">--</span>
-
-    <div class="kpi-trend">
-        Requieren intervención
-    </div>
-</div>
-
-<div class="card kpi-card kpi-indigo">
-    <div class="kpi-top">
-        <span class="kpi-icon">📅</span>
-        <h3>Programados</h3>
-    </div>
-
-    <span class="kpi-value" id="kpiProgramadosD1">
-        --
-    </span>
-    
-    <div class="kpi-trend">
-        Definidos por gestión
-    </div>
-</div>
-            
-
-        </section>
-<div id="panelPlaceholder"></div>
-        <section class="panel">
-
-           <div class="planeacion-header">
-
-    <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-
-        <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; width: 100%;">
-            <h2>Planeación Operativa</h2>
-            
-            <!-- Buscador trasladado al lado izquierdo de limpiar filtros -->
-            <input
-                id="filtroBusqueda"
-                type="text"
-                placeholder="Buscador general..."
-                style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 220px;">
-
-            <button id="btnLimpiarFiltros" class="btn-limpiar-header" title="Restablecer todos los filtros">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-                Limpiar filtros
-            </button>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="kpi-ids-afectados-widget">
-                <div class="kpi-ids-content">
-                    <span class="kpi-ids-label">Total IDs Afectados</span>
-                    <span id="totalIdsAfectados" class="kpi-ids-value">0</span>
-                </div>
-            </div>
-
-            <button id="btnZoom" class="expand-btn" title="Zoom / Pantalla completa">
-                ⛶
-            </button>
-        </div>
-
-    </div>
-
-</div>
-
-            <div class="planeacion-filtros-sticky">
-
-    <div class="planeacion-filtros">
-
-        <!-- Nuevo filtro para casos Nuevos / Existentes -->
-        <div class="multi-filtro" id="multiNuevo">
-            <button type="button" id="btnNuevo" class="multi-filtro-btn">
-                <span id="textoNuevo">Nuevo / Existente</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaNuevo" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiDepartamento">
-            <button type="button" id="btnDepartamento" class="multi-filtro-btn">
-                <span id="textoDepartamento">Departamento</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaDepartamento" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiEstado">
-            <button type="button" id="btnEstado" class="multi-filtro-btn">
-                <span id="textoEstado">Estado</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaEstado" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiAfectacion">
-            <button type="button" id="btnAfectacion" class="multi-filtro-btn">
-                <span id="textoAfectacion">Afectación</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaAfectacion" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiStoppers">
-            <button type="button" id="btnStoppers" class="multi-filtro-btn">
-                <span id="textoStoppers">Stoppers</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaStoppers" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiDiasOT">
-            <button type="button" id="btnDiasOT" class="multi-filtro-btn">
-                <span id="textoDiasOT">Días OT</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaDiasOT" class="multi-filtro-lista"></div>
-        </div>
-
-        <div class="multi-filtro" id="multiRango">
-            <button type="button" id="btnRango" class="multi-filtro-btn">
-                <span id="textoRango">Rango</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaRango" class="multi-filtro-lista"></div>
-        </div>
-
-       <div class="multi-filtro" id="multiFechaProg">
-            <button type="button" id="btnFechaProg" class="multi-filtro-btn">
-                <span id="textoFechaProg">Fecha programación</span>
-                <span class="multi-filtro-arrow">⌄</span>
-            </button>
-            <div id="listaFechaProg" class="multi-filtro-lista"></div>
-       </div>
-
-</div>
-
-</div>
-
-
-<div class="scroll-with-arrows-top">
-    <button type="button" class="btn-scroll-arrow" id="scrollLeftTopBtn" title="Izquierda">&#9664;</button>
-    <div class="planeacion-scroll-top">
-        <div class="planeacion-scroll-top-inner"></div>
-    </div>
-    <button type="button" class="btn-scroll-arrow" id="scrollRightTopBtn" title="Derecha">&#9654;</button>
-</div>
-
-<div class="planeacion-table-wrapper">
-
-    <table class="planeacion-table">
-
-        <thead>
-    <tr>
-
-        <th>ID</th>
-        <th>Departamento</th>
-        <th>Municipio</th>
-        <th>IM</th>
-        <th>OT</th>
-        <th>Afectación</th>
-        <th style="background-color: #f7fafc; text-align: center;">Nuevo</th>
-        <th>IDS afectados</th>
-        <th>Días OT</th>
-        <th>Rango de afectación</th>
-        <th>Prioridad</th>
-        <th>Stoppers</th>
-
-        <th class="editable-col">
-            Estado programación
-        </th>
-
-        <th class="editable-col">
-            Fecha programación
-        </th>
-
-        <th class="editable-col">
-            Observaciones
-        </th>
-
-        <th class="editable-col">
-            Estado gestión
-        </th>
-
-        <th class="editable-col">
-            Técnico asignado
-        </th>
-
-        <th class="editable-col">
-            Acompañamiento
-        </th>
-
-        <th>Indicador backlog</th>
-        <th>Stopper P3</th>
-        <th>Tipo facturación</th>
-        <th>Fecha vencimiento FM</th>
-        <th>Alerta vencimiento FM</th>
-
-    </tr>
-</thead>
-
-<tbody id="planeacionBody">
-
-        </tbody>
-
-    </table>
-
-</div>
-        </section>
-
-    </main>
-
-</div>
-
-<!-- MODAL DE OBSERVACIONES -->
-<div id="modalObservacion" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content">
-        <div class="obs-modal-header">
-            <h3>📝 Observaciones del Sitio</h3>
-            <button type="button" id="cerrarModalObs" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body">
-            <div id="obsModalOtInfo" class="obs-modal-subtitle">
-                <div><strong>ID:</strong> <span id="modalValId">--</span></div>
-                <div><strong>Departamento:</strong> <span id="modalValDepto">--</span></div>
-                <div><strong>Municipio:</strong> <span id="modalValMuni">--</span></div>
-                <div><strong>Orden de Trabajo (OT):</strong> <span id="modalValOt">--</span></div>
-                <div><strong>Tipo de afectación:</strong> <span id="modalValAfec">--</span></div>
-            </div>
-            <textarea id="textareaModalObs" rows="6" placeholder="Escribe o actualiza los avances aquí..."></textarea>
-        </div>
-        <div class="obs-modal-footer">
-            <button type="button" id="btnCancelarObs" class="obs-btn-secundario">Cerrar</button>
-            <button type="button" id="btnGuardarObs" class="obs-btn-principal">Guardar cambios</button>
-        </div>
-    </div>
-</div>
-
-<!-- 1. MODAL DE CONTRASEÑA -->
-<div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 350px;">
-        <div class="obs-modal-header">
-            <h3>🔒 Acceso Restringido</h3>
-            <button type="button" id="cerrarModalPassword" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 10px;">
-            <p style="font-size: 0.85rem; color: #4a5568; margin: 0;">Ingresa la contraseña de administrador:</p>
-            <input type="password" id="inputAdminPassword" placeholder="Contraseña..." style="width: 100%; padding: 8px; font-size: 0.9rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
-        </div>
-        <div class="obs-modal-footer">
-            <button type="button" id="btnCancelarPassword" class="obs-btn-secundario">Cancelar</button>
-            <button type="button" id="btnVerificarPassword" class="obs-btn-principal">Ingresar</button>
-        </div>
-    </div>
-</div>
-
-<!-- 2. MODAL MENÚ DE HERRAMIENTAS AVANZADAS (OPCIONES) -->
-<div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 450px;">
-        <div class="obs-modal-header">
-            <h3>⚙️ Herramientas Avanzadas</h3>
-            <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="font-size: 0.85rem; color: #4a5568; margin: 0;">Selecciona la herramienta que deseas utilizar:</p>
-            
-            <!-- Opción 1: Forzar Fecha OT -->
-            <button type="button" id="btnAbrirForzarFecha" style="background: #f7fafc; border: 1px solid #cbd5e0; padding: 12px; border-radius: 6px; text-align: left; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#edf2f7'" onmouseout="this.style.background='#f7fafc'">
-                <div style="font-weight: bold; color: #2d3748; font-size: 0.9rem;">🛠️ Forzar Fecha de Creación (OT)</div>
-                <div style="font-size: 0.75rem; color: #718096; margin-top: 2px;">Modifica manualmente el createdAt de una orden de trabajo.</div>
-            </button>
-            
-            <!-- Aquí en el futuro puedes agregar más botones para más herramientas avanzadas -->
-        </div>
-        <div class="obs-modal-footer">
-            <button type="button" id="btnCerrarTools" class="obs-btn-secundario">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<!-- 3. MODAL ESPECÍFICO: FORZAR FECHA OT -->
-<div id="modalAdminFecha" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 400px;">
-        <div class="obs-modal-header">
-            <h3>🛠️ Forzar Fecha OT</h3>
-            <button type="button" id="cerrarModalAdmin" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div>
-                <label style="font-size: 0.85rem; font-weight: bold; color: #2d3748; display: block; margin-bottom: 4px;">Número de OT:</label>
-                <input type="text" id="adminInputOt" placeholder="Ej. OT0000001" style="width: 100%; padding: 8px; font-size: 0.9rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
-            </div>
-            <div>
-                <label style="font-size: 0.85rem; font-weight: bold; color: #2d3748; display: block; margin-bottom: 4px;">Fecha de Creación Real:</label>
-                <input type="date" id="adminInputFecha" style="width: 100%; padding: 8px; font-size: 0.9rem; border: 1px solid #cbd5e0; border-radius: 4px; box-sizing: border-box;">
-            </div>
-        </div>
-        <div class="obs-modal-footer">
-            <button type="button" id="btnVolverTools" class="obs-btn-secundario">← Volver</button>
-            <button type="button" id="btnAdminGuardarFecha" class="obs-btn-principal">Actualizar Fecha OT</button>
-        </div>
-    </div>
-</div>
-
- <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
- <script src="../js/app.js"></script>
- <script src="../js/planeacion.js"></script>
- <script src="../js/settings.js"></script>
- </body>
- </html>
+document.addEventListener("click", async (e) => {
+    const target = e.target;
+
+    // 1. Clic en el botón del sidebar "Herramientas Avanzadas" -> Abre modal de contraseña
+    if (target.closest("#btnAbrirModalAdmin")) {
+        const modalPass = document.getElementById("modalAdminPassword");
+        const inputPass = document.getElementById("inputAdminPassword");
+        if (inputPass) inputPass.value = "";
+        if (modalPass) modalPass.style.display = "grid";
+        if (inputPass) inputPass.focus();
+        return;
+    }
+
+    // 2. Botones para cerrar el modal de contraseña
+    if (target.closest("#cerrarModalPassword, #btnCancelarPassword")) {
+        document.getElementById("modalAdminPassword").style.display = "none";
+        return;
+    }
+
+    // 3. Verificar contraseña (admin777)
+    if (target.closest("#btnVerificarPassword")) {
+        const inputPass = document.getElementById("inputAdminPassword");
+        const pass = inputPass ? inputPass.value.trim() : "";
+
+        if (pass === "admin777") {
+            document.getElementById("modalAdminPassword").style.display = "none";
+            // Abre el menú de opciones avanzadas
+            document.getElementById("modalAdminTools").style.display = "grid";
+        } else {
+            alert("Contraseña incorrecta.");
+            inputPass.value = "";
+            inputPass.focus();
+        }
+        return;
+    }
+
+    // 4. Cerrar el menú de herramientas
+    if (target.closest("#cerrarModalTools, #btnCerrarTools")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        return;
+    }
+
+    // 5. Desde el menú de herramientas, seleccionar "Forzar Fecha OT"
+    if (target.closest("#btnAbrirForzarFecha")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        document.getElementById("modalAdminFecha").style.display = "grid";
+        return;
+    }
+
+    // 6. Volver del modal de fecha al menú de herramientas
+    if (target.closest("#btnVolverTools, #cerrarModalAdmin")) {
+        document.getElementById("modalAdminFecha").style.display = "none";
+        document.getElementById("modalAdminTools").style.display = "grid";
+        return;
+    }
+
+    // 7. Guardar la nueva fecha forzada para la OT en el servidor
+    if (target.closest("#btnAdminGuardarFecha")) {
+        const inputOt = document.getElementById("adminInputOt");
+        const inputFecha = document.getElementById("adminInputFecha");
+
+        const otVal = inputOt ? inputOt.value.trim() : "";
+        const fechaVal = inputFecha ? inputFecha.value : "";
+
+        if (!otVal || !fechaVal) {
+            alert("Por favor ingresa tanto el número de la OT como la fecha correcta.");
+            return;
+        }
+
+        const confirmar = window.confirm(`¿Estás seguro de cambiar la fecha de creación de la OT ${otVal} a ${fechaVal}?`);
+        if (!confirmar) return;
+
+        const regActual = window.registrosD1[otVal] || {};
+
+        const payload = {
+            ot: otVal,
+            estadoProgramacion: regActual.estadoProgramacion || "",
+            fechaProgramacion: regActual.fechaProgramacion || "",
+            observacion: regActual.observacion || "",
+            estadoGestion: regActual.estadoGestion || "",
+            tecnicoAsignado: regActual.tecnicoAsignado || "",
+            acompanamiento: regActual.acompanamiento || "",
+            customCreatedAt: fechaVal
+        };
+
+        try {
+            const resp = await API_URL && await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const resultado = await resp.json();
+
+            if (resultado.ok) {
+                window.registrosD1[otVal] = {
+                    ...regActual,
+                    ot: otVal,
+                    createdAt: resultado.createdAt
+                };
+                
+                alert(`¡Éxito! La OT ${otVal} ahora tiene fecha de creación ${resultado.createdAt}.`);
+                inputOt.value = "";
+                inputFecha.value = "";
+                document.getElementById("modalAdminFecha").style.display = "none";
+                
+                if (typeof aplicarFiltros === "function") {
+                    aplicarFiltros();
+                }
+            } else {
+                alert("Error al actualizar la fecha en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Ocurrió un error de red al intentar actualizar la OT.");
+        }
+        return;
+    }
+});
+
+// Permitir presionar "Enter" en el campo de contraseña para iniciar sesión rápido
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        const modalPass = document.getElementById("modalAdminPassword");
+        if (modalPass && modalPass.style.display === "grid") {
+            const btnVerificar = document.getElementById("btnVerificarPassword");
+            if (btnVerificar) btnVerificar.click();
+        }
+    }
+});
