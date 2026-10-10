@@ -24,6 +24,7 @@ let ordenActualColumna = null;
 let ordenDireccionAsc = true;
 
 let otsModificadasRecientemente = new Set();
+let otsDelReporteDeHoy = null; // Almacena el reporte fresco del día
 
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
@@ -202,23 +203,20 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Lógica inteligente: Permite editar hoy sin perder el "Sí", pero expira automáticamente mañana
-// Función nueva basada en la base de datos D1 (sin localStorage)
-// Función nueva basada en la base de datos D1 (sin localStorage)
+// Lógica limpia basada en el dataset de hoy (sin localStorage y respetando ediciones)
 function esCasoNuevo(otVal) {
-    const reg = (window.registrosD1 || {})[otVal];
-    
-    // Si la OT no tiene un registro en D1, es totalmente nueva ("Sí")
-    if (!reg) return true;
-    
-    // Si ya tiene algún estado de gestión, programación u observación guardada, 
-    // ya fue gestionada, por lo que pasa a ser existente ("No")
-    if (reg.estadoGestion || reg.estadoProgramacion || reg.observacion) {
-        return false;
+    if (!otsDelReporteDeHoy && datosGlobal && datosGlobal.length > 0) {
+        const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
+        otsDelReporteDeHoy = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
     }
-    
+
+    if (otsDelReporteDeHoy && otsDelReporteDeHoy.has(otVal)) {
+        return true;
+    }
+
     return false;
 }
+
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
@@ -482,6 +480,10 @@ async function cargarPlaneacion(){
     encabezadosGlobal = filas[0];
     datosGlobal = filas.slice(1);
 
+    // Inicializamos el conjunto de OTs de hoy basándonos en el dataset descargado
+    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
+    otsDelReporteDeHoy = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
+
     let registrosD1 = {};
     try {
         const respD1 = await fetch(API_URL);
@@ -492,7 +494,6 @@ async function cargarPlaneacion(){
 
     window.registrosD1 = registrosD1;
 
-    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
     const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
     Object.values(registrosD1).forEach(reg => {
