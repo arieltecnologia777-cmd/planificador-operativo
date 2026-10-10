@@ -2130,38 +2130,35 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   PESTAÑA / TARJETA FLOTANTE VERTICAL (SEPARADA Y REDONDEADA)
+   PESTAÑA / TARJETA VERTICAL PROPORCIONAL AL SIDEBAR
    ========================================== */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 130px; /* Separada del borde superior, alineada a la altura simétrica */
+    top: 32px; /* Separada estéticamente del borde superior */
     left: 16px; /* Separada del borde izquierdo de la pantalla */
-    width: 32px;  /* Un ancho cómodo tipo tarjeta */
-    height: 180px; /* Una altura compacta que ocupa solo una sección vertical */
-    border-radius: 16px; /* Bordes redondeados tipo tarjeta / corchete arriba y abajo */
-    background: rgba(37, 99, 235, 0.92) !important; /* Azul corporativo con efecto vidrio */
+    width: 28px;  /* Ancho sutil y elegante */
+    height: calc(100vh - 64px); /* Casi la misma altura total del sidebar, respetando un margen arriba y abajo */
+    border-radius: 20px; /* Bordes redondeados de tarjeta completa */
+    background: rgba(37, 99, 235, 0.88) !important; /* Azul corporativo con efecto vidrio */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.35);
     color: #ffffff !important;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: pulsoTarjetaFlotante 2s infinite ease-in-out;
+    animation: pulsoTarjetaSidebar 2s infinite ease-in-out;
 }
 
-@keyframes pulsoTarjetaFlotante {
+@keyframes pulsoTarjetaSidebar {
     0% {
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-        transform: scale(1);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
     }
     50% {
-        box-shadow: 0 10px 35px rgba(37, 99, 235, 0.7);
-        transform: scale(1.02);
+        box-shadow: 0 15px 40px rgba(37, 99, 235, 0.65);
     }
     100% {
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-        transform: scale(1);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
     }
 }
