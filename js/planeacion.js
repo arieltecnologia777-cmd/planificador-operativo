@@ -210,10 +210,8 @@ function esCasoNuevo(otVal) {
 
     const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
     
-    // --- TRUCO DE PRUEBA ---
-    // Forzamos manualmente una fecha de "hoy" diferente para simular que ya pasó el tiempo
-    const hoy = "2026-10-01"; // Simulamos que hoy es 1 de octubre, por lo que las OTs de hoy (10 de octubre) quedarán en "No"
-    // -----------------------
+    // Usamos la fecha real de hoy del navegador sin simulaciones
+    const hoy = new Date().toLocaleDateString('en-CA');
 
     return fechaCreacionD1 === hoy;
 }
