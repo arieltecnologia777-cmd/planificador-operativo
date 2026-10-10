@@ -2133,32 +2133,33 @@ body.sidebar-colapsado .sidebar {
    PESTAÑA / TARJETA VERTICAL PROPORCIONAL AL SIDEBAR
    ========================================== */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 16px; /* Separación simétrica superior exactativa igual al sidebar */
-    left: 16px; /* Separada del borde izquierdo para que parezca una tarjeta flotante */
-    width: 28px;  /* Ancho sutil y elegante */
-    height: calc((100vh - 32px) / 0.9); /* Altura perfectamente proporcional al sidebar considerando el zoom */
-    border-radius: 16px; /* Bordes redondeados arriba y abajo para que sea una tarjeta completa */
+    top: 16px; /* Separación limpia arriba igual que el sidebar */
+    left: 0px; /* Pegada al borde izquierdo absoluto para no invadir la tabla */
+    width: 26px;  /* Ancho estilizado y elegante */
+    height: calc(100vh - 32px); /* Altura exacta proporcionada para que se note el final abajo */
+    border-radius: 0 16px 16px 0; /* Bordes redondeados solo a la derecha para que parezca una solapa de tarjeta acoplada al borde */
     background: rgba(37, 99, 235, 0.92) !important; /* Azul corporativo con efecto vidrio */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 4px 0 25px rgba(37, 99, 235, 0.45);
+    border-left: none;
+    box-shadow: 6px 0 25px rgba(37, 99, 235, 0.45);
     color: #ffffff !important;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transición suave solo para brillo, sin alterar tamaño */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     animation: pulsoPestañaProporcional 2s infinite ease-in-out;
 }
 
-/* Evitamos que al pasar el mouse cambie de tamaño o altura */
+/* Evitamos que al pasar el mouse cambie de tamaño, altura o posición */
 body.sidebar-colapsado .btn-sidebar-toggle:hover {
     transform: none !important;
-    width: 28px !important;
-    height: calc((100vh - 32px) / 0.9) !important;
+    width: 26px !important;
+    height: calc(100vh - 32px) !important;
     background: rgba(37, 99, 235, 0.98) !important;
-    box-shadow: 4px 0 30px rgba(37, 99, 235, 0.6) !important;
+    box-shadow: 6px 0 30px rgba(37, 99, 235, 0.65) !important;
 }
 
 @keyframes pulsoPestañaProporcional {
@@ -2166,7 +2167,7 @@ body.sidebar-colapsado .btn-sidebar-toggle:hover {
         box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
     }
     50% {
-        box-shadow: 6px 0 30px rgba(37, 99, 235, 0.75);
+        box-shadow: 8px 0 30px rgba(37, 99, 235, 0.75);
     }
     100% {
         box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
