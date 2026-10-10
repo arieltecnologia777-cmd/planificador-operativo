@@ -2129,35 +2129,39 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, se convierte en la pestaña vertical azul de arriba a abajo */
+/* ==========================================
+   PESTAÑA / TARJETA FLOTANTE VERTICAL (SEPARADA Y REDONDEADA)
+   ========================================== */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 0px; 
-    left: 0px; 
-    width: 24px;  /* Más delgada y estilizada */
-    height: 100vh; /* Ocupa toda la altura vertical de la pantalla de arriba a abajo */
-    border-radius: 0px; 
-    background: rgba(37, 99, 235, 0.88) !important; 
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 6px 0 25px rgba(37, 99, 235, 0.4);
+    top: 130px; /* Separada del borde superior, alineada a la altura simétrica */
+    left: 16px; /* Separada del borde izquierdo de la pantalla */
+    width: 32px;  /* Un ancho cómodo tipo tarjeta */
+    height: 180px; /* Una altura compacta que ocupa solo una sección vertical */
+    border-radius: 16px; /* Bordes redondeados tipo tarjeta / corchete arriba y abajo */
+    background: rgba(37, 99, 235, 0.92) !important; /* Azul corporativo con efecto vidrio */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
     color: #ffffff !important;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: pulsoBarraAzul 2s infinite ease-in-out;
+    animation: pulsoTarjetaFlotante 2s infinite ease-in-out;
 }
 
-@keyframes pulsoBarraAzul {
+@keyframes pulsoTarjetaFlotante {
     0% {
-        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 6px 0 30px rgba(37, 99, 235, 0.8);
+        box-shadow: 0 10px 35px rgba(37, 99, 235, 0.7);
+        transform: scale(1.02);
     }
     100% {
-        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+        transform: scale(1);
     }
 }
