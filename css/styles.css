@@ -2130,7 +2130,7 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   PESTAÑA / TARJETA VERTICAL PROPORCIONAL AL SIDEBAR
+   PESTAÑA / TARJETA VERTICAL CON EFECTO VIDRIO PURO
    ========================================== */
 body.sidebar-colapsado .btn-sidebar-toggle {
     top: 16px; 
@@ -2138,19 +2138,19 @@ body.sidebar-colapsado .btn-sidebar-toggle {
     width: 22px;  
     height: calc(100vh - 32px); 
     border-radius: 0 16px 16px 0; 
-    background: rgba(37, 99, 235, 0.62) !important; /* Más translúcida, efecto cristal ligero */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.45) !important; /* Efecto vidrio real con base clara y tinte sutil azulado */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     border-left: none;
-    box-shadow: 6px 0 25px rgba(37, 99, 235, 0.28);
-    color: #ffffff !important;
+    box-shadow: 6px 0 30px rgba(37, 99, 235, 0.22);
+    color: #2563eb !important; /* Icono en color azul corporativo para que contraste con elegancia sobre el vidrio */
     font-size: 1.05rem;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    animation: pulsoPestañaProporcional 2s infinite ease-in-out;
+    animation: pulsoVidrioPestaña 2s infinite ease-in-out;
 }
 
 /* Evitamos que al pasar el mouse cambie de tamaño, altura o posición */
@@ -2158,18 +2158,18 @@ body.sidebar-colapsado .btn-sidebar-toggle:hover {
     transform: none !important;
     width: 22px !important;
     height: calc(100vh - 32px) !important;
-    background: rgba(37, 99, 235, 0.72) !important;
-    box-shadow: 6px 0 30px rgba(37, 99, 235, 0.45) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    box-shadow: 6px 0 35px rgba(37, 99, 235, 0.35) !important;
 }
 
-@keyframes pulsoPestañaProporcional {
+@keyframes pulsoVidrioPestaña {
     0% {
-        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.25);
+        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.2);
     }
     50% {
-        box-shadow: 8px 0 30px rgba(37, 99, 235, 0.5);
+        box-shadow: 8px 0 32px rgba(37, 99, 235, 0.45);
     }
     100% {
-        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.25);
+        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.2);
     }
 }
