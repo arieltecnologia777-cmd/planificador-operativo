@@ -206,23 +206,22 @@ const TECNICOS = [
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
     
-    // Si la OT ya tiene cualquier gestión, programación u observación guardada, 
-    // significa que ya existía de antes (es un registro histórico), por lo que es "No".
-    if (reg && (reg.estadoGestion || reg.estadoProgramacion || reg.observacion)) {
-        return false;
-    }
+    // Si la OT no existe en D1, es nueva ("Sí")
+    if (!reg) return true;
 
-    // Si no tiene registro en D1 o no tiene createdAt, es realmente nueva ("Sí")
-    if (!reg || !reg.createdAt) {
-        return true;
-    }
+    // Si tiene un registro en D1 pero createdAt está vacío (registros antiguos), se queda como "No"
+    if (!reg.createdAt) return false;
 
-    const hoy = new Date().toISOString().split('T')[0];
+    // Extraemos solo la fecha (YYYY-MM-DD) de createdAt de la base de datos
+    const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
     
-    // Si tiene createdAt, validamos si fue creada el día de hoy
-    return reg.createdAt.startsWith(hoy);
-}
+    // Obtenemos la fecha actual exacta del navegador en formato YYYY-MM-DD
+    const hoy = new Date().toLocaleDateString('en-CA');
 
+    // Si la fecha de creación en D1 coincide con el día de hoy, ES NUEVA ("Sí").
+    // Al escribir, la base de datos mantiene el createdAt original, por lo que SEGUIRÁ SIENDO "SÍ".
+    return fechaCreacionD1 === hoy;
+}
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
