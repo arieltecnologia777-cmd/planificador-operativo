@@ -16,6 +16,7 @@ let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
 let diasOtSeleccionados = [];
 let fechasProgSeleccionadas = [];
+let backlogSeleccionados = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
 let grupoColumnasColapsado = false;
@@ -98,7 +99,6 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
-    /* Estilos mejorados para redimensionar el ancho de las columnas */
     .planeacion-table th {
         position: relative;
         user-select: none;
@@ -202,19 +202,16 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Lógica limpia basada en la base de datos D1 (createdAt)
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
     if (!reg) return true;
     if (!reg.createdAt) return false;
 
     const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
-    
-    // Usamos la fecha real de hoy del navegador
     const hoy = new Date().toLocaleDateString('en-CA');
-
     return fechaCreacionD1 === hoy;
 }
+
 function inicializarBotonAgruparColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     if (ths.length > 12) {
@@ -232,7 +229,6 @@ function inicializarBotonAgruparColumnas() {
     }
 }
 
-// Lógica mejorada de redimensionamiento para actualizar celdas y encabezado en tiempo real
 function inicializarRedimensionamientoColumnas() {
     const ths = document.querySelectorAll(".planeacion-table th");
     ths.forEach((th, index) => {
@@ -254,7 +250,6 @@ function inicializarRedimensionamientoColumnas() {
                 const dx = e.clientX - x;
                 const nuevoAncho = Math.max(50, w + dx);
                 
-                // Aplicar ancho fijo al encabezado y a todas las celdas de esa columna en el body
                 th.style.width = `${nuevoAncho}px`;
                 th.style.minWidth = `${nuevoAncho}px`;
                 th.style.maxWidth = `${nuevoAncho}px`;
@@ -448,7 +443,7 @@ function pintarTabla(datos){
 
     inicializarBotonAgruparColumnas();
     aplicarEstadoGrupoColumnas();
-    inicializarRedimensionamientoColumnas(); // Activa el ajuste dinámico por arrastre
+    inicializarRedimensionamientoColumnas();
 }
 
 async function cargarPlaneacion(){
@@ -604,6 +599,9 @@ function actualizarOpcionesFiltros(datos) {
     const txtRang = document.getElementById("textoRango");
     if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
 
+    const txtBacklog = document.getElementById("textoBacklog");
+    if (txtBacklog) txtBacklog.textContent = backlogSeleccionados.length === 0 ? "Incumple Backlog" : `Backlog (${backlogSeleccionados.length})`;
+
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
 
@@ -735,11 +733,29 @@ function actualizarOpcionesFiltros(datos) {
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
+    const bEl = document.getElementById("listaBacklog");
+    if(bEl) {
+        const backlogDisp = ["Sí", "No"];
+        bEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
+        ` + backlogDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const arbolFechas = {};
+    const idxOTCol = encabezadosGlobal.findIndex(h => h.trim() === "OT");
     
     datosGlobal.forEach(f => {
-        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+        const reg = (window.registrosD1 || {})[f[idxOTCol]] || {};
         const fechaVal = reg.fechaProgramacion;
         if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
             const [anio, mes, dia] = fechaVal.split("-");
@@ -811,6 +827,7 @@ function aplicarFiltros(){
     const stoppersFiltro = stoppersSeleccionados;
     const rangosFiltro = rangosSeleccionados;
     const diasOtFiltro = diasOtSeleccionados;
+    const backlogFiltro = backlogSeleccionados;
     const fechasFiltro = fechasProgSeleccionadas;
     const estGestionFiltro = estadosGestionSeleccionados;
 
@@ -824,6 +841,7 @@ function aplicarFiltros(){
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
 
     let resultado = datosGlobal.filter(fila => {
         const otVal = fila[idxOT];
@@ -831,6 +849,8 @@ function aplicarFiltros(){
         const estG = regD1.estadoGestion || "";
         const fechaProgVal = regD1.fechaProgramacion || "";
         const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+        const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
         const esN = esCasoNuevo(otVal) ? "Sí" : "No";
 
         if (otsModificadasRecientemente.has(otVal)) {
@@ -848,6 +868,7 @@ function aplicarFiltros(){
         const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
         const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(fila[idxRango]);
         const cumpleDiasOT = diasOtFiltro.length === 0 || diasOtFiltro.includes(fila[idxDiasOT]);
+        const cumpleBacklog = backlogFiltro.length === 0 || backlogFiltro.includes(incumplidor);
         const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
         const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
 
@@ -855,9 +876,11 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
-        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleBacklog && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
     });
 
     if (ordenActualColumna !== null) {
@@ -868,6 +891,9 @@ function aplicarFiltros(){
             if (ordenActualColumna === "Nuevo") {
                 valA = esCasoNuevo(a[idxOT]) ? "Sí" : "No";
                 valB = esCasoNuevo(b[idxOT]) ? "Sí" : "No";
+            } else if (ordenActualColumna === "Indicador backlog") {
+                valA = (a[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No";
+                valB = (b[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No";
             } else if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
                 const regA = (window.registrosD1 || {})[a[idxOT]] || {};
                 const regB = (window.registrosD1 || {})[b[idxOT]] || {};
@@ -902,6 +928,7 @@ function resetearTodosLosFiltros() {
     stoppersSeleccionados = [];
     rangosSeleccionados = [];
     diasOtSeleccionados = [];
+    backlogSeleccionados = [];
     fechasProgSeleccionadas = [];
     estadosGestionSeleccionados = [];
     kpiFiltroActivo = null;
@@ -1027,6 +1054,18 @@ document.addEventListener("change", (e) => {
     if (target.id === "chkTodosDiasOT") {
         document.querySelectorAll(".chkDiasOT").forEach(chk => chk.checked = target.checked);
         diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkBacklog")) {
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(chk => chk.checked = target.checked);
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
         aplicarFiltros();
         return;
     }
@@ -1198,6 +1237,13 @@ document.addEventListener("click", (e) => {
         diasOtSeleccionados = [];
         aplicarFiltros();
     }
+    if(target.id === "btnLimpiarBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosBacklog");
+        if(chkAll) chkAll.checked = false;
+        backlogSeleccionados = [];
+        aplicarFiltros();
+    }
     if(target.id === "btnLimpiarFechaProg") {
         document.querySelectorAll(".chkFechaProg").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodasFechasProg");
@@ -1213,6 +1259,7 @@ document.addEventListener("click", (e) => {
         { btn: "btnStoppers", lista: "listaStoppers" },
         { btn: "btnRango", lista: "listaRango" },
         { btn: "btnDiasOT", lista: "listaDiasOT" },
+        { btn: "btnBacklog", lista: "listaBacklog" },
         { btn: "btnFechaProg", lista: "listaFechaProg" },
         { btn: "btnEstado", lista: "listaEstado" }
     ];
@@ -1292,6 +1339,7 @@ async function guardarOT(fila, observacionForzada = null){
         console.error("Error al guardar OT:", err);
     }
 }
+
 const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
@@ -1694,202 +1742,4 @@ document.addEventListener("DOMContentLoaded", () => {
     if (inputExcel) {
         inputExcel.addEventListener("change", async (e) => {
             const archivo = e.target.files[0];
-            if (!archivo) return;
-
-            const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
-            
-            if (!confirmar) {
-                inputExcel.value = "";
-                return;
-            }
-
-            if (containerProgreso) containerProgreso.style.display = "block";
-            if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
-            
-            let porcentajeActual = 0;
-            if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
-            if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
-
-            const intervaloProgreso = setInterval(() => {
-                if (porcentajeActual < 90) {
-                    porcentajeActual += Math.floor(Math.random() * 12) + 4;
-                    if (porcentajeActual > 90) porcentajeActual = 90;
-                    
-                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
-                    if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
-                }
-            }, 120);
-
-            const lector = new FileReader();
-            lector.onload = async function (evt) {
-                try {
-                    const datosBinarios = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(datosBinarios, { type: "array" });
-                    
-                    const nombreHoja = workbook.SheetNames[0];
-                    const hoja = workbook.Sheets[nombreHoja];
-                    const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
-                    
-                    if (filasExcel.length === 0) {
-                        clearInterval(intervaloProgreso);
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        alert("El archivo Excel está vacío.");
-                        inputExcel.value = "";
-                        return;
-                    }
-
-                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
-                    const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-
-                    const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
-                    const idxObs = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n === "OBSERVACION" || n === "OBSERVACIONES";
-                    });
-
-                    const idxFechaProg = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
-                    });
-
-                    const idxEstadoProg = encabezadosExcel.findIndex(h => {
-                        const n = normalizar(h);
-                        return n.includes("ESTADO") && n.includes("PROGRAMACION");
-                    });
-
-                    if (idxOT === -1) {
-                        clearInterval(intervaloProgreso);
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        alert("El Excel debe contener obligatoriamente la columna 'OT'.");
-                        inputExcel.value = "";
-                        return;
-                    }
-
-                    const formatearFechaExcelAInput = (valorCrudo) => {
-                        if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
-
-                        if (valorCrudo instanceof Date) {
-                            const y = valorCrudo.getFullYear();
-                            const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
-                            const d = String(valorCrudo.getDate()).padStart(2, "0");
-                            return `${y}-${m}-${d}`;
-                        }
-
-                        if (typeof valorCrudo === "number") {
-                            const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
-                            if (fechaObj) {
-                                const y = fechaObj.y;
-                                const m = String(fechaObj.m).padStart(2, "0");
-                                const d = String(fechaObj.d).padStart(2, "0");
-                                return `${y}-${m}-${d}`;
-                            }
-                        }
-
-                        const texto = String(valorCrudo).trim();
-                        if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
-
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
-
-                        const partes = texto.split(/[\/\-]/);
-                        if (partes.length === 3) {
-                            if (partes[2].length === 4) {
-                                const d = partes[0].padStart(2, "0");
-                                const m = partes[1].padStart(2, "0");
-                                const y = partes[2];
-                                return `${y}-${m}-${d}`;
-                            }
-                            if (partes[0].length === 4) {
-                                const y = partes[0];
-                                const m = partes[1].padStart(2, "0");
-                                const d = partes[2].padStart(2, "0");
-                                return `${y}-${m}-${d}`;
-                            }
-                        }
-
-                        return "";
-                    };
-
-                    let actualizados = 0;
-
-                    for (let i = 1; i < filasExcel.length; i++) {
-                        const fila = filasExcel[i];
-                        const otVal = String(fila[idxOT] || "").trim();
-
-                        if (otVal) {
-                            const regD1Actual = window.registrosD1[otVal] || {};
-                            const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
-                            
-                            let fechaVal = "";
-                            if (idxFechaProg !== -1 && fila[idxFechaProg] !== undefined && fila[idxFechaProg] !== null) {
-                                fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
-                            }
-
-                            const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
-                            if (!esFechaValida) {
-                                fechaVal = "";
-                            }
-
-                            let estadoProgVal = regD1Actual.estadoProgramacion || "";
-
-                            if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
-                                estadoProgVal = String(fila[idxEstadoProg]).trim();
-                            } else {
-                                if (esFechaValida) {
-                                    estadoProgVal = "Programada";
-                                } else {
-                                    if (estadoProgVal === "Programada") {
-                                        estadoProgVal = "";
-                                    }
-                                }
-                            }
-
-                            const payload = {
-                                ot: otVal,
-                                estadoProgramacion: estadoProgVal,
-                                fechaProgramacion: fechaVal,
-                                observacion: obsVal,
-                                estadoGestion: regD1Actual.estadoGestion || "",
-                                tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
-                                acompanamiento: regD1Actual.acompanamiento || ""
-                            };
-
-                            try {
-                                const resp = await fetch(API_URL, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(payload)
-                                });
-                                const resJson = await resp.json();
-                                if (resJson.ok) {
-                                    window.registrosD1[otVal] = { ...regD1Actual, ...payload };
-                                    actualizados++;
-                                }
-                            } catch (err) {
-                                console.error(`Error al actualizar OT ${otVal}:`, err);
-                            }
-                        }
-                    }
-
-                    clearInterval(intervaloProgreso);
-                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
-                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
-
-                    setTimeout(() => {
-                        if (containerProgreso) containerProgreso.style.display = "none";
-                        inputExcel.value = "";
-                        alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
-                        aplicarFiltros();
-                    }, 300);
-
-                } catch (error) {
-                    console.error("Error leyendo el Excel:", error);
-                    clearInterval(intervaloProgreso);
-                    if (containerProgreso) containerProgreso.style.display = "none";
-                    alert("Ocurrió un error al procesar el archivo Excel.");
-                    inputExcel.value = "";
-                }
-            };
-            lector.readAsArrayBuffer(archivo);
-        });
-    }
-});
+            if (!
