@@ -2144,12 +2144,12 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA INTELIGENTE (AZUL CORPORATIVO Y FIJO AL HACER SCROLL)
+   BOTÓN HAMBURGUESA AZUL CORPORATIVO (FIJO Y ALINEADO CON EL BANNER)
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 20px;
-    left: 20px; /* Siempre visible y accesible arriba a la izquierda */
+    top: 95px; /* Altura perfecta alineada con el banner para que nunca tape el logo del menú */
+    left: 304px; /* Ubicado exactamente a la derecha del sidebar flotante */
     z-index: 99999;
     background: #2563eb !important; /* El color azul exacto de tu botón de exportar */
     color: #ffffff !important; /* Icono blanco con contraste perfecto */
@@ -2171,8 +2171,10 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Animación sutil de pulso cuando el menú está oculto para indicar que se puede abrir */
+/* Cuando el sidebar está oculto, el botón se mueve a la esquina superior izquierda con animación sutil */
 body.sidebar-colapsado .btn-sidebar-toggle {
+    top: 20px;
+    left: 20px;
     animation: pulsoAzul 2s infinite ease-in-out;
 }
 
