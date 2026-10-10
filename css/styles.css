@@ -2129,31 +2129,39 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar se oculta, este botón se convierte en una elegante pestaña/badge vertical en la orilla izquierda */
+/* ==========================================
+   PESTAÑA / TARJETA VERTICAL PROPORCIONAL AL SIDEBAR
+   ========================================== */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 130px;
-    left: 0px; /* Se ancla perfectamente al borde de la pantalla */
-    width: 32px; /* Ancho de la pestaña tipo badge */
-    height: 56px; /* Altura estilizada de pestaña */
+    top: 16px; /* Oĩ porã ojere porã hag̃ua pe sidebar yvate gotyo */
+    left: 0px; /* Opyta peteĩichaite pe pantalla rembe'ýre ani hagua ohasa la tabla ári */
+    width: 26px; /* Sa'ive ha iporãve la hete, sapy'ami hagua */
+    height: calc((100vh - 32px) / 0.9); /* Oñepyrũ yvate ha oguejy porã pe sidebar tuichakue rupi */
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-    background: rgba(37, 99, 235, 0.9) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 4px 4px 15px rgba(37, 99, 235, 0.3);
-    font-size: 1rem;
-    animation: pulsoPestaña 2s infinite ease-in-out;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    background: rgba(37, 99, 235, 0.92) !important; /* Hovy porã ojekuaaporãva */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 4px 0 25px rgba(37, 99, 235, 0.45);
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulsoPestañaProporcional 2s infinite ease-in-out;
 }
 
-@keyframes pulsoPestaña {
+@keyframes pulsoPestañaProporcional {
     0% {
-        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0.8);
+        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
     }
-    70% {
-        box-shadow: 2px 0 0 10px rgba(37, 99, 235, 0);
+    50% {
+        box-shadow: 6px 0 30px rgba(37, 99, 235, 0.75);
     }
     100% {
-        box-shadow: 2px 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 4px 0 15px rgba(37, 99, 235, 0.4);
     }
 }
