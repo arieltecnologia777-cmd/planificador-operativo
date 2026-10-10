@@ -2110,7 +2110,7 @@ body.sidebar-colapsado .sidebar {
 .btn-sidebar-toggle {
     position: fixed;
     top: 130px; 
-    left: 274px; /* Pegado justo al borde derecho del sidebar de 280px de ancho */
+    left: 280px; /* Exactamente en el borde derecho del sidebar de 280px */
     z-index: 99999;
     background: #2563eb !important; 
     color: #ffffff !important; 
@@ -2124,6 +2124,12 @@ body.sidebar-colapsado .sidebar {
     font-size: 1.2rem;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-sidebar-toggle:hover {
+    background: #1d4ed8 !important;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 /* ==========================================
    PESTAÑA / TARJETA VERTICAL CON EFECTO VIDRIO AZULADO
