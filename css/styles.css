@@ -6,8 +6,8 @@
     --muted:#64748b;
     --primary:#2563eb;
     --primary-light:#3b82f6;
-    --border:rgba(226, 232, 240, 0.8);
-    --shadow:0 10px 30px rgba(15,23,42,0.15);
+    --border:#e2e8f0;
+    --shadow:0 5px 22px rgba(15,23,42,.075);
     --radius:18px;
 }
 
@@ -32,45 +32,43 @@ button{
     font-family:inherit;
 }
 
-/* El layout ya no usa grid para desplazar, el contenido ocupa el 100% de la pantalla */
 .layout{
-    display:block !important;
-    position:relative;
+    display:grid;
+    grid-template-columns:260px minmax(0,1fr);
     min-height:100vh;
     zoom:0.90;
+    transition: grid-template-columns 0.3s ease;
 }
-
 /* =========================
-   SIDEBAR FLOTANTE (EFECTO VIDRIO Y SOBREPUESTO)
+   SIDEBAR (CON EFECTO VIDRIO)
 ========================= */
 
 .sidebar{
-    position:fixed !important;
-    top:16px;
-    left:16px;
-    height:calc((100vh - 32px) / 0.9) !important;
-    width:280px;
     background:var(--sidebar) !important;
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
-    border:1px solid var(--border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-right:1px solid var(--border);
     box-shadow:var(--shadow);
-    border-radius:24px;
-    z-index:99998;
+    height:calc(100vh / 0.9);
+    position:sticky;
+    top:0;
     padding:16px;
-    overflow-y:auto;
-    /* Por defecto inicia oculto */
-    transform: translateX(-115%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    z-index:10;
+    transition: transform 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 }
 
-/* Cuando se abre el sidebar (quitando la clase colapsado o invirtiendo la lógica), se sobrepone sin mover el contenido */
-body:not(.sidebar-colapsado) .sidebar {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
+/* Comportamiento al colapsar el menú manteniendo el grid original */
+body.sidebar-colapsado .layout {
+    grid-template-columns: 0px minmax(0, 1fr) !important;
+}
+
+body.sidebar-colapsado .sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    padding: 0;
+    border: none;
 }
 
 .logo-box{
@@ -82,7 +80,7 @@ body:not(.sidebar-colapsado) .sidebar {
     align-items:center;
     gap:14px;
     margin-bottom:20px;
-    backdrop-filter:blur(4px);
+    backdrop-filter: blur(4px);
 }
 
 .logo-img{
@@ -136,13 +134,13 @@ body:not(.sidebar-colapsado) .sidebar {
 
 .sidebar-nav a:hover,
 #btnAbrirConfig:hover {
-    background:rgba(241, 245, 249, 0.8);
+    background:#f1f5f9;
     border-color:var(--border);
     transform:translateX(3px);
 }
 
 .sidebar-nav a.active{
-    background:linear-gradient(90deg,rgba(230, 240, 255, 0.9),rgba(237, 245, 255, 0.9));
+    background:linear-gradient(90deg,#e6f0ff,#edf5ff);
     color:#1260d9;
     border-color:#d7e8ff;
     font-weight:700;
@@ -155,12 +153,10 @@ body:not(.sidebar-colapsado) .sidebar {
 }
 
 /* =========================
-   CONTENIDO PRINCIPAL (OCUPA TODA LA PANTALLA)
+   CONTENIDO
 ========================= */
 
 .main-content{
-    width:100% !important;
-    margin:0 !important;
     padding:16px 18px 30px;
     min-width:0;
 }
@@ -541,16 +537,16 @@ body:not(.sidebar-colapsado) .sidebar {
     border-radius:10px;
 }
 
-.bar-fill.offline{background:#ff4d6d;}
-.bar-fill.p3{background:#9a5cff;}
-.bar-fill.parcial{background:#ff9b2f;}
-.bar-fill.pqr{background:#3a8dff;}
-.bar-fill.velocidad{background:#ffd029;}
-.bar-fill.operativo{background:#20b779;}
-.bar-fill.blue{background:#3a8dff;}
-.bar-fill.purple{background:#9a5cff;}
-.bar-fill.cyan{background:#25c7e8;}
-.bar-fill.orange{background:#ff9b2f;}
+.bar-fill.offline{background:#ff4d6d}
+.bar-fill.p3{background:#9a5cff}
+.bar-fill.parcial{background:#ff9b2f}
+.bar-fill.pqr{background:#3a8dff}
+.bar-fill.velocidad{background:#ffd029}
+.bar-fill.operativo{background:#20b779}
+.bar-fill.blue{background:#3a8dff}
+.bar-fill.purple{background:#9a5cff}
+.bar-fill.cyan{background:#25c7e8}
+.bar-fill.orange{background:#ff9b2f}
 
 /* =========================
    TABLA
@@ -769,8 +765,7 @@ body:not(.sidebar-colapsado) .sidebar {
     top: 20px;
     right: 24px;
     z-index: 99999;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
+    background: #ffffff;
     border: 1px solid var(--border);
     color: var(--text);
     width: 44px;
