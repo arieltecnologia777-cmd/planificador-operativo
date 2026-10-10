@@ -2086,3 +2086,58 @@ width:160px;
     border-radius: 4px;
     transition: width 0.2s ease-out; /* Transición fluida al avanzar */
 }
+/* ==========================================
+   BOTÓN HAMBURGUESA Y COLAPSO DE SIDEBAR
+   ========================================== */
+
+/* Estilo del botón hamburguesa */
+.btn-sidebar-toggle {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    flex: none;
+}
+
+.btn-sidebar-toggle:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+/* Transición fluida de la rejilla principal */
+.layout {
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* Estado cuando el sidebar está colapsado (oculto) */
+body.sidebar-colapsado .layout {
+    grid-template-columns: 0px minmax(0, 1fr) !important;
+}
+
+body.sidebar-colapsado .sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+}
+
+/* El sidebar transiciona suavemente al ocultarse */
+.sidebar {
+    transition: transform 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+}
+
+/* Asegurar que el contenido principal ocupe toda la pantalla al colapsar */
+body.sidebar-colapsado .main-content {
+    width: 100%;
+}
