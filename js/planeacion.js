@@ -24,7 +24,6 @@ let ordenActualColumna = null;
 let ordenDireccionAsc = true;
 
 let otsModificadasRecientemente = new Set();
-let otsDelReporteDeHoy = null; // Almacena el reporte fresco del día
 
 const styleGrupoExcel = document.createElement('style');
 styleGrupoExcel.innerHTML = `
@@ -203,18 +202,15 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Lógica limpia basada en el dataset de hoy (sin localStorage y respetando ediciones)
+// Lógica limpia: Es nueva si no tiene registros previos de gestión o programación en D1
 function esCasoNuevo(otVal) {
-    if (!otsDelReporteDeHoy && datosGlobal && datosGlobal.length > 0) {
-        const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
-        otsDelReporteDeHoy = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
+    const reg = (window.registrosD1 || {})[otVal];
+    
+    if (reg && (reg.estadoGestion || reg.estadoProgramacion || reg.observacion)) {
+        return false;
     }
 
-    if (otsDelReporteDeHoy && otsDelReporteDeHoy.has(otVal)) {
-        return true;
-    }
-
-    return false;
+    return !reg;
 }
 
 function inicializarBotonAgruparColumnas() {
@@ -480,10 +476,6 @@ async function cargarPlaneacion(){
     encabezadosGlobal = filas[0];
     datosGlobal = filas.slice(1);
 
-    // Inicializamos el conjunto de OTs de hoy basándonos en el dataset descargado
-    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
-    otsDelReporteDeHoy = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
-
     let registrosD1 = {};
     try {
         const respD1 = await fetch(API_URL);
@@ -494,6 +486,7 @@ async function cargarPlaneacion(){
 
     window.registrosD1 = registrosD1;
 
+    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
     const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
     Object.values(registrosD1).forEach(reg => {
