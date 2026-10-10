@@ -431,5 +431,22 @@
         </div>
     </div>
 </div>
+    <!-- Modal de Confirmación de Clave Segura -->
+<div id="modalClaveSegura" class="obs-modal-overlay" style="display: none;">
+    <div class="obs-modal-content" style="max-width: 400px;">
+        <div class="obs-modal-header">
+            <h3>🔒 Confirmación de Seguridad</h3>
+            <button type="button" id="cerrarModalClave" class="obs-modal-close">&times;</button>
+        </div>
+        <div class="obs-modal-body" style="text-align: center;">
+            <p id="textoMensajeClave" style="margin-bottom: 12px; color: #4a5568; font-size: 0.9rem;">Ingresa la clave de administrador:</p>
+            <input type="password" id="inputClaveSegura" placeholder="Contraseña..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 1rem;">
+        </div>
+        <div class="obs-modal-footer" style="justify-content: space-between;">
+            <button type="button" id="btnCancelarClave" class="obs-btn-secundario">Cancelar</button>
+            <button type="button" id="btnConfirmarClave" class="obs-btn-principal">Confirmar</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
