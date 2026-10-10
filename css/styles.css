@@ -2074,7 +2074,7 @@ width:160px;
     
 }
 /* ==========================================
-   SIDEBAR CON EFECTO VIDRIO Y MENÚS MÁS VISIBLES
+   SIDEBAR CON EFECTO VIDRIO LIMPIO (SIN COBERTURAS INTERNAS)
    ========================================== */
 .sidebar {
     position: fixed !important;
@@ -2082,10 +2082,10 @@ width:160px;
     left: 16px;
     height: calc((100vh - 32px) / 0.9) !important;
     width: 280px;
-    background: rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
     border-radius: 24px;
     z-index: 99998;
@@ -2100,21 +2100,22 @@ body.sidebar-colapsado .sidebar {
     pointer-events: none;
 }
 
-/* Fondo más sólido y legible para los elementos del sidebar */
+/* El logo mantiene un fondo limpio y legible */
 .logo-box {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: #ffffff !important;
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 14px;
     display: flex;
-    align-items: center;
+    align-items:center;
     gap: 14px;
     margin-bottom: 20px;
 }
 
+/* Opciones del menú sin fondos ni coberturas extra */
 .sidebar-nav a {
     text-decoration: none;
-    color: #112240;
+    color: #17345f;
     padding: 12px 14px;
     border-radius: 13px;
     transition: .2s ease;
@@ -2123,37 +2124,36 @@ body.sidebar-colapsado .sidebar {
     align-items: center;
     gap: 9px;
     font-size: .92rem;
-    background: rgba(255, 255, 255, 0.65); /* Fondo sutil para destacar texto */
+    background: transparent !important;
     font-weight: 600;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .sidebar-nav a:hover,
 #btnAbrirConfig:hover {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: rgba(241, 245, 249, 0.8) !important;
     border-color: var(--border);
     transform: translateX(3px);
 }
 
 .sidebar-nav a.active {
-    background: linear-gradient(90deg, #dbeafe, #eff6ff) !important;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
+    background: linear-gradient(90deg, #e6f0ff, #edf5ff) !important;
+    color: #1260d9;
+    border-color: #d7e8ff;
     font-weight: 700;
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA (UBICACIÓN Y ANIMACIÓN SUTIL)
+   BOTÓN HAMBURGUESA (COLOR HERRAMIENTAS AVANZADAS Y UBICACIÓN BAJADA)
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 75px; /* Bajado exactamente al lugar que señalaste en la imagen */
+    top: 95px; /* Bajada un poco más a la altura requerida */
     left: 304px; 
     z-index: 99999;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    color: var(--text);
+    background: #4a5568 !important; /* Mismo color del botón de Herramientas Avanzadas */
+    color: #ffffff !important; /* Icono blanco para contraste total */
+    border: 1px solid #374151;
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -2161,33 +2161,31 @@ body.sidebar-colapsado .sidebar {
     place-items: center;
     cursor: pointer;
     font-size: 1.2rem;
-    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-sidebar-toggle:hover {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
+    background: #2d3748 !important;
     transform: scale(1.05);
 }
 
-/* Cuando el sidebar está oculto, se mueve a la esquina y hace un pulso muy sutil de aviso */
+/* Cuando el sidebar está oculto, se mueve a la esquina con la animación sutil de aviso */
 body.sidebar-colapsado .btn-sidebar-toggle {
     top: 20px;
     left: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: #4a5568 !important;
     animation: pulsoSutil 2s infinite ease-in-out;
 }
 
 @keyframes pulsoSutil {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+        box-shadow: 0 0 0 0 rgba(74, 85, 104, 0.5);
     }
     70% {
-        box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 8px rgba(74, 85, 104, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        box-shadow: 0 0 0 0 rgba(74, 85, 104, 0);
     }
 }
