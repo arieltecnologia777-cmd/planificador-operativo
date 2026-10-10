@@ -206,16 +206,20 @@ const TECNICOS = [
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
     
-    // Si la OT no está registrada en D1 o no tiene fecha de creación, se asume nueva
+    // Si la OT ya tiene cualquier gestión, programación u observación guardada, 
+    // significa que ya existía de antes (es un registro histórico), por lo que es "No".
+    if (reg && (reg.estadoGestion || reg.estadoProgramacion || reg.observacion)) {
+        return false;
+    }
+
+    // Si no tiene registro en D1 o no tiene createdAt, es realmente nueva ("Sí")
     if (!reg || !reg.createdAt) {
         return true;
     }
 
     const hoy = new Date().toISOString().split('T')[0];
     
-    // Compara la fecha guardada en D1 con el día de hoy.
-    // Si se creó hoy, retorna "Sí". Aunque la edites, la fecha createdAt no cambia en D1.
-    // Mañana, al cambiar la fecha del sistema, dejará de coincidir y pasará a ser "No" automáticamente.
+    // Si tiene createdAt, validamos si fue creada el día de hoy
     return reg.createdAt.startsWith(hoy);
 }
 
