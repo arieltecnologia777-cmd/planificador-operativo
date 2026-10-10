@@ -202,14 +202,21 @@ const TECNICOS = [
     "YORMAN DAVID DUQUE GUERRA"
 ];
 
-// Lógica robusta: Si no está en D1 es nueva. Si la modificaste recientemente hoy, mantiene el "Sí".
+// Lógica limpia basada en la base de datos D1 (createdAt)
 function esCasoNuevo(otVal) {
-    if (otsModificadasRecientemente.has(otVal)) {
+    const reg = (window.registrosD1 || {})[otVal];
+    
+    // Si la OT no está registrada en D1 o no tiene fecha de creación, se asume nueva
+    if (!reg || !reg.createdAt) {
         return true;
     }
 
-    const reg = (window.registrosD1 || {})[otVal];
-    return !reg || (!reg.estadoGestion && !reg.estadoProgramacion && !reg.observacion);
+    const hoy = new Date().toISOString().split('T')[0];
+    
+    // Compara la fecha guardada en D1 con el día de hoy.
+    // Si se creó hoy, retorna "Sí". Aunque la edites, la fecha createdAt no cambia en D1.
+    // Mañana, al cambiar la fecha del sistema, dejará de coincidir y pasará a ser "No" automáticamente.
+    return reg.createdAt.startsWith(hoy);
 }
 
 function inicializarBotonAgruparColumnas() {
@@ -1145,9 +1152,7 @@ document.addEventListener("change", (e) => {
     const filaTabla = target.closest("tr");
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         const otMod = filaTabla.children[4].textContent.trim();
-        if (otMod) {
-            otsModificadasRecientemente.add(otMod); // Registra en memoria de sesión que esta OT fue tocada y debe seguir siendo nueva hoy
-        }
+        if (otMod) otsModificadasRecientemente.add(otMod);
         guardarOT(filaTabla);
     }
 });
@@ -1310,9 +1315,7 @@ document.addEventListener("blur", async e => {
     const fila = e.target.closest("tr");
     if(!fila) return;
     const otMod = fila.children[4].textContent.trim();
-    if (otMod) {
-        otsModificadasRecientemente.add(otMod);
-    }
+    if (otMod) otsModificadasRecientemente.add(otMod);
     await guardarOT(fila);
 }, true);
 
@@ -1356,7 +1359,8 @@ async function guardarOT(fila, observacionForzada = null){
                 estadoGestion: payload.estadoGestion,
                 tecnicoAsignado: payload.tecnicoAsignado,
                 acompanamiento: payload.acompanamiento,
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
+                createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
 
             actualizarKPIs(datosFiltradosGlobal);
