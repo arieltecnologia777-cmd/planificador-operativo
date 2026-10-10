@@ -2144,12 +2144,12 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA AZUL (SIMÉTRICO Y PEGADO AL SIDEBAR)
+   BOTÓN HAMBURGUESA AZUL (PEGADO AL SIDEBAR)
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 130px; /* Bajado a la altura de la opción Dashboard para mayor simetría */
-    left: 288px; /* Pegado justo al borde derecho del sidebar de 280px (16px margen + 280px ancho + 12px espacio) */
+    top: 130px; 
+    left: 274px; /* Pegado más cerca del borde del sidebar (16px margen + 280px ancho = 296px, restando un poco para solapar sutilmente el borde) */
     z-index: 99999;
     background: #2563eb !important; 
     color: #ffffff !important; 
