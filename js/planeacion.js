@@ -1335,6 +1335,9 @@ async function guardarOT(fila, observacionForzada = null){
     const inputObs = fila.querySelector(".observacion");
     const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
 
+    // Calculamos la fecha local exacta de tu navegador (ej: "2026-10-09")
+    const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
+
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
@@ -1342,7 +1345,8 @@ async function guardarOT(fila, observacionForzada = null){
         observacion: obsFinal,
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
-        acompanamiento: fila.querySelector(".acompanamiento")?.value || ""
+        acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
+        fechaLocal: fechaLocalHoy // <--- Mandamos la fecha local limpia
     };
 
     try {
@@ -1361,7 +1365,7 @@ async function guardarOT(fila, observacionForzada = null){
                 fechaProgramacion: payload.fechaProgramacion,
                 observacion: payload.observacion,
                 estadoGestion: payload.estadoGestion,
-                tecnicoAsignado: payload.tecnicoAsignado,
+                tecnicoAsigned: payload.tecnicoAsignado,
                 acompanamiento: payload.acompanamiento,
                 updatedAt: new Date().toISOString(),
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
@@ -1373,7 +1377,6 @@ async function guardarOT(fila, observacionForzada = null){
         console.error("Error al guardar OT:", err);
     }
 }
-
 const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
