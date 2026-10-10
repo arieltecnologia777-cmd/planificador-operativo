@@ -2144,15 +2144,15 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   BOTÓN HAMBURGUESA AZUL CORPORATIVO (FIJO Y ALINEADO CON EL BANNER)
+   BOTÓN HAMBURGUESA AZUL (SIMÉTRICO Y PEGADO AL SIDEBAR)
    ========================================== */
 .btn-sidebar-toggle {
     position: fixed;
-    top: 95px; /* Altura perfecta alineada con el banner para que nunca tape el logo del menú */
-    left: 304px; /* Ubicado exactamente a la derecha del sidebar flotante */
+    top: 130px; /* Bajado a la altura de la opción Dashboard para mayor simetría */
+    left: 288px; /* Pegado justo al borde derecho del sidebar de 280px (16px margen + 280px ancho + 12px espacio) */
     z-index: 99999;
-    background: #2563eb !important; /* El color azul exacto de tu botón de exportar */
-    color: #ffffff !important; /* Icono blanco con contraste perfecto */
+    background: #2563eb !important; 
+    color: #ffffff !important; 
     border: 1px solid #1d4ed8;
     width: 42px;
     height: 42px;
@@ -2171,7 +2171,7 @@ body.sidebar-colapsado .sidebar {
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
-/* Cuando el sidebar está oculto, el botón se mueve a la esquina superior izquierda con animación sutil */
+/* Cuando el sidebar está oculto, el botón se mueve a la esquina superior izquierda */
 body.sidebar-colapsado .btn-sidebar-toggle {
     top: 20px;
     left: 20px;
