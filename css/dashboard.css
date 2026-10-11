@@ -729,7 +729,7 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - ANCHO, ALTURA Y ALINEACIÓN PERFECTAS
+   BLOQUE DE FILTROS CENTRAL - ESTRUCTURA LIMPIA Y HORIZONTAL
    ========================================================== */
 .bloque-filtros-centro {
     display: flex !important;
@@ -739,29 +739,29 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 10px 14px !important; /* Altura compacta idéntica a Total CD y KPIs */
+    padding: 10px 14px !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
     gap: 8px !important;
 }
 
-/* Contenedor superior para Proyecto y Departamento lado a lado alineados arriba */
-.bloque-filtros-centro .panel-filtros-superior,
-.bloque-filtros-centro > div:not(.btn-borrar-filtros) {
+/* Forzar que los grupos de filtros dentro del bloque central vayan lado a lado en una sola fila superior */
+.bloque-filtros-centro {
     display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
     justify-content: space-between !important;
-    align-items: flex-start !important; /* Alineados perfectamente arriba */
-    gap: 20px !important;
-    width: 100% !important;
 }
 
-.grupo-filtros {
-    display: flex;
-    flex-direction: column;
+/* Los dos primeros elementos (Proyecto y Departamento) ocupan la parte superior lado a lado */
+.bloque-filtros-centro .grupo-filtros {
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
-    gap: 2px;
+    gap: 2px !important;
+    flex: 1 !important;
 }
 
 .label-titulo {
@@ -779,6 +779,7 @@
 .botones-filtro, .botones-departamentos {
     display: flex;
     gap: 6px;
+    justify-content: center;
 }
 
 .btn-filtro, .btn-depto {
@@ -808,8 +809,9 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% de lado a lado de la tarjeta */
+/* Botón de borrar filtros abarcando exactamente el 100% de la parte inferior de lado a lado */
 .btn-borrar-filtros {
+    flex-basis: 100% !important;
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
@@ -823,6 +825,7 @@
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
+    margin-top: 4px !important;
     transition: all 0.2s ease;
 }
 
