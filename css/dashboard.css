@@ -133,11 +133,19 @@
     gap: 16px;
 }
 
-/* Columna derecha: apila la tabla de carpetas, la nueva tabla de rangos y el backlog simétricamente */
+/* Columna derecha general */
 .columna-der-inferior {
     display: flex;
     flex-direction: column;
     gap: 14px;
+}
+
+/* Sub-grilla para poner la tabla de rangos y el backlog lado a lado exactamente en el cuadro rojo */
+.subgrid-inferior-derecha {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 14px;
+    align-items: stretch;
 }
 
 .mapa-regiones-container {
@@ -212,7 +220,7 @@
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
 
-/* Estilos específicos para la tabla de rangos (números en rojo según referencia) */
+/* Estilos específicos para la tabla de rangos */
 .tabla-rangos td:not(:first-child) {
     color: #2d3748;
 }
@@ -221,7 +229,7 @@
     font-weight: bold;
 }
 .fila-alerta-roja td:nth-child(3) {
-    color: #a0aec0; /* Ceros en gris tenue como la referencia */
+    color: #a0aec0;
 }
 
 .bloque-performance {
@@ -272,6 +280,9 @@
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .bloque-backlog-al-lado h4 {
@@ -289,7 +300,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-size: 0.8rem;
 }
 
@@ -304,7 +315,7 @@
 
 
 /* ==========================================================
-   OPTIMIZACIÓN PARA LAPTOPS (Ajuste compacto sin scroll)
+   OPTIMIZACIÓN PARA LAPTOPS
    ========================================================== */
 @media (max-width: 1400px) {
     body {
@@ -331,6 +342,11 @@
     }
 
     .columna-der-inferior {
+        gap: 8px;
+    }
+
+    .subgrid-inferior-derecha {
+        grid-template-columns: 1fr 260px;
         gap: 8px;
     }
 
