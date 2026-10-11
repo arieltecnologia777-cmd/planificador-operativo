@@ -120,7 +120,7 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL EN 2 COLUMNAS (IZQUIERDA Y DERECHA)
+   GRID PRINCIPAL PBI: Mapa/Perf a la izq, Tabla/Backlog a la der
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -135,10 +135,11 @@
     gap: 16px;
 }
 
-.columna-der {
-    display: flex;
-    flex-direction: column;
+.columna-der-inferior {
+    display: grid;
+    grid-template-columns: 1fr 340px; /* Tabla ancha a la izq, Backlog angosto a la der */
     gap: 16px;
+    align-items: start;
 }
 
 /* Mapa */
@@ -257,8 +258,8 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* Indicador Backlog */
-.bloque-backlog {
+/* Indicador Backlog al lado derecho de la tabla */
+.bloque-backlog-al-lado {
     background: white;
     padding: 14px;
     border-radius: 12px;
@@ -266,7 +267,7 @@
     font-size: 0.8rem;
 }
 
-.bloque-backlog h4 {
+.bloque-backlog-al-lado h4 {
     margin-top: 0;
     font-size: 0.85rem;
     background: #718096;
