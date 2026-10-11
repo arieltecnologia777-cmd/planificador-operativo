@@ -101,7 +101,7 @@
 }
 
 /* ==========================================================
-   NUEVAS KPI CARDS 3D - VIDRIOSAS Y EXACTAS A LA REFERENCIA
+   KPI CARDS 3D - CONTENEDOR Y TARJETAS INDIVIDUALES VIDRIOSAS
    ========================================================== */
 .kpis-wrapper-contenedor {
     background: rgba(13, 20, 36, 0.45);
@@ -110,36 +110,37 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 6px 8px;
+    padding: 8px;
     display: inline-flex;
     align-items: center;
 }
 
 .kpis-estado-superior {
     display: flex !important;
-    gap: 6px !important;
+    gap: 8px !important;
     background: transparent !important;
     box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    align-items: stretch !important;
+    align-items: center !important;
 }
 
+/* Cada KPI card vuelve a ser una caja independiente con cristal oscuro y borde brillante */
 .kpi-box {
-    background: rgba(15, 23, 42, 0.45) !important;
+    background: rgba(15, 23, 42, 0.75) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 12px !important;
     padding: 8px 10px !important;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-align: center;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    flex: 1;
+    justify-content: center !important;
     min-width: 65px;
+    box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
@@ -150,39 +151,39 @@
     margin: 2px 0 !important;
 }
 
-/* 1. Online - Verde Esmeralda Vidrioso y Neón */
+/* 1. Online - Verde Esmeralda Neon */
 .kpi-box.online { 
-    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
-    border: 1.5px solid rgba(16, 185, 129, 0.75) !important; 
+    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.8) !important; 
     color: #34d399 !important; 
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25) !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
 }
 .kpi-box.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline - Rojo Coral Vidrioso y Neón */
+/* 2. Offline - Rojo Coral Neon */
 .kpi-box.offline { 
-    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
-    border: 1.5px solid rgba(239, 68, 68, 0.75) !important; 
+    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.8) !important; 
     color: #f87171 !important; 
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
 }
 .kpi-box.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
 
-/* 3. Parcial - Ámbar Vidrioso y Neón */
+/* 3. Parcial - Ámbar Neon */
 .kpi-box.parcial { 
-    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.75) !important; 
+    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.8) !important; 
     color: #fbbf24 !important; 
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) !important;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
 }
 .kpi-box.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
 
-/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón Vidriosos */
+/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón */
 .kpi-box.sub { 
-    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.65) !important; 
+    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.7) !important; 
     color: #38bdf8 !important; 
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
 }
 .kpi-box.sub span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
