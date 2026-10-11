@@ -537,3 +537,81 @@
     box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.15) !important;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
+/* ==========================================================
+   KPI CARDS 3D - IDÉNTICAS A LA REFERENCIA (SIN FONDO NEGRO GLOBAL)
+   ========================================================== */
+
+/* Contenedor transparente que alinea horizontalmente las 6 tarjetas de KPI */
+.kpis-estado-superior {
+    display: flex !important;
+    gap: 10px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+}
+
+/* Tarjeta individual flotante estilo Glassmorphism con bordes redondeados */
+.kpi-box {
+    background: rgba(15, 23, 42, 0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-radius: 14px !important;
+    padding: 10px 8px !important;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex: 1;
+    min-width: 68px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.kpi-box span { 
+    font-size: 1.2rem !important; 
+    display: block !important; 
+    font-weight: 800 !important;
+    margin: 3px 0 !important;
+    letter-spacing: 0.5px;
+}
+
+/* 1. Online - Verde Esmeralda Neon con Resplandor */
+.kpi-box.online { 
+    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.25) 0%, rgba(15, 23, 42, 0.65) 75%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.7) !important; 
+    color: #34d399 !important; 
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2) !important;
+}
+.kpi-box.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
+
+/* 2. Offline - Rojo Coral Neon con Resplandor */
+.kpi-box.offline { 
+    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.65) 75%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.7) !important; 
+    color: #f87171 !important; 
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2) !important;
+}
+.kpi-box.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
+
+/* 3. Parcial - Ámbar Neon con Resplandor */
+.kpi-box.parcial { 
+    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.65) 75%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.7) !important; 
+    color: #fbbf24 !important; 
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2) !important;
+}
+.kpi-box.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+
+/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón */
+.kpi-box.sub { 
+    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 23, 42, 0.65) 75%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.6) !important; 
+    color: #38bdf8 !important; 
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.18) !important;
+}
+.kpi-box.sub span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
