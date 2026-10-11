@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=18">
+    <link rel="stylesheet" href="../css/dashboard.css?v=19">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -38,9 +38,9 @@
                 Planeación
             </a>
             
-            <!-- Botón de Herramientas Avanzadas idéntico al de planeación -->
+            <!-- Botón para abrir el editor de la Nota del Día (Protegido por contraseña) -->
             <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ⚙️ Herramientas Avanzadas
+                📝 Editar Nota del Día
             </button>
 
             <a href="#" onclick="alert('Página en construcción'); return false;">
@@ -229,7 +229,7 @@
                                 <h4>📝 Notas del Día / Bitácora</h4>
                             </div>
                             <div class="notas-body">
-                                <textarea id="txtNotasDia" placeholder="Sin notas registradas para hoy..." readonly></textarea>
+                                <textarea id="txtNotasDia" placeholder="Cargando nota del día..." readonly></textarea>
                             </div>
                         </div>
                     </div>
@@ -322,12 +322,32 @@
 </div>
 
 <!-- Scripts -->
-<script src="../js/dashboard.js?v=18"></script>
+<script src="../js/dashboard.js?v=19"></script>
 
-<!-- Declaración exacta de API_URL idéntica a la que usa planeacion.js -->
 <script>
     const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
+
+    // Cargar automáticamente la nota del día al abrir el dashboard
+    async function cargarNotaDelDia() {
+        try {
+            const resp = await fetch(`${API_URL.replace('/planeacion', '/notas')}`);
+            const data = await resp.json();
+            const txtNotas = document.getElementById("txtNotasDia");
+            if (txtNotas && data.ok) {
+                txtNotas.value = data.nota || "Sin notas registradas para hoy.";
+            }
+        } catch (err) {
+            console.error("Error al cargar la nota:", err);
+            const txtNotas = document.getElementById("txtNotasDia");
+            if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        cargarNotaDelDia();
+    });
 </script>
+
 <script src="../js/settings.js"></script>
 
 <script>
@@ -337,16 +357,9 @@
             document.body.classList.toggle("sidebar-colapsado");
         }
     });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas && localStorage.getItem("dashboard_nota_dia")) {
-            txtNotas.value = localStorage.getItem("dashboard_nota_dia");
-        }
-    });
 </script>
 
-<!-- Modales de Herramientas Avanzadas -->
+<!-- Modales de Seguridad y Edición de Nota -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
@@ -364,24 +377,18 @@
     </div>
 </div>
 
+<!-- Modal Modificado Exclusivamente para Notas de Seguimiento -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 450px;">
+    <div class="obs-modal-content" style="max-width: 500px;">
         <div class="obs-modal-header">
-            <h3>⚙️ Herramientas Avanzadas</h3>
+            <h3>📝 Editar Nota del Día / Seguimiento</h3>
             <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
         </div>
         <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div class="carga-masiva-container">
-                <label for="inputExcelMasivo" class="btn-subir-excel" style="cursor: pointer; background: #28a745; color: white; padding: 12px; border-radius: 4px; font-size: 1rem; display: block; text-align: center; font-weight: 500;">
-                    📂 Subir Excel Masivo (Actualización)
-                </label>
-                <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
-            </div>
-            <button type="button" id="btnAbrirForzarFecha" style="padding: 12px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; text-align: left;">
-                📅 Forzar Fecha de Creación (OT)
-            </button>
-            <button type="button" id="btnAbrirBorrarData" style="padding: 12px; background: #e53e3e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; text-align: left;">
-                🗑️ Eliminar / Borrar Datos (Cloudflare)
+            <p style="font-size: 0.9rem; color: #4a5568;">Escribe o actualiza la bitácora que se mostrará en el tablero para todos los usuarios:</p>
+            <textarea id="txtModalNotaDia" rows="6" placeholder="Escribe la nota del día aquí..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.95rem;"></textarea>
+            <button type="button" id="btnGuardarNotaServidor" style="padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                💾 Guardar y Sincronizar Nota
             </button>
         </div>
         <div class="obs-modal-footer">
@@ -390,22 +397,54 @@
     </div>
 </div>
 
-<div id="modalClaveSegura" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 400px;">
-        <div class="obs-modal-header">
-            <h3>🔒 Confirmación de Seguridad</h3>
-            <button type="button" id="cerrarModalClave" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="text-align: center;">
-            <p id="textoMensajeClave" style="margin-bottom: 12px; color: #4a5568; font-size: 0.9rem;">Ingresa la clave de administrador:</p>
-            <input type="password" id="inputClaveSegura" placeholder="Contraseña..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 1rem;">
-        </div>
-        <div class="obs-modal-footer" style="justify-content: space-between;">
-            <button type="button" id="btnCancelarClave" class="obs-btn-secundario">Cancelar</button>
-            <button type="button" id="btnConfirmarClave" class="obs-btn-principal">Confirmar</button>
-        </div>
-    </div>
-</div>
+<script>
+    // Lógica para cargar y guardar la nota dentro del modal simplificado
+    document.addEventListener("click", async (e) => {
+        const target = e.target;
+
+        // Cuando se abre el modal de herramientas tras verificar contraseña, cargamos la nota actual
+        if (target.closest("#btnVerificarPassword")) {
+            setTimeout(async () => {
+                try {
+                    const resp = await fetch(`${API_URL.replace('/planeacion', '/notas')}`);
+                    const data = await resp.json();
+                    const txtModal = document.getElementById("txtModalNotaDia");
+                    if (txtModal && data.ok) {
+                        txtModal.value = data.nota || "";
+                    }
+                } catch (err) {
+                    console.error("Error al cargar nota en modal:", err);
+                }
+            }, 200);
+        }
+
+        // Guardar la nota en el servidor
+        if (target.closest("#btnGuardarNotaServidor")) {
+            const txtModal = document.getElementById("txtModalNotaDia");
+            const notaTexto = txtModal ? txtModal.value : "";
+
+            try {
+                const resp = await fetch(`${API_URL.replace('/planeacion', '/notas')}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nota: notaTexto })
+                });
+                const resultado = await resp.json();
+
+                if (resultado.ok) {
+                    alert("¡Nota del día guardada y sincronizada exitosamente!");
+                    document.getElementById("modalAdminTools").style.display = "none";
+                    cargarNotaDelDia(); // Refrescar en el dashboard principal
+                } else {
+                    alert("Error al guardar la nota en el servidor.");
+                }
+            } catch (err) {
+                console.error("Error de red:", err);
+                alert("Error de red al intentar guardar la nota.");
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
