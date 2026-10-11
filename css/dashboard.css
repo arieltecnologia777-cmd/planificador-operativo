@@ -45,7 +45,7 @@
     border-radius: 4px;
 }
 
-.btn-zona { background: #2563eb; }
+.btn-zona { background: #3182ce; }
 .btn-todas { background: #a0aec0; color: #1a202c; }
 
 .bloque-filtros-centro {
@@ -84,7 +84,7 @@
 }
 
 .btn-filtro.active, .btn-depto.active {
-    background: #2563eb;
+    background: #3182ce;
     color: white;
 }
 
@@ -177,7 +177,7 @@
 
 .marcador-mapa {
     position: absolute;
-    background: rgba(37, 99, 235, 0.9);
+    background: rgba(49, 130, 206, 0.9);
     color: white;
     font-size: 0.7rem;
     font-weight: bold;
@@ -194,7 +194,7 @@
 }
 
 /* ==========================================================
-   ENCABEZADOS UNIFICADOS CON EL AZUL DE LA HAMBURGUESA (#2563eb)
+   ENCABEZADOS UNIFICADOS CON AZUL SUAVE Y ELEGANTE (#3182ce)
    ========================================================== */
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
@@ -203,7 +203,7 @@
     font-size: 0.9rem;
     color: white !important;
     text-align: center;
-    background: #2563eb !important;
+    background: #3182ce !important;
     padding: 6px;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -246,7 +246,7 @@
 }
 
 .tabla-dinamica-carpetas th {
-    background: #2563eb !important;
+    background: #3182ce !important;
     color: white;
     font-weight: 600;
 }
@@ -282,7 +282,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #2563eb !important;
+    background: #3182ce !important;
     padding: 6px 10px;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -295,7 +295,7 @@
 }
 
 .btn-admin-mode {
-    background: #1d4ed8;
+    background: #2b6cb0;
     color: white;
     border: none;
     padding: 3px 8px;
@@ -307,7 +307,7 @@
 }
 
 .btn-admin-mode:hover {
-    background: #1e40af;
+    background: #2c5282;
 }
 
 .notas-body {
@@ -331,7 +331,7 @@
 }
 
 #txtNotasDia:focus {
-    border-color: #2563eb;
+    border-color: #3182ce;
 }
 
 .notas-footer {
@@ -348,7 +348,7 @@
 }
 
 .btn-guardar-notas {
-    background: #2563eb;
+    background: #3182ce;
     color: white;
     border: none;
     padding: 4px 10px;
@@ -359,7 +359,7 @@
 }
 
 .btn-guardar-notas:hover {
-    background: #1d4ed8;
+    background: #2b6cb0;
 }
 
 .bloque-performance {
