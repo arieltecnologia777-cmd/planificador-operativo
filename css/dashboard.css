@@ -100,25 +100,91 @@
     margin-top: 4px;
 }
 
+/* ==========================================================
+   NUEVAS KPI CARDS 3D - VIDRIOSAS Y EXACTAS A LA REFERENCIA
+   ========================================================== */
+.kpis-wrapper-contenedor {
+    background: rgba(13, 20, 36, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
 .kpis-estado-superior {
-    display: flex;
-    gap: 6px;
+    display: flex !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
 }
 
 .kpi-box {
-    padding: 6px 10px;
-    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px !important;
+    padding: 8px 10px !important;
     font-weight: bold;
     font-size: 0.75rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex: 1;
+    min-width: 65px;
+    transition: all 0.2s ease;
 }
 
-.kpi-box span { font-size: 1rem; display: block; }
-.kpi-box.online { background: #48bb78; color: white; }
-.kpi-box.offline { background: #a0aec0; color: white; }
-.kpi-box.parcial { background: #f56565; color: white; }
-.kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
+.kpi-box span { 
+    font-size: 1.15rem !important; 
+    display: block !important; 
+    font-weight: 800 !important;
+    margin: 2px 0 !important;
+}
+
+/* 1. Online - Verde Esmeralda Vidrioso y Neón */
+.kpi-box.online { 
+    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.75) !important; 
+    color: #34d399 !important; 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25) !important;
+}
+.kpi-box.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
+
+/* 2. Offline - Rojo Coral Vidrioso y Neón */
+.kpi-box.offline { 
+    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.75) !important; 
+    color: #f87171 !important; 
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important;
+}
+.kpi-box.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
+
+/* 3. Parcial - Ámbar Vidrioso y Neón */
+.kpi-box.parcial { 
+    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.75) !important; 
+    color: #fbbf24 !important; 
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) !important;
+}
+.kpi-box.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+
+/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón Vidriosos */
+.kpi-box.sub { 
+    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.65) !important; 
+    color: #38bdf8 !important; 
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2) !important;
+}
+.kpi-box.sub span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
 .panel-layout-pbi {
     display: grid;
@@ -266,7 +332,7 @@
 }
 
 /* ==========================================================
-   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA (Limpio y sin candados)
+   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA
    ========================================================== */
 .bloque-notas-dia {
     background: white;
@@ -377,7 +443,6 @@
 .badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
 .badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
 
-
 /* ==========================================================
    OPTIMIZACIÓN PARA LAPTOPS
    ========================================================== */
@@ -460,145 +525,4 @@
         margin-bottom: 2px;
         font-size: 0.72rem;
     }
-}
-/* ==========================================================
-   CONTENEDOR GENERAL DE KPIS (MARCO VIDRIOSO EXTERIOR)
-   ========================================================== */
-.kpis-wrapper-contenedor {
-    background: rgba(13, 20, 36, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.kpis-estado-superior {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-}
-
-.kpi-card-neon {
-    /* Efecto vidrioso traslúcido real (sin negro sólido) */
-    background: rgba(15, 23, 42, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 14px;
-    padding: 12px 6px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    text-align: center;
-    flex: 1;
-    min-width: 70px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s ease;
-}
-
-.kpi-icon-wrap {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2px;
-}
-
-.kpi-card-neon span {
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin: 2px 0;
-    letter-spacing: 0.5px;
-}
-
-.kpi-label-row {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #cbd5e0;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    white-space: nowrap;
-}
-
-/* 1. Online (Verde Esmeralda Vidrioso) */
-.kpi-card-neon.online {
-    border: 1px solid rgba(16, 185, 129, 0.5);
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
-}
-.kpi-card-neon.online .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.05) 70%);
-    color: #34d399;
-}
-.kpi-card-neon.online span { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
-
-/* 2. Offline (Rojo Coral Vidrioso) */
-.kpi-card-neon.offline {
-    border: 1px solid rgba(239, 68, 68, 0.5);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
-}
-.kpi-card-neon.offline .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, rgba(239, 68, 68, 0.05) 70%);
-    color: #f87171;
-}
-.kpi-card-neon.offline span { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
-
-/* 3. Parcial (Ámbar Vidrioso) */
-.kpi-card-neon.parcial {
-    border: 1px solid rgba(245, 158, 11, 0.5);
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
-}
-.kpi-card-neon.parcial .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(245, 158, 11, 0.05) 70%);
-    color: #fbbf24;
-}
-.kpi-card-neon.parcial span { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
-
-/* 4. Velocidad (Azul Cielo Vidrioso) */
-.kpi-card-neon.velocidad {
-    border: 1px solid rgba(56, 189, 248, 0.5);
-    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
-}
-.kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(56, 189, 248, 0.05) 70%);
-    color: #38bdf8;
-}
-.kpi-card-neon.velocidad span { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
-
-/* 5. PQR's (Morado Vidrioso) */
-.kpi-card-neon.pqrs {
-    border: 1px solid rgba(168, 85, 247, 0.5);
-    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15);
-}
-.kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.05) 70%);
-    color: #c084fc;
-}
-.kpi-card-neon.pqrs span { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
-
-/* 6. Otros P3 (Índigo Vidrioso) */
-.kpi-card-neon.otros {
-    border: 1px solid rgba(99, 102, 241, 0.5);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
-}
-.kpi-card-neon.otros .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0.05) 70%);
-    color: #818cf8;
-}
-.kpi-card-neon.otros span { color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6); }
-
-.dot-green {
-    width: 5px;
-    height: 5px;
-    background-color: #34d399;
-    border-radius: 50%;
-    box-shadow: 0 0 6px #34d399;
-    display: inline-block;
 }
