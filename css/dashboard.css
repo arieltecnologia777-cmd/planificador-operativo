@@ -855,10 +855,25 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 /* ==========================================================
-   IGUALAR ALTURA Y ALINEACIÓN DE LOS TRES BLOQUES SUPERIORES
+   CORRECCIÓN SIMÉTRICA Y COMPACTA DE LA BARRA SUPERIOR
    ========================================================== */
 
-/* 1. Ajuste del contenedor principal de Total CD para igualar altura */
+/* 1. Contenedor general del panel superior alineado al centro (sin estirarse) */
+.panel-superior {
+    background: rgba(13, 20, 36, 0.25) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 10px 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center !important; /* Alineación centrada para que conserven su tamaño natural */
+    gap: 12px;
+}
+
+/* 2. Bloque Total CD compacto y simétrico */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(12px);
@@ -866,15 +881,16 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 12px 10px !important;
+    padding: 8px 10px !important;
     display: flex;
     flex-direction: column;
-    justify-content: space-between !important;
-    min-width: 180px;
+    justify-content: center;
+    gap: 6px;
+    width: 200px; /* Ancho controlado y simétrico */
     box-sizing: border-box;
 }
 
-/* 2. Ajuste del bloque de filtros del centro para mantener la misma línea visual */
+/* 3. Bloque de filtros central con tamaño armónico */
 .bloque-filtros-centro {
     display: flex;
     gap: 15px;
@@ -883,23 +899,8 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 12px 16px !important;
+    padding: 8px 14px !important;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
-}
-
-/* 3. Asegurar que el contenedor general del panel superior mantenga los tres bloques alineados y con la misma altura */
-.panel-superior {
-    background: rgba(13, 20, 36, 0.25) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 12px 16px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch !important; /* Estira los tres bloques para que midan exactamente lo mismo en altura */
-    gap: 15px;
 }
