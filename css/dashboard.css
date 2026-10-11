@@ -120,27 +120,27 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL PBI
+   GRID PRINCIPAL PBI: Alineado abajo del todo para igualar alturas
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 16px;
-    align-items: start;
+    align-items: stretch; /* Estira ambas columnas para que midan exactamente lo mismo de alto */
 }
 
 .columna-izq {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    justify-content: space-between; /* Distribuye mapa arriba y performance abajo del todo */
+    height: 100%;
 }
 
-/* AQUÍ ESTABLECEMOS QUE LA TABLA BAJE DEL TODO (flex-end) Y EL BACKLOG QUEDE ARRIBA A SU DERECHA */
 .columna-der-inferior {
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 16px;
-    align-items: end; /* Fuerza a que la tabla y el backlog se alinien hacia la parte inferior */
+    align-items: end; /* Baja tanto la tabla como el backlog al final de la página */
 }
 
 /* Mapa */
@@ -170,7 +170,7 @@
     cursor: pointer;
 }
 
-/* Tabla de Cumplimiento por Carpetas (Baja del todo) */
+/* Tabla de Cumplimiento por Carpetas (Bajará al nivel final) */
 .tabla-carpetas-wrapper {
     background: white;
     padding: 14px;
@@ -259,7 +259,7 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* Indicador Backlog al lado derecho */
+/* Indicador Backlog al lado derecho (Bajará al nivel final) */
 .bloque-backlog-al-lado {
     background: white;
     padding: 14px;
