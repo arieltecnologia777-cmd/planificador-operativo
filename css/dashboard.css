@@ -935,3 +935,19 @@
     width: 100%;
     margin-bottom: 4px;
 }
+/* ==========================================================
+   BOTÓN BORRAR FILTROS A ANCHO COMPLETO (100%)
+   ========================================================== */
+.btn-borrar-filtros {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 8px !important;
+    box-sizing: border-box !important;
+}
+
+/* Asegurar que el contenedor del grupo de departamento ocupe el ancho necesario para guiar el botón */
+.bloque-filtros-centro .grupo-filtros:last-child {
+    width: 100%;
+}
