@@ -18,22 +18,24 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Diccionario de imágenes del mapa por departamento
-const MAPAS_DEPARTAMENTOS = {
-    "TODOS": "../assets/mapas/colombia_general.png",
-    "ANTIOQUIA": "../assets/mapas/antioquia.png",
-    "CESAR": "../assets/mapas/cesar.png",
-    "LA GUAJIRA": "../assets/mapas/guajira.png",
-    "SAI": "../assets/mapas/sai.png"
+// Coordenadas geográficas y zoom por departamento para el mapa real
+const COORDENADAS_DEPTOS = {
+    "TODOS": { lat: 8.5, lng: -74.0, zoom: 6 },      // Vista general norte de Colombia
+    "ANTIOQUIA": { lat: 7.25, lng: -75.58, zoom: 7 }, // Antioquia
+    "CESAR": { lat: 9.89, lng: -73.58, zoom: 8 },     // Cesar
+    "LA GUAJIRA": { lat: 11.54, lng: -72.9, zoom: 8 },// Guajira
+    "SAI": { lat: 12.58, lng: -81.71, zoom: 11 }      // San Andrés y Providencia
 };
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
 let proyectoFiltroActual = "MINTIC 7K";
+let mapaLeaflet = null; // Instancia global del mapa
 
 async function inicializarDashboard() {
     try {
+        inicializarMapaLeaflet();
         cargarNotaDelDia();
 
         const resp = await fetch(DATASET_URL);
@@ -70,6 +72,36 @@ async function inicializarDashboard() {
     }
 }
 
+// Inicializar el mapa interactivo real
+function inicializarMapaLeaflet() {
+    const contenedor = document.getElementById("mapaLeaflet");
+    if (!contenedor || mapaLeaflet) return;
+
+    // Crear mapa centrado por defecto en Colombia
+    mapaLeaflet = L.map("mapaLeaflet", {
+        zoomControl: true,
+        attributionControl: false
+    }).setView([8.5, -74.0], 6);
+
+    // Añadir capa base limpia estilo minimalista de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(mapaLeaflet);
+}
+
+// Mover y hacer zoom en el mapa según el departamento seleccionado
+function actualizarMapaInteractivo(depto) {
+    if (!mapaLeaflet) return;
+
+    const configCoord = COORDENADAS_DEPTOS[depto] || COORDENADAS_DEPTOS["TODOS"];
+    mapaLeaflet.setView([configCoord.lat, configCoord.lng], configCoord.zoom);
+
+    // Forzar redibujado para evitar problemas de renderizado al cambiar pestañas/filtros
+    setTimeout(() => {
+        mapaLeaflet.invalidateSize();
+    }, 200);
+}
+
 async function cargarNotaDelDia() {
     try {
         const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
@@ -82,19 +114,6 @@ async function cargarNotaDelDia() {
         console.error("Error al cargar la nota:", err);
         const txtNotas = document.getElementById("txtNotasDia");
         if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
-    }
-}
-
-// Función para cambiar dinámicamente el mapa según el departamento seleccionado
-function actualizarImagenMapa(depto) {
-    const imgElement = document.getElementById("imgMapaDepto");
-    if (imgElement) {
-        const rutaImagen = MAPAS_DEPARTAMENTOS[depto] || MAPAS_DEPARTAMENTOS["TODOS"];
-        imgElement.style.opacity = "0"; 
-        setTimeout(() => {
-            imgElement.src = rutaImagen;
-            imgElement.style.opacity = "1";
-        }, 150);
     }
 }
 
@@ -126,8 +145,8 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Actualizar visualmente el mapa dinámico
-    actualizarImagenMapa(departamentoFiltroActual);
+    // Actualizar el enfoque del mapa interactivo real
+    actualizarMapaInteractivo(departamentoFiltroActual);
 
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
