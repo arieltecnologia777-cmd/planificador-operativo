@@ -120,20 +120,29 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRILLA PBI DEFINITIVA (Estructura de 2 Columnas y 2 Filas)
+   GRID PRINCIPAL EN 2 COLUMNAS (IZQUIERDA Y DERECHA)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
     grid-template-columns: 320px 1fr;
-    grid-template-rows: auto auto;
     gap: 16px;
     align-items: start;
 }
 
-/* 1. Mapa (Fila 1, Columna 1) */
+.columna-izq {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.columna-der {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Mapa */
 .mapa-regiones-container {
-    grid-column: 1;
-    grid-row: 1;
     background: #1a202c;
     border-radius: 12px;
     height: 300px;
@@ -159,10 +168,8 @@
     cursor: pointer;
 }
 
-/* 2. Tabla de Carpetas (Fila 1, Columna 2) */
+/* Tabla de Cumplimiento por Carpetas */
 .tabla-carpetas-wrapper {
-    grid-column: 2;
-    grid-row: 1;
     background: white;
     padding: 14px;
     border-radius: 12px;
@@ -207,10 +214,8 @@
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
 
-/* 3. Performance (Fila 2, Columna 1) */
+/* Performance */
 .bloque-performance {
-    grid-column: 1;
-    grid-row: 2;
     background: white;
     padding: 14px;
     border-radius: 12px;
@@ -252,10 +257,8 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* 4. Indicador Backlog (Fila 2, Columna 2) */
+/* Indicador Backlog */
 .bloque-backlog {
-    grid-column: 2;
-    grid-row: 2;
     background: white;
     padding: 14px;
     border-radius: 12px;
