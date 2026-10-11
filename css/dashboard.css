@@ -392,22 +392,28 @@ body {
     table-layout: fixed !important;
 }
 
+/* ==========================================================
+   ESTILO DE ENCABEZADOS DE TABLA: AZUL SUAVE CON EFECTO ESPEJO
+   ========================================================== */
+
 .tabla-dinamica-carpetas th {
-    background: #f8fafc !important;
-    color: #334155 !important;
-    border: 1px solid #e2e8f0 !important;
+    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
     padding: 8px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.7rem;
     letter-spacing: 0.5px;
     text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4); /* Efecto espejo de luz superior */
 }
 
 .tabla-dinamica-carpetas th:first-child, 
 .tabla-rangos th:first-child {
     width: 32%;
     text-align: left !important;
+    border-top-left-radius: 6px;
 }
 
 .tabla-dinamica-carpetas th:not(:first-child), 
@@ -416,6 +422,9 @@ body {
     text-align: center !important;
 }
 
+.tabla-dinamica-carpetas th:last-child {
+    border-top-right-radius: 6px;
+}
 .tabla-dinamica-carpetas td {
     background: #ffffff !important;
     color: #1e293b !important;
