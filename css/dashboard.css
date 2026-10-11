@@ -462,45 +462,45 @@
     }
 }
 /* ==========================================================
-   KPI CARDS 3D - 100% TRANSPARENTES / VIDRIOSAS (CERO NEGRO)
+   KPI CARDS 3D - CRISTAL TEÑIDO CON EL COLOR EXACTO DE CADA ESTADO
    ========================================================== */
 
-/* Contenedor general que enmarca las tarjetas */
+/* Contenedor general principal (marco traslúcido azul suave) */
 .kpis-wrapper-contenedor {
-    background: rgba(13, 20, 36, 0.25);
+    background: rgba(13, 20, 36, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 8px;
+    padding: 6px 8px;
     display: inline-flex;
     align-items: center;
 }
 
 .kpis-estado-superior {
-    display: flex;
-    gap: 8px;
+    display: flex !important;
+    gap: 6px !important;
     background: transparent !important;
     box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    align-items: stretch !important;
 }
 
-/* Tarjetas individuales totalmente transparentes y de cristal */
+/* Tarjetas individuales teñidas con cristal luminoso */
 .kpi-card-neon {
-    background: rgba(0, 0, 0, 0) !important; /* Cero fondo negro */
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: 12px;
-    padding: 10px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    text-align: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px !important;
+    padding: 10px 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: center !important;
     flex: 1;
-    min-width: 70px;
+    min-width: 68px;
     position: relative;
     overflow: hidden;
     transition: all 0.2s ease;
@@ -517,9 +517,9 @@
 }
 
 .kpi-card-neon span {
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin: 2px 0;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    margin: 2px 0 !important;
     letter-spacing: 0.5px;
 }
 
@@ -533,77 +533,83 @@
     white-space: nowrap;
 }
 
-/* 1. Online (Verde Esmeralda Transparente con Neón) */
+/* 1. Online (Verde Esmeralda) */
 .kpi-card-neon.online {
-    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.2) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(16, 185, 129, 0.75);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.4) 0%, rgba(6, 78, 59, 0.6) 85%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
 }
 .kpi-card-neon.online .kpi-icon-wrap {
-    background: rgba(16, 185, 129, 0.15);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.5) 0%, rgba(16, 185, 129, 0.1) 70%);
     color: #34d399;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
-.kpi-card-neon.online span { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
+.kpi-card-neon.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline (Rojo Coral Transparente con Neón) */
+/* 2. Offline (Rojo Coral) */
 .kpi-card-neon.offline {
-    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(239, 68, 68, 0.75);
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+    background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.4) 0%, rgba(127, 29, 29, 0.6) 85%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.85) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
 }
 .kpi-card-neon.offline .kpi-icon-wrap {
-    background: rgba(239, 68, 68, 0.15);
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.5) 0%, rgba(239, 68, 68, 0.1) 70%);
     color: #f87171;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
 }
-.kpi-card-neon.offline span { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
+.kpi-card-neon.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
 
-/* 3. Parcial (Ámbar Transparente con Neón) */
+/* 3. Parcial (Ámbar / Naranja) */
 .kpi-card-neon.parcial {
-    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.2) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.75);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+    background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.4) 0%, rgba(120, 53, 15, 0.6) 85%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.85) !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3) !important;
 }
 .kpi-card-neon.parcial .kpi-icon-wrap {
-    background: rgba(245, 158, 11, 0.15);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, rgba(245, 158, 11, 0.1) 70%);
     color: #fbbf24;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
 }
-.kpi-card-neon.parcial span { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+.kpi-card-neon.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
 
-/* 4. Velocidad (Azul Cielo Transparente con Neón) */
+/* 4. Velocidad (Azul Cielo) */
 .kpi-card-neon.velocidad {
-    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.18) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.65);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.12);
+    background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.35) 0%, rgba(12, 74, 110, 0.6) 85%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.8) !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
 }
 .kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: rgba(56, 189, 248, 0.15);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(56, 189, 248, 0.1) 70%);
     color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
 }
-.kpi-card-neon.velocidad span { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
+.kpi-card-neon.velocidad span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
-/* 5. PQR's (Morado Transparente con Neón) */
+/* 5. PQR's (Morado) */
 .kpi-card-neon.pqrs {
-    background: radial-gradient(circle at 50% 25%, rgba(168, 85, 247, 0.18) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(168, 85, 247, 0.65);
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.12);
+    background: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, rgba(88, 28, 135, 0.6) 85%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.8) !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.25) !important;
 }
 .kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: rgba(168, 85, 247, 0.15);
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.1) 70%);
     color: #c084fc;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
 }
-.kpi-card-neon.pqrs span { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
+.kpi-card-neon.pqrs span { color: #c084fc !important; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
 
-/* 6. Otros P3 (Índigo Transparente con Neón) */
+/* 6. Otros P3 (Índigo) */
 .kpi-card-neon.otros {
-    background: radial-gradient(circle at 50% 25%, rgba(99, 102, 241, 0.18) 0%, rgba(0, 0, 0, 0) 75%) !important;
-    border: 1.5px solid rgba(99, 102, 241, 0.65);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.12);
+    background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.35) 0%, rgba(49, 46, 129, 0.6) 85%) !important;
+    border: 1.5px solid rgba(99, 102, 241, 0.8) !important;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.25) !important;
 }
 .kpi-card-neon.otros .kpi-icon-wrap {
-    background: rgba(99, 102, 241, 0.15);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(99, 102, 241, 0.1) 70%);
     color: #818cf8;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
 }
-.kpi-card-neon.otros span { color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6); }
+.kpi-card-neon.otros span { color: #818cf8 !important; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6); }
 
 .dot-green {
     width: 5px;
