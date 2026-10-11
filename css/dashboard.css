@@ -608,4 +608,15 @@
     border-radius: 50%;
     box-shadow: 0 0 6px #34d399;
     display: inline-block;
+}/* ==========================================================
+   CONTENEDOR GENERAL LIMPIO (SIN FONDO OSCURO)
+   ========================================================== */
+.kpis-wrapper-contenedor {
+    background: transparent !important;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
 }
