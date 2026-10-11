@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=21">
+    <link rel="stylesheet" href="../css/dashboard.css?v=22">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -40,7 +40,7 @@
             
             <!-- Botón para abrir el editor de la Nota del Día (Protegido por contraseña) -->
             <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ⚙️ Herramientas Avanzadas
+                📝 Editar Nota del Día
             </button>
 
             <a href="#" onclick="alert('Página en construcción'); return false;">
@@ -322,10 +322,11 @@
 </div>
 
 <!-- Scripts -->
-<script src="../js/dashboard.js?v=21"></script>
+<script src="../js/dashboard.js?v=22"></script>
 
 <script>
     const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
+    const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
 
     // Cargar automáticamente la nota del día al abrir el dashboard
     async function cargarNotaDelDia() {
@@ -397,7 +398,7 @@
 </div>
 
 <script>
-    // Lógica limpia y directa con URL absoluta correcta hacia planeacion-api
+    // Lógica para cargar y guardar la nota en el servidor
     document.addEventListener("click", async (e) => {
         const target = e.target;
 
