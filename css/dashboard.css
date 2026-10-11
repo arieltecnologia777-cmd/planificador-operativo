@@ -729,7 +729,7 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - ANCHO TOTAL Y ALINEACIÓN DEFINITIVA
+   BLOQUE DE FILTROS CENTRAL - DISEÑO LADO A LADO Y ANCHO TOTAL
    ========================================================== */
 .bloque-filtros-centro {
     display: flex !important;
@@ -739,20 +739,22 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 18px 16px !important; /* Misma altura simétrica que Total CD */
+    padding: 14px 16px !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
     gap: 12px !important;
+    width: auto !important;
 }
 
-/* Fila superior que contiene Proyecto y Filtro Departamento lado a lado */
-.bloque-filtros-centro::before {
-    content: none !important;
+/* Contenedor superior interno para alinear Proyecto y Departamento horizontalmente */
+.bloque-filtros-centro .panel-filtros-superior,
+.bloque-filtros-centro {
+    /* Aseguramos que los hijos directos que sean los grupos se distribuyan en una fila superior */
 }
 
-/* Contenedor interno superior para los dos bloques de filtros */
-.panel-filtros-superior {
+/* Forzamos que los dos grupos de filtros dentro del bloque central se alineen en fila */
+.bloque-filtros-centro > div:not(.btn-borrar-filtros) {
     display: flex !important;
     justify-content: space-between !important;
     align-items: flex-start !important;
@@ -812,7 +814,7 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% del ancho inferior */
+/* Botón de borrar filtros ocupando exactamente el 100% de la parte inferior */
 .btn-borrar-filtros {
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
