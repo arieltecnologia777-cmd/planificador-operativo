@@ -24,14 +24,16 @@ body {
     overflow-y: auto;
 }
 
+/* 1. Expandir el contenedor principal al 100% del ancho disponible */
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
     gap: 20px !important;
     width: 100% !important;
-    max-width: 1450px !important;
+    max-width: 100% !important; /* Elimina la restricción anterior de 1450px */
     margin: 0 auto !important;
     box-sizing: border-box !important;
+    padding: 10px 24px 24px 24px !important;
 }
 
 /* ==========================================================
@@ -62,12 +64,20 @@ body {
     box-sizing: border-box !important;
 }
 
+/* 2. Ampliar el ancho del bloque Total CD para acomodar nombres de departamentos largos */
 .bloque-totales-cd {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 12px;
-    width: 205px;
+    width: 280px !important; /* Aumentado de 205px para dar mayor espacio */
+    min-width: 280px !important;
 }
 
 .cd-header-principal {
