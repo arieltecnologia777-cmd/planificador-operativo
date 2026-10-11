@@ -1,15 +1,18 @@
 /* ==========================================================================
-   VARIABLES DE TEMA (MODO OSCURO FUTURISTA POR DEFECTO / MODO CLARO)
+   VARIABLES DE TEMA - ESTILO FUTURISTA NEÓN / GLASS 3D
    ========================================================================== */
 :root {
-    --bg-body: #060911;
-    --bg-sidebar: #0a0e17;
-    --card-bg: rgba(13, 20, 36, 0.75);
-    --card-border: 1px solid rgba(56, 189, 248, 0.18);
-    --card-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
-    --glass-blur: blur(20px);
+    --bg-body: #05080e;
+    --bg-sidebar: #090d16;
     
-    --text-primary: #f8fafc;
+    /* Tarjetas con relieve 3D y bordes translúcidos iluminados */
+    --card-bg: linear-gradient(135deg, rgba(16, 26, 48, 0.85) 0%, rgba(10, 16, 30, 0.9) 100%);
+    --card-border: 1px solid rgba(56, 189, 248, 0.25);
+    --card-border-active: 1px solid rgba(56, 189, 248, 0.8);
+    --card-shadow: 0 14px 35px 0 rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(16px);
+    
+    --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     
     --color-online: #10b981;
@@ -24,30 +27,28 @@
 body.light-mode {
     --bg-body: #f1f5f9;
     --bg-sidebar: #ffffff;
-    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.9);
     --card-border: 1px solid rgba(148, 163, 184, 0.3);
     --card-shadow: 0 10px 25px 0 rgba(0, 0, 0, 0.08);
-    
     --text-primary: #0f172a;
     --text-secondary: #64748b;
 }
 
 /* ==========================================================================
-   ESTRUCTURA GENERAL Y FONDO FUTURISTA
+   ESTRUCTURA GENERAL Y FONDO
    ========================================================================== */
 body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-body);
     background-image: 
-        radial-gradient(circle at 15% 20%, rgba(14, 116, 144, 0.18) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+        radial-gradient(circle at 10% 15%, rgba(14, 116, 144, 0.22) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(37, 99, 235, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.06) 0%, transparent 60%);
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-primary);
     overflow-x: hidden;
     height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .layout {
@@ -56,25 +57,20 @@ body {
 }
 
 /* ==========================================================================
-   SIDEBAR LATERAL ESTILIZADA
+   SIDEBAR
    ========================================================================== */
 .sidebar {
     width: var(--sidebar-width);
     background: var(--bg-sidebar);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border-right: var(--card-border);
     display: flex;
     flex-direction: column;
     padding: 25px 20px;
     z-index: 100;
-    transition: width 0.3s ease;
-    box-shadow: 5px 0 25px rgba(0,0,0,0.4);
+    box-shadow: 6px 0 30px rgba(0,0,0,0.5);
 }
 
-.sidebar.sidebar-colapsado {
-    width: 80px;
-}
+.sidebar.sidebar-colapsado { width: 80px; }
 
 .logo-box {
     display: flex;
@@ -83,23 +79,9 @@ body {
     margin-bottom: 35px;
 }
 
-.logo-img {
-    width: 38px;
-    height: auto;
-}
-
-.logo-text h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--text-primary);
-}
-
-.logo-text span {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-}
+.logo-img { width: 38px; height: auto; }
+.logo-text h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+.logo-text span { font-size: 0.75rem; color: var(--text-secondary); }
 
 .sidebar-nav {
     display: flex;
@@ -121,22 +103,20 @@ body {
 }
 
 .sidebar-nav a:hover {
-    background: rgba(56, 189, 248, 0.08);
+    background: rgba(56, 189, 248, 0.1);
     color: var(--text-primary);
 }
 
 .sidebar-nav a.active {
     background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
     color: #ffffff;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.6);
 }
 
-.nav-icon {
-    font-size: 1.2rem;
-}
+.nav-icon { font-size: 1.2rem; }
 
 /* ==========================================================================
-   CONTENIDO PRINCIPAL Y HERO PANORÁMICO (RESTAURADO EXACTO)
+   HERO PANORÁMICO
    ========================================================================== */
 .main-content {
     flex: 1;
@@ -147,80 +127,49 @@ body {
 
 .hero {
     position: relative;
-    /* Imagen de fondo panorámica con degradado oscuro futurista */
-    background: linear-gradient(90deg, rgba(7, 11, 20, 0.92) 0%, rgba(10, 15, 28, 0.75) 50%, rgba(7, 11, 20, 0.92) 100%), 
+    background: linear-gradient(90deg, rgba(6, 10, 18, 0.95) 0%, rgba(10, 16, 30, 0.8) 50%, rgba(6, 10, 18, 0.95) 100%), 
                 url('../assets/dominion_banner_bg.jpg') center/cover no-repeat;
     border-bottom: var(--card-border);
-    padding: 30px 40px;
+    padding: 25px 35px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    min-height: 110px;
-    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
 }
 
-body.light-mode .hero {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
-}
-
-.hero-content h1 {
-    margin: 0 0 4px 0;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: 0.5px;
-}
-
-.hero-content p {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
+.hero-content h1 { margin: 0 0 4px 0; font-size: 1.9rem; font-weight: 800; color: var(--text-primary); }
+.hero-content p { margin: 0; color: var(--text-secondary); font-size: 0.88rem; }
 .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    border: 1px solid rgba(16, 185, 129, 0.4);
     color: var(--color-online);
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    margin-bottom: 8px;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    margin-bottom: 6px;
 }
 
-.btn-sidebar-toggle {
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    cursor: pointer;
-    margin-right: 15px;
-}
-
+.btn-sidebar-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.4rem; cursor: pointer; margin-right: 15px; }
 .btn-theme-toggle {
     background: var(--card-bg);
     border: var(--card-border);
     color: var(--text-primary);
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 600;
-    backdrop-filter: var(--glass-blur);
     transition: all 0.2s;
 }
-
-.btn-theme-toggle:hover {
-    border-color: var(--color-sub);
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
-}
+.btn-theme-toggle:hover { border-color: var(--color-sub); box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
 
 /* ==========================================================================
-   CONTENEDOR DEL DASHBOARD Y GRID SUPERIOR
+   PANEL SUPERIOR (TOTALES, FILTROS Y KPIS NEÓN)
    ========================================================================== */
 .dashboard-container {
     padding: 25px 35px;
@@ -238,12 +187,10 @@ body.light-mode .hero {
 /* Tarjeta Total CD */
 .bloque-totales-cd {
     background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: var(--card-border);
     box-shadow: var(--card-shadow);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
@@ -251,15 +198,15 @@ body.light-mode .hero {
 }
 
 .val-total-cd {
-    font-size: 2.3rem;
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--color-sub);
     text-align: center;
-    text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
 }
 
 .btn-total-cd, .btn-zona, .btn-todas {
-    background: rgba(56, 189, 248, 0.12);
+    background: rgba(56, 189, 248, 0.1);
     border: 1px solid rgba(56, 189, 248, 0.3);
     color: var(--text-primary);
     padding: 8px;
@@ -269,27 +216,26 @@ body.light-mode .hero {
     text-align: center;
 }
 
-/* Tarjeta Filtros */
+/* Bloque Filtros (Con borde neon azul claro en selección activa) */
 .bloque-filtros-centro {
     background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: var(--card-border);
     box-shadow: var(--card-shadow);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .label-titulo {
     color: var(--text-secondary);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     display: block;
+    letter-spacing: 0.5px;
 }
 
 .botones-filtro, .botones-departamentos {
@@ -299,22 +245,23 @@ body.light-mode .hero {
 }
 
 .btn-filtro, .btn-depto {
-    background: rgba(148, 163, 184, 0.08);
+    background: rgba(148, 163, 184, 0.06);
     border: 1px solid rgba(148, 163, 184, 0.15);
     color: var(--text-secondary);
     padding: 6px 12px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
+/* Estado activo con borde de neón azul claro impecable */
 .btn-filtro.active, .btn-depto.active {
-    background: rgba(56, 189, 248, 0.22);
-    border-color: var(--color-sub);
-    color: var(--color-sub);
-    font-weight: 600;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.2);
+    border: 1.5px solid #38bdf8;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
 }
 
 .btn-borrar-filtros {
@@ -322,13 +269,13 @@ body.light-mode .hero {
     border: none;
     color: var(--color-offline);
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-align: left;
     padding: 0;
 }
 
-/* Tarjetas KPIs Superiores */
+/* KPIs Superiores Estilo Neón Individual */
 .kpis-estado-superior {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -337,35 +284,28 @@ body.light-mode .hero {
 
 .kpi-box {
     background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: var(--card-border);
     box-shadow: var(--card-shadow);
     border-radius: 16px;
-    padding: 14px 8px;
+    padding: 12px 6px;
     text-align: center;
 }
 
 .kpi-box span {
     display: block;
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 800;
     margin-bottom: 2px;
 }
 
-.kpi-box.online span { color: var(--color-online); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
-.kpi-box.offline span { color: var(--color-offline); text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-.kpi-box.parcial span { color: var(--color-parcial); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-.kpi-box.sub span { color: var(--color-sub); text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-
-.kpi-box {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
+.kpi-box.online span { color: var(--color-online); text-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+.kpi-box.offline span { color: var(--color-offline); text-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+.kpi-box.parcial span { color: var(--color-parcial); text-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
+.kpi-box.sub span { color: var(--color-sub); text-shadow: 0 0 12px rgba(56, 189, 248, 0.6); }
+.kpi-box { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); }
 
 /* ==========================================================================
-   GRID PRINCIPAL (MAPA GEOGRÁFICO OSCURO + TABLAS Y WIDGETS)
+   GRID PRINCIPAL (MAPA + TABLAS Y WIDGETS SOBRESALIENTES)
    ========================================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -374,26 +314,20 @@ body.light-mode .hero {
     align-items: start;
 }
 
-/* Mapa Geográfico Izquierdo Estilizado */
-.mapa-departamento-container {
+.mapa-departamento-container, .tabla-carpetas-wrapper, .bloque-notas-dia, .bloque-performance, .bloque-backlog-al-lado {
     background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: var(--card-border);
     box-shadow: var(--card-shadow);
     border-radius: 16px;
     padding: 20px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
     box-sizing: border-box;
 }
 
-.mapa-departamento-container h4 {
-    margin: 0 0 12px 0;
+.mapa-departamento-container h4, .tabla-carpetas-wrapper h3, .bloque-performance h4, .bloque-backlog-al-lado h4, .notas-header h4 {
+    margin: 0 0 14px 0;
     color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 #mapaLeaflet {
@@ -403,15 +337,13 @@ body.light-mode .hero {
     border-radius: 12px;
     z-index: 1;
     background-color: #030508;
-    border: 1px solid rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.15);
 }
 
-/* Filtro CSS inteligente para oscurecer las baldosas de OpenStreetMap automáticamente */
 body:not(.light-mode) .leaflet-tile-pane {
-    filter: brightness(0.65) invert(1) contrast(1.3) hue-rotate(200deg) saturate(0.4);
+    filter: brightness(0.6) invert(1) contrast(1.35) hue-rotate(200deg) saturate(0.35);
 }
 
-/* Columna Derecha de Contenedores */
 .columna-der-inferior {
     display: flex;
     flex-direction: column;
@@ -424,37 +356,12 @@ body:not(.light-mode) .leaflet-tile-pane {
     gap: 20px;
 }
 
-/* Tarjetas de Tablas y Widgets (Estilo Glass Profundo) */
-.tabla-carpetas-wrapper, .bloque-notas-dia, .bloque-performance, .bloque-backlog-al-lado {
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--card-border);
-    box-shadow: var(--card-shadow);
-    border-radius: 16px;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.tabla-carpetas-wrapper h3, .bloque-performance h4, .bloque-backlog-al-lado h4, .notas-header h4 {
-    margin: 0 0 15px 0;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-}
-
 /* Tablas Dinámicas */
-.tabla-fondo-imagen {
-    background: transparent;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
     color: var(--text-primary);
-    font-size: 0.85rem;
+    font-size: 0.84rem;
 }
 
 .tabla-dinamica-carpetas th {
@@ -473,7 +380,7 @@ body:not(.light-mode) .leaflet-tile-pane {
 
 .tabla-dinamica-carpetas tr.fila-cumplimiento td {
     font-weight: bold;
-    background: rgba(56, 189, 248, 0.08);
+    background: rgba(56, 189, 248, 0.1);
 }
 
 .tabla-dinamica-carpetas tr.fila-alerta-roja td {
@@ -482,17 +389,8 @@ body:not(.light-mode) .leaflet-tile-pane {
 }
 
 /* Notas del Día */
-.bloque-notas-dia {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.notas-body {
-    flex-grow: 1;
-    display: flex;
-}
-
+.bloque-notas-dia { display: flex; flex-direction: column; height: 100%; }
+.notas-body { flex-grow: 1; display: flex; }
 .notas-body textarea {
     width: 100%;
     background: rgba(148, 163, 184, 0.04);
@@ -505,24 +403,20 @@ body:not(.light-mode) .leaflet-tile-pane {
     box-sizing: border-box;
 }
 
-/* Performance y Backlog con Brillo Neon */
-.bloques-derechos-apilados {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
+/* Barras de Rendimiento con Efecto Neón Intenso */
+.bloques-derechos-apilados { display: flex; flex-direction: column; gap: 20px; }
 .perf-bar { margin-bottom: 12px; }
-.perf-bar label { display: block; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 4px; }
+.perf-bar label { display: block; color: var(--text-secondary); font-size: 0.78rem; margin-bottom: 4px; font-weight: 600; }
 .progress {
-    height: 8px;
-    background: rgba(148, 163, 184, 0.1);
-    border-radius: 4px;
+    height: 9px;
+    background: rgba(148, 163, 184, 0.12);
+    border-radius: 5px;
     overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
-.progress .bar { height: 100%; border-radius: 4px; }
-.progress .bar.red { background: var(--color-offline); box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
-.progress .bar.green { background: var(--color-online); box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+.progress .bar { height: 100%; border-radius: 5px; }
+.progress .bar.red { background: linear-gradient(90deg, #dc2626, #ef4444); box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+.progress .bar.green { background: linear-gradient(90deg, #059669, #10b981); box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); }
 
 .item-backlog-pbi {
     display: grid;
@@ -533,17 +427,16 @@ body:not(.light-mode) .leaflet-tile-pane {
     border-bottom: var(--card-border);
 }
 .item-backlog-pbi:last-child { border-bottom: none; }
-.item-backlog-pbi span { color: var(--text-secondary); font-size: 0.85rem; }
-.item-backlog-pbi strong { color: var(--text-primary); font-size: 1rem; }
+.item-backlog-pbi span { color: var(--text-secondary); font-size: 0.82rem; }
+.item-backlog-pbi strong { color: var(--text-primary); font-size: 0.95rem; }
 
 .badge-cumplimiento {
     padding: 3px 8px;
     border-radius: 6px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
 }
-.badge-cumplimiento.green { background: rgba(16, 185, 129, 0.15); color: var(--color-online); border: 1px solid rgba(16, 185, 129, 0.3); }
-.badge-cumplimiento.red { background: rgba(239, 68, 68, 0.15); color: var(--color-offline); border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-cumplimiento.green { background: rgba(16, 185, 129, 0.18); color: var(--color-online); border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+.badge-cumplimiento.red { background: rgba(239, 68, 68, 0.18); color: var(--color-offline); border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
 
-/* Utilidades */
 .sidebar-colapsado .logo-text, .sidebar-colapsado .sidebar-nav span { display: none; }
