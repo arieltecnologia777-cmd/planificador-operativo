@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=15">
+    <link rel="stylesheet" href="../css/dashboard.css?v=16">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -321,12 +321,8 @@
 
 </div>
 
-<!-- Declaración de la URL del Worker para que settings.js funcione -->
-<script>
-    const API_URL = "https://planeacion-api.72cb4457b889685d50ea254f04c24a64.workers.dev";
-</script>
-
-<script src="../js/dashboard.js?v=15"></script>
+<!-- Scripts (dashboard.js ya declara API_URL, solo cargamos el archivo de configuración) -->
+<script src="../js/dashboard.js?v=16"></script>
 <script src="../js/settings.js"></script>
 
 <script>
@@ -405,29 +401,6 @@
         </div>
     </div>
 </div>
-<!-- Definición de la URL de la API para que settings.js pueda verificar la contraseña -->
-<script>
-    const API_URL = "https://planeacion-api.72cb4457b889685d50ea254f04c24a64.workers.dev";
-</script>
-
-<!-- Script de configuración que maneja los modales y la clave (mismo archivo que usa planeacion) -->
-<script src="../js/settings.js"></script>
-
-<script>
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
-            document.body.classList.toggle("sidebar-colapsado");
-        }
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas && localStorage.getItem("dashboard_nota_dia")) {
-            txtNotas.value = localStorage.getItem("dashboard_nota_dia");
-        }
-    });
-</script>
 
 </body>
 </html>
