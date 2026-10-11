@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=9">
+    <link rel="stylesheet" href="../css/dashboard.css?v=10">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -127,7 +127,7 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Únicamente el Mapa -->
+                <!-- COLUMNA IZQUIERDA: Mapa -->
                 <div class="columna-izq">
                     <div class="mapa-regiones-container">
                         <div class="mapa-silueta">
@@ -141,80 +141,99 @@
 
                 <!-- COLUMNA DERECHA -->
                 <div class="columna-der-inferior">
-                    <!-- 1. Tabla Cumplimiento por Carpetas (Ancho ajustado simétricamente) -->
-                    <div class="tabla-carpetas-wrapper tabla-completa-ancho">
-                        <h3>Cumplimiento por carpetas</h3>
-                        <div class="tabla-fondo-imagen">
-                            <table class="tabla-dinamica-carpetas">
-                                <thead>
-                                    <tr>
-                                        <th>Carpeta</th>
-                                        <th>Offline</th>
-                                        <th>Parcial</th>
-                                        <th>Velocidad</th>
-                                        <th>PQR</th>
-                                        <th>P3</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Total neto</td>
-                                        <td id="c_neto_off">79</td>
-                                        <td id="c_neto_par">6</td>
-                                        <td id="c_neto_vel">12</td>
-                                        <td id="c_neto_pqr">17</td>
-                                        <td id="c_neto_p3">72</td>
-                                    </tr>
-                                    <tr>
-                                        <td>FM/Trasl./reubicaciones</td>
-                                        <td id="c_fm_off">18</td>
-                                        <td id="c_fm_par">3</td>
-                                        <td id="c_fm_vel">2</td>
-                                        <td id="c_fm_pqr">3</td>
-                                        <td id="c_fm_p3">3</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Repuestos</td>
-                                        <td id="c_rep_off">0</td>
-                                        <td id="c_rep_par">0</td>
-                                        <td id="c_rep_vel">0</td>
-                                        <td id="c_rep_pqr">0</td>
-                                        <td id="c_rep_p3">20</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Requiere atención S.O</td>
-                                        <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Neto sin stopper</td>
-                                        <td id="c_sin_off">61</td>
-                                        <td id="c_sin_par">3</td>
-                                        <td id="c_sin_vel">10</td>
-                                        <td id="c_sin_pqr">14</td>
-                                        <td id="c_sin_p3">49</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Meta</td>
-                                        <td id="c_meta_off">37</td>
-                                        <td id="c_meta_par">7</td>
-                                        <td id="c_meta_vel">10</td>
-                                        <td id="c_meta_pqr">1</td>
-                                        <td id="c_meta_p3">34</td>
-                                    </tr>
-                                    <tr class="fila-cumplimiento">
-                                        <td>Cumplimiento %</td>
-                                        <td id="pct_off" class="bg-yellow">59 %</td>
-                                        <td id="pct_par" class="bg-green">233 %</td>
-                                        <td id="pct_vel" class="bg-green">100 %</td>
-                                        <td id="pct_pqr" class="bg-yellow">7 %</td>
-                                        <td id="pct_p3" class="bg-yellow">69 %</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    
+                    <!-- FILA SUPERIOR: Tabla de Carpetas a la izquierda y Notas del Día en el cuadro rojo a la derecha -->
+                    <div class="subgrid-superior-derecha">
+                        <!-- 1. Tabla Cumplimiento por Carpetas -->
+                        <div class="tabla-carpetas-wrapper">
+                            <h3>Cumplimiento por carpetas</h3>
+                            <div class="tabla-fondo-imagen">
+                                <table class="tabla-dinamica-carpetas">
+                                    <thead>
+                                        <tr>
+                                            <th>Carpeta</th>
+                                            <th>Offline</th>
+                                            <th>Parcial</th>
+                                            <th>Velocidad</th>
+                                            <th>PQR</th>
+                                            <th>P3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Total neto</td>
+                                            <td id="c_neto_off">79</td>
+                                            <td id="c_neto_par">6</td>
+                                            <td id="c_neto_vel">12</td>
+                                            <td id="c_neto_pqr">17</td>
+                                            <td id="c_neto_p3">72</td>
+                                        </tr>
+                                        <tr>
+                                            <td>FM/Trasl./reubicaciones</td>
+                                            <td id="c_fm_off">18</td>
+                                            <td id="c_fm_par">3</td>
+                                            <td id="c_fm_vel">2</td>
+                                            <td id="c_fm_pqr">3</td>
+                                            <td id="c_fm_p3">3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Repuestos</td>
+                                            <td id="c_rep_off">0</td>
+                                            <td id="c_rep_par">0</td>
+                                            <td id="c_rep_vel">0</td>
+                                            <td id="c_rep_pqr">0</td>
+                                            <td id="c_rep_p3">20</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Requiere atención S.O</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Neto sin stopper</td>
+                                            <td id="c_sin_off">61</td>
+                                            <td id="c_sin_par">3</td>
+                                            <td id="c_sin_vel">10</td>
+                                            <td id="c_sin_pqr">14</td>
+                                            <td id="c_sin_p3">49</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Meta</td>
+                                            <td id="c_meta_off">37</td>
+                                            <td id="c_meta_par">7</td>
+                                            <td id="c_meta_vel">10</td>
+                                            <td id="c_meta_pqr">1</td>
+                                            <td id="c_meta_p3">34</td>
+                                        </tr>
+                                        <tr class="fila-cumplimiento">
+                                            <td>Cumplimiento %</td>
+                                            <td id="pct_off" class="bg-yellow">59 %</td>
+                                            <td id="pct_par" class="bg-green">233 %</td>
+                                            <td id="pct_vel" class="bg-green">100 %</td>
+                                            <td id="pct_pqr" class="bg-yellow">7 %</td>
+                                            <td id="pct_p3" class="bg-yellow">69 %</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. NUEVO CUADRO: Notas del Día (Ubicado exactamente en el recuadro rojo) -->
+                        <div class="bloque-notas-dia">
+                            <div class="notas-header">
+                                <h4>📝 Notas del Día / Bitácora</h4>
+                                <button type="button" id="btnToggleAdmin" class="btn-admin-mode" title="Cambiar a Modo Admin">🔒 Admin</button>
+                            </div>
+                            <div class="notas-body">
+                                <textarea id="txtNotasDia" placeholder="Escribe aquí las observaciones u novedades operativas del día..." readonly></textarea>
+                            </div>
+                            <div class="notas-footer">
+                                <span id="lblEstadoAdmin" class="estado-lectura">Modo Lectura (Bloqueado)</span>
+                                <button type="button" id="btnGuardarNotas" class="btn-guardar-notas" style="display: none;">💾 Guardar Cambios</button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 2. SECCIÓN INFERIOR DERECHA: Rangos a la izquierda, y Performance + Backlog apilados a la derecha -->
+                    <!-- FILA INFERIOR: Rangos a la izquierda y [Performance + Backlog] a la derecha -->
                     <div class="subgrid-inferior-derecha">
                         <!-- Tabla Rangos de Afectación -->
                         <div class="tabla-carpetas-wrapper">
@@ -261,7 +280,7 @@
                             </div>
                         </div>
 
-                        <!-- Columna derecha superior: Performance arriba y Backlog abajo (Exactamente en el recuadro rojo) -->
+                        <!-- Columna derecha apilada: Performance arriba y Backlog abajo -->
                         <div class="bloques-derechos-apilados">
                             <div class="bloque-performance">
                                 <h4>% Performance</h4>
@@ -290,6 +309,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
             </div>
@@ -307,8 +327,57 @@
             document.body.classList.toggle("sidebar-colapsado");
         }
     });
+
+    // Lógica interactiva para el módulo de Notas del Día (Admin / Guardado local)
+    document.addEventListener("DOMContentLoaded", () => {
+        const txtNotas = document.getElementById("txtNotasDia");
+        const btnAdmin = document.getElementById("btnToggleAdmin");
+        const btnGuardar = document.getElementById("btnGuardarNotas");
+        const lblEstado = document.getElementById("lblEstadoAdmin");
+
+        // Cargar nota guardada previamente
+        if (localStorage.getItem("dashboard_nota_dia")) {
+            txtNotas.value = localStorage.getItem("dashboard_nota_dia");
+        }
+
+        let isAdmin = false;
+
+        btnAdmin.addEventListener("click", () => {
+            if (!isAdmin) {
+                const pass = prompt("Ingrese la contraseña de Administrador:");
+                if (pass === "admin123") { // Contraseña sencilla por defecto para pruebas
+                    isAdmin = true;
+                    txtNotas.removeAttribute("readonly");
+                    txtNotas.style.background = "#fff";
+                    btnAdmin.textContent = "🔓 Admin Activo";
+                    btnAdmin.style.background = "#48bb78";
+                    lblEstado.textContent = "Modo Edición Habilitado";
+                    lblEstado.style.color = "#2b6cb0";
+                    btnGuardar.style.display = "inline-block";
+                    alert("¡Acceso concedido como Administrador!");
+                } else if (pass !== null) {
+                    alert("Contraseña incorrecta.");
+                }
+            } else {
+                isAdmin = false;
+                txtNotas.setAttribute("readonly", "true");
+                txtNotas.style.background = "#f7fafc";
+                btnAdmin.textContent = "🔒 Admin";
+                btnAdmin.style.background = "#718096";
+                lblEstado.textContent = "Modo Lectura (Bloqueado)";
+                lblEstado.style.color = "#718096";
+                btnGuardar.style.display = "none";
+                alert("Sesión de administrador cerrada.");
+            }
+        });
+
+        btnGuardar.addEventListener("click", () => {
+            localStorage.setItem("dashboard_nota_dia", txtNotas.value);
+            alert("¡Notas del día guardadas correctamente en el sistema!");
+        });
+    });
 </script>
-<script src="../js/dashboard.js?v=9"></script>
+<script src="../js/dashboard.js?v=10"></script>
 
 </body>
 </html>
