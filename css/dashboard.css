@@ -45,7 +45,7 @@
     border-radius: 4px;
 }
 
-.btn-zona { background: #2b6cb0; }
+.btn-zona { background: #2563eb; }
 .btn-todas { background: #a0aec0; color: #1a202c; }
 
 .bloque-filtros-centro {
@@ -84,7 +84,7 @@
 }
 
 .btn-filtro.active, .btn-depto.active {
-    background: #2b6cb0;
+    background: #2563eb;
     color: white;
 }
 
@@ -177,7 +177,7 @@
 
 .marcador-mapa {
     position: absolute;
-    background: rgba(43, 108, 176, 0.9);
+    background: rgba(37, 99, 235, 0.9);
     color: white;
     font-size: 0.7rem;
     font-weight: bold;
@@ -194,7 +194,7 @@
 }
 
 /* ==========================================================
-   ENCABEZADOS UNIFICADOS EN AZUL CORPORATIVO (Texto Blanco)
+   ENCABEZADOS UNIFICADOS CON EL AZUL DE LA HAMBURGUESA (#2563eb)
    ========================================================== */
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
@@ -203,7 +203,7 @@
     font-size: 0.9rem;
     color: white !important;
     text-align: center;
-    background: #2b6cb0 !important; /* Azul corporativo unificado */
+    background: #2563eb !important;
     padding: 6px;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -246,7 +246,7 @@
 }
 
 .tabla-dinamica-carpetas th {
-    background: #2b6cb0 !important; /* Encabezados de tabla en azul corporativo */
+    background: #2563eb !important;
     color: white;
     font-weight: 600;
 }
@@ -266,7 +266,7 @@
 }
 
 /* ==========================================================
-   ESTILOS DE NOTAS DEL DÍA (Con cabecera azul unificada)
+   ESTILOS DE NOTAS DEL DÍA
    ========================================================== */
 .bloque-notas-dia {
     background: white;
@@ -282,7 +282,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #2b6cb0 !important; /* Azul corporativo unificado */
+    background: #2563eb !important;
     padding: 6px 10px;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -295,7 +295,7 @@
 }
 
 .btn-admin-mode {
-    background: #1a365d;
+    background: #1d4ed8;
     color: white;
     border: none;
     padding: 3px 8px;
@@ -307,7 +307,7 @@
 }
 
 .btn-admin-mode:hover {
-    background: #2a4365;
+    background: #1e40af;
 }
 
 .notas-body {
@@ -331,7 +331,7 @@
 }
 
 #txtNotasDia:focus {
-    border-color: #2b6cb0;
+    border-color: #2563eb;
 }
 
 .notas-footer {
@@ -348,7 +348,7 @@
 }
 
 .btn-guardar-notas {
-    background: #2b6cb0;
+    background: #2563eb;
     color: white;
     border: none;
     padding: 4px 10px;
@@ -359,7 +359,7 @@
 }
 
 .btn-guardar-notas:hover {
-    background: #2c5282;
+    background: #1d4ed8;
 }
 
 .bloque-performance {
