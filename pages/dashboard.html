@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=7">
+    <link rel="stylesheet" href="../css/dashboard.css?v=8">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -151,10 +151,10 @@
                     </div>
                 </div>
 
-                <!-- COLUMNA DERECHA: Tabla de Carpetas, Tabla de Rangos y Backlog -->
+                <!-- COLUMNA DERECHA -->
                 <div class="columna-der-inferior">
-                    <!-- 1. Tabla Cumplimiento por Carpetas -->
-                    <div class="tabla-carpetas-wrapper">
+                    <!-- 1. Tabla Cumplimiento por Carpetas (Ancho completo arriba) -->
+                    <div class="tabla-carpetas-wrapper tabla-completa-ancho">
                         <h3>Cumplimiento por carpetas</h3>
                         <div class="tabla-fondo-imagen">
                             <table class="tabla-dinamica-carpetas">
@@ -226,63 +226,66 @@
                         </div>
                     </div>
 
-                    <!-- 2. NUEVO CUADRO: Rangos de Afectación por Días (Simétrico y con mismo ancho) -->
-                    <div class="tabla-carpetas-wrapper">
-                        <h3>Rangos de Afectación por Días</h3>
-                        <div class="tabla-fondo-imagen">
-                            <table class="tabla-dinamica-carpetas tabla-rangos">
-                                <thead>
-                                    <tr>
-                                        <th>Rango de Días</th>
-                                        <th>Offline</th>
-                                        <th>Parcial</th>
-                                        <th>Velocidad</th>
-                                        <th>PQR</th>
-                                        <th>P3</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1. MENOR A 5 DÍAS</td>
-                                        <td>224</td><td>25</td><td>27</td><td>21</td><td>29</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2. DE 5 A 15 DÍAS</td>
-                                        <td>115</td><td>17</td><td>22</td><td>40</td><td>75</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3. DE 15 A 30 DÍAS</td>
-                                        <td>27</td><td>1</td><td>10</td><td>32</td><td>88</td>
-                                    </tr>
-                                    <tr class="fila-alerta-roja">
-                                        <td>4. DE 30 A 45 DÍAS</td>
-                                        <td>4</td><td>0</td><td>2</td><td>11</td><td>42</td>
-                                    </tr>
-                                    <tr class="fila-alerta-roja">
-                                        <td>5. DE 45 A 60 DÍAS</td>
-                                        <td>6</td><td>0</td><td>2</td><td>7</td><td>31</td>
-                                    </tr>
-                                    <tr class="fila-alerta-roja">
-                                        <td>6. MAYOR A 60 DÍAS</td>
-                                        <td>6</td><td>0</td><td>1</td><td>3</td><td>8</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <!-- 2. SECCIÓN INFERIOR DERECHA: Tabla de Rangos (Izquierda) y Backlog (Derecha en paralelo) -->
+                    <div class="subgrid-inferior-derecha">
+                        <!-- Tabla Rangos de Afectación -->
+                        <div class="tabla-carpetas-wrapper">
+                            <h3>Rangos de Afectación por Días</h3>
+                            <div class="tabla-fondo-imagen">
+                                <table class="tabla-dinamica-carpetas tabla-rangos">
+                                    <thead>
+                                        <tr>
+                                            <th>Rango de Días</th>
+                                            <th>Offline</th>
+                                            <th>Parcial</th>
+                                            <th>Velocidad</th>
+                                            <th>PQR</th>
+                                            <th>P3</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1. MENOR A 5 DÍAS</td>
+                                            <td>224</td><td>25</td><td>27</td><td>21</td><td>29</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. DE 5 A 15 DÍAS</td>
+                                            <td>115</td><td>17</td><td>22</td><td>40</td><td>75</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3. DE 15 A 30 DÍAS</td>
+                                            <td>27</td><td>1</td><td>10</td><td>32</td><td>88</td>
+                                        </tr>
+                                        <tr class="fila-alerta-roja">
+                                            <td>4. DE 30 A 45 DÍAS</td>
+                                            <td>4</td><td>0</td><td>2</td><td>11</td><td>42</td>
+                                        </tr>
+                                        <tr class="fila-alerta-roja">
+                                            <td>5. DE 45 A 60 DÍAS</td>
+                                            <td>6</td><td>0</td><td>2</td><td>7</td><td>31</td>
+                                        </tr>
+                                        <tr class="fila-alerta-roja">
+                                            <td>6. MAYOR A 60 DÍAS</td>
+                                            <td>6</td><td>0</td><td>1</td><td>3</td><td>8</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 3. Indicador Backlog -->
-                    <div class="bloque-backlog-al-lado">
-                        <h4>Indicador Ejecución % Cumplimiento</h4>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R1</span>
-                            <strong>97,17 %</strong>
-                            <span class="badge-cumplimiento green">104.49%</span>
-                        </div>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R2</span>
-                            <strong>87,53 %</strong>
-                            <span class="badge-cumplimiento red">94.12%</span>
+                        <!-- Indicador Backlog (Ubicado exactamente en el cuadro rojo señalado) -->
+                        <div class="bloque-backlog-al-lado">
+                            <h4>Indicador Ejecución % Cumplimiento</h4>
+                            <div class="item-backlog-pbi">
+                                <span>Backlog R1</span>
+                                <strong>97,17 %</strong>
+                                <span class="badge-cumplimiento green">104.49%</span>
+                            </div>
+                            <div class="item-backlog-pbi">
+                                <span>Backlog R2</span>
+                                <strong>87,53 %</strong>
+                                <span class="badge-cumplimiento red">94.12%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -303,7 +306,7 @@
         }
     });
 </script>
-<script src="../js/dashboard.js?v=7"></script>
+<script src="../js/dashboard.js?v=8"></script>
 
 </body>
 </html>
