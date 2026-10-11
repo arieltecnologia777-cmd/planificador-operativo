@@ -703,7 +703,7 @@
     border-radius: 16px !important;
 }
 /* ==========================================================
-   ESTILO DE CONTENEDORES CON TONO AZUL LUMINOSO (REFERENCIA)
+   ESTILO DE CONTENEDORES EN AZUL PROFUNDO Y LUMINOSO (REAL)
    ========================================================== */
 
 .tabla-carpetas-wrapper,
@@ -713,12 +713,12 @@
 .bloque-backlog-al-lado,
 .bloque-totales-cd,
 .bloque-filtros-centro {
-    background: linear-gradient(135deg, rgba(14, 38, 79, 0.55) 0%, rgba(8, 22, 48, 0.7) 100%) !important;
+    background: linear-gradient(135deg, rgba(15, 35, 75, 0.85) 0%, rgba(10, 24, 52, 0.95) 100%) !important;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
     border-radius: 18px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(147, 197, 253, 0.3) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(125, 211, 252, 0.3) !important;
     padding: 16px !important;
     box-sizing: border-box !important;
 }
@@ -745,7 +745,7 @@
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
-    text-shadow: 0 0 10px rgba(147, 197, 253, 0.6);
+    text-shadow: 0 0 10px rgba(125, 211, 252, 0.6);
 }
 
 .icon-titulo {
@@ -754,9 +754,9 @@
 
 /* Botón flotante derecho de acción en las tarjetas */
 .btn-card-action {
-    background: rgba(30, 64, 135, 0.4) !important;
-    border: 1px solid rgba(59, 130, 246, 0.3) !important;
-    color: #93c5fd !important;
+    background: rgba(30, 64, 135, 0.5) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    color: #7dd3fc !important;
     width: 28px;
     height: 28px;
     border-radius: 8px;
@@ -768,9 +768,9 @@
 }
 
 .btn-card-action:hover {
-    background: rgba(37, 99, 235, 0.6) !important;
+    background: rgba(37, 99, 235, 0.7) !important;
     color: #ffffff !important;
-    border-color: rgba(147, 197, 253, 0.6) !important;
+    border-color: rgba(125, 211, 252, 0.7) !important;
 }
 
 /* Estructura interna de las tablas */
@@ -786,9 +786,9 @@
 }
 
 .tabla-dinamica-carpetas th {
-    background: rgba(30, 64, 135, 0.45) !important;
+    background: rgba(29, 78, 216, 0.45) !important;
     color: #bfdbfe !important;
-    border: 1px solid rgba(59, 130, 246, 0.25) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
     padding: 8px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
@@ -807,9 +807,9 @@
 }
 
 .tabla-dinamica-carpetas td {
-    background: rgba(15, 36, 74, 0.3) !important;
+    background: rgba(11, 27, 58, 0.4) !important;
     color: #e2e8f0 !important;
-    border: 1px solid rgba(59, 130, 246, 0.15) !important;
+    border: 1px solid rgba(56, 189, 248, 0.18) !important;
     padding: 7px 10px !important;
     text-align: center;
 }
@@ -822,6 +822,6 @@
 }
 
 .tabla-dinamica-carpetas tbody tr:hover td {
-    background: rgba(37, 99, 235, 0.3) !important;
+    background: rgba(37, 99, 235, 0.35) !important;
     color: #ffffff !important;
 }
