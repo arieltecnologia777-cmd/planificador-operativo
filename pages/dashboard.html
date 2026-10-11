@@ -6,396 +6,460 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=29">
-    
-    <!-- Librerías oficiales de Leaflet.js para el mapa real interactivo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/dashboard.css?v=30">
+
+    <!-- Leaflet para el mapa interactivo -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
 
-<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-    ☰
-</button>
+<!-- Iconos reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol>
+        <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+        <symbol id="i-house" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></symbol>
+        <symbol id="i-map" viewBox="0 0 24 24"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4z"/><path d="M8 2v16M16 6v16"/></symbol>
+        <symbol id="i-bars" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></symbol>
+        <symbol id="i-building" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9h.01M9 12h.01M9 15h.01M9 18h.01"/></symbol>
+        <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></symbol>
+        <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></symbol>
+        <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+        <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M12 14l4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+        <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
+        <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+        <symbol id="i-funnel" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></symbol>
+        <symbol id="i-reset" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+        <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+        <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+    </defs>
+</svg>
 
 <div class="layout">
 
+    <!-- ===================== SIDEBAR ===================== -->
     <aside class="sidebar">
         <div class="logo-box">
             <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
-            <div class="logo-text">
-                <h3>Dashboard</h3>
-                <span>Tablero Ejecutivo</span>
-            </div>
         </div>
 
         <nav class="sidebar-nav">
             <a href="dashboard.html" class="active">
-                <span class="nav-icon">📊</span>
+                <svg class="ico"><use href="#i-grid"/></svg>
                 Dashboard
             </a>
             <a href="planeacion.html">
-                <span class="nav-icon">📅</span>
+                <svg class="ico"><use href="#i-calendar"/></svg>
                 Planeación
             </a>
-            
-            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                📝 Editar Nota del Día
-            </button>
-
             <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📋</span>
+                <svg class="ico"><use href="#i-target"/></svg>
                 Seguimiento
             </a>
             <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
+                <svg class="ico"><use href="#i-house"/></svg>
                 Centros Digitales
             </a>
             <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
+                <svg class="ico"><use href="#i-map"/></svg>
                 Mapa
             </a>
             <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
+                <svg class="ico"><use href="#i-bars"/></svg>
                 Reportes
             </a>
+
+            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada">
+                <svg class="ico"><use href="#i-edit"/></svg>
+                Editar nota del día
+            </button>
         </nav>
+
+        <svg class="sidebar-wave" viewBox="0 0 232 220" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+                <linearGradient id="gWaveSide" x1="0" x2="1">
+                    <stop offset="0" stop-color="#27d3ff" stop-opacity="0"/>
+                    <stop offset="0.5" stop-color="#2f8cff" stop-opacity="0.9"/>
+                    <stop offset="1" stop-color="#8b7bff" stop-opacity="0.7"/>
+                </linearGradient>
+            </defs>
+            <g fill="none" stroke="url(#gWaveSide)" stroke-width="1">
+                <path d="M0 40 C60 20 110 70 160 100 S220 150 232 190"/>
+                <path d="M0 55 C60 35 110 85 160 115 S220 160 232 205"/>
+                <path d="M0 70 C60 50 110 100 160 130 S220 170 232 220"/>
+                <path d="M0 85 C60 65 110 115 160 145 S215 185 232 235"/>
+                <path d="M0 100 C60 80 110 130 160 160 S212 195 232 250"/>
+            </g>
+        </svg>
+
+        <div class="sidebar-footer">
+            Conectando<br>territorios,<br>impulsando<br>el futuro
+        </div>
     </aside>
 
+    <!-- ===================== CONTENIDO ===================== -->
     <main class="main-content">
 
         <header class="hero">
+            <button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar menú" aria-label="Ocultar o mostrar menú">
+                <svg class="ico"><use href="#i-menu"/></svg>
+            </button>
+
             <div class="hero-content">
-                <div class="hero-badge">
-                    <span></span>
-                    DASHBOARD
+                <div class="hero-icon"><svg class="ico"><use href="#i-wifi"/></svg></div>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p class="hero-sub">Tablero Ejecutivo</p>
+                    <div class="hero-update">
+                        <span class="dot-live"></span>
+                        <span id="lblUltimaActualizacion">Última actualización: --</span>
+                    </div>
                 </div>
-                <h1>Tablero Ejecutivo</h1>
-                <p>Monitoreo en tiempo real, cumplimiento por carpetas y estado general de la red.</p>
             </div>
+
+            <div class="hero-user">
+                <span class="avatar"><svg class="ico"><use href="#i-user"/></svg></span>
+                Centro Digitales
+                <svg class="ico chev"><use href="#i-chevron"/></svg>
+            </div>
+
+            <img src="../assets/dominion_logo.png" class="hero-logo" alt="">
         </header>
 
         <div class="dashboard-container">
-            
-            <!-- PANEL SUPERIOR -->
+
+            <!-- ============ PANEL SUPERIOR ============ -->
             <div class="panel-superior">
-                <div class="bloque-totales-cd">
-                    <div class="btn-total-cd">TOTAL CD</div>
-                    <div class="val-total-cd">1443</div>
-                    <div class="btn-zona">ZONA</div>
-                    <div class="btn-todas">TODAS</div>
-                </div>
 
-                <div class="bloque-filtros-centro">
-                    <div class="grupo-filtros">
-                        <span class="label-titulo">Proyecto</span>
-                        <div class="botones-filtro">
-                            <button class="btn-filtro active">MinTic 7K</button>
-                            <button class="btn-filtro">ODH 5G</button>
+                <!-- Total CD -->
+                <div class="glass bloque-totales-cd">
+                    <div class="total-cd-top">
+                        <div class="total-cd-icon"><svg class="ico"><use href="#i-building"/></svg></div>
+                        <div>
+                            <span class="label-titulo">Total CD</span>
+                            <div class="val-total-cd">1443</div>
                         </div>
                     </div>
-                    
-                    <div class="grupo-filtros">
-                        <span class="label-titulo">Filtro Departamento</span>
+                    <div class="seg">
+                        <button type="button" class="seg-btn active">ZONA</button>
+                        <button type="button" class="seg-btn">TODAS</button>
+                    </div>
+                </div>
+
+                <!-- Proyecto -->
+                <div class="glass grupo-filtros">
+                    <span class="label-titulo">Proyecto</span>
+                    <div class="botones-filtro">
+                        <button type="button" class="btn-filtro active">MinTic 7K</button>
+                        <button type="button" class="btn-filtro">ODH 5G</button>
+                    </div>
+                </div>
+
+                <!-- Filtro departamento -->
+                <div class="glass bloque-filtros-centro">
+                    <span class="label-titulo">Filtro Departamento</span>
+                    <div class="fila-deptos">
                         <div class="botones-departamentos" id="filtroDeptosWeb">
-                            <button class="btn-depto active" data-depto="TODOS">TODOS</button>
-                            <button class="btn-depto" data-depto="ANTIOQUIA">ANTIOQUIA</button>
-                            <button class="btn-depto" data-depto="CESAR">CESAR</button>
-                            <button class="btn-depto" data-depto="LA GUAJIRA">LA GUAJIRA</button>
-                            <button class="btn-depto" data-depto="SAI">SAI</button>
+                            <button type="button" class="btn-depto active" data-depto="TODOS">TODOS</button>
+                            <button type="button" class="btn-depto" data-depto="ANTIOQUIA">ANTIOQUIA</button>
+                            <button type="button" class="btn-depto" data-depto="CESAR">CESAR</button>
+                            <button type="button" class="btn-depto" data-depto="LA GUAJIRA">LA GUAJIRA</button>
+                            <button type="button" class="btn-depto" data-depto="SAI">SAI</button>
                         </div>
-                        <button class="btn-borrar-filtros" id="btnBorrarFiltros">🧹 Borrar filtros</button>
+                        <span class="btn-icon-filtro" aria-hidden="true"><svg class="ico"><use href="#i-funnel"/></svg></span>
                     </div>
+                    <button type="button" class="btn-borrar-filtros" id="btnBorrarFiltros">
+                        <svg class="ico"><use href="#i-reset"/></svg>
+                        Borrar filtros
+                    </button>
                 </div>
 
-               <!-- KPIS DE ESTADO SUPERIORES (Dentro del contenedor vidrioso general) -->
-<div class="kpis-wrapper-contenedor">
-    <div class="kpis-estado-superior">
-        <div class="kpi-card-neon online">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                <!-- KPIs de estado -->
+                <div class="glass kpis-wrapper-contenedor">
+                    <div class="kpis-estado-superior">
+                        <div class="kpi-card-neon online">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-wifi"/></svg></div>
+                            <span id="valOnline">0</span>
+                            <div class="kpi-label-row">Online <i class="dot-green"></i></div>
+                        </div>
+                        <div class="kpi-card-neon offline">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-ban"/></svg></div>
+                            <span id="valOffline">0</span>
+                            <div class="kpi-label-row">Offline</div>
+                        </div>
+                        <div class="kpi-card-neon parcial">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-alert"/></svg></div>
+                            <span id="valParcial">0</span>
+                            <div class="kpi-label-row">Parcial</div>
+                        </div>
+                        <div class="kpi-card-neon velocidad">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-gauge"/></svg></div>
+                            <span id="valVelocidad">0</span>
+                            <div class="kpi-label-row">Velocidad</div>
+                        </div>
+                        <div class="kpi-card-neon pqrs">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-chat"/></svg></div>
+                            <span id="valPqrs">0</span>
+                            <div class="kpi-label-row">PQR's</div>
+                        </div>
+                        <div class="kpi-card-neon otros">
+                            <div class="kpi-icon-wrap"><svg class="ico"><use href="#i-box"/></svg></div>
+                            <span id="valOtrosP3">0</span>
+                            <div class="kpi-label-row">Otros P3</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <span id="valOnline">0</span>
-            <div class="kpi-label-row">Online <span class="dot-green"></span></div>
-        </div>
 
-        <div class="kpi-card-neon offline">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-            </div>
-            <span id="valOffline">0</span>
-            <div class="kpi-label-row">Offline</div>
-        </div>
-
-        <div class="kpi-card-neon parcial">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            </div>
-            <span id="valParcial">0</span>
-            <div class="kpi-label-row">Parcial</div>
-        </div>
-
-        <div class="kpi-card-neon velocidad">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <span id="valVelocidad">0</span>
-            <div class="kpi-label-row">Velocidad</div>
-        </div>
-
-        <div class="kpi-card-neon pqrs">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            </div>
-            <span id="valPqrs">0</span>
-            <div class="kpi-label-row">PQR's</div>
-        </div>
-
-        <div class="kpi-card-neon otros">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-            </div>
-            <span id="valOtrosP3">0</span>
-            <div class="kpi-label-row">Otros P3</div>
-        </div>
-    </div>
-</div>
-            <!-- GRID PRINCIPAL PBI -->
+            <!-- ============ GRID PRINCIPAL ============ -->
             <div class="panel-layout-pbi">
-                
-                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo -->
-                <div class="columna-izq">
-                    <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; text-align: center; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
-                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #2d3748; font-size: 0.95rem; font-weight: 600;">Mapa Geográfico</h4>
-                        <div id="mapaLeaflet" style="flex-grow: 1; width: 100%; min-height: 280px; border-radius: 6px; z-index: 1;"></div>
+
+                <!-- COLUMNA 1: Mapa -->
+                <section class="panel-card card-mapa">
+                    <div class="panel-head">
+                        <span class="panel-icon blue"><svg class="ico"><use href="#i-pin"/></svg></span>
+                        <h3>Mapa Geográfico</h3>
+                        <svg class="ico panel-shuffle" aria-hidden="true"><use href="#i-shuffle"/></svg>
                     </div>
+                    <div class="mapa-wrap">
+                        <div id="mapaLeaflet"></div>
+                        <div class="mapa-norte" aria-hidden="true">
+                            <svg viewBox="0 0 14 18" fill="currentColor"><path d="M7 0l6 16-6-4-6 4z"/></svg>
+                            N
+                        </div>
+                    </div>
+                </section>
+
+                <!-- COLUMNA 2: Tablas -->
+                <div class="columna-centro">
+
+                    <section class="panel-card">
+                        <div class="panel-head">
+                            <span class="panel-icon violet"><svg class="ico"><use href="#i-target"/></svg></span>
+                            <h3>Cumplimiento por carpetas</h3>
+                            <svg class="ico panel-shuffle" aria-hidden="true"><use href="#i-shuffle"/></svg>
+                        </div>
+                        <div class="tabla-fondo-imagen">
+                            <table class="tabla-dinamica-carpetas">
+                                <thead>
+                                    <tr>
+                                        <th>Carpeta</th>
+                                        <th>Offline</th>
+                                        <th>Parcial</th>
+                                        <th>Velocidad</th>
+                                        <th>PQR</th>
+                                        <th>P3</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Total neto</td>
+                                        <td id="c_neto_off">0</td><td id="c_neto_par">0</td><td id="c_neto_vel">0</td><td id="c_neto_pqr">0</td><td id="c_neto_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FM/Trasl./reubicaciones</td>
+                                        <td id="c_fm_off">0</td><td id="c_fm_par">0</td><td id="c_fm_vel">0</td><td id="c_fm_pqr">0</td><td id="c_fm_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Repuestos</td>
+                                        <td id="c_rep_off">0</td><td id="c_rep_par">0</td><td id="c_rep_vel">0</td><td id="c_rep_pqr">0</td><td id="c_rep_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Requiere atención S.O</td>
+                                        <td id="c_req_off">0</td><td id="c_req_par">0</td><td id="c_req_vel">0</td><td id="c_req_pqr">0</td><td id="c_req_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Neto sin stopper</td>
+                                        <td id="c_sin_off">0</td><td id="c_sin_par">0</td><td id="c_sin_vel">0</td><td id="c_sin_pqr">0</td><td id="c_sin_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Meta</td>
+                                        <td id="c_meta_off">0</td><td id="c_meta_par">0</td><td id="c_meta_vel">0</td><td id="c_meta_pqr">0</td><td id="c_meta_p3">0</td>
+                                    </tr>
+                                    <tr class="fila-cumplimiento">
+                                        <td>Cumplimiento %</td>
+                                        <td id="pct_off">0 %</td><td id="pct_par">0 %</td><td id="pct_vel">0 %</td><td id="pct_pqr">0 %</td><td id="pct_p3">0 %</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="panel-card">
+                        <div class="panel-head">
+                            <span class="panel-icon violet"><svg class="ico"><use href="#i-calendar"/></svg></span>
+                            <h3>Rangos de Afectación por Días</h3>
+                            <svg class="ico panel-shuffle" aria-hidden="true"><use href="#i-shuffle"/></svg>
+                        </div>
+                        <div class="tabla-fondo-imagen">
+                            <table class="tabla-dinamica-carpetas tabla-rangos">
+                                <thead>
+                                    <tr>
+                                        <th>Rango de Días</th>
+                                        <th>Offline</th>
+                                        <th>Parcial</th>
+                                        <th>Velocidad</th>
+                                        <th>PQR</th>
+                                        <th>P3</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1. MENOR A 5 DÍAS</td>
+                                        <td id="r1_off">0</td><td id="r1_par">0</td><td id="r1_vel">0</td><td id="r1_pqr">0</td><td id="r1_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2. DE 5 A 15 DÍAS</td>
+                                        <td id="r2_off">0</td><td id="r2_par">0</td><td id="r2_vel">0</td><td id="r2_pqr">0</td><td id="r2_p3">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3. DE 15 A 30 DÍAS</td>
+                                        <td id="r3_off">0</td><td id="r3_par">0</td><td id="r3_vel">0</td><td id="r3_pqr">0</td><td id="r3_p3">0</td>
+                                    </tr>
+                                    <tr class="fila-alerta-roja">
+                                        <td>4. DE 30 A 45 DÍAS</td>
+                                        <td id="r4_off">0</td><td id="r4_par">0</td><td id="r4_vel">0</td><td id="r4_pqr">0</td><td id="r4_p3">0</td>
+                                    </tr>
+                                    <tr class="fila-alerta-roja">
+                                        <td>5. DE 45 A 60 DÍAS</td>
+                                        <td id="r5_off">0</td><td id="r5_par">0</td><td id="r5_vel">0</td><td id="r5_pqr">0</td><td id="r5_p3">0</td>
+                                    </tr>
+                                    <tr class="fila-alerta-roja">
+                                        <td>6. MAYOR A 60 DÍAS</td>
+                                        <td id="r6_off">0</td><td id="r6_par">0</td><td id="r6_vel">0</td><td id="r6_pqr">0</td><td id="r6_p3">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 </div>
 
-                <!-- COLUMNA DERECHA -->
-                <div class="columna-der-inferior">
-                    
-                    <!-- FILA SUPERIOR: Tabla de Carpetas y Notas del Día -->
-                    <div class="subgrid-superior-derecha">
-                        <!-- 1. Tabla Cumplimiento por Carpetas -->
-                        <div class="tabla-carpetas-wrapper">
-                            <h3>Cumplimiento por carpetas</h3>
-                            <div class="tabla-fondo-imagen">
-                                <table class="tabla-dinamica-carpetas">
-                                    <thead>
-                                        <tr>
-                                            <th>Carpeta</th>
-                                            <th>Offline</th>
-                                            <th>Parcial</th>
-                                            <th>Velocidad</th>
-                                            <th>PQR</th>
-                                            <th>P3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Total neto</td>
-                                            <td id="c_neto_off">0</td>
-                                            <td id="c_neto_par">0</td>
-                                            <td id="c_neto_vel">0</td>
-                                            <td id="c_neto_pqr">0</td>
-                                            <td id="c_neto_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>FM/Trasl./reubicaciones</td>
-                                            <td id="c_fm_off">0</td>
-                                            <td id="c_fm_par">0</td>
-                                            <td id="c_fm_vel">0</td>
-                                            <td id="c_fm_pqr">0</td>
-                                            <td id="c_fm_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Repuestos</td>
-                                            <td id="c_rep_off">0</td>
-                                            <td id="c_rep_par">0</td>
-                                            <td id="c_rep_vel">0</td>
-                                            <td id="c_rep_pqr">0</td>
-                                            <td id="c_rep_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Requiere atención S.O</td>
-                                            <td id="c_req_off">0</td>
-                                            <td id="c_req_par">0</td>
-                                            <td id="c_req_vel">0</td>
-                                            <td id="c_req_pqr">0</td>
-                                            <td id="c_req_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Neto sin stopper</td>
-                                            <td id="c_sin_off">0</td>
-                                            <td id="c_sin_par">0</td>
-                                            <td id="c_sin_vel">0</td>
-                                            <td id="c_sin_pqr">0</td>
-                                            <td id="c_sin_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Meta</td>
-                                            <td id="c_meta_off">0</td>
-                                            <td id="c_meta_par">0</td>
-                                            <td id="c_meta_vel">0</td>
-                                            <td id="c_meta_pqr">0</td>
-                                            <td id="c_meta_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-cumplimiento">
-                                            <td>Cumplimiento %</td>
-                                            <td id="pct_off">0 %</td>
-                                            <td id="pct_par">0 %</td>
-                                            <td id="pct_vel">0 %</td>
-                                            <td id="pct_pqr">0 %</td>
-                                            <td id="pct_p3">0 %</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                <!-- COLUMNA 3: Notas, performance, backlog -->
+                <div class="columna-der">
+
+                    <section class="panel-card bloque-notas-dia">
+                        <div class="panel-head">
+                            <span class="panel-icon blue"><svg class="ico"><use href="#i-file"/></svg></span>
+                            <h4>Notas del Día / Bitácora</h4>
+                            <svg class="ico panel-shuffle" aria-hidden="true"><use href="#i-shuffle"/></svg>
                         </div>
-
-                        <!-- 2. Notas del Día -->
-                        <div class="bloque-notas-dia">
-                            <div class="notas-header">
-                                <h4>📝 Notas del Día / Bitácora</h4>
-                            </div>
-                            <div class="notas-body">
-                                <textarea id="txtNotasDia" placeholder="Cargando nota del día..." readonly></textarea>
-                            </div>
+                        <div class="notas-body">
+                            <svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>
+                            <textarea id="txtNotasDia" placeholder="Cargando nota del día..." readonly></textarea>
+                            <svg class="notas-wave" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="gWaveNota" x1="0" x2="1">
+                                        <stop offset="0" stop-color="#2f8cff" stop-opacity="0"/>
+                                        <stop offset="0.6" stop-color="#2f8cff" stop-opacity="0.8"/>
+                                        <stop offset="1" stop-color="#8b7bff" stop-opacity="0.9"/>
+                                    </linearGradient>
+                                </defs>
+                                <g fill="none" stroke="url(#gWaveNota)" stroke-width="1">
+                                    <path d="M0 62 C70 40 120 66 180 48 S270 20 300 30"/>
+                                    <path d="M0 66 C70 46 120 70 180 54 S270 28 300 38"/>
+                                    <path d="M0 70 C70 52 120 74 180 60 S270 36 300 46"/>
+                                </g>
+                            </svg>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- FILA INFERIOR: Rangos y [Performance + Backlog] -->
-                    <div class="subgrid-inferior-derecha">
-                        <!-- Tabla Rangos de Afectación -->
-                        <div class="tabla-carpetas-wrapper">
-                            <h3>Rangos de Afectación por Días</h3>
-                            <div class="tabla-fondo-imagen">
-                                <table class="tabla-dinamica-carpetas tabla-rangos">
-                                    <thead>
-                                        <tr>
-                                            <th>Rango de Días</th>
-                                            <th>Offline</th>
-                                            <th>Parcial</th>
-                                            <th>Velocidad</th>
-                                            <th>PQR</th>
-                                            <th>P3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1. MENOR A 5 DÍAS</td>
-                                            <td id="r1_off">0</td><td id="r1_par">0</td><td id="r1_vel">0</td><td id="r1_pqr">0</td><td id="r1_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2. DE 5 A 15 DÍAS</td>
-                                            <td id="r2_off">0</td><td id="r2_par">0</td><td id="r2_vel">0</td><td id="r2_pqr">0</td><td id="r2_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3. DE 15 A 30 DÍAS</td>
-                                            <td id="r3_off">0</td><td id="r3_par">0</td><td id="r3_vel">0</td><td id="r3_pqr">0</td><td id="r3_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>4. DE 30 A 45 DÍAS</td>
-                                            <td id="r4_off">0</td><td id="r4_par">0</td><td id="r4_vel">0</td><td id="r4_pqr">0</td><td id="r4_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>5. DE 45 A 60 DÍAS</td>
-                                            <td id="r5_off">0</td><td id="r5_par">0</td><td id="r5_vel">0</td><td id="r5_pqr">0</td><td id="r5_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>6. MAYOR A 60 DÍAS</td>
-                                            <td id="r6_off">0</td><td id="r6_par">0</td><td id="r6_vel">0</td><td id="r6_pqr">0</td><td id="r6_p3">0</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <section class="panel-card bloque-performance">
+                        <div class="panel-head">
+                            <span class="panel-icon violet"><svg class="ico"><use href="#i-bars"/></svg></span>
+                            <h4>% Performance</h4>
+                            <svg class="ico panel-shuffle" aria-hidden="true"><use href="#i-shuffle"/></svg>
                         </div>
-
-                        <!-- Columna derecha apilada -->
-                        <div class="bloques-derechos-apilados">
-                            <div class="bloque-performance">
-                                <h4>% Performance</h4>
-                                <div class="perf-bar">
-                                    <label id="lblOfflinePerf">Offline (0.00%)</label>
-                                    <div class="progress"><div class="bar red" id="barPerfOffline" style="width: 0%;"></div></div>
-                                </div>
-                                <div class="perf-bar">
-                                    <label id="lblOnlinePerf">Online (100%)</label>
-                                    <div class="progress"><div class="bar green" id="barPerfOnline" style="width: 100%;"></div></div>
-                                </div>
-                            </div>
-
-                            <div class="bloque-backlog-al-lado">
-                                <h4>Indicador Ejecución % Cumplimiento</h4>
-                                <div class="item-backlog-pbi">
-                                    <span>Backlog R1</span>
-                                    <strong id="valBacklogR1">97,17 %</strong>
-                                    <span class="badge-cumplimiento green" id="badgeR1">104.49%</span>
-                                </div>
-                                <div class="item-backlog-pbi">
-                                    <span>Backlog R2</span>
-                                    <strong id="valBacklogR2">87,53 %</strong>
-                                    <span class="badge-cumplimiento red" id="badgeR2">94.12%</span>
-                                </div>
-                            </div>
+                        <div class="perf-bar">
+                            <label id="lblOfflinePerf">Offline (0.00%)</label>
+                            <div class="progress"><div class="bar red" id="barPerfOffline" style="width: 0%;"></div></div>
                         </div>
-                    </div>
+                        <div class="perf-bar">
+                            <label id="lblOnlinePerf">Online (100%)</label>
+                            <div class="progress"><div class="bar green" id="barPerfOnline" style="width: 100%;"></div></div>
+                        </div>
+                    </section>
 
+                    <section class="panel-card bloque-backlog-al-lado">
+                        <div class="panel-head">
+                            <span class="panel-icon violet"><svg class="ico"><use href="#i-target"/></svg></span>
+                            <h4>Indicador Ejecución % Cumplimiento</h4>
+                        </div>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R1</span>
+                            <strong id="valBacklogR1">97,17 %</strong>
+                            <span class="badge-cumplimiento green" id="badgeR1">104.49%</span>
+                        </div>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R2</span>
+                            <strong id="valBacklogR2">87,53 %</strong>
+                            <span class="badge-cumplimiento red" id="badgeR2">94.12%</span>
+                        </div>
+                    </section>
                 </div>
 
             </div>
-
         </div>
-
     </main>
-
 </div>
 
-<script src="../js/dashboard.js?v=29"></script>
+<script src="../js/dashboard.js?v=30"></script>
 <script src="../js/settings.js"></script>
 
 <script>
     document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
+        if (e.target.closest("#btnToggleSidebar")) {
             document.body.classList.toggle("sidebar-colapsado");
+            // El mapa necesita recalcular su tamaño cuando cambia el ancho
+            setTimeout(() => window.dispatchEvent(new Event("resize")), 300);
         }
     });
+    // En pantallas pequeñas el menú arranca oculto
+    if (window.innerWidth <= 900) document.body.classList.add("sidebar-colapsado");
 </script>
 
+<!-- Modal: contraseña de administrador -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 400px;">
+    <div class="obs-modal-content sm">
         <div class="obs-modal-header">
-            <h3>🔒 Acceso Restringido</h3>
-            <button type="button" id="cerrarModalPassword" class="obs-modal-close">&times;</button>
+            <h3>Acceso restringido</h3>
+            <button type="button" id="cerrarModalPassword" class="obs-modal-close" aria-label="Cerrar">&times;</button>
         </div>
-        <div class="obs-modal-body" style="text-align: center;">
-            <p style="margin-bottom: 15px; color: #4a5568;">Ingresa la contraseña de administrador:</p>
-            <input type="password" id="inputAdminPassword" placeholder="Contraseña..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 1rem;">
+        <div class="obs-modal-body centrado">
+            <p>Ingresa la contraseña de administrador:</p>
+            <input type="password" id="inputAdminPassword" placeholder="Contraseña...">
         </div>
-        <div class="obs-modal-footer" style="justify-content: space-between;">
+        <div class="obs-modal-footer">
             <button type="button" id="btnCancelarPassword" class="obs-btn-secundario">Cancelar</button>
             <button type="button" id="btnVerificarPassword" class="obs-btn-principal">Ingresar</button>
         </div>
     </div>
 </div>
 
+<!-- Modal: editar nota del día -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 500px;">
+    <div class="obs-modal-content">
         <div class="obs-modal-header">
-            <h3>📝 Editar Nota del Día / Seguimiento</h3>
-            <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
+            <h3>Editar nota del día / seguimiento</h3>
+            <button type="button" id="cerrarModalTools" class="obs-modal-close" aria-label="Cerrar">&times;</button>
         </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="font-size: 0.9rem; color: #4a5568;">Escribe o actualiza la bitácora que se mostrará en el tablero para todos los usuarios:</p>
-            <textarea id="txtModalNotaDia" rows="6" placeholder="Escribe la nota del día aquí..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.95rem;"></textarea>
-            <button type="button" id="btnGuardarNotaServidor" style="padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
-                💾 Guardar y Sincronizar Nota
-            </button>
+        <div class="obs-modal-body">
+            <p>Escribe o actualiza la bitácora que se mostrará en el tablero para todos los usuarios:</p>
+            <textarea id="txtModalNotaDia" rows="6" placeholder="Escribe la nota del día aquí..."></textarea>
+            <button type="button" id="btnGuardarNotaServidor" class="btn-guardar-nota">Guardar y sincronizar nota</button>
         </div>
         <div class="obs-modal-footer">
             <button type="button" id="btnCerrarTools" class="obs-btn-secundario">Cerrar</button>
