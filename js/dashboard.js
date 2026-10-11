@@ -70,17 +70,18 @@ async function cargarNotaDelDia() {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Buscar columnas dinámicamente por nombre o índices de respaldo
+    // Buscar columnas dinámicamente o usar índices estándar
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T (aprox índice 19 o 15 según configuración)
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T aprox
     const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; // Columna U (índice 20)
+    const colCarpetaU = 20; // Columna U (FM/Trasl./reubicaciones)
+    const colStopper = 21;  // Columna de stoppers (Repuestos, Requiere atención S.O, Sin stopper)
 
     // Filtrar datos por Departamento y Proyecto
     let datosFiltrados = datosGlobal.filter(fila => {
@@ -93,40 +94,59 @@ function renderizarDatosDashboard() {
         return matchDepto && matchProyecto;
     });
 
-    let sumaOffline = 0;
-    let sumaParcial = 0;
-    let sumaVelocidad = 0;
-    let sumaPqrs = 0;
-    let sumaOtrosP3 = 0;
-
-    // Variables para la fila FM/Trasl./reubicaciones
+    let sumaOffline = 0, sumaParcial = 0, sumaVelocidad = 0, sumaPqrs = 0, sumaOtrosP3 = 0;
     let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
+    let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
+    let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
+    let sinOff = 0, sinPar = 0, sinVel = 0, sinPqr = 0, sinP3 = 0;
 
     datosFiltrados.forEach(fila => {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
+        const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-        // Totales generales de la red
-        if (estado.includes("OFFLINE")) {
-            sumaOffline += idsAfectados;
-        } else if (estado.includes("PARCIAL")) {
-            sumaParcial += idsAfectados;
-        } else if (estado.includes("VELOCIDAD")) {
-            sumaVelocidad += idsAfectados;
-        } else if (estado.includes("PQR")) {
-            sumaPqrs += idsAfectados;
-        } else if (estado.includes("P3") || estado.includes("OTROS")) {
-            sumaOtrosP3 += idsAfectados;
-        }
+        // 1. Totales netos (Universo completo filtrado)
+        if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
+        else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
+        else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
+        else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
+        else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
 
-        // Condicionales para la carpeta FM/Traslado/Reubicaciones (Columna U)
+        // 2. FM/Trasl./reubicaciones (Columna U)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
             if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
             else if (estado.includes("PQR")) fmPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
+        }
+
+        // 3. Repuestos (Stopper)
+        if (stopper.includes("REPUESTO")) {
+            if (estado.includes("OFFLINE")) repOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) repPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
+            else if (estado.includes("PQR")) repPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
+        }
+
+        // 4. Requiere atención S.O (Stopper)
+        if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
+            if (estado.includes("OFFLINE")) reqOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) reqVel += idsAfectados;
+            else if (estado.includes("PQR")) reqPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
+        }
+
+        // 5. Neto sin stopper (Stopper)
+        if (stopper.includes("SIN STOPPER") || stopper.includes("SIN_STOPPER")) {
+            if (estado.includes("OFFLINE")) sinOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) sinPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) sinVel += idsAfectados;
+            else if (estado.includes("PQR")) sinPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) sinP3 += idsAfectados;
         }
     });
 
@@ -156,7 +176,7 @@ function renderizarDatosDashboard() {
     if (elPqrs) elPqrs.textContent = sumaPqrs;
     if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
 
-    // Actualizar Tabla de Carpetas (Total neto)
+    // Pintar Tabla de Carpetas - Total neto
     const netOff = document.getElementById("c_neto_off");
     const netPar = document.getElementById("c_neto_par");
     const netVel = document.getElementById("c_neto_vel");
@@ -169,7 +189,7 @@ function renderizarDatosDashboard() {
     if (netPqr) netPqr.textContent = sumaPqrs;
     if (netP3) netP3.textContent = sumaOtrosP3;
 
-    // Actualizar Fila FM/Trasl./reubicaciones
+    // Pintar Fila FM/Trasl./reubicaciones
     const c_fm_off = document.getElementById("c_fm_off");
     const c_fm_par = document.getElementById("c_fm_par");
     const c_fm_vel = document.getElementById("c_fm_vel");
@@ -181,6 +201,45 @@ function renderizarDatosDashboard() {
     if (c_fm_vel) c_fm_vel.textContent = fmVel;
     if (c_fm_pqr) c_fm_pqr.textContent = fmPqr;
     if (c_fm_p3) c_fm_p3.textContent = fmP3;
+
+    // Pintar Fila Repuestos
+    const c_rep_off = document.getElementById("c_rep_off");
+    const c_rep_par = document.getElementById("c_rep_par");
+    const c_rep_vel = document.getElementById("c_rep_vel");
+    const c_rep_pqr = document.getElementById("c_rep_pqr");
+    const c_rep_p3 = document.getElementById("c_rep_p3");
+
+    if (c_rep_off) c_rep_off.textContent = repOff;
+    if (c_rep_par) c_rep_par.textContent = repPar;
+    if (c_rep_vel) c_rep_vel.textContent = repVel;
+    if (c_rep_pqr) c_rep_pqr.textContent = repPqr;
+    if (c_rep_p3) c_rep_p3.textContent = repP3;
+
+    // Pintar Fila Requiere atención S.O
+    const c_req_off = document.getElementById("c_req_off");
+    const c_req_par = document.getElementById("c_req_par");
+    const c_req_vel = document.getElementById("c_req_vel");
+    const c_req_pqr = document.getElementById("c_req_pqr");
+    const c_req_p3 = document.getElementById("c_req_p3");
+
+    if (c_req_off) c_req_off.textContent = reqOff;
+    if (c_req_par) c_req_par.textContent = reqPar;
+    if (c_req_vel) c_req_vel.textContent = reqVel;
+    if (c_req_pqr) c_req_pqr.textContent = reqPqr;
+    if (c_req_p3) c_req_p3.textContent = reqP3;
+
+    // Pintar Fila Neto sin stopper
+    const c_sin_off = document.getElementById("c_sin_off");
+    const c_sin_par = document.getElementById("c_sin_par");
+    const c_sin_vel = document.getElementById("c_sin_vel");
+    const c_sin_pqr = document.getElementById("c_sin_pqr");
+    const c_sin_p3 = document.getElementById("c_sin_p3");
+
+    if (c_sin_off) c_sin_off.textContent = sinOff;
+    if (c_sin_par) c_sin_par.textContent = sinPar;
+    if (c_sin_vel) c_sin_vel.textContent = sinVel;
+    if (c_sin_pqr) c_sin_pqr.textContent = sinPqr;
+    if (c_sin_p3) c_sin_p3.textContent = sinP3;
 
     // Actualizar % Performance
     const divisorPerf = totalSitiosFijo || 1;
