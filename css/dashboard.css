@@ -350,14 +350,17 @@ body {
     box-sizing: border-box !important;
 }
 
-/* Encabezados de tarjetas y tablas (Barra azul vibrante clásica de referencia) */
+/* ==========================================================
+   ESTILO UNIFICADO DE TÍTULOS: DEGRADADO HORIZONTAL TIPO ESPEJO
+   ========================================================== */
+
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
 .bloque-backlog-al-lado h4,
 .notas-header h4,
 .mapa-departamento-container h4 {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-    border: none !important;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
     text-shadow: none !important;
     padding: 9px 14px !important;
@@ -366,7 +369,7 @@ body {
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
     margin-bottom: 14px !important;
     text-align: left;
