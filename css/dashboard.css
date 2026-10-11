@@ -591,53 +591,61 @@
     gap: 12px !important;
 }
 /* ==========================================================
-   ADN VISUAL PREMIUM PARA LAS TABLAS (ESTILO MODERNO / OSCURO)
+   ESTILO EXACTO REFERENCIA 2 - TABLAS Y CONTENEDORES CON EFECTO CRISTAL Y NEÓN
    ========================================================== */
 
-/* 1. Contenedor principal de la tarjeta de la tabla */
+/* 1. Contenedores de las tablas con fondo azul oscuro translúcido y borde brillante */
 .tabla-carpetas-wrapper {
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    background: linear-gradient(135deg, rgba(12, 24, 48, 0.65) 0%, rgba(7, 13, 26, 0.75) 100%) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    padding: 14px !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    padding: 16px !important;
     box-sizing: border-box !important;
 }
 
-/* 2. Título superior de la tarjeta (Estilo barra azul iluminada) */
+/* 2. Encabezados de tarjeta (Títulos iluminados con degradado azul neón) */
 .tabla-carpetas-wrapper h3 {
     margin-top: 0 !important;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #1d4ed8 100%) !important;
-    border: 1px solid rgba(96, 165, 250, 0.4) !important;
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.85) 0%, rgba(37, 99, 235, 0.65) 50%, rgba(29, 78, 216, 0.85) 100%) !important;
+    border: 1px solid rgba(96, 165, 250, 0.5) !important;
     color: #ffffff !important;
-    text-shadow: 0 0 10px rgba(96, 165, 250, 0.7);
-    padding: 8px 12px !important;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+    padding: 9px 14px !important;
     border-radius: 10px !important;
     font-size: 0.85rem !important;
     font-weight: 700 !important;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
+    text-align: left; /* Alineado a la izquierda como la referencia */
+    text-transform: none; /* Mantiene las minúsculas/mayúsculas originales */
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
     margin-bottom: 12px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* 3. Estructura general de la tabla dinámica */
+/* 3. Estructura interna de la tabla sin fondos negros planos */
+.tabla-fondo-imagen {
+    background: transparent !important;
+}
+
 .tabla-dinamica-carpetas {
     width: 100% !important;
-    border-collapse: collapse !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
     font-size: 0.78rem;
     background: transparent !important;
 }
 
-/* 4. Encabezados de la tabla (Con luz central e iluminación azulada) */
+/* 4. Celdas de encabezado de la tabla (th) con brillo central */
 .tabla-dinamica-carpetas th {
-    background: radial-gradient(circle at center, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+    background: radial-gradient(circle at center, rgba(30, 58, 138, 0.8) 0%, rgba(11, 19, 38, 0.9) 100%) !important;
     color: #93c5fd !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
-    padding: 8px !important;
+    border: 1px solid rgba(56, 189, 248, 0.2) !important;
+    padding: 8px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.7rem;
@@ -647,18 +655,23 @@
 
 .tabla-dinamica-carpetas th:first-child {
     text-align: left !important;
+    border-top-left-radius: 8px;
 }
 
-/* 5. Celdas del cuerpo (Eliminando el look plano/cuadriculado de Excel) */
+.tabla-dinamica-carpetas th:last-child {
+    border-top-right-radius: 8px;
+}
+
+/* 5. Celdas del cuerpo de la tabla (td) translúcidas y sin negrura total */
 .tabla-dinamica-carpetas td {
-    background: rgba(15, 23, 42, 0.3) !important;
+    background: rgba(15, 23, 42, 0.25) !important;
     color: #cbd5e1 !important;
-    border: 1px solid rgba(56, 189, 248, 0.15) !important;
-    padding: 7px 8px !important;
+    border: 1px solid rgba(56, 189, 248, 0.12) !important;
+    padding: 7px 10px !important;
     text-align: center;
 }
 
-/* Primera columna alineada a la izquierda con texto más claro */
+/* Primera columna alineada a la izquierda */
 .tabla-dinamica-carpetas td:first-child,
 .tabla-rangos td:first-child {
     text-align: left !important;
@@ -666,15 +679,15 @@
     font-weight: 600;
 }
 
-/* Efecto hover elegante al pasar el mouse por las filas */
+/* Efecto hover suave al pasar el cursor */
 .tabla-dinamica-carpetas tbody tr:hover td {
-    background: rgba(30, 41, 59, 0.5) !important;
+    background: rgba(30, 41, 59, 0.45) !important;
     color: #ffffff !important;
 }
 
-/* Fila de alertas rojas optimizada para el entorno oscuro */
+/* Alertas de filas rojas con brillo neón */
 .fila-alerta-roja td:not(:first-child) {
     color: #fca5a5 !important;
     font-weight: bold;
-    text-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
 }
