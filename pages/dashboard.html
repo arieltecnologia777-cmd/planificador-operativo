@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=25">
+    <link rel="stylesheet" href="../css/dashboard.css?v=26">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -81,7 +81,7 @@
             <div class="panel-superior">
                 <div class="bloque-totales-cd">
                     <div class="btn-total-cd">TOTAL CD</div>
-                    <div class="val-total-cd">1422</div>
+                    <div class="val-total-cd">1443</div>
                     <div class="btn-zona">ZONA</div>
                     <div class="btn-todas">TODAS</div>
                 </div>
@@ -110,7 +110,7 @@
 
                 <div class="kpis-estado-superior">
                     <div class="kpi-box online">
-                        <span id="valOnline">1460</span> Online 🌐
+                        <span id="valOnline">0</span> Online 🌐
                     </div>
                     <div class="kpi-box offline">
                         <span id="valOffline">0</span> Offline 🚫
@@ -168,19 +168,19 @@
                                     <tbody>
                                         <tr>
                                             <td>Total neto</td>
-                                            <td id="c_neto_off">79</td>
-                                            <td id="c_neto_par">6</td>
-                                            <td id="c_neto_vel">12</td>
-                                            <td id="c_neto_pqr">17</td>
-                                            <td id="c_neto_p3">72</td>
+                                            <td id="c_neto_off">0</td>
+                                            <td id="c_neto_par">0</td>
+                                            <td id="c_neto_vel">0</td>
+                                            <td id="c_neto_pqr">0</td>
+                                            <td id="c_neto_p3">0</td>
                                         </tr>
                                         <tr>
                                             <td>FM/Trasl./reubicaciones</td>
-                                            <td id="c_fm_off">18</td>
-                                            <td id="c_fm_par">3</td>
-                                            <td id="c_fm_vel">2</td>
-                                            <td id="c_fm_pqr">3</td>
-                                            <td id="c_fm_p3">3</td>
+                                            <td id="c_fm_off">0</td>
+                                            <td id="c_fm_par">0</td>
+                                            <td id="c_fm_vel">0</td>
+                                            <td id="c_fm_pqr">0</td>
+                                            <td id="c_fm_p3">0</td>
                                         </tr>
                                         <tr>
                                             <td>Repuestos</td>
@@ -188,35 +188,39 @@
                                             <td id="c_rep_par">0</td>
                                             <td id="c_rep_vel">0</td>
                                             <td id="c_rep_pqr">0</td>
-                                            <td id="c_rep_p3">20</td>
+                                            <td id="c_rep_p3">0</td>
                                         </tr>
                                         <tr>
                                             <td>Requiere atención S.O</td>
-                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                                            <td id="c_req_off">0</td>
+                                            <td id="c_req_par">0</td>
+                                            <td id="c_req_vel">0</td>
+                                            <td id="c_req_pqr">0</td>
+                                            <td id="c_req_p3">0</td>
                                         </tr>
                                         <tr>
                                             <td>Neto sin stopper</td>
-                                            <td id="c_sin_off">61</td>
-                                            <td id="c_sin_par">3</td>
-                                            <td id="c_sin_vel">10</td>
-                                            <td id="c_sin_pqr">14</td>
-                                            <td id="c_sin_p3">49</td>
+                                            <td id="c_sin_off">0</td>
+                                            <td id="c_sin_par">0</td>
+                                            <td id="c_sin_vel">0</td>
+                                            <td id="c_sin_pqr">0</td>
+                                            <td id="c_sin_p3">0</td>
                                         </tr>
                                         <tr>
                                             <td>Meta</td>
-                                            <td id="c_meta_off">37</td>
-                                            <td id="c_meta_par">7</td>
-                                            <td id="c_meta_vel">10</td>
-                                            <td id="c_meta_pqr">1</td>
-                                            <td id="c_meta_p3">34</td>
+                                            <td id="c_meta_off">0</td>
+                                            <td id="c_meta_par">0</td>
+                                            <td id="c_meta_vel">0</td>
+                                            <td id="c_meta_pqr">0</td>
+                                            <td id="c_meta_p3">0</td>
                                         </tr>
                                         <tr class="fila-cumplimiento">
                                             <td>Cumplimiento %</td>
-                                            <td id="pct_off" class="bg-yellow">59 %</td>
-                                            <td id="pct_par" class="bg-green">233 %</td>
-                                            <td id="pct_vel" class="bg-green">100 %</td>
-                                            <td id="pct_pqr" class="bg-yellow">7 %</td>
-                                            <td id="pct_p3" class="bg-yellow">69 %</td>
+                                            <td id="pct_off">0 %</td>
+                                            <td id="pct_par">0 %</td>
+                                            <td id="pct_vel">0 %</td>
+                                            <td id="pct_pqr">0 %</td>
+                                            <td id="pct_p3">0 %</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -254,27 +258,27 @@
                                     <tbody>
                                         <tr>
                                             <td>1. MENOR A 5 DÍAS</td>
-                                            <td>224</td><td>25</td><td>27</td><td>21</td><td>29</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                         <tr>
                                             <td>2. DE 5 A 15 DÍAS</td>
-                                            <td>115</td><td>17</td><td>22</td><td>40</td><td>75</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                         <tr>
                                             <td>3. DE 15 A 30 DÍAS</td>
-                                            <td>27</td><td>1</td><td>10</td><td>32</td><td>88</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                         <tr class="fila-alerta-roja">
                                             <td>4. DE 30 A 45 DÍAS</td>
-                                            <td>4</td><td>0</td><td>2</td><td>11</td><td>42</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                         <tr class="fila-alerta-roja">
                                             <td>5. DE 45 A 60 DÍAS</td>
-                                            <td>6</td><td>0</td><td>2</td><td>7</td><td>31</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                         <tr class="fila-alerta-roja">
                                             <td>6. MAYOR A 60 DÍAS</td>
-                                            <td>6</td><td>0</td><td>1</td><td>3</td><td>8</td>
+                                            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -286,12 +290,12 @@
                             <div class="bloque-performance">
                                 <h4>% Performance</h4>
                                 <div class="perf-bar">
-                                    <label>Offline 5.21%</label>
-                                    <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
+                                    <label id="lblOfflinePerf">Offline (0.00%)</label>
+                                    <div class="progress"><div class="bar red" id="barPerfOffline" style="width: 0%;"></div></div>
                                 </div>
                                 <div class="perf-bar">
-                                    <label>Online 94.79%</label>
-                                    <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
+                                    <label id="lblOnlinePerf">Online (100%)</label>
+                                    <div class="progress"><div class="bar green" id="barPerfOnline" style="width: 100%;"></div></div>
                                 </div>
                             </div>
 
@@ -299,13 +303,13 @@
                                 <h4>Indicador Ejecución % Cumplimiento</h4>
                                 <div class="item-backlog-pbi">
                                     <span>Backlog R1</span>
-                                    <strong>97,17 %</strong>
-                                    <span class="badge-cumplimiento green">104.49%</span>
+                                    <strong id="valBacklogR1">97,17 %</strong>
+                                    <span class="badge-cumplimiento green" id="badgeR1">104.49%</span>
                                 </div>
                                 <div class="item-backlog-pbi">
                                     <span>Backlog R2</span>
-                                    <strong>87,53 %</strong>
-                                    <span class="badge-cumplimiento red">94.12%</span>
+                                    <strong id="valBacklogR2">87,53 %</strong>
+                                    <span class="badge-cumplimiento red" id="badgeR2">94.12%</span>
                                 </div>
                             </div>
                         </div>
@@ -322,7 +326,7 @@
 </div>
 
 <!-- Scripts y dependencias oficiales -->
-<script src="../js/dashboard.js?v=25"></script>
+<script src="../js/dashboard.js?v=26"></script>
 <script src="../js/settings.js"></script>
 
 <script>
