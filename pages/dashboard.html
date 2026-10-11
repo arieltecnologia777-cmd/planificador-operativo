@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=4">
+    <link rel="stylesheet" href="../css/dashboard.css?v=6">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -127,7 +127,7 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Mapa Arriba, Performance Abajo -->
+                <!-- COLUMNA IZQUIERDA: Mapa y Performance -->
                 <div class="columna-izq">
                     <div class="mapa-regiones-container">
                         <div class="mapa-silueta">
@@ -151,8 +151,8 @@
                     </div>
                 </div>
 
-                <!-- COLUMNA DERECHA: Tabla Arriba, Backlog Abajo -->
-                <div class="columna-der">
+                <!-- COLUMNA DERECHA: Tabla de Carpetas y Backlog A SU LADO DERECHO -->
+                <div class="columna-der-inferior">
                     <div class="tabla-carpetas-wrapper">
                         <h3>Cumplimiento por carpetas</h3>
                         <div class="tabla-fondo-imagen">
@@ -225,7 +225,8 @@
                         </div>
                     </div>
 
-                    <div class="bloque-backlog">
+                    <!-- Backlog ubicado a la derecha exacta de la tabla -->
+                    <div class="bloque-backlog-al-lado">
                         <h4>Indicador Ejecución % Cumplimiento</h4>
                         <div class="item-backlog-pbi">
                             <span>Backlog R1</span>
@@ -256,7 +257,7 @@
         }
     });
 </script>
-<script src="../js/dashboard.js?v=4"></script>
+<script src="../js/dashboard.js?v=6"></script>
 
 </body>
 </html>
