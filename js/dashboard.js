@@ -79,8 +79,10 @@ function renderizarDatosDashboard() {
     const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; 
-    const colStopper = 21;  
+    const colCarpetaU = 20; // Columna U
+    const colStopper = 21;  // Stopper general
+    const colStopperRepuestos = 28; // Columna AC (índice 28 aprox) - Stopper P3 (repuestos)
+    const colStopperFM = 29;        // Columna AD (índice 29 aprox) - Stopper P3 (FM/traslado/reubicaciones)
 
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
@@ -101,6 +103,8 @@ function renderizarDatosDashboard() {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
         const stopper = String(fila[colStopper] || "").trim().toUpperCase();
+        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
+        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
         // 1. Totales netos (Universo completo)
@@ -119,8 +123,11 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        // 3. Repuestos (Stopper)
-        if (stopper.includes("REPUESTO")) {
+        // 3. Repuestos (Con regla estricta: si tiene stopper FM, predomina FM y se excluye de repuestos)
+        const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
+        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS") || stopper.includes("REPUESTO");
+
+        if (esRepuestoP3 && !esFM_P3) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
