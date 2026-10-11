@@ -723,37 +723,22 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - DISEÑO HORIZONTAL Y BOTÓN ANCHO TOTAL (CSS DEFINITIVO)
+   BLOQUE DE FILTROS CENTRAL - ALTURA COMPACTA Y SIMÉTRICA
    ========================================================== */
-.bloque-filtros-centro {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 14px 16px !important; /* Altura simétrica idéntica a Total CD y KPIs */
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    box-sizing: border-box !important;
-    gap: 10px !important;
-}
-
-/* Forzar que los dos primeros grupos (Proyecto y Departamento) queden lado a lado horizontalmente */
-.bloque-filtros-centro > .grupo-filtros {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-}
-
-/* Creamos una fila superior virtual flexible para alinear los dos títulos y sus botones lado a lado */
 .bloque-filtros-centro {
     display: grid !important;
     grid-template-columns: auto 1fr !important;
     grid-template-rows: auto auto !important;
-    gap: 10px 20px !important;
-    align-items: flex-start !important;
+    gap: 6px 20px !important; /* Espacio vertical reducido para compactar la altura */
+    align-items: center !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    padding: 10px 14px !important; /* Padding compacto idéntico a los otros bloques */
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
 }
 
 /* Posicionar el grupo Proyecto arriba a la izquierda */
@@ -773,7 +758,7 @@
     flex-direction: column;
     align-items: center !important;
     text-align: center !important;
-    gap: 4px;
+    gap: 2px !important;
 }
 
 .label-titulo {
@@ -784,7 +769,7 @@
     letter-spacing: 0.5px;
     text-align: center !important;
     width: 100%;
-    margin-bottom: 4px;
+    margin-bottom: 2px !important;
 }
 
 /* Botones de Filtro y Departamentos */
@@ -820,7 +805,7 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% de la fila inferior de lado a lado */
+/* Botón de borrar filtros abarcando exactamente el 100% de la fila inferior */
 .btn-borrar-filtros {
     grid-column: 1 / -1 !important;
     grid-row: 2 / 3 !important;
@@ -837,6 +822,7 @@
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
+    margin-top: 2px !important;
     transition: all 0.2s ease;
 }
 
