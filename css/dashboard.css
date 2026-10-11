@@ -460,3 +460,80 @@
         font-size: 0.72rem;
     }
 }
+/* ==========================================================
+   ESTILOS NEÓN 3D PARA LAS KPI CARDS EXISTENTES
+   ========================================================== */
+
+/* Contenedor principal que agrupa las tarjetas de KPI */
+.kpis-estado-superior {
+    display: flex !important;
+    gap: 8px !important;
+    background: rgba(13, 20, 36, 0.65) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border-radius: 16px !important;
+    padding: 8px !important;
+    align-items: center !important;
+}
+
+/* Estilo individual para cada tarjeta KPI */
+.kpi-box {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1;
+    min-width: 65px;
+    transition: all 0.2s ease;
+}
+
+.kpi-box span { 
+    font-size: 1.2rem !important; 
+    display: block !important; 
+    font-weight: 800 !important;
+    margin-bottom: 2px;
+}
+
+/* 1. Online - Verde Esmeralda Neon */
+.kpi-box.online { 
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, rgba(15, 23, 42, 0.9) 80%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.75) !important; 
+    color: #34d399 !important; 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 8px rgba(16, 185, 129, 0.2) !important;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+}
+
+/* 2. Offline - Rojo Coral Neon */
+.kpi-box.offline { 
+    background: radial-gradient(circle at center, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.9) 80%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.75) !important; 
+    color: #f87171 !important; 
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), inset 0 0 8px rgba(239, 68, 68, 0.2) !important;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+}
+
+/* 3. Parcial - Ámbar Neon */
+.kpi-box.parcial { 
+    background: radial-gradient(circle at center, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.9) 80%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.75) !important; 
+    color: #fbbf24 !important; 
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3), inset 0 0 8px rgba(245, 158, 11, 0.2) !important;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón */
+.kpi-box.sub { 
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 80%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.65) !important; 
+    color: #38bdf8 !important; 
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.15) !important;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
