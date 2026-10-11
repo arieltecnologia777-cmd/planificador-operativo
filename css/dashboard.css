@@ -11,11 +11,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #e2e8f0;
+    background: #1a202c;
     padding: 10px 15px;
     border-radius: 12px;
     margin-bottom: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 .bloque-totales-cd {
@@ -36,8 +36,8 @@
 }
 
 .val-total-cd {
-    background: #cbd5e0;
-    color: #1a202c;
+    background: #2d3748;
+    color: #63b3ed;
     font-size: 0.85rem;
     font-weight: 900;
     text-align: center;
@@ -46,7 +46,7 @@
 }
 
 .btn-zona { background: #3182ce; }
-.btn-todas { background: #a0aec0; color: #1a202c; }
+.btn-todas { background: #4a5568; color: white; }
 
 .bloque-filtros-centro {
     display: flex;
@@ -63,7 +63,7 @@
 .label-titulo {
     font-weight: bold;
     font-size: 0.75rem;
-    color: #4a5568;
+    color: #a0aec0;
     text-transform: uppercase;
 }
 
@@ -73,14 +73,14 @@
 }
 
 .btn-filtro, .btn-depto {
-    background: #cbd5e0;
+    background: #2d3748;
     border: none;
     padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.8rem;
-    color: #2d3748;
+    color: #e2e8f0;
 }
 
 .btn-filtro.active, .btn-depto.active {
@@ -89,103 +89,76 @@
 }
 
 .btn-borrar-filtros {
-    background: #fff;
-    border: 1px solid #cbd5e0;
+    background: #1a202c;
+    border: 1px solid #4a5568;
     padding: 4px 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #c53030;
+    color: #fc8181;
     margin-top: 4px;
 }
 
 /* ==========================================================
-   KPI CARDS 3D - CONTENEDOR Y TARJETAS INDIVIDUALES VIDRIOSAS
+   KPI CARDS - ESTILO VIDRIOSO Y NEÓN EXACTO (SIN FONDO PLANO)
    ========================================================== */
-.kpis-wrapper-contenedor {
-    background: rgba(13, 20, 36, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    border-radius: 16px;
-    padding: 8px;
-    display: inline-flex;
-    align-items: center;
-}
-
 .kpis-estado-superior {
-    display: flex !important;
-    gap: 8px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    align-items: center !important;
+    display: flex;
+    gap: 8px;
 }
 
-/* Cada KPI card vuelve a ser una caja independiente con cristal oscuro y borde brillante */
 .kpi-box {
-    background: rgba(15, 23, 42, 0.75) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 12px !important;
-    padding: 8px 10px !important;
+    padding: 6px 12px;
     font-weight: bold;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     text-align: center;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: 65px;
-    box-sizing: border-box;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s ease;
 }
 
 .kpi-box span { 
-    font-size: 1.15rem !important; 
-    display: block !important; 
-    font-weight: 800 !important;
-    margin: 2px 0 !important;
+    font-size: 1.15rem; 
+    display: block; 
+    font-weight: 800;
 }
 
-/* 1. Online - Verde Esmeralda Neon */
+/* Estilos de neón y brillos individuales por estado sin fondos sólidos */
 .kpi-box.online { 
-    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(16, 185, 129, 0.8) !important; 
     color: #34d399 !important; 
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
 }
-.kpi-box.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline - Rojo Coral Neon */
 .kpi-box.offline { 
-    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(239, 68, 68, 0.8) !important; 
     color: #f87171 !important; 
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
 }
-.kpi-box.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
 
-/* 3. Parcial - Ámbar Neon */
 .kpi-box.parcial { 
-    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.3) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(245, 158, 11, 0.8) !important; 
     color: #fbbf24 !important; 
     box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
 }
-.kpi-box.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
 
-/* 4, 5 y 6. Velocidad, PQRs, Otros P3 - Azul y Tonos Neón */
 .kpi-box.sub { 
-    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.85) 75%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(56, 189, 248, 0.7) !important; 
     color: #38bdf8 !important; 
     box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
 }
-.kpi-box.sub span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
 .panel-layout-pbi {
     display: grid;
