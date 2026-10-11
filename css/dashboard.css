@@ -120,34 +120,34 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL PBI: Alineado abajo del todo para igualar alturas
+   GRID PRINCIPAL PBI RESPONSIVE (Sin Scroll y adaptado)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 16px;
-    align-items: stretch; /* Estira ambas columnas para que midan exactamente lo mismo de alto */
+    grid-template-columns: 300px 1fr;
+    gap: 14px;
+    align-items: stretch;
 }
 
 .columna-izq {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribuye mapa arriba y performance abajo del todo */
-    height: 100%;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .columna-der-inferior {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 16px;
-    align-items: end; /* Baja tanto la tabla como el backlog al final de la página */
+    grid-template-columns: 1fr 320px;
+    gap: 14px;
+    align-items: end;
 }
 
-/* Mapa */
+/* Mapa adaptable */
 .mapa-regiones-container {
     background: #1a202c;
     border-radius: 12px;
-    height: 300px;
+    height: 260px; /* Altura optimizada para laptops */
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -163,41 +163,41 @@
     position: absolute;
     background: rgba(43, 108, 176, 0.9);
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: bold;
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-/* Tabla de Cumplimiento por Carpetas (Bajará al nivel final) */
+/* Tabla de Cumplimiento por Carpetas */
 .tabla-carpetas-wrapper {
     background: white;
-    padding: 14px;
+    padding: 10px 12px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .tabla-carpetas-wrapper h3 {
     margin-top: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #2d3748;
     text-align: center;
     background: #cbd5e0;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.82rem;
+    font-size: 0.78rem; /* Letra ligeramente compacta para evitar desbordes */
 }
 
 .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
     border: 1px solid #cbd5e0;
-    padding: 8px;
+    padding: 5px 6px; /* Padding reducido para laptops */
     text-align: center;
 }
 
@@ -219,29 +219,29 @@
 /* Performance */
 .bloque-performance {
     background: white;
-    padding: 14px;
+    padding: 10px 12px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
 }
 
 .bloque-performance h4 {
     margin-top: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background: #718096;
     color: white;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .perf-bar {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .perf-bar label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #4a5568;
     display: block;
     margin-bottom: 2px;
@@ -249,7 +249,7 @@
 
 .progress {
     background: #edf2f7;
-    height: 12px;
+    height: 10px;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid #cbd5e0;
@@ -259,39 +259,74 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* Indicador Backlog al lado derecho (Bajará al nivel final) */
+/* Indicador Backlog */
 .bloque-backlog-al-lado {
     background: white;
-    padding: 14px;
+    padding: 10px 12px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
 }
 
 .bloque-backlog-al-lado h4 {
     margin-top: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background: #718096;
     color: white;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .item-backlog-pbi {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
 }
 
 .badge-cumplimiento {
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 .badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
 .badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
+
+
+/* ==========================================================
+   MEDIA QUERIES PARA ADAPTARSE A LAPTOPS Y PANTALLAS PEQUEÑAS
+   ========================================================== */
+@media (max-width: 1366px) {
+    .dashboard-container {
+        padding: 5px 0;
+        max-width: 1250px;
+    }
+    
+    .panel-superior {
+        padding: 8px 12px;
+        margin-bottom: 10px;
+    }
+
+    .panel-layout-pbi {
+        grid-template-columns: 270px 1fr;
+        gap: 10px;
+    }
+
+    .columna-der-inferior {
+        grid-template-columns: 1fr 280px;
+        gap: 10px;
+    }
+
+    .mapa-regiones-container {
+        height: 220px;
+    }
+
+    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+        padding: 4px 5px;
+        font-size: 0.75rem;
+    }
+}
