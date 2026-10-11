@@ -914,3 +914,17 @@
     width: 100%;
     margin-bottom: 4px;
 }
+/* ==========================================================
+   ALINEACIÓN SIMÉTRICA VERTICAL ENTRE PROYECTO Y FILTROS
+   ========================================================== */
+.bloque-filtros-centro {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end !important; /* Alinea los dos grupos de filtros hacia la parte inferior para que queden nivelados */
+}
+
+/* Ajuste específico para que el grupo de Proyecto baje y quede simétrico */
+.grupo-filtros:first-child {
+    justify-content: flex-end;
+    padding-bottom: 2px; /* Pequeño ajuste para igualar el espacio del botón de borrar abajo */
+}
