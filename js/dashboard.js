@@ -12,7 +12,7 @@ const TOTALES_MAPA = {
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
-let proyectoFiltroActual = "MINTIC 7K"; // Por defecto arranca en MinTic 7K
+let proyectoFiltroActual = "MINTIC 7K";
 
 async function inicializarDashboard() {
     try {
@@ -70,16 +70,17 @@ async function cargarNotaDelDia() {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Buscar columnas dinámicamente
+    // Buscar columnas dinámicamente por nombre o índices de respaldo
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 15;
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T (aprox índice 19 o 15 según configuración)
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
-    const colProj = idxProyecto !== -1 ? idxProyecto : 3; // Ajusta según la posición de tu columna Proyecto
+    const colProj = idxProyecto !== -1 ? idxProyecto : 3;
+    const colCarpetaU = 20; // Columna U (índice 20)
 
     // Filtrar datos por Departamento y Proyecto
     let datosFiltrados = datosGlobal.filter(fila => {
@@ -98,10 +99,15 @@ function renderizarDatosDashboard() {
     let sumaPqrs = 0;
     let sumaOtrosP3 = 0;
 
+    // Variables para la fila FM/Trasl./reubicaciones
+    let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
+
     datosFiltrados.forEach(fila => {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
+        const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
+        // Totales generales de la red
         if (estado.includes("OFFLINE")) {
             sumaOffline += idsAfectados;
         } else if (estado.includes("PARCIAL")) {
@@ -113,18 +119,26 @@ function renderizarDatosDashboard() {
         } else if (estado.includes("P3") || estado.includes("OTROS")) {
             sumaOtrosP3 += idsAfectados;
         }
+
+        // Condicionales para la carpeta FM/Traslado/Reubicaciones (Columna U)
+        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
+            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
+            else if (estado.includes("PQR")) fmPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
+        }
     });
 
-    // Obtener el total fijo correspondiente a la combinación actual de filtros
+    // Total de sitios fijo según la combinación de filtros
     const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
         ? TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual]
         : 1460;
 
-    // Actualizar el valor visual de "TOTAL CD" en el panel superior
     const elTotalCd = document.querySelector(".val-total-cd");
     if (elTotalCd) elTotalCd.textContent = totalSitiosFijo;
 
-    // Cálculo del Online: Total fijo de la combinación menos los offline reales
+    // Cálculo del Online
     const totalOnline = Math.max(0, totalSitiosFijo - sumaOffline);
 
     // Actualizar KPIs superiores
@@ -142,7 +156,7 @@ function renderizarDatosDashboard() {
     if (elPqrs) elPqrs.textContent = sumaPqrs;
     if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
 
-    // Actualizar Tabla de Carpetas
+    // Actualizar Tabla de Carpetas (Total neto)
     const netOff = document.getElementById("c_neto_off");
     const netPar = document.getElementById("c_neto_par");
     const netVel = document.getElementById("c_neto_vel");
@@ -154,6 +168,19 @@ function renderizarDatosDashboard() {
     if (netVel) netVel.textContent = sumaVelocidad;
     if (netPqr) netPqr.textContent = sumaPqrs;
     if (netP3) netP3.textContent = sumaOtrosP3;
+
+    // Actualizar Fila FM/Trasl./reubicaciones
+    const c_fm_off = document.getElementById("c_fm_off");
+    const c_fm_par = document.getElementById("c_fm_par");
+    const c_fm_vel = document.getElementById("c_fm_vel");
+    const c_fm_pqr = document.getElementById("c_fm_pqr");
+    const c_fm_p3 = document.getElementById("c_fm_p3");
+
+    if (c_fm_off) c_fm_off.textContent = fmOff;
+    if (c_fm_par) c_fm_par.textContent = fmPar;
+    if (c_fm_vel) c_fm_vel.textContent = fmVel;
+    if (c_fm_pqr) c_fm_pqr.textContent = fmPqr;
+    if (c_fm_p3) c_fm_p3.textContent = fmP3;
 
     // Actualizar % Performance
     const divisorPerf = totalSitiosFijo || 1;
@@ -171,9 +198,8 @@ function renderizarDatosDashboard() {
     if (barOnPerf) barOnPerf.style.width = `${pctOnlineVal}%`;
 }
 
-// Manejo de eventos de clic en filtros (Departamentos, Mapa y Proyectos)
+// Manejo de eventos de clic en filtros
 document.addEventListener("click", (e) => {
-    // Filtro por Departamento o Mapa
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
         const depto = btnDepto.getAttribute("data-depto");
@@ -187,7 +213,6 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    // Filtro por Proyecto (MinTic 7K / ODH 5G)
     const btnFiltroProyecto = e.target.closest(".botones-filtro button");
     if (btnFiltroProyecto) {
         document.querySelectorAll(".botones-filtro button").forEach(b => b.classList.remove("active"));
@@ -204,7 +229,6 @@ document.addEventListener("click", (e) => {
         renderizarDatosDashboard();
     }
 
-    // Botón Borrar Filtros
     if (e.target.id === "btnBorrarFiltros") {
         departamentoFiltroActual = "TODOS";
         document.querySelectorAll(".btn-depto").forEach(b => {
