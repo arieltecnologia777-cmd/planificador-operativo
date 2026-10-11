@@ -563,3 +563,30 @@
     .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia { padding: 6px 8px; }
     #txtNotasDia { min-height: 100px; font-size: 0.72rem; }
 }
+/* ==========================================================
+   FORZAR EL PANEL SUPERIOR ARRIBA (BAJO EL BANNER)
+   ========================================================== */
+.dashboard-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+/* El panel superior se convierte en una barra horizontal continua */
+.panel-superior {
+    order: -1 !important; /* Lo fuerza a colocarse de primero en el contenedor */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: rgba(13, 20, 36, 0.25) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 10px 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box !important;
+    gap: 12px !important;
+}
