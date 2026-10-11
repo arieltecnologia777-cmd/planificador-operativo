@@ -139,7 +139,15 @@
     gap: 14px;
 }
 
-/* Sub-grilla inferior derecha: Tabla de rangos a la izquierda y bloques apilados a la derecha */
+/* Subgrilla superior derecha: Tabla de carpetas a la izquierda y Notas del Día a la derecha (cuadro rojo) */
+.subgrid-superior-derecha {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 14px;
+    align-items: stretch;
+}
+
+/* Subgrilla inferior derecha */
 .subgrid-inferior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -147,17 +155,11 @@
     align-items: stretch;
 }
 
-/* Contenedor para apilar Performance arriba y Backlog abajo en el espacio derecho */
 .bloques-derechos-apilados {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 14px;
-}
-
-/* Ajuste simétrico del ancho superior */
-.columna-der-inferior .tabla-completa-ancho {
-    width: calc(100% - 354px);
 }
 
 .mapa-regiones-container {
@@ -205,7 +207,105 @@
 }
 
 /* ==========================================================
-   SIMETRÍA EXACTA DE COLUMNAS ENTRE AMBAS TABLAS
+   ESTILOS DEL NUEVO MÓDULO: NOTAS DEL DÍA
+   ========================================================== */
+.bloque-notas-dia {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.notas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #718096;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.notas-header h4 {
+    margin: 0;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.btn-admin-mode {
+    background: #4a5568;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-admin-mode:hover {
+    background: #2d3748;
+}
+
+.notas-body {
+    flex-grow: 1;
+    display: flex;
+}
+
+#txtNotasDia {
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    resize: none;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.8rem;
+    color: #2d3748;
+    background: #f7fafc;
+    font-family: inherit;
+    outline: none;
+}
+
+#txtNotasDia:focus {
+    border-color: #2b6cb0;
+}
+
+.notas-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 0.72rem;
+}
+
+.estado-lectura {
+    color: #718096;
+    font-weight: 600;
+}
+
+.btn-guardar-notas {
+    background: #2b6cb0;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.72rem;
+}
+
+.btn-guardar-notas:hover {
+    background: #2c5282;
+}
+
+
+/* ==========================================================
+   SIMETRÍA EXACTA DE COLUMNAS ENTRE TABLAS
    ========================================================== */
 .tabla-dinamica-carpetas {
     width: 100%;
@@ -376,13 +476,14 @@
         gap: 8px;
     }
 
-    .subgrid-inferior-derecha {
+    .subgrid-superior-derecha {
         grid-template-columns: 1fr 260px;
         gap: 8px;
     }
 
-    .columna-der-inferior .tabla-completa-ancho {
-        width: calc(100% - 268px);
+    .subgrid-inferior-derecha {
+        grid-template-columns: 1fr 260px;
+        gap: 8px;
     }
 
     .mapa-regiones-container {
@@ -404,14 +505,19 @@
         font-size: 0.7rem;
     }
 
-    .bloque-performance, .bloque-backlog-al-lado {
+    .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia {
         padding: 6px 8px;
     }
 
-    .bloque-backlog-al-lado h4, .bloque-performance h4 {
+    .bloque-backlog-al-lado h4, .bloque-performance h4, .notas-header h4 {
         margin-bottom: 4px;
         padding: 3px;
         font-size: 0.78rem;
+    }
+
+    #txtNotasDia {
+        min-height: 100px;
+        font-size: 0.72rem;
     }
 
     .item-backlog-pbi {
