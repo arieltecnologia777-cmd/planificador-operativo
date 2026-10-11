@@ -9,13 +9,13 @@ const TOTALES_MAPA = {
     "SAI": { "TODOS": 21, "MINTIC 7K": 21, "ODH 5G": 0 }
 };
 
-// Metas fijas de tolerancia máxima/mínima por Departamento
+// Metas fijas actualizadas por Departamento
 const METAS_DEPARTAMENTO = {
     "ANTIOQUIA": { offline: 9, parcial: 2, velocidad: 3, pqr: 0, p3: 9 },
     "CESAR": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 14 },
-    "LA GUAJIRA": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 13 },
+    "LA GUAJIRA": { offline: 14, parcial: 2, velocidad: 3, pqr: 0, p3: 12 },
     "SAI": { offline: 1, parcial: 0, velocidad: 0, pqr: 0, p3: 0 },
-    "TODOS": { offline: 36, parcial: 8, velocidad: 11, pqr: 2, p3: 36 } // Suma total de referencia global
+    "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
 let datosGlobal = [];
@@ -76,28 +76,28 @@ async function cargarNotaDelDia() {
     }
 }
 
-// Función auxiliar para calcular el color de cumplimiento y su clase degradada
+// Función visual para renderizar la barra de cumplimiento con línea de meta al 50% (escala máx 200%)
 function aplicarColorCumplimiento(elementoId, porcentaje) {
     const el = document.getElementById(elementoId);
     if (!el) return;
 
-    el.textContent = `${porcentaje.toFixed(0)} %`;
-    el.className = ""; // Limpiar clases anteriores
-
-    // Lógica de colores degradados: Verde (>= 100%), Amarillo (70% - 99%), Rojo (< 70%)
+    let colorFondo = "#dc3545"; // Rojo por defecto (<70%)
     if (porcentaje >= 100) {
-        el.classList.add("bg-green");
-        el.style.backgroundColor = "#28a745";
-        el.style.color = "#white";
+        colorFondo = "#28a745"; // Verde (>=100%)
     } else if (porcentaje >= 70) {
-        el.classList.add("bg-yellow");
-        el.style.backgroundColor = "#ffc107";
-        el.style.color = "#212529";
-    } else {
-        el.classList.add("bg-red");
-        el.style.backgroundColor = "#dc3545";
-        el.style.color = "#white";
+        colorFondo = "#ffc107"; // Amarillo (70% - 99%)
     }
+
+    // Escala donde el 100% se ubica exactamente en el centro (50% del ancho)
+    const anchoBarra = Math.min(porcentaje / 2, 100);
+
+    el.innerHTML = `
+        <div style="position: relative; display: block; width: 100%; height: 26px; background: #fff; border: 1px solid #cbd5e0; border-radius: 2px; overflow: hidden; text-align: center;">
+            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background-color: ${colorFondo}; opacity: 0.85; transition: width 0.3s ease;"></div>
+            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #000; z-index: 2;"></div>
+            <span style="position: relative; z-index: 3; font-weight: bold; font-size: 0.8rem; line-height: 26px; color: #000;">${porcentaje.toFixed(0)} %</span>
+        </div>
+    `;
 }
 
 function renderizarDatosDashboard() {
@@ -185,7 +185,6 @@ function renderizarDatosDashboard() {
     const deptoKey = departamentoFiltroActual.toUpperCase();
     const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
 
-    // Pintar Fila de Metas
     const metaOff = metasActivas.offline;
     const metaPar = metasActivas.parcial;
     const metaVel = metasActivas.velocidad;
@@ -196,9 +195,9 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_meta_par")) document.getElementById("c_meta_par").textContent = metaPar;
     if (document.getElementById("c_meta_vel")) document.getElementById("c_meta_vel").textContent = metaVel;
     if (document.getElementById("c_meta_pqr")) document.getElementById("c_meta_pqr").textContent = metaPqr;
-    if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent = metaP3;
+    if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent  = metaP3;
 
-    // Calcular Cumplimiento % (Meta / Neto sin stopper, o regla inversa de tolerancia)
+    // Calcular Cumplimiento % (Meta / Neto sin stopper)
     const pctOffVal = sinOff > 0 ? (metaOff / sinOff) * 100 : 100;
     const pctParVal = sinPar > 0 ? (metaPar / sinPar) * 100 : 100;
     const pctVelVal = sinVel > 0 ? (metaVel / sinVel) * 100 : 100;
