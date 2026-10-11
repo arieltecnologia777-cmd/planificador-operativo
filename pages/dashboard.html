@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=8">
+    <link rel="stylesheet" href="../css/dashboard.css?v=9">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -127,7 +127,7 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Mapa y Performance -->
+                <!-- COLUMNA IZQUIERDA: Únicamente el Mapa -->
                 <div class="columna-izq">
                     <div class="mapa-regiones-container">
                         <div class="mapa-silueta">
@@ -137,23 +137,11 @@
                             <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
                         </div>
                     </div>
-
-                    <div class="bloque-performance">
-                        <h4>% Performance</h4>
-                        <div class="perf-bar">
-                            <label>Offline 5.21%</label>
-                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
-                        </div>
-                        <div class="perf-bar">
-                            <label>Online 94.79%</label>
-                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- COLUMNA DERECHA -->
                 <div class="columna-der-inferior">
-                    <!-- 1. Tabla Cumplimiento por Carpetas (Ancho completo arriba) -->
+                    <!-- 1. Tabla Cumplimiento por Carpetas (Ancho ajustado simétricamente) -->
                     <div class="tabla-carpetas-wrapper tabla-completa-ancho">
                         <h3>Cumplimiento por carpetas</h3>
                         <div class="tabla-fondo-imagen">
@@ -226,7 +214,7 @@
                         </div>
                     </div>
 
-                    <!-- 2. SECCIÓN INFERIOR DERECHA: Tabla de Rangos (Izquierda) y Backlog (Derecha en paralelo) -->
+                    <!-- 2. SECCIÓN INFERIOR DERECHA: Rangos a la izquierda, y Performance + Backlog apilados a la derecha -->
                     <div class="subgrid-inferior-derecha">
                         <!-- Tabla Rangos de Afectación -->
                         <div class="tabla-carpetas-wrapper">
@@ -273,18 +261,32 @@
                             </div>
                         </div>
 
-                        <!-- Indicador Backlog (Ubicado exactamente en el cuadro rojo señalado) -->
-                        <div class="bloque-backlog-al-lado">
-                            <h4>Indicador Ejecución % Cumplimiento</h4>
-                            <div class="item-backlog-pbi">
-                                <span>Backlog R1</span>
-                                <strong>97,17 %</strong>
-                                <span class="badge-cumplimiento green">104.49%</span>
+                        <!-- Columna derecha superior: Performance arriba y Backlog abajo (Exactamente en el recuadro rojo) -->
+                        <div class="bloques-derechos-apilados">
+                            <div class="bloque-performance">
+                                <h4>% Performance</h4>
+                                <div class="perf-bar">
+                                    <label>Offline 5.21%</label>
+                                    <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
+                                </div>
+                                <div class="perf-bar">
+                                    <label>Online 94.79%</label>
+                                    <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
+                                </div>
                             </div>
-                            <div class="item-backlog-pbi">
-                                <span>Backlog R2</span>
-                                <strong>87,53 %</strong>
-                                <span class="badge-cumplimiento red">94.12%</span>
+
+                            <div class="bloque-backlog-al-lado">
+                                <h4>Indicador Ejecución % Cumplimiento</h4>
+                                <div class="item-backlog-pbi">
+                                    <span>Backlog R1</span>
+                                    <strong>97,17 %</strong>
+                                    <span class="badge-cumplimiento green">104.49%</span>
+                                </div>
+                                <div class="item-backlog-pbi">
+                                    <span>Backlog R2</span>
+                                    <strong>87,53 %</strong>
+                                    <span class="badge-cumplimiento red">94.12%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -306,7 +308,7 @@
         }
     });
 </script>
-<script src="../js/dashboard.js?v=8"></script>
+<script src="../js/dashboard.js?v=9"></script>
 
 </body>
 </html>
