@@ -139,7 +139,7 @@
     gap: 14px;
 }
 
-/* Sub-grilla inferior derecha: Tabla de rangos a la izquierda y Backlog a la derecha */
+/* Sub-grilla inferior derecha: Tabla de rangos a la izquierda y bloques apilados a la derecha */
 .subgrid-inferior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -147,7 +147,15 @@
     align-items: stretch;
 }
 
-/* Ajuste simétrico: El cuadro superior medirá exactamente lo mismo que el cuadro de rangos inferior (restando el espacio del backlog) */
+/* Contenedor para apilar Performance arriba y Backlog abajo en el espacio derecho */
+.bloques-derechos-apilados {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+/* Ajuste simétrico del ancho superior */
 .columna-der-inferior .tabla-completa-ancho {
     width: calc(100% - 354px);
 }
