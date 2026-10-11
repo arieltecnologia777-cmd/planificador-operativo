@@ -462,17 +462,16 @@
     }
 }
 /* ==========================================================
-   KPI CARDS 3D - CRISTAL TEÑIDO CON EL COLOR EXACTO DE CADA ESTADO
+   KPI CARDS 3D - ESTILO AZUL NOCTURNO EXACTO A LA REFERENCIA
    ========================================================== */
-/* ==========================================================
-   CONTENEDOR GENERAL DE KPIS - FONDO SUAVE Y TRANSPARENTE
-   ========================================================== */
+
+/* Contenedor general principal (marco azul neón suave) */
 .kpis-wrapper-contenedor {
-    background: rgba(226, 232, 240, 0.6) !important; /* Fondo suave integrado al panel superior */
+    background: rgba(10, 25, 47, 0.65) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(203, 213, 224, 0.8);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 6px 8px;
     display: inline-flex;
@@ -489,8 +488,9 @@
     align-items: stretch !important;
 }
 
-/* Tarjetas individuales teñidas con cristal luminoso */
+/* Tarjetas individuales con base azul nocturna y cristal brillante */
 .kpi-card-neon {
+    background: rgba(15, 23, 42, 0.75) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 12px !important;
@@ -534,79 +534,79 @@
     white-space: nowrap;
 }
 
-/* 1. Online (Verde Esmeralda) */
+/* 1. Online (Verde Esmeralda intenso sobre base azul) */
 .kpi-card-neon.online {
-    background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.4) 0%, rgba(6, 78, 59, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.3) !important;
 }
 .kpi-card-neon.online .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.5) 0%, rgba(16, 185, 129, 0.1) 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, rgba(16, 185, 129, 0.1) 70%);
     color: #34d399;
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
 .kpi-card-neon.online span { color: #34d399 !important; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline (Rojo Coral) */
+/* 2. Offline (Rojo Coral intenso sobre base azul) */
 .kpi-card-neon.offline {
-    background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.4) 0%, rgba(127, 29, 29, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(239, 68, 68, 0.85) !important;
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.3) !important;
 }
 .kpi-card-neon.offline .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(239, 68, 68, 0.5) 0%, rgba(239, 68, 68, 0.1) 70%);
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0.1) 70%);
     color: #f87171;
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
 }
 .kpi-card-neon.offline span { color: #f87171 !important; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
 
-/* 3. Parcial (Ámbar / Naranja) */
+/* 3. Parcial (Ámbar intenso sobre base azul) */
 .kpi-card-neon.parcial {
-    background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.4) 0%, rgba(120, 53, 15, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(245, 158, 11, 0.85) !important;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.3) !important;
 }
 .kpi-card-neon.parcial .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, rgba(245, 158, 11, 0.1) 70%);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0.1) 70%);
     color: #fbbf24;
     box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
 }
 .kpi-card-neon.parcial span { color: #fbbf24 !important; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
 
-/* 4. Velocidad (Azul Cielo) */
+/* 4. Velocidad (Azul Cielo intenso sobre base azul) */
 .kpi-card-neon.velocidad {
-    background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.35) 0%, rgba(12, 74, 110, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(56, 189, 248, 0.8) !important;
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.25) !important;
 }
 .kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(56, 189, 248, 0.1) 70%);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(56, 189, 248, 0.1) 70%);
     color: #38bdf8;
     box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
 }
 .kpi-card-neon.velocidad span { color: #38bdf8 !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
-/* 5. PQR's (Morado) */
+/* 5. PQR's (Morado intenso sobre base azul) */
 .kpi-card-neon.pqrs {
-    background: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, rgba(88, 28, 135, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(168, 85, 247, 0.8) !important;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.25) !important;
+    box-shadow: 0 0 18px rgba(168, 85, 247, 0.25) !important;
 }
 .kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.1) 70%);
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0.1) 70%);
     color: #c084fc;
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
 }
 .kpi-card-neon.pqrs span { color: #c084fc !important; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
 
-/* 6. Otros P3 (Índigo) */
+/* 6. Otros P3 (Índigo intenso sobre base azul) */
 .kpi-card-neon.otros {
-    background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.35) 0%, rgba(49, 46, 129, 0.6) 85%) !important;
+    background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.35) 0%, rgba(15, 23, 42, 0.85) 80%) !important;
     border: 1.5px solid rgba(99, 102, 241, 0.8) !important;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.25) !important;
+    box-shadow: 0 0 18px rgba(99, 102, 241, 0.25) !important;
 }
 .kpi-card-neon.otros .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(99, 102, 241, 0.1) 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0.1) 70%);
     color: #818cf8;
     box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
 }
