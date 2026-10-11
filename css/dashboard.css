@@ -729,7 +729,7 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - DISEÑO HORIZONTAL Y BOTÓN ANCHO TOTAL
+   BLOQUE DE FILTROS CENTRAL - ANCHO, ALTURA Y ALINEACIÓN PERFECTAS
    ========================================================== */
 .bloque-filtros-centro {
     display: flex !important;
@@ -739,38 +739,21 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 16px !important;
+    padding: 10px 14px !important; /* Altura compacta idéntica a Total CD y KPIs */
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
-    gap: 12px !important;
-    width: auto !important;
+    gap: 8px !important;
 }
 
-/* Fila superior que contiene Proyecto y Departamento estrictamente LADO A LADO */
-.bloque-filtros-centro::before {
-    display: none !important;
-}
-
-/* Forzamos que los elementos internos directos (excepto el botón de borrar) se acomoden horizontalmente en una sola línea */
-.bloque-filtros-centro {
-    display: grid !important;
-    grid-template-columns: repeat(2, auto) !important;
-    grid-template-rows: auto auto !important;
-    gap: 12px 25px !important;
-    align-items: center !important;
-}
-
-/* Posicionar Proyecto en la celda superior izquierda */
-.bloque-filtros-centro .grupo-filtros:nth-of-type(1) {
-    grid-column: 1 / 2 !important;
-    grid-row: 1 / 2 !important;
-}
-
-/* Posicionar Filtro Departamento en la celda superior derecha */
-.bloque-filtros-centro .grupo-filtros:nth-of-type(2) {
-    grid-column: 2 / 3 !important;
-    grid-row: 1 / 2 !important;
+/* Contenedor superior para Proyecto y Departamento lado a lado alineados arriba */
+.bloque-filtros-centro .panel-filtros-superior,
+.bloque-filtros-centro > div:not(.btn-borrar-filtros) {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important; /* Alineados perfectamente arriba */
+    gap: 20px !important;
+    width: 100% !important;
 }
 
 .grupo-filtros {
@@ -778,7 +761,7 @@
     flex-direction: column;
     align-items: center !important;
     text-align: center !important;
-    gap: 4px;
+    gap: 2px;
 }
 
 .label-titulo {
@@ -789,7 +772,7 @@
     letter-spacing: 0.5px;
     text-align: center !important;
     width: 100%;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 /* Botones de Filtro y Departamentos */
@@ -825,10 +808,8 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% de la fila inferior de lado a lado */
+/* Botón de borrar filtros abarcando exactamente el 100% de lado a lado de la tarjeta */
 .btn-borrar-filtros {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 / 3 !important;
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
