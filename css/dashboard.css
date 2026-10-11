@@ -11,11 +11,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1a202c;
+    background: #e2e8f0;
     padding: 10px 15px;
     border-radius: 12px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .bloque-totales-cd {
@@ -36,8 +36,8 @@
 }
 
 .val-total-cd {
-    background: #2d3748;
-    color: #63b3ed;
+    background: #cbd5e0;
+    color: #1a202c;
     font-size: 0.85rem;
     font-weight: 900;
     text-align: center;
@@ -46,7 +46,7 @@
 }
 
 .btn-zona { background: #3182ce; }
-.btn-todas { background: #4a5568; color: white; }
+.btn-todas { background: #a0aec0; color: #1a202c; }
 
 .bloque-filtros-centro {
     display: flex;
@@ -63,7 +63,7 @@
 .label-titulo {
     font-weight: bold;
     font-size: 0.75rem;
-    color: #a0aec0;
+    color: #4a5568;
     text-transform: uppercase;
 }
 
@@ -73,14 +73,14 @@
 }
 
 .btn-filtro, .btn-depto {
-    background: #2d3748;
+    background: #cbd5e0;
     border: none;
     padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.8rem;
-    color: #e2e8f0;
+    color: #2d3748;
 }
 
 .btn-filtro.active, .btn-depto.active {
@@ -89,35 +89,42 @@
 }
 
 .btn-borrar-filtros {
-    background: #1a202c;
-    border: 1px solid #4a5568;
+    background: #fff;
+    border: 1px solid #cbd5e0;
     padding: 4px 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #fc8181;
+    color: #c53030;
     margin-top: 4px;
 }
 
 /* ==========================================================
-   KPI CARDS - ESTILO VIDRIOSO Y NEÓN EXACTO (SIN FONDO PLANO)
+   KPI CARDS 3D - VIDRIOSAS Y EXACTAS A LA REFERENCIA (SIN FONDO NEGRO)
    ========================================================== */
 .kpis-estado-superior {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    background: rgba(13, 20, 36, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .kpi-box {
     background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px !important;
-    padding: 6px 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px 10px;
+    border-radius: 8px;
     font-weight: bold;
     font-size: 0.75rem;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -126,38 +133,38 @@
 }
 
 .kpi-box span { 
-    font-size: 1.15rem; 
+    font-size: 1rem; 
     display: block; 
     font-weight: 800;
 }
 
-/* Estilos de neón y brillos individuales por estado sin fondos sólidos */
+/* Colores neón traslúcidos exactos basados en tu base */
 .kpi-box.online { 
     background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(16, 185, 129, 0.8) !important; 
     color: #34d399 !important; 
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25) !important;
 }
 
 .kpi-box.offline { 
     background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(239, 68, 68, 0.8) !important; 
     color: #f87171 !important; 
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important;
 }
 
 .kpi-box.parcial { 
     background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.35) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(245, 158, 11, 0.8) !important; 
     color: #fbbf24 !important; 
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) !important;
 }
 
 .kpi-box.sub { 
     background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.3) 0%, rgba(15, 23, 42, 0.5) 75%) !important;
     border: 1.5px solid rgba(56, 189, 248, 0.7) !important; 
     color: #38bdf8 !important; 
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2) !important;
 }
 
 .panel-layout-pbi {
