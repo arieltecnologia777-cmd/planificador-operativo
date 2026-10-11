@@ -9,6 +9,15 @@ const TOTALES_MAPA = {
     "SAI": { "TODOS": 21, "MINTIC 7K": 21, "ODH 5G": 0 }
 };
 
+// Metas fijas de tolerancia máxima/mínima por Departamento
+const METAS_DEPARTAMENTO = {
+    "ANTIOQUIA": { offline: 9, parcial: 2, velocidad: 3, pqr: 0, p3: 9 },
+    "CESAR": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 14 },
+    "LA GUAJIRA": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 13 },
+    "SAI": { offline: 1, parcial: 0, velocidad: 0, pqr: 0, p3: 0 },
+    "TODOS": { offline: 36, parcial: 8, velocidad: 11, pqr: 2, p3: 36 } // Suma total de referencia global
+};
+
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
@@ -67,6 +76,30 @@ async function cargarNotaDelDia() {
     }
 }
 
+// Función auxiliar para calcular el color de cumplimiento y su clase degradada
+function aplicarColorCumplimiento(elementoId, porcentaje) {
+    const el = document.getElementById(elementoId);
+    if (!el) return;
+
+    el.textContent = `${porcentaje.toFixed(0)} %`;
+    el.className = ""; // Limpiar clases anteriores
+
+    // Lógica de colores degradados: Verde (>= 100%), Amarillo (70% - 99%), Rojo (< 70%)
+    if (porcentaje >= 100) {
+        el.classList.add("bg-green");
+        el.style.backgroundColor = "#28a745";
+        el.style.color = "#white";
+    } else if (porcentaje >= 70) {
+        el.classList.add("bg-yellow");
+        el.style.backgroundColor = "#ffc107";
+        el.style.color = "#212529";
+    } else {
+        el.classList.add("bg-red");
+        el.style.backgroundColor = "#dc3545";
+        el.style.color = "#white";
+    }
+}
+
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
@@ -79,10 +112,10 @@ function renderizarDatosDashboard() {
     const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; // Columna U
-    const colStopper = 21;  // Stopper general
-    const colStopperRepuestos = 28; // Columna AC (índice 28 aprox) - Stopper P3 (repuestos)
-    const colStopperFM = 29;        // Columna AD (índice 29 aprox) - Stopper P3 (FM/traslado/reubicaciones)
+    const colCarpetaU = 20; 
+    const colStopper = 21;  
+    const colStopperRepuestos = 28; 
+    const colStopperFM = 29;        
 
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
@@ -107,14 +140,12 @@ function renderizarDatosDashboard() {
         const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-        // 1. Totales netos (Universo completo)
         if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
         else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
         else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
         else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
         else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
 
-        // 2. FM/Trasl./reubicaciones (Columna U)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
             if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
@@ -123,7 +154,6 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        // 3. Repuestos (Con regla estricta: si tiene stopper FM, predomina FM y se excluye de repuestos)
         const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
         const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS") || stopper.includes("REPUESTO");
 
@@ -135,7 +165,6 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
-        // 4. Requiere atención S.O (Stopper)
         if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
             if (estado.includes("OFFLINE")) reqOff += idsAfectados;
             else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
@@ -145,12 +174,42 @@ function renderizarDatosDashboard() {
         }
     });
 
-    // 5. Neto sin stopper: Resta del total neto menos las demás carpetas con stopper
+    // Neto sin stopper
     const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
     const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
     const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
     const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
     const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
+
+    // Obtener las Metas correspondientes al departamento actual
+    const deptoKey = departamentoFiltroActual.toUpperCase();
+    const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
+
+    // Pintar Fila de Metas
+    const metaOff = metasActivas.offline;
+    const metaPar = metasActivas.parcial;
+    const metaVel = metasActivas.velocidad;
+    const metaPqr = metasActivas.pqr;
+    const metaP3  = metasActivas.p3;
+
+    if (document.getElementById("c_meta_off")) document.getElementById("c_meta_off").textContent = metaOff;
+    if (document.getElementById("c_meta_par")) document.getElementById("c_meta_par").textContent = metaPar;
+    if (document.getElementById("c_meta_vel")) document.getElementById("c_meta_vel").textContent = metaVel;
+    if (document.getElementById("c_meta_pqr")) document.getElementById("c_meta_pqr").textContent = metaPqr;
+    if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent = metaP3;
+
+    // Calcular Cumplimiento % (Meta / Neto sin stopper, o regla inversa de tolerancia)
+    const pctOffVal = sinOff > 0 ? (metaOff / sinOff) * 100 : 100;
+    const pctParVal = sinPar > 0 ? (metaPar / sinPar) * 100 : 100;
+    const pctVelVal = sinVel > 0 ? (metaVel / sinVel) * 100 : 100;
+    const pctPqrVal = sinPqr > 0 ? (metaPqr / sinPqr) * 100 : 100;
+    const pctP3Val  = sinP3 > 0  ? (metaP3 / sinP3) * 100  : 100;
+
+    aplicarColorCumplimiento("pct_off", pctOffVal);
+    aplicarColorCumplimiento("pct_par", pctParVal);
+    aplicarColorCumplimiento("pct_vel", pctVelVal);
+    aplicarColorCumplimiento("pct_pqr", pctPqrVal);
+    aplicarColorCumplimiento("pct_p3",  pctP3Val);
 
     // Total de sitios fijo según la combinación de filtros
     const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
@@ -160,103 +219,61 @@ function renderizarDatosDashboard() {
     const elTotalCd = document.querySelector(".val-total-cd");
     if (elTotalCd) elTotalCd.textContent = totalSitiosFijo;
 
-    // Cálculo del Online
     const totalOnline = Math.max(0, totalSitiosFijo - sumaOffline);
 
     // Actualizar KPIs superiores
-    const elOnline = document.getElementById("valOnline");
-    const elOffline = document.getElementById("valOffline");
-    const elParcial = document.getElementById("valParcial");
-    const elVelocidad = document.getElementById("valVelocidad");
-    const elPqrs = document.getElementById("valPqrs");
-    const elOtrosP3 = document.getElementById("valOtrosP3");
-
-    if (elOnline) elOnline.textContent = totalOnline;
-    if (elOffline) elOffline.textContent = sumaOffline;
-    if (elParcial) elParcial.textContent = sumaParcial;
-    if (elVelocidad) elVelocidad.textContent = sumaVelocidad;
-    if (elPqrs) elPqrs.textContent = sumaPqrs;
-    if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
+    if (document.getElementById("valOnline")) document.getElementById("valOnline").textContent = totalOnline;
+    if (document.getElementById("valOffline")) document.getElementById("valOffline").textContent = sumaOffline;
+    if (document.getElementById("valParcial")) document.getElementById("valParcial").textContent = sumaParcial;
+    if (document.getElementById("valVelocidad")) document.getElementById("valVelocidad").textContent = sumaVelocidad;
+    if (document.getElementById("valPqrs")) document.getElementById("valPqrs").textContent = sumaPqrs;
+    if (document.getElementById("valOtrosP3")) document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
 
     // Pintar Tabla de Carpetas - Total neto
-    const netOff = document.getElementById("c_neto_off");
-    const netPar = document.getElementById("c_neto_par");
-    const netVel = document.getElementById("c_neto_vel");
-    const netPqr = document.getElementById("c_neto_pqr");
-    const netP3 = document.getElementById("c_neto_p3");
-
-    if (netOff) netOff.textContent = sumaOffline;
-    if (netPar) netPar.textContent = sumaParcial;
-    if (netVel) netVel.textContent = sumaVelocidad;
-    if (netPqr) netPqr.textContent = sumaPqrs;
-    if (netP3) netP3.textContent = sumaOtrosP3;
+    if (document.getElementById("c_neto_off")) document.getElementById("c_neto_off").textContent = sumaOffline;
+    if (document.getElementById("c_neto_par")) document.getElementById("c_neto_par").textContent = sumaParcial;
+    if (document.getElementById("c_neto_vel")) document.getElementById("c_neto_vel").textContent = sumaVelocidad;
+    if (document.getElementById("c_neto_pqr")) document.getElementById("c_neto_pqr").textContent = sumaPqrs;
+    if (document.getElementById("c_neto_p3"))  document.getElementById("c_neto_p3").textContent  = sumaOtrosP3;
 
     // Pintar Fila FM/Trasl./reubicaciones
-    const c_fm_off = document.getElementById("c_fm_off");
-    const c_fm_par = document.getElementById("c_fm_par");
-    const c_fm_vel = document.getElementById("c_fm_vel");
-    const c_fm_pqr = document.getElementById("c_fm_pqr");
-    const c_fm_p3 = document.getElementById("c_fm_p3");
-
-    if (c_fm_off) c_fm_off.textContent = fmOff;
-    if (c_fm_par) c_fm_par.textContent = fmPar;
-    if (c_fm_vel) c_fm_vel.textContent = fmVel;
-    if (c_fm_pqr) c_fm_pqr.textContent = fmPqr;
-    if (c_fm_p3) c_fm_p3.textContent = fmP3;
+    if (document.getElementById("c_fm_off")) document.getElementById("c_fm_off").textContent = fmOff;
+    if (document.getElementById("c_fm_par")) document.getElementById("c_fm_par").textContent = fmPar;
+    if (document.getElementById("c_fm_vel")) document.getElementById("c_fm_vel").textContent = fmVel;
+    if (document.getElementById("c_fm_pqr")) document.getElementById("c_fm_pqr").textContent = fmPqr;
+    if (document.getElementById("c_fm_p3"))  document.getElementById("c_fm_p3").textContent  = fmP3;
 
     // Pintar Fila Repuestos
-    const c_rep_off = document.getElementById("c_rep_off");
-    const c_rep_par = document.getElementById("c_rep_par");
-    const c_rep_vel = document.getElementById("c_rep_vel");
-    const c_rep_pqr = document.getElementById("c_rep_pqr");
-    const c_rep_p3 = document.getElementById("c_rep_p3");
-
-    if (c_rep_off) c_rep_off.textContent = repOff;
-    if (c_rep_par) c_rep_par.textContent = repPar;
-    if (c_rep_vel) c_rep_vel.textContent = repVel;
-    if (c_rep_pqr) c_rep_pqr.textContent = repPqr;
-    if (c_rep_p3) c_rep_p3.textContent = repP3;
+    if (document.getElementById("c_rep_off")) document.getElementById("c_rep_off").textContent = repOff;
+    if (document.getElementById("c_rep_par")) document.getElementById("c_rep_par").textContent = repPar;
+    if (document.getElementById("c_rep_vel")) document.getElementById("c_rep_vel").textContent = repVel;
+    if (document.getElementById("c_rep_pqr")) document.getElementById("c_rep_pqr").textContent = repPqr;
+    if (document.getElementById("c_rep_p3"))  document.getElementById("c_rep_p3").textContent  = repP3;
 
     // Pintar Fila Requiere atención S.O
-    const c_req_off = document.getElementById("c_req_off");
-    const c_req_par = document.getElementById("c_req_par");
-    const c_req_vel = document.getElementById("c_req_vel");
-    const c_req_pqr = document.getElementById("c_req_pqr");
-    const c_req_p3 = document.getElementById("c_req_p3");
-
-    if (c_req_off) c_req_off.textContent = reqOff;
-    if (c_req_par) c_req_par.textContent = reqPar;
-    if (c_req_vel) c_req_vel.textContent = reqVel;
-    if (c_req_pqr) c_req_pqr.textContent = reqPqr;
-    if (c_req_p3) c_req_p3.textContent = reqP3;
+    if (document.getElementById("c_req_off")) document.getElementById("c_req_off").textContent = reqOff;
+    if (document.getElementById("c_req_par")) document.getElementById("c_req_par").textContent = reqPar;
+    if (document.getElementById("c_req_vel")) document.getElementById("c_req_vel").textContent = reqVel;
+    if (document.getElementById("c_req_pqr")) document.getElementById("c_req_pqr").textContent = reqPqr;
+    if (document.getElementById("c_req_p3"))  document.getElementById("c_req_p3").textContent  = reqP3;
 
     // Pintar Fila Neto sin stopper
-    const c_sin_off = document.getElementById("c_sin_off");
-    const c_sin_par = document.getElementById("c_sin_par");
-    const c_sin_vel = document.getElementById("c_sin_vel");
-    const c_sin_pqr = document.getElementById("c_sin_pqr");
-    const c_sin_p3 = document.getElementById("c_sin_p3");
-
-    if (c_sin_off) c_sin_off.textContent = sinOff;
-    if (c_sin_par) c_sin_par.textContent = sinPar;
-    if (c_sin_vel) c_sin_vel.textContent = sinVel;
-    if (c_sin_pqr) c_sin_pqr.textContent = sinPqr;
-    if (c_sin_p3) c_sin_p3.textContent = sinP3;
+    if (document.getElementById("c_sin_off")) document.getElementById("c_sin_off").textContent = sinOff;
+    if (document.getElementById("c_sin_par")) document.getElementById("c_sin_par").textContent = sinPar;
+    if (document.getElementById("c_sin_vel")) document.getElementById("c_sin_vel").textContent = sinVel;
+    if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
+    if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
 
     // Actualizar % Performance
     const divisorPerf = totalSitiosFijo || 1;
     const pctOfflineVal = ((sumaOffline / divisorPerf) * 100).toFixed(2);
     const pctOnlineVal = ((totalOnline / divisorPerf) * 100).toFixed(2);
 
-    const lblOffPerf = document.getElementById("lblOfflinePerf");
-    const barOffPerf = document.getElementById("barPerfOffline");
-    if (lblOffPerf) lblOffPerf.textContent = `Offline (${pctOfflineVal}%)`;
-    if (barOffPerf) barOffPerf.style.width = `${pctOfflineVal}%`;
+    if (document.getElementById("lblOfflinePerf")) document.getElementById("lblOfflinePerf").textContent = `Offline (${pctOfflineVal}%)`;
+    if (document.getElementById("barPerfOffline")) document.getElementById("barPerfOffline").style.width = `${pctOfflineVal}%`;
 
-    const lblOnPerf = document.getElementById("lblOnlinePerf");
-    const barOnPerf = document.getElementById("barPerfOnline");
-    if (lblOnPerf) lblOnPerf.textContent = `Online (${pctOnlineVal}%)`;
-    if (barOnPerf) barOnPerf.style.width = `${pctOnlineVal}%`;
+    if (document.getElementById("lblOnlinePerf")) document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
+    if (document.getElementById("barPerfOnline")) document.getElementById("barPerfOnline").style.width = `${pctOnlineVal}%`;
 }
 
 // Manejo de eventos de clic en filtros
