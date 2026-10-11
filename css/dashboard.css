@@ -703,27 +703,27 @@
     border-radius: 16px !important;
 }
 /* ==========================================================
-   ILUMINACIÓN Y DEGRADADO LUMÍNICO EXACTO (ESTILO REFERENCIA)
+   TEMA OSCURO CON AZUL ELÉCTRICO BRILLANTE Y DEGRADADO LUMINICENTE
    ========================================================== */
 
-/* 1. Fondo general de la página con luminosidad degradada en azul espacial */
+/* 1. Fondo general de la página con luminosidad degradada basada en el nuevo azul */
 body {
-    background-color: #0b1728 !important;
+    background-color: #0b1930 !important;
     color: #f1f5f9 !important;
 }
 
-/* 2. Área principal con degradado que aporta luz ambiental */
+/* 2. Área principal con degradado dinámico y luminoso */
 .main-content {
-    background: linear-gradient(180deg, #10223e 0%, #0b1728 40%, #070e1a 100%) !important;
+    background: linear-gradient(180deg, #142e5c 0%, #0d1f3d 40%, #091326 100%) !important;
 }
 
-/* 3. Menú lateral con un tono equilibrado y sutil */
+/* 3. Menú lateral (Sidebar) en sintonía */
 .sidebar {
-    background-color: #091322 !important;
-    border-right: 1px solid rgba(56, 189, 248, 0.2) !important;
+    background-color: #091324 !important;
+    border-right: 1px solid rgba(59, 130, 246, 0.25) !important;
 }
 
-/* 4. Tarjetas con efecto cristal translúcido iluminado y bordes de neón suave */
+/* 4. Tarjetas y contenedores con cristal esmerilado y reflejo de luz superior */
 .tabla-carpetas-wrapper,
 .mapa-departamento-container,
 .bloque-notas-dia,
@@ -731,32 +731,32 @@ body {
 .bloque-backlog-al-lado,
 .bloque-totales-cd,
 .bloque-filtros-centro {
-    background: rgba(19, 38, 68, 0.45) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    background: rgba(18, 38, 74, 0.4) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(96, 165, 250, 0.25) !important;
     padding: 14px !important;
     box-sizing: border-box !important;
 }
 
-/* 5. Barras de título de las tarjetas (Degradado azul brillante con resplandor) */
+/* 5. Barras de título de las tarjetas con el azul exacto y brillo luminicente */
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
 .bloque-backlog-al-lado h4,
 .notas-header {
-    background: linear-gradient(135deg, rgba(29, 78, 216, 0.9) 0%, rgba(37, 99, 235, 0.7) 100%) !important;
-    border: 1px solid rgba(96, 165, 250, 0.5) !important;
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+    border: 1px solid rgba(147, 197, 253, 0.6) !important;
     color: #ffffff !important;
-    text-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+    text-shadow: 0 0 12px rgba(147, 197, 253, 0.9);
     padding: 8px 12px !important;
     border-radius: 10px !important;
     font-size: 0.85rem !important;
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
     margin-bottom: 12px !important;
 }
 
@@ -769,9 +769,9 @@ body {
 }
 
 .tabla-dinamica-carpetas th {
-    background: rgba(30, 58, 138, 0.5) !important;
-    color: #93c5fd !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
+    background: rgba(30, 64, 135, 0.55) !important;
+    color: #bfdbfe !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
     padding: 8px !important;
     font-weight: 700;
     text-transform: uppercase;
@@ -780,9 +780,9 @@ body {
 }
 
 .tabla-dinamica-carpetas td {
-    background: rgba(15, 28, 51, 0.3) !important;
+    background: rgba(13, 31, 61, 0.35) !important;
     color: #e2e8f0 !important;
-    border: 1px solid rgba(56, 189, 248, 0.18) !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
     padding: 7px 8px !important;
 }
 
@@ -793,18 +793,18 @@ body {
 }
 
 .tabla-dinamica-carpetas tbody tr:hover td {
-    background: rgba(30, 58, 138, 0.4) !important;
+    background: rgba(37, 99, 235, 0.3) !important;
     color: #ffffff !important;
 }
 
-/* 7. Cuadro de notas y barras de progreso iluminadas */
+/* 7. Cuadro de notas y barras de progreso estilizadas */
 #txtNotasDia {
-    background: rgba(15, 28, 51, 0.4) !important;
+    background: rgba(13, 31, 61, 0.4) !important;
     color: #f1f5f9 !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
 }
 
 .progress {
-    background: rgba(30, 58, 138, 0.4) !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
+    background: rgba(30, 64, 135, 0.4) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
 }
