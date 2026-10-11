@@ -217,15 +217,16 @@
 }
 
 .tabla-dinamica-carpetas th:first-child, 
-.tabla-dinamica-carpetas td:first-child {
+.tabla-rangos th:first-child {
     width: 30%;
     text-align: left;
     font-weight: 600;
-    color: #2d3748;
+    color: white !important; /* CORREGIDO: Texto blanco en encabezados Carpeta y Rango de Días */
     font-size: 0.75rem;
 }
 
-.tabla-rangos th:first-child, 
+/* Las celdas normales de la primera columna (las filas de datos) sí van en gris oscuro */
+.tabla-dinamica-carpetas td:first-child,
 .tabla-rangos td:first-child {
     width: 30%;
     text-align: left;
