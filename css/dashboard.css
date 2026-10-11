@@ -133,14 +133,12 @@
     gap: 16px;
 }
 
-/* Columna derecha general */
 .columna-der-inferior {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-/* Sub-grilla para poner la tabla de rangos y el backlog lado a lado exactamente en el cuadro rojo */
 .subgrid-inferior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -192,29 +190,42 @@
     margin-bottom: 10px;
 }
 
+/* ==========================================================
+   SIMETRÍA EXACTA DE COLUMNAS ENTRE AMBAS TABLAS
+   ========================================================== */
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
+    table-layout: fixed; /* Fuerza a respetar los anchos asignados a las columnas */
+}
+
+/* Columna 1 (Carpeta / Rango de Días) más ancha */
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-dinamica-carpetas td:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.75rem;
+}
+
+/* Columnas de datos (Offline, Parcial, Velocidad, PQR, P3) con ancho idéntico simétrico */
+.tabla-dinamica-carpetas th:not(:first-child), 
+.tabla-dinamica-carpetas td:not(:first-child) {
+    width: 14%;
+    text-align: center;
 }
 
 .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
     border: 1px solid #cbd5e0;
     padding: 6px 8px;
-    text-align: center;
 }
 
 .tabla-dinamica-carpetas th {
     background: #718096;
     color: white;
     font-weight: 600;
-}
-
-.tabla-dinamica-carpetas td:first-child {
-    text-align: left;
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 0.75rem;
 }
 
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
