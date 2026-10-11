@@ -124,117 +124,123 @@
                 </div>
             </div>
 
-            <!-- GRID PRINCIPAL (Distribución exacta tipo PBI) -->
+            <!-- GRID PRINCIPAL (Estructura PBI Referencia) -->
             <div class="panel-layout-pbi">
                 
-                <!-- 1. MAPA (Izquierda Arriba) -->
-                <div class="mapa-regiones-container">
-                    <div class="mapa-silueta">
-                        <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
-                        <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
-                        <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
-                        <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
+                <!-- COLUMNA IZQUIERDA: Mapa Arriba, Performance Abajo -->
+                <div class="columna-izq">
+                    <!-- Mapa -->
+                    <div class="mapa-regiones-container">
+                        <div class="mapa-silueta">
+                            <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
+                            <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
+                            <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
+                            <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
+                        </div>
+                    </div>
+
+                    <!-- Performance -->
+                    <div class="bloque-performance">
+                        <h4>% Performance</h4>
+                        <div class="perf-bar">
+                            <label>Offline 5.21%</label>
+                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
+                        </div>
+                        <div class="perf-bar">
+                            <label>Online 94.79%</label>
+                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2. TABLA DE CUMPLIMIENTO POR CARPETAS (Centro Abajo / Derecha Arriba) -->
-                <div class="tabla-carpetas-wrapper">
-                    <h3>Cumplimiento por carpetas</h3>
-                    <div class="tabla-fondo-imagen">
-                        <table class="tabla-dinamica-carpetas">
-                            <thead>
-                                <tr>
-                                    <th>Carpeta</th>
-                                    <th>Offline</th>
-                                    <th>Parcial</th>
-                                    <th>Velocidad</th>
-                                    <th>PQR</th>
-                                    <th>P3</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Total neto</td>
-                                    <td id="c_neto_off">79</td>
-                                    <td id="c_neto_par">6</td>
-                                    <td id="c_neto_vel">12</td>
-                                    <td id="c_neto_pqr">17</td>
-                                    <td id="c_neto_p3">72</td>
-                                </tr>
-                                <tr>
-                                    <td>FM/Trasl./reubicaciones</td>
-                                    <td id="c_fm_off">18</td>
-                                    <td id="c_fm_par">3</td>
-                                    <td id="c_fm_vel">2</td>
-                                    <td id="c_fm_pqr">3</td>
-                                    <td id="c_fm_p3">3</td>
-                                </tr>
-                                <tr>
-                                    <td>Repuestos</td>
-                                    <td id="c_rep_off">0</td>
-                                    <td id="c_rep_par">0</td>
-                                    <td id="c_rep_vel">0</td>
-                                    <td id="c_rep_pqr">0</td>
-                                    <td id="c_rep_p3">20</td>
-                                </tr>
-                                <tr>
-                                    <td>Requiere atención S.O</td>
-                                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
-                                </tr>
-                                <tr>
-                                    <td>Neto sin stopper</td>
-                                    <td id="c_sin_off">61</td>
-                                    <td id="c_sin_par">3</td>
-                                    <td id="c_sin_vel">10</td>
-                                    <td id="c_sin_pqr">14</td>
-                                    <td id="c_sin_p3">49</td>
-                                </tr>
-                                <tr>
-                                    <td>Meta</td>
-                                    <td id="c_meta_off">37</td>
-                                    <td id="c_meta_par">7</td>
-                                    <td id="c_meta_vel">10</td>
-                                    <td id="c_meta_pqr">1</td>
-                                    <td id="c_meta_p3">34</td>
-                                </tr>
-                                <tr class="fila-cumplimiento">
-                                    <td>Cumplimiento %</td>
-                                    <td id="pct_off" class="bg-yellow">59 %</td>
-                                    <td id="pct_par" class="bg-green">233 %</td>
-                                    <td id="pct_vel" class="bg-green">100 %</td>
-                                    <td id="pct_pqr" class="bg-yellow">7 %</td>
-                                    <td id="pct_p3" class="bg-yellow">69 %</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <!-- COLUMNA DERECHA: Tabla de Carpetas Arriba, Backlog Abajo -->
+                <div class="columna-der">
+                    <!-- Tabla de Cumplimiento por Carpetas -->
+                    <div class="tabla-carpetas-wrapper">
+                        <h3>Cumplimiento por carpetas</h3>
+                        <div class="tabla-fondo-imagen">
+                            <table class="tabla-dinamica-carpetas">
+                                <thead>
+                                    <tr>
+                                        <th>Carpeta</th>
+                                        <th>Offline</th>
+                                        <th>Parcial</th>
+                                        <th>Velocidad</th>
+                                        <th>PQR</th>
+                                        <th>P3</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Total neto</td>
+                                        <td id="c_neto_off">79</td>
+                                        <td id="c_neto_par">6</td>
+                                        <td id="c_neto_vel">12</td>
+                                        <td id="c_neto_pqr">17</td>
+                                        <td id="c_neto_p3">72</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FM/Trasl./reubicaciones</td>
+                                        <td id="c_fm_off">18</td>
+                                        <td id="c_fm_par">3</td>
+                                        <td id="c_fm_vel">2</td>
+                                        <td id="c_fm_pqr">3</td>
+                                        <td id="c_fm_p3">3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Repuestos</td>
+                                        <td id="c_rep_off">0</td>
+                                        <td id="c_rep_par">0</td>
+                                        <td id="c_rep_vel">0</td>
+                                        <td id="c_rep_pqr">0</td>
+                                        <td id="c_rep_p3">20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Requiere atención S.O</td>
+                                        <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Neto sin stopper</td>
+                                        <td id="c_sin_off">61</td>
+                                        <td id="c_sin_par">3</td>
+                                        <td id="c_sin_vel">10</td>
+                                        <td id="c_sin_pqr">14</td>
+                                        <td id="c_sin_p3">49</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Meta</td>
+                                        <td id="c_meta_off">37</td>
+                                        <td id="c_meta_par">7</td>
+                                        <td id="c_meta_vel">10</td>
+                                        <td id="c_meta_pqr">1</td>
+                                        <td id="c_meta_p3">34</td>
+                                    </tr>
+                                    <tr class="fila-cumplimiento">
+                                        <td>Cumplimiento %</td>
+                                        <td id="pct_off" class="bg-yellow">59 %</td>
+                                        <td id="pct_par" class="bg-green">233 %</td>
+                                        <td id="pct_vel" class="bg-green">100 %</td>
+                                        <td id="pct_pqr" class="bg-yellow">7 %</td>
+                                        <td id="pct_p3" class="bg-yellow">69 %</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <!-- 3. PERFORMANCE (Izquierda Abajo) -->
-                <div class="bloque-performance">
-                    <h4>% Performance</h4>
-                    <div class="perf-bar">
-                        <label>Offline 5.21%</label>
-                        <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
-                    </div>
-                    <div class="perf-bar">
-                        <label>Online 94.79%</label>
-                        <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
-                    </div>
-                </div>
-
-                <!-- 4. INDICADOR BACKLOG (Derecha Abajo, al lado de la tabla) -->
-                <div class="bloque-backlog">
-                    <h4>Indicador Ejecución % Cumplimiento</h4>
-                    <div class="item-backlog-pbi">
-                        <span>Backlog R1</span>
-                        <strong>97,17 %</strong>
-                        <span class="badge-cumplimiento green">104.49%</span>
-                    </div>
-                    <div class="item-backlog-pbi">
-                        <span>Backlog R2</span>
-                        <strong>87,53 %</strong>
-                        <span class="badge-cumplimiento red">94.12%</span>
+                    <!-- Indicador Backlog -->
+                    <div class="bloque-backlog">
+                        <h4>Indicador Ejecución % Cumplimiento</h4>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R1</span>
+                            <strong>97,17 %</strong>
+                            <span class="badge-cumplimiento green">104.49%</span>
+                        </div>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R2</span>
+                            <strong>87,53 %</strong>
+                            <span class="badge-cumplimiento red">94.12%</span>
+                        </div>
                     </div>
                 </div>
 
