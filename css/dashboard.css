@@ -139,7 +139,6 @@
     gap: 14px;
 }
 
-/* Subgrilla superior derecha: Tabla de carpetas a la izquierda y Notas del Día a la derecha (cuadro rojo) */
 .subgrid-superior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -147,7 +146,6 @@
     align-items: stretch;
 }
 
-/* Subgrilla inferior derecha */
 .subgrid-inferior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -195,19 +193,80 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.tabla-carpetas-wrapper h3 {
+/* ==========================================================
+   ENCABEZADOS UNIFICADOS EN AZUL CORPORATIVO (Texto Blanco)
+   ========================================================== */
+.tabla-carpetas-wrapper h3,
+.bloque-performance h4,
+.bloque-backlog-al-lado h4 {
     margin-top: 0;
     font-size: 0.9rem;
-    color: #2d3748;
+    color: white !important;
     text-align: center;
-    background: #cbd5e0;
-    padding: 5px;
+    background: #2b6cb0 !important; /* Azul corporativo unificado */
+    padding: 6px;
     border-radius: 6px;
     margin-bottom: 10px;
 }
 
+.tabla-dinamica-carpetas {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    table-layout: fixed !important;
+}
+
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-dinamica-carpetas td:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.75rem;
+}
+
+.tabla-rangos th:first-child, 
+.tabla-rangos td:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.75rem;
+}
+
+.tabla-dinamica-carpetas th:not(:first-child), 
+.tabla-dinamica-carpetas td:not(:first-child) {
+    width: 14%;
+    text-align: center;
+}
+
+.tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+    border: 1px solid #cbd5e0;
+    padding: 6px 8px;
+}
+
+.tabla-dinamica-carpetas th {
+    background: #2b6cb0 !important; /* Encabezados de tabla en azul corporativo */
+    color: white;
+    font-weight: 600;
+}
+
+.bg-yellow { background-color: #feebc8; font-weight: bold; }
+.bg-green { background-color: #c6f6d5; font-weight: bold; }
+
+.tabla-rangos td:not(:first-child) {
+    color: #2d3748;
+}
+.fila-alerta-roja td:not(:first-child) {
+    color: #e53e3e;
+    font-weight: bold;
+}
+.fila-alerta-roja td:nth-child(3) {
+    color: #a0aec0;
+}
+
 /* ==========================================================
-   ESTILOS DEL NUEVO MÓDULO: NOTAS DEL DÍA
+   ESTILOS DE NOTAS DEL DÍA (Con cabecera azul unificada)
    ========================================================== */
 .bloque-notas-dia {
     background: white;
@@ -223,7 +282,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #718096;
+    background: #2b6cb0 !important; /* Azul corporativo unificado */
     padding: 6px 10px;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -236,7 +295,7 @@
 }
 
 .btn-admin-mode {
-    background: #4a5568;
+    background: #1a365d;
     color: white;
     border: none;
     padding: 3px 8px;
@@ -248,7 +307,7 @@
 }
 
 .btn-admin-mode:hover {
-    background: #2d3748;
+    background: #2a4365;
 }
 
 .notas-body {
@@ -303,83 +362,12 @@
     background: #2c5282;
 }
 
-
-/* ==========================================================
-   SIMETRÍA EXACTA DE COLUMNAS ENTRE TABLAS
-   ========================================================== */
-.tabla-dinamica-carpetas {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.8rem;
-    table-layout: fixed !important;
-}
-
-.tabla-dinamica-carpetas th:first-child, 
-.tabla-dinamica-carpetas td:first-child {
-    width: 30%;
-    text-align: left;
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 0.75rem;
-}
-
-.tabla-rangos th:first-child, 
-.tabla-rangos td:first-child {
-    width: 30%;
-    text-align: left;
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 0.75rem;
-}
-
-.tabla-dinamica-carpetas th:not(:first-child), 
-.tabla-dinamica-carpetas td:not(:first-child) {
-    width: 14%;
-    text-align: center;
-}
-
-.tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-    border: 1px solid #cbd5e0;
-    padding: 6px 8px;
-}
-
-.tabla-dinamica-carpetas th {
-    background: #718096;
-    color: white;
-    font-weight: 600;
-}
-
-.bg-yellow { background-color: #feebc8; font-weight: bold; }
-.bg-green { background-color: #c6f6d5; font-weight: bold; }
-
-.tabla-rangos td:not(:first-child) {
-    color: #2d3748;
-}
-.fila-alerta-roja td:not(:first-child) {
-    color: #e53e3e;
-    font-weight: bold;
-}
-.fila-alerta-roja td:nth-child(3) {
-    color: #a0aec0;
-}
-
 .bloque-performance {
     background: white;
     padding: 14px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
-}
-
-.bloque-performance h4 {
-    margin-top: 0;
-    font-size: 0.85rem;
-    background: #718096;
-    color: white;
-    padding: 6px;
-    border-radius: 6px;
-    text-align: center;
-    margin-bottom: 10px;
 }
 
 .perf-bar {
@@ -414,17 +402,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.bloque-backlog-al-lado h4 {
-    margin-top: 0;
-    font-size: 0.85rem;
-    background: #718096;
-    color: white;
-    padding: 6px;
-    border-radius: 6px;
-    text-align: center;
-    margin-bottom: 8px;
 }
 
 .item-backlog-pbi {
@@ -509,7 +486,10 @@
         padding: 6px 8px;
     }
 
-    .bloque-backlog-al-lado h4, .bloque-performance h4, .notas-header h4 {
+    .tabla-carpetas-wrapper h3,
+    .bloque-performance h4,
+    .bloque-backlog-al-lado h4,
+    .notas-header h4 {
         margin-bottom: 4px;
         padding: 3px;
         font-size: 0.78rem;
