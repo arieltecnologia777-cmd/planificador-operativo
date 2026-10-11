@@ -1,5 +1,5 @@
 /* ==========================================================
-   ESTILOS GENERALES (Pantallas Grandes)
+   ESTILOS GENERALES Y LAYOUT PBI
    ========================================================== */
 .dashboard-container {
     padding: 10px 0;
@@ -133,11 +133,11 @@
     gap: 16px;
 }
 
+/* Columna derecha: apila la tabla de carpetas, la nueva tabla de rangos y el backlog simétricamente */
 .columna-der-inferior {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 16px;
-    align-items: end;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .mapa-regiones-container {
@@ -168,31 +168,31 @@
 
 .tabla-carpetas-wrapper {
     background: white;
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .tabla-carpetas-wrapper h3 {
     margin-top: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #2d3748;
     text-align: center;
     background: #cbd5e0;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
 .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
     border: 1px solid #cbd5e0;
-    padding: 8px;
+    padding: 6px 8px;
     text-align: center;
 }
 
@@ -206,10 +206,23 @@
     text-align: left;
     font-weight: 600;
     color: #2d3748;
+    font-size: 0.75rem;
 }
 
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
+
+/* Estilos específicos para la tabla de rangos (números en rojo según referencia) */
+.tabla-rangos td:not(:first-child) {
+    color: #2d3748;
+}
+.fila-alerta-roja td:not(:first-child) {
+    color: #e53e3e;
+    font-weight: bold;
+}
+.fila-alerta-roja td:nth-child(3) {
+    color: #a0aec0; /* Ceros en gris tenue como la referencia */
+}
 
 .bloque-performance {
     background: white;
@@ -255,7 +268,7 @@
 
 .bloque-backlog-al-lado {
     background: white;
-    padding: 14px;
+    padding: 12px 14px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
@@ -269,14 +282,14 @@
     padding: 6px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .item-backlog-pbi {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 0.8rem;
 }
 
@@ -291,7 +304,7 @@
 
 
 /* ==========================================================
-   OPTIMIZACIÓN SIMÉTRICA PARA LAPTOPS (Sin Scroll y Alineado)
+   OPTIMIZACIÓN PARA LAPTOPS (Ajuste compacto sin scroll)
    ========================================================== */
 @media (max-width: 1400px) {
     body {
@@ -304,64 +317,54 @@
     }
 
     .panel-superior {
-        padding: 5px 10px;
+        padding: 4px 10px;
         margin-bottom: 6px;
     }
 
     .panel-layout-pbi {
-        grid-template-columns: 260px 1fr;
-        gap: 10px;
-        align-items: stretch; /* Iguala las alturas de las columnas izquierda y derecha */
+        grid-template-columns: 250px 1fr;
+        gap: 8px;
     }
 
     .columna-izq {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Empuja el Performance abajo exactamente al ras de la tabla */
         gap: 8px;
     }
 
     .columna-der-inferior {
-        grid-template-columns: 1fr 270px;
-        gap: 10px;
-        align-items: end; /* Alinea la tabla y el backlog abajo */
+        gap: 8px;
     }
 
     .mapa-regiones-container {
-        height: 165px; /* Altura controlada para que el performance no rebase el límite */
-    }
-
-    .bloque-performance {
-        padding: 8px 10px;
+        height: 160px;
     }
 
     .tabla-carpetas-wrapper {
-        padding: 8px 10px;
+        padding: 6px 8px;
     }
 
     .tabla-carpetas-wrapper h3 {
         margin-bottom: 4px;
         padding: 3px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-        padding: 3px 5px;
-        font-size: 0.72rem;
+        padding: 2px 4px;
+        font-size: 0.7rem;
     }
 
-    .bloque-backlog-al-lado {
-        padding: 8px 10px;
+    .bloque-performance, .bloque-backlog-al-lado {
+        padding: 6px 8px;
     }
 
-    .bloque-backlog-al-lado h4 {
-        margin-bottom: 6px;
+    .bloque-backlog-al-lado h4, .bloque-performance h4 {
+        margin-bottom: 4px;
         padding: 3px;
         font-size: 0.78rem;
     }
 
     .item-backlog-pbi {
-        margin-bottom: 3px;
-        font-size: 0.75rem;
+        margin-bottom: 2px;
+        font-size: 0.72rem;
     }
 }
