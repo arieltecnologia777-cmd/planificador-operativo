@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=22">
+    <link rel="stylesheet" href="../css/dashboard.css?v=23">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -110,22 +110,22 @@
 
                 <div class="kpis-estado-superior">
                     <div class="kpi-box online">
-                        <span id="valOnline">1343</span> Online 🌐
+                        <span id="valOnline">1460</span> Online 🌐
                     </div>
                     <div class="kpi-box offline">
-                        <span id="valOffline">79</span> Offline 🚫
+                        <span id="valOffline">0</span> Offline 🚫
                     </div>
                     <div class="kpi-box parcial">
-                        <span id="valParcial">6</span> Parcial ⚠️
+                        <span id="valParcial">0</span> Parcial ⚠️
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valVelocidad">12</span> Velocidad 📶
+                        <span id="valVelocidad">0</span> Velocidad 📶
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valPqrs">17</span> PQRs 🎧
+                        <span id="valPqrs">0</span> PQRs 🎧
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valOtrosP3">72</span> Otros P3 📋
+                        <span id="valOtrosP3">0</span> Otros P3 📋
                     </div>
                 </div>
             </div>
@@ -301,7 +301,7 @@
                                     <span>Backlog R1</span>
                                     <strong>97,17 %</strong>
                                     <span class="badge-cumplimiento green">104.49%</span>
-                                </div>
+                               querySelectorAll</div>
                                 <div class="item-backlog-pbi">
                                     <span>Backlog R2</span>
                                     <strong>87,53 %</strong>
@@ -322,13 +322,14 @@
 </div>
 
 <!-- Scripts -->
-<script src="../js/dashboard.js?v=22"></script>
+<script src="../js/dashboard.js?v=23"></script>
 
 <script>
     const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
     const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
+    const TOTAL_SITIOS_FIJO = 1460;
 
-    // Cargar automáticamente la nota del día al abrir el dashboard
+    // Cargar automáticamente la nota del día
     async function cargarNotaDelDia() {
         try {
             const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
@@ -343,8 +344,78 @@
             if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
         }
     }
+
+    // Cargar y procesar el dataset de Google Sheets para calcular los KPIs
+    async function procesarDatasetDashboard() {
+        try {
+            const resp = await fetch(DATASET_URL);
+            const htmlText = await resp.text();
+
+            // Usar DOMParser para extraer la tabla del pubhtml de Google Sheets
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const tablaHtml = doc.querySelector('table');
+
+            if (!tablaHtml) {
+                console.warn("No se encontró la tabla en el pubhtml.");
+                return;
+            }
+
+            const rows = Array.from(tablaHtml.querySelectorAll('tr')).map(tr =>
+                Array.from(tr.querySelectorAll('th, td')).map(td => td.textContent.trim())
+            );
+
+            if (rows.length < 2) return;
+
+            // Índice Columna I (Total IDs afectados) -> índice 8
+            // Índice Columna P (Estado real) -> índice 15
+            const idxTotalIds = 8;
+            const idxEstadoReal = 15;
+
+            let sumaOffline = 0;
+            let sumaParcial = 0;
+            let sumaVelocidad = 0;
+            let sumaPqrs = 0;
+            let sumaOtrosP3 = 0;
+
+            // Omitimos la cabecera (fila 0)
+            for (let i = 1; i < rows.length; i++) {
+                const fila = rows[i];
+                const estado = (fila[idxEstadoReal] || "").toUpperCase();
+                const idsAfectados = parseInt(fila[idxTotalIds], 10) || 0;
+
+                if (estado.includes("OFFLINE")) {
+                    sumaOffline += idsAfectados;
+                } else if (estado.includes("PARCIAL")) {
+                    sumaParcial += idsAfectados;
+                } else if (estado.includes("VELOCIDAD")) {
+                    sumaVelocidad += idsAfectados;
+                } else if (estado.includes("PQR")) {
+                    sumaPqrs += idsAfectados;
+                } else if (estado.includes("P3") || estado.includes("OTROS")) {
+                    sumaOtrosP3 += idsAfectados;
+                }
+            }
+
+            // Cálculo del Online: Total de sitios fijo (1460) menos la suma de Offline
+            const totalOnline = Math.max(0, TOTAL_SITIOS_FIJO - sumaOffline);
+
+            // Pintar en los elementos del DOM del Dashboard
+            document.getElementById("valOnline").textContent = totalOnline;
+            document.getElementById("valOffline").textContent = sumaOffline;
+            document.getElementById("valParcial").textContent = sumaParcial;
+            document.getElementById("valVelocidad").textContent = sumaVelocidad;
+            document.getElementById("valPqrs").textContent = sumaPqrs;
+            document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
+
+        } catch (err) {
+            console.error("Error al procesar el dataset del dashboard:", err);
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         cargarNotaDelDia();
+        procesarDatasetDashboard();
     });
 </script>
 
@@ -377,7 +448,6 @@
     </div>
 </div>
 
-<!-- Modal Modificado Exclusivamente para Notas de Seguimiento -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 500px;">
         <div class="obs-modal-header">
@@ -398,7 +468,6 @@
 </div>
 
 <script>
-    // Lógica para cargar y guardar la nota en el servidor
     document.addEventListener("click", async (e) => {
         const target = e.target;
 
