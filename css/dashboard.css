@@ -139,11 +139,17 @@
     gap: 14px;
 }
 
+/* Sub-grilla inferior derecha: Tabla de rangos a la izquierda y Backlog a la derecha */
 .subgrid-inferior-derecha {
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 14px;
     align-items: stretch;
+}
+
+/* Ajuste simétrico: El cuadro superior medirá exactamente lo mismo que el cuadro de rangos inferior (restando el espacio del backlog) */
+.columna-der-inferior .tabla-completa-ancho {
+    width: calc(100% - 354px);
 }
 
 .mapa-regiones-container {
@@ -191,7 +197,7 @@
 }
 
 /* ==========================================================
-   SIMETRÍA EXACTA DE COLUMNAS (Anchos fijos idénticos)
+   SIMETRÍA EXACTA DE COLUMNAS ENTRE AMBAS TABLAS
    ========================================================== */
 .tabla-dinamica-carpetas {
     width: 100%;
@@ -365,6 +371,10 @@
     .subgrid-inferior-derecha {
         grid-template-columns: 1fr 260px;
         gap: 8px;
+    }
+
+    .columna-der-inferior .tabla-completa-ancho {
+        width: calc(100% - 268px);
     }
 
     .mapa-regiones-container {
