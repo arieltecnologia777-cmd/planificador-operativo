@@ -81,23 +81,24 @@
 
         <div class="dashboard-container">
             
-            <!-- PANEL SUPERIOR -->
+            <!-- PANEL SUPERIOR UNIFICADO (Total CD, Filtros y KPIs adentro de forma estricta) -->
             <div class="panel-superior">
+                
                 <div class="bloque-totales-cd">
-    <div class="cd-header-principal">
-        <div class="cd-icon-box">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"></path><path d="M4 20V10l8-6 8 6v10"></path><path d="M10 20v-6h4v6"></path></svg>
-        </div>
-        <div class="cd-text-box">
-            <span class="label-titulo-cd">TOTAL CD</span>
-            <span class="val-total-cd" id="valTotalCD">1443</span>
-        </div>
-    </div>
-    <div class="cd-botones-inferiores">
-        <button type="button" class="btn-zona active">ZONA</button>
-        <button type="button" class="btn-todas">TODAS</button>
-    </div>
-</div>
+                    <div class="cd-header-principal">
+                        <div class="cd-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"></path><path d="M4 20V10l8-6 8 6v10"></path><path d="M10 20v-6h4v6"></path></svg>
+                        </div>
+                        <div class="cd-text-box">
+                            <span class="label-titulo-cd">TOTAL CD</span>
+                            <span class="val-total-cd" id="valTotalCD">1443</span>
+                        </div>
+                    </div>
+                    <div class="cd-botones-inferiores">
+                        <button type="button" class="btn-zona active">ZONA</button>
+                        <button type="button" class="btn-todas">TODAS</button>
+                    </div>
+                </div>
 
                 <div class="bloque-filtros-centro">
                     <div class="grupo-filtros">
@@ -119,62 +120,63 @@
                         </div>
                     </div>
 
-                    <!-- Botón de borrar filtros fuera de los grupos para que abarque el 100% inferior -->
                     <button class="btn-borrar-filtros" id="btnBorrarFiltros">🧹 Borrar filtros</button>
                 </div>
 
-               <!-- KPIS DE ESTADO SUPERIORES (Dentro del contenedor vidrioso general) -->
-<div class="kpis-wrapper-contenedor">
-    <div class="kpis-estado-superior">
-        <div class="kpi-card-neon online">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-            </div>
-            <span id="valOnline">0</span>
-            <div class="kpi-label-row">Online <span class="dot-green"></span></div>
-        </div>
+                <div class="kpis-wrapper-contenedor">
+                    <div class="kpis-estado-superior">
+                        <div class="kpi-card-neon online">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                            </div>
+                            <span id="valOnline">0</span>
+                            <div class="kpi-label-row">Online <span class="dot-green"></span></div>
+                        </div>
 
-        <div class="kpi-card-neon offline">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-            </div>
-            <span id="valOffline">0</span>
-            <div class="kpi-label-row">Offline</div>
-        </div>
+                        <div class="kpi-card-neon offline">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                            </div>
+                            <span id="valOffline">0</span>
+                            <div class="kpi-label-row">Offline</div>
+                        </div>
 
-        <div class="kpi-card-neon parcial">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            </div>
-            <span id="valParcial">0</span>
-            <div class="kpi-label-row">Parcial</div>
-        </div>
+                        <div class="kpi-card-neon parcial">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                            <span id="valParcial">0</span>
+                            <div class="kpi-label-row">Parcial</div>
+                        </div>
 
-        <div class="kpi-card-neon velocidad">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </div>
-            <span id="valVelocidad">0</span>
-            <div class="kpi-label-row">Velocidad</div>
-        </div>
+                        <div class="kpi-card-neon velocidad">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <span id="valVelocidad">0</span>
+                            <div class="kpi-label-row">Velocidad</div>
+                        </div>
 
-        <div class="kpi-card-neon pqrs">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            </div>
-            <span id="valPqrs">0</span>
-            <div class="kpi-label-row">PQR's</div>
-        </div>
+                        <div class="kpi-card-neon pqrs">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <span id="valPqrs">0</span>
+                            <div class="kpi-label-row">PQR's</div>
+                        </div>
 
-        <div class="kpi-card-neon otros">
-            <div class="kpi-icon-wrap">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <div class="kpi-card-neon otros">
+                            <div class="kpi-icon-wrap">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            </div>
+                            <span id="valOtrosP3">0</span>
+                            <div class="kpi-label-row">Otros P3</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <span id="valOtrosP3">0</span>
-            <div class="kpi-label-row">Otros P3</div>
-        </div>
-    </div>
-</div>
+
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
