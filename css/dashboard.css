@@ -1,483 +1,463 @@
-/* ============================================================
-   Variables Globales - Tema Glassmorphism High-Tech
-   ============================================================ */
-:root {
-    --bg-body: #090c14; /* Fondo profundo tipo espacio */
-    --card-bg: rgba(30, 41, 59, 0.4); /* Fondo de tarjeta semitransparente */
-    --card-border: 1px solid rgba(148, 163, 184, 0.1); /* Borde sutil de "cristal" */
-    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --glass-blur: blur(12px); /* Efecto de desenfoque */
-    
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    
-    /* Colores de Estado Semánticos (Estilizados) */
-    --color-online: #34d399; /* Esmeralda vibrante */
-    --color-offline: #f87171; /* Coral rojizo */
-    --color-parcial: #fbbf24; /* Ámbar suave */
-    --color-sub: #60a5fa;    /* Azul cielo */
-    
-    --sidebar-width: 260px;
-    --header-height: 70px;
-}
-
-/* ============================================================
-   Estructura Base y Layout General
-   ============================================================ */
-body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-body);
-    background-image: radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                      radial-gradient(at 90% 90%, rgba(34, 197, 94, 0.15) 0px, transparent 50%);
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    color: var(--text-primary);
-    overflow-x: hidden;
-    height: 100vh;
-}
-
-.layout {
-    display: flex;
-    height: 100vh;
-}
-
-/* ============================================================
-   Sidebar (Navegación Lateral Estilizada)
-   ============================================================ */
-.sidebar {
-    width: var(--sidebar-width);
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-right: var(--card-border);
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    transition: width 0.3s ease;
-    z-index: 100;
-}
-
-.sidebar.sidebar-colapsado {
-    width: 80px;
-}
-
-.logo-box {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-}
-
-.logo-img {
-    width: 40px;
-    height: auto;
-}
-
-.logo-text h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.logo-text span {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-.sidebar-nav a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 8px;
-    margin-bottom: 5px;
-    transition: all 0.2s ease;
-}
-
-.sidebar-nav a:hover {
-    background: rgba(248, 250, 252, 0.05);
-    color: var(--text-primary);
-}
-
-.sidebar-nav a.active {
-    background: rgba(59, 130, 246, 0.15);
-    color: var(--color-sub);
-    border: 1px solid rgba(96, 165, 250, 0.3);
-}
-
-.nav-icon {
-    font-size: 1.3rem;
-}
-
-/* ============================================================
-   Main Content (Área Principal)
-   ============================================================ */
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-.main-header-glass {
-    height: var(--header-height);
-    background: rgba(9, 12, 20, 0.5);
-    backdrop-filter: blur(10px);
-    border-bottom: var(--card-border);
-    display: flex;
-    align-items: center;
-    padding: 0 30px;
-    position: sticky;
-    top: 0;
-    z-index: 90;
-}
-
-.btn-sidebar-toggle {
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
+/* ==========================================================
+   ESTILOS GENERALES Y LAYOUT PBI
+   ========================================================== */
 .dashboard-container {
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+    padding: 10px 0;
+    max-width: 1450px;
+    margin: 0 auto;
 }
 
-/* ============================================================
-   Panel Superior (Totales y Filtros)
-   ============================================================ */
 .panel-superior {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1.5fr;
-    gap: 20px;
-}
-
-.glass-card {
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--card-border);
-    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e2e8f0;
+    padding: 10px 15px;
     border-radius: 12px;
-    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Bloque Totales CD */
 .bloque-totales-cd {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 75px 75px;
+    gap: 4px;
     align-items: center;
-}
-
-.val-total-cd {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--color-sub);
-    text-align: center;
 }
 
 .btn-total-cd, .btn-zona, .btn-todas {
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    color: var(--text-primary);
-    padding: 8px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    background: #4a5568;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
     text-align: center;
+    padding: 6px 4px;
+    border-radius: 4px;
 }
 
-/* Bloque Filtros */
+.val-total-cd {
+    background: #cbd5e0;
+    color: #1a202c;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.btn-zona { background: #3182ce; }
+.btn-todas { background: #a0aec0; color: #1a202c; }
+
 .bloque-filtros-centro {
     display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.grupo-filtros {
+    display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 4px;
 }
 
 .label-titulo {
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    margin-bottom: 5px;
-    display: block;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: #4a5568;
+    text-transform: uppercase;
 }
 
 .botones-filtro, .botones-departamentos {
     display: flex;
-    gap: 10px;
+    gap: 4px;
 }
 
 .btn-filtro, .btn-depto {
-    background: rgba(148, 163, 184, 0.05);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    color: var(--text-secondary);
-    padding: 8px 12px;
+    background: #cbd5e0;
+    border: none;
+    padding: 5px 10px;
     border-radius: 6px;
-    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #2d3748;
 }
 
 .btn-filtro.active, .btn-depto.active {
-    background: rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.3);
-    color: var(--color-sub);
+    background: #3182ce;
+    color: white;
 }
 
 .btn-borrar-filtros {
-    background: none;
-    border: none;
-    color: var(--color-offline);
+    background: #fff;
+    border: 1px solid #cbd5e0;
+    padding: 4px 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.85rem;
-    margin-top: 5px;
-    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #c53030;
+    margin-top: 4px;
 }
 
-/* Bloque KPIs Estado */
 .kpis-estado-superior {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    gap: 6px;
 }
 
 .kpi-box {
-    background: rgba(148, 163, 184, 0.05);
+    padding: 6px 10px;
     border-radius: 8px;
-    padding: 10px;
+    font-weight: bold;
+    font-size: 0.75rem;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.kpi-box span {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-}
+.kpi-box span { font-size: 1rem; display: block; }
+.kpi-box.online { background: #48bb78; color: white; }
+.kpi-box.offline { background: #a0aec0; color: white; }
+.kpi-box.parcial { background: #f56565; color: white; }
+.kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
-.kpi-box.online span { color: var(--color-online); }
-.kpi-box.offline span { color: var(--color-offline); }
-.kpi-box.parcial span { color: var(--color-parcial); }
-.kpi-box.sub span { color: var(--color-sub); }
-
-/* ============================================================
-   Panel Layout PBI (Grids Inferiores)
-   ============================================================ */
 .panel-layout-pbi {
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 20px;
+    grid-template-columns: 320px 1fr;
+    gap: 16px;
     align-items: start;
 }
 
 .columna-izq {
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-/* Columna Derecha (Subgrids) */
 .columna-der-inferior {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
 }
 
-.subgrid-superior-derecha, .subgrid-inferior-derecha {
+.subgrid-superior-derecha {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 340px;
+    gap: 14px;
+    align-items: stretch;
 }
 
-/* ============================================================
-   Tablas Dinámicas y Widgets (El estilo Glass principal)
-   ============================================================ */
-.tabla-carpetas-wrapper h3, .bloques-derechos-apilados h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
+.subgrid-inferior-derecha {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 14px;
+    align-items: stretch;
 }
 
-.tabla-fondo-imagen {
-    background: transparent; /* Quitamos el fondo de imagen anterior */
-    border-radius: 10px;
+.bloques-derechos-apilados {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.mapa-regiones-container {
+    background: #1a202c;
+    border-radius: 12px;
+    height: 300px;
+    position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.mapa-silueta {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.marcador-mapa {
+    position: absolute;
+    background: rgba(49, 130, 206, 0.9);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tabla-carpetas-wrapper {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* ==========================================================
+   ENCABEZADOS UNIFICADOS CON AZUL SUAVE Y ELEGANTE (#3182ce)
+   ========================================================== */
+.tabla-carpetas-wrapper h3,
+.bloque-performance h4,
+.bloque-backlog-al-lado h4 {
+    margin-top: 0;
+    font-size: 0.9rem;
+    color: white !important;
+    text-align: center;
+    background: #3182ce !important;
+    padding: 6px;
+    border-radius: 6px;
+    margin-bottom: 10px;
 }
 
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
-    color: var(--text-primary);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    table-layout: fixed !important;
+}
+
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-rangos th:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: white !important;
+    font-size: 0.75rem;
+}
+
+.tabla-dinamica-carpetas td:first-child,
+.tabla-rangos td:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.75rem;
+}
+
+.tabla-dinamica-carpetas th:not(:first-child), 
+.tabla-dinamica-carpetas td:not(:first-child) {
+    width: 14%;
+    text-align: center;
+}
+
+.tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+    border: 1px solid #cbd5e0;
+    padding: 6px 8px;
 }
 
 .tabla-dinamica-carpetas th {
-    text-align: left;
-    padding: 12px;
-    background: rgba(148, 163, 184, 0.05);
-    color: var(--text-secondary);
+    background: #3182ce !important;
+    color: white;
     font-weight: 600;
-    border-bottom: var(--card-border);
 }
 
-.tabla-dinamica-carpetas td {
-    padding: 10px 12px;
-    border-bottom: var(--card-border);
-}
+.bg-yellow { background-color: #feebc8; font-weight: bold; }
+.bg-green { background-color: #c6f6d5; font-weight: bold; }
 
-.tabla-dinamica-carpetas tr:last-child td {
-    border-bottom: none;
+.tabla-rangos td:not(:first-child) {
+    color: #2d3748;
 }
-
-/* Filas especiales de la tabla de cumplimiento */
-.tabla-dinamica-carpetas tr.fila-cumplimiento td {
+.fila-alerta-roja td:not(:first-child) {
+    color: #e53e3e;
     font-weight: bold;
-    color: var(--text-primary);
-    background: rgba(59, 130, 246, 0.05);
+}
+.fila-alerta-roja td:nth-child(3) {
+    color: #a0aec0;
 }
 
-.tabla-dinamica-carpetas tr.fila-alerta-roja td {
-    color: var(--color-offline);
-}
-
-/* ============================================================
-   Widget Notas del Día
-   ============================================================ */
+/* ==========================================================
+   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA (Limpio y sin candados)
+   ========================================================== */
 .bloque-notas-dia {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    justify-content: space-between;
 }
 
-.notas-header h4 { margin: 0 0 10px 0; }
+.notas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #3182ce !important;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
 
-.notas-body textarea {
+.notas-header h4 {
+    margin: 0;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.notas-body {
+    flex-grow: 1;
+    display: flex;
+}
+
+#txtNotasDia {
     width: 100%;
     height: 100%;
-    background: rgba(148, 163, 184, 0.05);
-    border: 1px solid rgba(148, 163, 184, 0.1);
-    border-radius: 8px;
-    padding: 15px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    min-height: 155px;
     resize: none;
-    box-sizing: border-box;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.8rem;
+    color: #2d3748;
+    background: #f7fafc;
+    font-family: inherit;
+    outline: none;
 }
 
-/* ============================================================
-   Widget Performance y Backlog
-   ============================================================ */
-.bloques-derechos-apilados {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    height: 100%;
+#txtNotasDia:focus {
+    border-color: #3182ce;
 }
 
-.bloque-performance, .bloque-backlog-al-lado {
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    border: var(--card-border);
+.bloque-performance {
+    background: white;
+    padding: 14px;
     border-radius: 12px;
-    padding: 20px;
-    box-sizing: border-box;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
 }
 
-.perf-bar { margin-bottom: 15px; }
-.perf-bar label { display: block; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 5px; }
+.perf-bar {
+    margin-bottom: 8px;
+}
+
+.perf-bar label {
+    font-size: 0.75rem;
+    color: #4a5568;
+    display: block;
+    margin-bottom: 2px;
+}
+
 .progress {
-    height: 8px;
-    background: rgba(148, 163, 184, 0.1);
+    background: #edf2f7;
+    height: 12px;
     border-radius: 4px;
     overflow: hidden;
+    border: 1px solid #cbd5e0;
 }
-.progress .bar { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-.progress .bar.red { background: linear-gradient(90deg, var(--color-offline), #ef4444); box-shadow: 0 0 10px rgba(248, 113, 113, 0.4); }
-.progress .bar.green { background: linear-gradient(90deg, var(--color-online), #10b981); box-shadow: 0 0 10px rgba(52, 211, 153, 0.4); }
 
-.item-backlog-pbi {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 15px;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: var(--card-border);
-}
-.item-backlog-pbi:last-child { border-bottom: none; }
-.item-backlog-pbi span { color: var(--text-secondary); font-size: 0.9rem; }
-.item-backlog-pbi strong { color: var(--text-primary); font-size: 1.1rem; }
+.progress .bar { height: 100%; }
+.progress .bar.red { background: #f56565; }
+.progress .bar.green { background: #48bb78; }
 
-.badge-cumplimiento {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-.badge-cumplimiento.green { background: rgba(34, 197, 94, 0.15); color: var(--color-online); border: 1px solid rgba(34, 197, 94, 0.3); }
-.badge-cumplimiento.red { background: rgba(239, 68, 68, 0.15); color: var(--color-offline); border: 1px solid rgba(239, 68, 68, 0.3); }
-
-/* ============================================================
-   Widget Mapa Geográfico (A la izquierda)
-   ============================================================ */
-/* Reemplazo del mapa negro anterior por un panel estilizado con el nuevo estilo */
-.mapa-departamento-container {
-    background: var(--card-bg) !important; /* Forzamos el fondo glass */
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: var(--card-border);
-    box-shadow: var(--card-shadow);
+.bloque-backlog-al-lado {
+    background: white;
+    padding: 12px 14px;
     border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    height: 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+    justify-content: center;
 }
 
-.mapa-departamento-container h4 {
-    margin: 0 0 15px 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
+.item-backlog-pbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
 }
 
-#mapaLeaflet {
-    flex-grow: 1;
-    width: 100%;
-    min-height: 280px;
-    border-radius: 8px;
-    z-index: 1;
-    /* Capa oscura sobre el mapa para que combine con el tema */
-    background-color: #090c14; 
+.badge-cumplimiento {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75rem;
 }
+.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
+.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
 
-/* Estilo para los marcadores de Leaflet para que brillen */
-.leaflet-marker-icon.offline-marker {
-    filter: drop-shadow(0 0 5px var(--color-offline));
-}
-.leaflet-marker-icon.online-marker {
-    filter: drop-shadow(0 0 5px var(--color-online));
-}
 
-/* Estilo del popup de Leaflet */
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
-    background: rgba(30, 41, 59, 0.9) !important;
-    backdrop-filter: blur(10px);
-    color: var(--text-primary) !important;
-    border: 1px solid rgba(148, 163, 184, 0.2);
-}
-.leaflet-popup-content h3 { margin: 0 0 5px 0; color: var(--color-sub); }
+/* ==========================================================
+   OPTIMIZACIÓN PARA LAPTOPS
+   ========================================================== */
+@media (max-width: 1400px) {
+    body {
+        overflow: hidden;
+    }
 
-/* Utilidades Generales */
-.sidebar-colapsado .logo-text,
-.sidebar-colapsado .sidebar-nav span {
-    display: none;
+    .dashboard-container {
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .panel-superior {
+        padding: 4px 10px;
+        margin-bottom: 6px;
+    }
+
+    .panel-layout-pbi {
+        grid-template-columns: 250px 1fr;
+        gap: 8px;
+    }
+
+    .columna-izq {
+        gap: 8px;
+    }
+
+    .columna-der-inferior {
+        gap: 8px;
+    }
+
+    .subgrid-superior-derecha {
+        grid-template-columns: 1fr 260px;
+        gap: 8px;
+    }
+
+    .subgrid-inferior-derecha {
+        grid-template-columns: 1fr 260px;
+        gap: 8px;
+    }
+
+    .mapa-regiones-container {
+        height: 160px;
+    }
+
+    .tabla-carpetas-wrapper {
+        padding: 6px 8px;
+    }
+
+    .tabla-carpetas-wrapper h3 {
+        margin-bottom: 4px;
+        padding: 3px;
+        font-size: 0.78rem;
+    }
+
+    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+        padding: 2px 4px;
+        font-size: 0.7rem;
+    }
+
+    .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia {
+        padding: 6px 8px;
+    }
+
+    .tabla-carpetas-wrapper h3,
+    .bloque-performance h4,
+    .bloque-backlog-al-lado h4,
+    .notas-header h4 {
+        margin-bottom: 4px;
+        padding: 3px;
+        font-size: 0.78rem;
+    }
+
+    #txtNotasDia {
+        min-height: 100px;
+        font-size: 0.72rem;
+    }
+
+    .item-backlog-pbi {
+        margin-bottom: 2px;
+        font-size: 0.72rem;
+    }
 }
