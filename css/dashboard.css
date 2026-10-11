@@ -729,8 +729,9 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - DISEÑO LADO A LADO Y ANCHO TOTAL
+   BLOQUE DE FILTROS CENTRAL - DISEÑO PERFECTO (PROYECTO Y DEPARTAMENTO LADO A LADO)
    ========================================================== */
+
 .bloque-filtros-centro {
     display: flex !important;
     flex-direction: column !important;
@@ -744,22 +745,34 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
     gap: 12px !important;
-    width: auto !important;
 }
 
-/* Contenedor superior interno para alinear Proyecto y Departamento horizontalmente */
-.bloque-filtros-centro .panel-filtros-superior,
-.bloque-filtros-centro {
-    /* Aseguramos que los hijos directos que sean los grupos se distribuyan en una fila superior */
-}
-
-/* Forzamos que los dos grupos de filtros dentro del bloque central se alineen en fila */
-.bloque-filtros-centro > div:not(.btn-borrar-filtros) {
+/* Forzar que los dos primeros hijos directos (Proyecto y Departamento) queden lado a lado en una fila */
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(1),
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(2) {
     display: flex !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
-    gap: 20px !important;
-    width: 100% !important;
+    flex-direction: column !important;
+}
+
+/* Contenedor virtual o distribución horizontal para los grupos de arriba */
+.bloque-filtros-centro {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    grid-template-rows: auto auto !important;
+    gap: 10px 20px !important;
+    align-items: center !important;
+}
+
+/* Ubicar Proyecto en la columna izquierda arriba */
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(1) {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+}
+
+/* Ubicar Filtro Departamento en la columna derecha arriba */
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(2) {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 2 !important;
 }
 
 .grupo-filtros {
@@ -814,8 +827,10 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros ocupando exactamente el 100% de la parte inferior */
+/* Botón de borrar filtros ocupando exactamente el 100% de la fila inferior (de lado a lado) */
 .btn-borrar-filtros {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 / 3 !important;
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
