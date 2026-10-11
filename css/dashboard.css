@@ -728,20 +728,36 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 
-/* 2. Bloque Central de Filtros con Estructura Grid Definitiva */
+/* ==========================================================
+   BLOQUE DE FILTROS CENTRAL - ANCHO TOTAL Y ALINEACIÓN DEFINITIVA
+   ========================================================== */
 .bloque-filtros-centro {
-    display: grid !important;
-    grid-template-columns: auto 1fr !important;
-    gap: 8px 20px !important;
-    align-items: flex-start !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     background: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 14px 16px !important;
+    padding: 18px 16px !important; /* Misma altura simétrica que Total CD */
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
+    gap: 12px !important;
+}
+
+/* Fila superior que contiene Proyecto y Filtro Departamento lado a lado */
+.bloque-filtros-centro::before {
+    content: none !important;
+}
+
+/* Contenedor interno superior para los dos bloques de filtros */
+.panel-filtros-superior {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    width: 100% !important;
 }
 
 .grupo-filtros {
@@ -750,16 +766,6 @@
     align-items: center !important;
     text-align: center !important;
     gap: 4px;
-}
-
-.bloque-filtros-centro .grupo-filtros:first-child {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-}
-
-.bloque-filtros-centro .grupo-filtros:last-child {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
 }
 
 .label-titulo {
@@ -806,9 +812,8 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando todo el ancho inferior en grid */
+/* Botón de borrar filtros abarcando exactamente el 100% del ancho inferior */
 .btn-borrar-filtros {
-    grid-column: 1 / -1 !important;
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
@@ -818,7 +823,6 @@
     font-size: 0.7rem;
     font-weight: 600;
     color: #fca5a5 !important;
-    margin-top: 6px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -830,16 +834,4 @@
     background: rgba(127, 29, 29, 0.6) !important;
     color: white !important;
     border-color: #ef4444 !important;
-}
-
-/* 3. Contenedor de KPIs */
-.kpis-wrapper-contenedor {
-    background: transparent !important;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    border-radius: 16px;
-    padding: 10px 8px !important;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
 }
