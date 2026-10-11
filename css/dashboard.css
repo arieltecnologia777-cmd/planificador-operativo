@@ -120,9 +120,9 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL (Estructura de Cuadrícula 2x2 exacta)
-   Columna 1: Mapa (arriba) y Performance (abajo)
-   Columna 2: Tabla de Carpetas (arriba) y Backlog (abajo)
+   GRID PRINCIPAL (Estructura de Cuadrícula 2x2 Exacta)
+   Columna 1: Mapa (Arriba) y Performance (Abajo)
+   Columna 2: Tabla de Carpetas (Arriba) y Backlog (Abajo)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -161,7 +161,7 @@
     cursor: pointer;
 }
 
-/* 2. Tabla de Carpetas (Fila 1, Columna 2) */
+/* 2. Tabla de Cumplimiento por Carpetas (Fila 1, Columna 2) */
 .tabla-carpetas-wrapper {
     grid-column: 2;
     grid-row: 1;
@@ -254,7 +254,7 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* 4. Indicador Backlog (Fila 2, Columna 2) */
+/* 4. Indicador Backlog (Fila 2, Columna 2, al lado de la tabla) */
 .bloque-backlog {
     grid-column: 2;
     grid-row: 2;
