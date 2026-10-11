@@ -1,427 +1,25 @@
 /* ==========================================================
-   ENCABEZADOS UNIFICADOS CON AZUL SUAVE Y ELEGANTE (#3182ce)
-   ========================================================== */
-.tabla-carpetas-wrapper h3,
-.bloque-performance h4,
-.bloque-backlog-al-lado h4 {
-    margin-top: 0;
-    font-size: 0.9rem;
-    color: white !important;
-    text-align: center;
-    background: #3182ce !important;
-    padding: 6px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-}
-
-.tabla-dinamica-carpetas {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.8rem;
-    table-layout: fixed !important;
-}
-
-.tabla-dinamica-carpetas th:first-child, 
-.tabla-rangos th:first-child {
-    width: 30%;
-    text-align: left;
-    font-weight: 600;
-    color: white !important;
-    font-size: 0.75rem;
-}
-
-.tabla-dinamica-carpetas td:first-child,
-.tabla-rangos td:first-child {
-    width: 30%;
-    text-align: left;
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 0.75rem;
-}
-
-.tabla-dinamica-carpetas th:not(:first-child), 
-.tabla-dinamica-carpetas td:not(:first-child) {
-    width: 14%;
-    text-align: center;
-}
-
-.tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-    border: 1px solid #cbd5e0;
-    padding: 6px 8px;
-}
-
-.tabla-dinamica-carpetas th {
-    background: #3182ce !important;
-    color: white;
-    font-weight: 600;
-}
-
-.bg-yellow { background-color: #feebc8; font-weight: bold; }
-.bg-green { background-color: #c6f6d5; font-weight: bold; }
-
-.tabla-rangos td:not(:first-child) {
-    color: #2d3748;
-}
-.fila-alerta-roja td:not(:first-child) {
-    color: #e53e3e;
-    font-weight: bold;
-}
-.fila-alerta-roja td:nth-child(3) {
-    color: #a0aec0;
-}
-
-/* ==========================================================
-   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA (Limpio y sin candados)
-   ========================================================== */
-.bloque-notas-dia {
-    background: white;
-    padding: 12px 14px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.notas-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #3182ce !important;
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-}
-
-.notas-header h4 {
-    margin: 0;
-    font-size: 0.85rem;
-    color: white;
-}
-
-.notas-body {
-    flex-grow: 1;
-    display: flex;
-}
-
-#txtNotasDia {
-    width: 100%;
-    height: 100%;
-    min-height: 155px;
-    resize: none;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    padding: 8px;
-    font-size: 0.8rem;
-    color: #2d3748;
-    background: #f7fafc;
-    font-family: inherit;
-    outline: none;
-}
-
-#txtNotasDia:focus {
-    border-color: #3182ce;
-}
-
-.bloque-performance {
-    background: white;
-    padding: 14px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-size: 0.8rem;
-}
-
-.perf-bar {
-    margin-bottom: 8px;
-}
-
-.perf-bar label {
-    font-size: 0.75rem;
-    color: #4a5568;
-    display: block;
-    margin-bottom: 2px;
-}
-
-.progress {
-    background: #edf2f7;
-    height: 12px;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid #cbd5e0;
-}
-
-.progress .bar { height: 100%; }
-.progress .bar.red { background: #f56565; }
-.progress .bar.green { background: #48bb78; }
-
-.bloque-backlog-al-lado {
-    background: white;
-    padding: 12px 14px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-size: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.item-backlog-pbi {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-}
-
-.badge-cumplimiento {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.75rem;
-}
-.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
-.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
-
-
-/* ==========================================================
-   OPTIMIZACIÓN PARA LAPTOPS
-   ========================================================== */
-@media (max-width: 1400px) {
-    body {
-        overflow: hidden;
-    }
-
-    .dashboard-container {
-        padding: 0;
-        max-width: 100%;
-    }
-
-    .panel-superior {
-        padding: 4px 10px;
-        margin-bottom: 6px;
-    }
-
-    .panel-layout-pbi {
-        grid-template-columns: 250px 1fr;
-        gap: 8px;
-    }
-
-    .columna-izq {
-        gap: 8px;
-    }
-
-    .columna-der-inferior {
-        gap: 8px;
-    }
-
-    .subgrid-superior-derecha {
-        grid-template-columns: 1fr 260px;
-        gap: 8px;
-    }
-
-    .subgrid-inferior-derecha {
-        grid-template-columns: 1fr 260px;
-        gap: 8px;
-    }
-
-    .mapa-regiones-container {
-        height: 160px;
-    }
-
-    .tabla-carpetas-wrapper {
-        padding: 6px 8px;
-    }
-
-    .tabla-carpetas-wrapper h3 {
-        margin-bottom: 4px;
-        padding: 3px;
-        font-size: 0.78rem;
-    }
-
-    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-        padding: 2px 4px;
-        font-size: 0.7rem;
-    }
-
-    .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia {
-        padding: 6px 8px;
-    }
-
-    .tabla-carpetas-wrapper h3,
-    .bloque-performance h4,
-    .bloque-backlog-al-lado h4,
-    .notas-header h4 {
-        margin-bottom: 4px;
-        padding: 3px;
-        font-size: 0.78rem;
-    }
-
-    #txtNotasDia {
-        min-height: 100px;
-        font-size: 0.72rem;
-    }
-
-    .item-backlog-pbi {
-        margin-bottom: 2px;
-        font-size: 0.72rem;
-    }
-}
-/* ==========================================================
-   KPI CARDS 3D - SÓLIDAS CON DEGRADADO DE PROFUNDIDAD Y NEÓN
+   ESTILOS GENERALES Y DISEÑO DEFINITIVO DEL DASHBOARD
    ========================================================== */
 
-/* Contenedor general principal (marco azul neón suave) */
-.kpis-wrapper-contenedor {
-    background: transparent !important;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    border-radius: 16px;
-    padding: 6px 8px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.kpis-estado-superior {
-    display: flex !important;
-    gap: 6px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    align-items: stretch !important;
-}
-
-/* Tarjetas individuales con fondo semi-transparente equilibrado */
-.kpi-card-neon {
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: 12px !important;
-    padding: 10px 8px !important;
+/* 1. Contenedor principal y estructura de la casa */
+.dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    text-align: center !important;
-    flex: 1;
-    min-width: 68px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s ease;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 1450px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    padding: 10px 15px 20px 15px !important;
 }
 
-.kpi-icon-wrap {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2px;
-}
-
-.kpi-card-neon span {
-    font-size: 1.15rem !important;
-    font-weight: 800 !important;
-    margin: 2px 0 !important;
-    letter-spacing: 0.5px;
-}
-
-.kpi-label-row {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    white-space: nowrap;
-}
-
-/* 1. Online (Verde Esmeralda equilibrado) */
-.kpi-card-neon.online {
-    background: linear-gradient(135deg, rgba(6, 78, 59, 0.85) 0%, rgba(2, 44, 34, 0.9) 100%) !important;
-    border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
-}
-.kpi-card-neon.online .kpi-icon-wrap {
-    background: rgba(16, 185, 129, 0.25);
-    color: #34d399;
-}
-.kpi-card-neon.online span { color: #34d399 !important; text-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
-
-/* 2. Offline (Rojo Coral equilibrado) */
-.kpi-card-neon.offline {
-    background: linear-gradient(135deg, rgba(127, 29, 29, 0.85) 0%, rgba(69, 10, 10, 0.9) 100%) !important;
-    border: 1.5px solid rgba(239, 68, 68, 0.85) !important;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
-}
-.kpi-card-neon.offline .kpi-icon-wrap {
-    background: rgba(239, 68, 68, 0.25);
-    color: #f87171;
-}
-.kpi-card-neon.offline span { color: #f87171 !important; text-shadow: 0 0 8px rgba(248, 113, 113, 0.6); }
-
-/* 3. Parcial (Ámbar / Naranja equilibrado) */
-.kpi-card-neon.parcial {
-    background: linear-gradient(135deg, rgba(120, 53, 15, 0.85) 0%, rgba(69, 26, 3, 0.9) 100%) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.85) !important;
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
-}
-.kpi-card-neon.parcial .kpi-icon-wrap {
-    background: rgba(245, 158, 11, 0.25);
-    color: #fbbf24;
-}
-.kpi-card-neon.parcial span { color: #fbbf24 !important; text-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
-
-/* 4. Velocidad (Azul Cielo equilibrado) */
-.kpi-card-neon.velocidad {
-    background: linear-gradient(135deg, rgba(12, 74, 110, 0.85) 0%, rgba(8, 47, 73, 0.9) 100%) !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.8) !important;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
-}
-.kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: rgba(56, 189, 248, 0.25);
-    color: #38bdf8;
-}
-.kpi-card-neon.velocidad span { color: #38bdf8 !important; text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
-
-/* 5. PQR's (Morado equilibrado) */
-.kpi-card-neon.pqrs {
-    background: linear-gradient(135deg, rgba(88, 28, 135, 0.85) 0%, rgba(59, 7, 100, 0.9) 100%) !important;
-    border: 1.5px solid rgba(168, 85, 247, 0.8) !important;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.25) !important;
-}
-.kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: rgba(168, 85, 247, 0.25);
-    color: #c084fc;
-}
-.kpi-card-neon.pqrs span { color: #c084fc !important; text-shadow: 0 0 8px rgba(192, 132, 252, 0.6); }
-
-/* 6. Otros P3 (Índigo equilibrado) */
-.kpi-card-neon.otros {
-    background: linear-gradient(135deg, rgba(49, 46, 129, 0.85) 0%, rgba(30, 27, 75, 0.9) 100%) !important;
-    border: 1.5px solid rgba(99, 102, 241, 0.8) !important;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.25) !important;
-}
-.kpi-card-neon.otros .kpi-icon-wrap {
-    background: rgba(99, 102, 241, 0.25);
-    color: #818cf8;
-}
-.kpi-card-neon.otros span { color: #818cf8 !important; text-shadow: 0 0 8px rgba(129, 140, 248, 0.6); }
-
-.dot-green {
-    width: 5px;
-    height: 5px;
-    background-color: #34d399;
-    border-radius: 50%;
-    box-shadow: 0 0 6px #34d399;
-    display: inline-block;
-}
-/* ==========================================================
-   ESTILOS DE CONTENEDORES Y BOTONES DE LA BARRA SUPERIOR
-   ========================================================== */
-
-/* Contenedor general del panel superior para alinear todo con elegancia */
+/* 2. Panel Superior Unificado */
 .panel-superior {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
     background: rgba(13, 20, 36, 0.25) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -429,13 +27,11 @@
     padding: 10px 14px !important;
     border-radius: 16px !important;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center !important;
-    gap: 12px;
+    box-sizing: border-box !important;
+    gap: 12px !important;
 }
 
-/* 1. Bloque Totales CD (Simétrico en altura con los demás) */
+/* 3. Bloque Total CD */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(12px);
@@ -533,40 +129,28 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 
-/* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - ALTURA PERFECTAMENTE EQUILIBRADA
-   ========================================================== */
+/* 4. Bloque de Filtros Central */
 .bloque-filtros-centro {
     display: grid !important;
     grid-template-columns: auto 1fr !important;
     grid-template-rows: auto auto !important;
-    
-    /* 🎯 MUEVE ESTO (1): Espacio vertical entre la fila superior y el botón de abajo. 
-       Si quieres que sea más delgado, baja el "7px" (ej: 5px). Si quieres más espacio, súbelo (ej: 9px). */
     gap: 3px 20px !important; 
-    
     align-items: center !important;
     background: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    
-    /* 🎯 MUEVE ESTO (2): Padding superior e inferior de toda la tarjeta central. 
-       Si el bloque se ve muy alto, baja el "11px" (ej: 9px o 8px). Si se ve muy bajo, súbelo (ej: 13px). */
     padding: 6px 14px !important; 
-    
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
 }
 
-/* Posicionar el grupo Proyecto arriba a la izquierda */
 .bloque-filtros-centro > .grupo-filtros:nth-of-type(1) {
     grid-column: 1 / 2 !important;
     grid-row: 1 / 2 !important;
 }
 
-/* Posicionar el grupo Filtro Departamento arriba a la derecha */
 .bloque-filtros-centro > .grupo-filtros:nth-of-type(2) {
     grid-column: 2 / 3 !important;
     grid-row: 1 / 2 !important;
@@ -591,7 +175,6 @@
     margin-bottom: 2px !important;
 }
 
-/* Botones de Filtro y Departamentos */
 .botones-filtro, .botones-departamentos {
     display: flex;
     gap: 6px;
@@ -624,7 +207,6 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% de la fila inferior */
 .btn-borrar-filtros {
     grid-column: 1 / -1 !important;
     grid-row: 2 / 3 !important;
@@ -650,42 +232,334 @@
     color: white !important;
     border-color: #ef4444 !important;
 }
-/* ==========================================================
-   RESTAURACIÓN DE POSICIÓN DEL PANEL SUPERIOR Y CONTENEDOR
-   ========================================================== */
 
-/* 1. Asegurar que el contenedor general del dashboard recupere su flujo normal */
-.dashboard-container {
+/* 5. KPI Cards 3D con Neón */
+.kpis-wrapper-contenedor {
+    background: transparent !important;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.kpis-estado-superior {
+    display: flex !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: stretch !important;
+}
+
+.kpi-card-neon {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 12px !important;
+    padding: 10px 8px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    margin-top: 10px !important;
-}
-
-/* 2. Fijar el panel superior de forma limpia y horizontal justo bajo el banner */
-.panel-superior {
-    display: flex !important;
-    justify-content: space-between !important;
     align-items: center !important;
-    width: 100% !important;
-    background: rgba(13, 20, 36, 0.25) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 10px 14px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box !important;
-    gap: 15px !important;
+    justify-content: space-between !important;
+    text-align: center !important;
+    flex: 1;
+    min-width: 68px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-/* 3. Estabilizar la grilla principal inferior (Mapas y Tablas) para que no se desborde */
+.kpi-icon-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.kpi-card-neon span {
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    margin: 2px 0 !important;
+    letter-spacing: 0.5px;
+}
+
+.kpi-label-row {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+}
+
+.kpi-card-neon.online {
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.85) 0%, rgba(2, 44, 34, 0.9) 100%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.85) !important;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+}
+.kpi-card-neon.online .kpi-icon-wrap { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+.kpi-card-neon.online span { color: #34d399 !important; text-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
+
+.kpi-card-neon.offline {
+    background: linear-gradient(135deg, rgba(127, 29, 29, 0.85) 0%, rgba(69, 10, 10, 0.9) 100%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.85) !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
+}
+.kpi-card-neon.offline .kpi-icon-wrap { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+.kpi-card-neon.offline span { color: #f87171 !important; text-shadow: 0 0 8px rgba(248, 113, 113, 0.6); }
+
+.kpi-card-neon.parcial {
+    background: linear-gradient(135deg, rgba(120, 53, 15, 0.85) 0%, rgba(69, 26, 3, 0.9) 100%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.85) !important;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+}
+.kpi-card-neon.parcial .kpi-icon-wrap { background: rgba(245, 158, 11, 0.25); color: #fbbf24; }
+.kpi-card-neon.parcial span { color: #fbbf24 !important; text-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
+
+.kpi-card-neon.velocidad {
+    background: linear-gradient(135deg, rgba(12, 74, 110, 0.85) 0%, rgba(8, 47, 73, 0.9) 100%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.8) !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
+}
+.kpi-card-neon.velocidad .kpi-icon-wrap { background: rgba(56, 189, 248, 0.25); color: #38bdf8; }
+.kpi-card-neon.velocidad span { color: #38bdf8 !important; text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
+
+.kpi-card-neon.pqrs {
+    background: linear-gradient(135deg, rgba(88, 28, 135, 0.85) 0%, rgba(59, 7, 100, 0.9) 100%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.8) !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.25) !important;
+}
+.kpi-card-neon.pqrs .kpi-icon-wrap { background: rgba(168, 85, 247, 0.25); color: #c084fc; }
+.kpi-card-neon.pqrs span { color: #c084fc !important; text-shadow: 0 0 8px rgba(192, 132, 252, 0.6); }
+
+.kpi-card-neon.otros {
+    background: linear-gradient(135deg, rgba(49, 46, 129, 0.85) 0%, rgba(30, 27, 75, 0.9) 100%) !important;
+    border: 1.5px solid rgba(99, 102, 241, 0.8) !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.25) !important;
+}
+.kpi-card-neon.otros .kpi-icon-wrap { background: rgba(99, 102, 241, 0.25); color: #818cf8; }
+.kpi-card-neon.otros span { color: #818cf8 !important; text-shadow: 0 0 8px rgba(129, 140, 248, 0.6); }
+
+.dot-green {
+    width: 5px;
+    height: 5px;
+    background-color: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #34d399;
+    display: inline-block;
+}
+
+/* 6. Grilla Principal Inferior (Mapas y Tablas) */
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 380px 1fr !important;
     gap: 20px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+}
+
+.columna-izq, .columna-der-inferior {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.subgrid-superior-derecha, .subgrid-inferior-derecha {
+    display: grid !important;
+    grid-template-columns: 1fr 340px !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+}
+
+.bloques-derechos-apilados {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 7. Estilos de Tablas y Encabezados */
+.tabla-carpetas-wrapper h3,
+.bloque-performance h4,
+.bloque-backlog-al-lado h4 {
+    margin-top: 0;
+    font-size: 0.9rem;
+    color: white !important;
+    text-align: center;
+    background: #3182ce !important;
+    padding: 6px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.tabla-dinamica-carpetas {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    table-layout: fixed !important;
+}
+
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-rangos th:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: white !important;
+    font-size: 0.75rem;
+}
+
+.tabla-dinamica-carpetas td:first-child,
+.tabla-rangos td:first-child {
+    width: 30%;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.75rem;
+}
+
+.tabla-dinamica-carpetas th:not(:first-child), 
+.tabla-dinamica-carpetas td:not(:first-child) {
+    width: 14%;
+    text-align: center;
+}
+
+.tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+    border: 1px solid #cbd5e0;
+    padding: 6px 8px;
+}
+
+.tabla-dinamica-carpetas th {
+    background: #3182ce !important;
+    color: white;
+    font-weight: 600;
+}
+
+.bg-yellow { background-color: #feebc8; font-weight: bold; }
+.bg-green { background-color: #c6f6d5; font-weight: bold; }
+
+.tabla-rangos td:not(:first-child) { color: #2d3748; }
+.fila-alerta-roja td:not(:first-child) { color: #e53e3e; font-weight: bold; }
+.fila-alerta-roja td:nth-child(3) { color: #a0aec0; }
+
+/* 8. Notas del Día y Módulos de Apoyo */
+.bloque-notas-dia {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.notas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #3182ce !important;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.notas-header h4 { margin: 0; font-size: 0.85rem; color: white; }
+.notas-body { flex-grow: 1; display: flex; }
+
+#txtNotasDia {
+    width: 100%;
+    height: 100%;
+    min-height: 155px;
+    resize: none;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.8rem;
+    color: #2d3748;
+    background: #f7fafc;
+    font-family: inherit;
+    outline: none;
+}
+#txtNotasDia:focus { border-color: #3182ce; }
+
+.bloque-performance {
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
+}
+
+.perf-bar { margin-bottom: 8px; }
+.perf-bar label { font-size: 0.75rem; color: #4a5568; display: block; margin-bottom: 2px; }
+
+.progress {
+    background: #edf2f7;
+    height: 12px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #cbd5e0;
+}
+.progress .bar { height: 100%; }
+.progress .bar.red { background: #f56565; }
+.progress .bar.green { background: #48bb78; }
+
+.bloque-backlog-al-lado {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.item-backlog-pbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+}
+
+.badge-cumplimiento {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
+.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
+
+.tabla-carpetas-wrapper {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* 9. Optimización para Laptops */
+@media (max-width: 1400px) {
+    body { overflow: hidden; }
+    .dashboard-container { padding: 0; max-width: 100%; }
+    .panel-superior { padding: 4px 10px; }
+    .panel-layout-pbi { grid-template-columns: 250px 1fr; gap: 8px; }
+    .columna-izq, .columna-der-inferior { gap: 8px; }
+    .subgrid-superior-derecha, .subgrid-inferior-derecha { grid-template-columns: 1fr 260px; gap: 8px; }
+    .tabla-carpetas-wrapper { padding: 6px 8px; }
+    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td { padding: 2px 4px; font-size: 0.7rem; }
+    .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia { padding: 6px 8px; }
+    #txtNotasDia { min-height: 100px; font-size: 0.72rem; }
 }
