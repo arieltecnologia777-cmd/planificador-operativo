@@ -621,145 +621,16 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 12px 16px !important;
+    padding: 10px 14px !important;
     border-radius: 16px !important;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 15px;
+    align-items: center !important;
+    gap: 12px;
 }
 
-/* 1. Bloque Totales CD (Enmarcado en contenedor idéntico al estilo de KPIs) */
-.bloque-totales-cd {
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 8px;
-    border-radius: 12px;
-    display: grid;
-    grid-template-columns: 75px 75px;
-    gap: 6px;
-    align-items: center;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
-}
-
-.btn-total-cd, .btn-zona {
-    background: #1e3a8a !important;
-    color: #93c5fd !important;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 6px 4px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.val-total-cd {
-    background: rgba(30, 41, 59, 0.8) !important;
-    color: #38bdf8 !important;
-    font-size: 0.85rem;
-    font-weight: 900;
-    text-align: center;
-    padding: 5px;
-    border-radius: 6px;
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
-}
-
-.btn-todas {
-    background: rgba(30, 41, 59, 0.6) !important;
-    color: #cbd5e0 !important;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 6px 4px;
-    border-radius: 6px;
-    border: 1px solid rgba(148, 163, 184, 0.25);
-}
-
-/* 2. Bloques Centrales de Filtros (Proyecto y Departamento enmarcados) */
-.bloque-filtros-centro {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    padding: 8px 12px;
-    border-radius: 12px;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
-}
-
-.grupo-filtros {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.label-titulo {
-    font-weight: 700;
-    font-size: 0.7rem;
-    color: #93c5fd;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Botones de Filtro y Departamentos */
-.botones-filtro, .botones-departamentos {
-    display: flex;
-    gap: 6px;
-}
-
-/* Botones NO seleccionados (más oscuros pero notorios y elegantes) */
-.btn-filtro, .btn-depto {
-    background: rgba(30, 41, 59, 0.75) !important;
-    border: 1px solid rgba(148, 163, 184, 0.3) !important;
-    padding: 6px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.75rem;
-    color: #94a3b8 !important;
-    transition: all 0.2s ease;
-}
-
-.btn-filtro:hover, .btn-depto:hover {
-    background: rgba(51, 65, 85, 0.9) !important;
-    color: #e2e8f0 !important;
-    border-color: rgba(56, 189, 248, 0.5) !important;
-}
-
-/* Botones SELECCIONADOS (Azules vibrantes con estilo brillante en sus bordes) */
-.btn-filtro.active, .btn-depto.active {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-    color: white !important;
-    border: 1px solid #60a5fa !important;
-    box-shadow: 0 0 12px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
-    font-weight: 700;
-    text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
-}
-
-/* Botón de borrar filtros */
-.btn-borrar-filtros {
-    background: rgba(127, 29, 29, 0.3) !important;
-    border: 1px solid rgba(239, 68, 68, 0.4) !important;
-    padding: 4px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #fca5a5 !important;
-    margin-top: 4px;
-    transition: all 0.2s ease;
-}
-
-.btn-borrar-filtros:hover {
-    background: rgba(127, 29, 29, 0.6) !important;
-    color: white !important;
-    border-color: #ef4444 !important;
-}
-/* ==========================================================
-   BLOQUE TOTALES CD - DEFINITIVO Y SIMÉTRICO
-   ========================================================== */
+/* 1. Bloque Totales CD (Simétrico en altura con los demás) */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(12px);
@@ -767,7 +638,7 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 18px 12px !important; /* Padding vertical ajustado para la altura simétrica */
+    padding: 18px 12px !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -857,38 +728,111 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 
-/* ==========================================================
-   PANEL SUPERIOR Y RESTO DE CONTENEDORES
-   ========================================================== */
-
-.panel-superior {
-    background: rgba(13, 20, 36, 0.25) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    padding: 10px 14px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center !important;
-    gap: 12px;
-}
-
+/* 2. Bloque Central de Filtros con Estructura Grid Definitiva */
 .bloque-filtros-centro {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.45);
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    gap: 8px 20px !important;
+    align-items: flex-start !important;
+    background: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 10px 16px !important;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    box-sizing: border-box;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    padding: 14px 16px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
 }
 
+.grupo-filtros {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 4px;
+}
+
+.bloque-filtros-centro .grupo-filtros:first-child {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.bloque-filtros-centro .grupo-filtros:last-child {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.label-titulo {
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center !important;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+/* Botones de Filtro y Departamentos */
+.botones-filtro, .botones-departamentos {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-filtro, .btn-depto {
+    background: rgba(30, 41, 59, 0.75) !important;
+    border: 1px solid rgba(148, 163, 184, 0.3) !important;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #94a3b8 !important;
+    transition: all 0.2s ease;
+}
+
+.btn-filtro:hover, .btn-depto:hover {
+    background: rgba(51, 65, 85, 0.9) !important;
+    color: #e2e8f0 !important;
+    border-color: rgba(56, 189, 248, 0.5) !important;
+}
+
+.btn-filtro.active, .btn-depto.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8) !important;
+    color: white !important;
+    border: 1px solid #60a5fa !important;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+    font-weight: 700;
+    text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
+}
+
+/* Botón de borrar filtros abarcando todo el ancho inferior en grid */
+.btn-borrar-filtros {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    background: rgba(127, 29, 29, 0.3) !important;
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    padding: 6px 8px !important;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fca5a5 !important;
+    margin-top: 6px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease;
+}
+
+.btn-borrar-filtros:hover {
+    background: rgba(127, 29, 29, 0.6) !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+}
+
+/* 3. Contenedor de KPIs */
 .kpis-wrapper-contenedor {
     background: transparent !important;
     border: 1px solid rgba(56, 189, 248, 0.3);
@@ -898,101 +842,4 @@
     display: flex;
     align-items: center;
     box-sizing: border-box;
-}
-/* ==========================================================
-   CENTRAR TÍTULOS EN EL BLOQUE DE FILTROS CENTRAL
-   ========================================================== */
-.grupo-filtros {
-    display: flex;
-    flex-direction: column;
-    align-items: center !important; /* Centra el contenido de cada grupo verticalmente */
-    text-align: center !important;
-}
-
-.label-titulo {
-    text-align: center !important;
-    width: 100%;
-    margin-bottom: 4px;
-}
-/* ==========================================================
-   ALINEACIÓN SUPERIOR Y SIMÉTRICA DE LOS GRUPOS DE FILTROS
-   ========================================================== */
-.bloque-filtros-centro {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start !important; /* Alinea ambos grupos de filtros hacia arriba */
-}
-
-.grupo-filtros {
-    display: flex;
-    flex-direction: column;
-    align-items: center !important;
-    text-align: center !important;
-}
-
-.label-titulo {
-    text-align: center !important;
-    width: 100%;
-    margin-bottom: 4px;
-}
-/* ==========================================================
-   BOTÓN BORRAR FILTROS A ANCHO COMPLETO (100%)
-   ========================================================== */
-.btn-borrar-filtros {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-top: 8px !important;
-    box-sizing: border-box !important;
-}
-
-/* Asegurar que el contenedor del grupo de departamento ocupe el ancho necesario para guiar el botón */
-.bloque-filtros-centro .grupo-filtros:last-child {
-    width: 100%;
-}
-/* ==========================================================
-   CORRECCIÓN DEFINITIVA: ALTURA SIMÉTRICA Y BOTÓN ANCHO TOTAL
-   ========================================================== */
-
-/* 1. Igualar la altura exacta del bloque central de filtros con Total CD y KPIs */
-.bloque-filtros-centro {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: flex-start !important;
-    justify-content: space-between !important;
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 14px 14px !important; /* Mismo padding vertical para empatar altura */
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    box-sizing: border-box !important;
-    gap: 10px 15px !important;
-}
-
-/* 2. Distribuir los grupos superiores de manera limpia */
-.bloque-filtros-centro .grupo-filtros {
-    flex: 1;
-    box-sizing: border-box;
-}
-
-.bloque-filtros-centro .grupo-filtros:first-child {
-    min-width: 140px;
-}
-
-.bloque-filtros-centro .grupo-filtros:last-child {
-    min-width: 320px;
-}
-
-/* 3. Hacer que el botón de borrar filtros ocupe todo el ancho inferior del cuadro central */
-.btn-borrar-filtros {
-    width: 100% !important;
-    grid-column: 1 / -1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-top: 4px !important;
-    box-sizing: border-box !important;
 }
