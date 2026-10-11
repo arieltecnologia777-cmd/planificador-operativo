@@ -252,8 +252,8 @@ body {
     text-align: center !important;
     flex: 1;
     min-width: 68px;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
+    background: #ffffff !important;
+    transition: all 0.2s ease;
 }
 
 .kpi-icon-wrap {
@@ -270,7 +270,6 @@ body {
     font-size: 1.1rem !important;
     font-weight: 800 !important;
     margin: 2px 0 !important;
-    color: #0f172a !important;
 }
 
 .kpi-label-row {
@@ -283,21 +282,57 @@ body {
     white-space: nowrap;
 }
 
+/* Colores y resplandor neón sutil para cada KPI */
+.kpi-card-neon.online {
+    border: 1.5px solid rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15) !important;
+}
 .kpi-card-neon.online .kpi-icon-wrap { background: rgba(16, 185, 129, 0.15); color: #059669; }
+.kpi-card-neon.online span { color: #059669 !important; text-shadow: 0 0 6px rgba(5, 150, 105, 0.25); }
+
+.kpi-card-neon.offline {
+    border: 1.5px solid rgba(239, 68, 68, 0.4) !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.15) !important;
+}
 .kpi-card-neon.offline .kpi-icon-wrap { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.kpi-card-neon.offline span { color: #dc2626 !important; text-shadow: 0 0 6px rgba(220, 38, 38, 0.25); }
+
+.kpi-card-neon.parcial {
+    border: 1.5px solid rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.15) !important;
+}
 .kpi-card-neon.parcial .kpi-icon-wrap { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.kpi-card-neon.parcial span { color: #d97706 !important; text-shadow: 0 0 6px rgba(217, 119, 6, 0.25); }
+
+.kpi-card-neon.velocidad {
+    border: 1.5px solid rgba(56, 189, 248, 0.4) !important;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.15) !important;
+}
 .kpi-card-neon.velocidad .kpi-icon-wrap { background: rgba(56, 189, 248, 0.15); color: #0284c7; }
+.kpi-card-neon.velocidad span { color: #0284c7 !important; text-shadow: 0 0 6px rgba(2, 132, 199, 0.25); }
+
+.kpi-card-neon.pqrs {
+    border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.15) !important;
+}
 .kpi-card-neon.pqrs .kpi-icon-wrap { background: rgba(168, 85, 247, 0.15); color: #9333ea; }
+.kpi-card-neon.pqrs span { color: #9333ea !important; text-shadow: 0 0 6px rgba(147, 51, 234, 0.25); }
+
+.kpi-card-neon.otros {
+    border: 1.5px solid rgba(99, 102, 241, 0.4) !important;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15) !important;
+}
 .kpi-card-neon.otros .kpi-icon-wrap { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
+.kpi-card-neon.otros span { color: #4f46e5 !important; text-shadow: 0 0 6px rgba(79, 70, 229, 0.25); }
 
 .dot-green {
     width: 5px;
     height: 5px;
     background-color: #10b981;
     border-radius: 50%;
+    box-shadow: 0 0 6px #10b981;
     display: inline-block;
 }
-
 /* ==========================================================
    GRILLA E INCORPORACIÓN DE TARJETAS Y TABLAS (MODO CLARO)
    ========================================================== */
