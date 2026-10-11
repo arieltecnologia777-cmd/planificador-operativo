@@ -4,7 +4,7 @@
     margin: 0 auto;
 }
 
-/* Panel Superior */
+/* Panel Superior: Distribución exacta */
 .panel-superior {
     display: flex;
     justify-content: space-between;
@@ -45,6 +45,12 @@
 
 .btn-zona { background: #2b6cb0; }
 .btn-todas { background: #a0aec0; color: #1a202c; }
+
+.bloque-filtros-centro {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
 
 .grupo-filtros {
     display: flex;
@@ -92,7 +98,7 @@
     margin-top: 4px;
 }
 
-/* KPIs Superiores */
+/* KPIs Arriba a la Derecha */
 .kpis-estado-superior {
     display: flex;
     gap: 6px;
@@ -113,16 +119,15 @@
 .kpi-box.parcial { background: #f56565; color: white; }
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
-/* LAYOUT PRINCIPAL TIPO POWER BI (3 Columnas Exactas) */
+/* Grid Principal (Mapa Izquierda / Tabla Derecha-Centro) */
 .panel-layout-pbi {
     display: grid;
-    grid-template-columns: 280px 1fr 300px;
+    grid-template-columns: 320px 1fr;
     gap: 16px;
     align-items: start;
 }
 
-/* Columna Izquierda: Mapa y Notas */
-.columna-izq-mapa {
+.columna-izq-inferior {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -152,22 +157,9 @@
     padding: 2px 6px;
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.notas-importantes {
-    background: #fff;
-    padding: 10px 12px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    border: 1px solid #cbd5e0;
-    color: #4a5568;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-}
-
-.notas-importantes strong { color: #c53030; }
-
-/* Tabla Central de Carpetas */
+/* Tabla de Cumplimiento de Carpetas Centrada abajo */
 .tabla-carpetas-wrapper {
     background: white;
     padding: 12px;
@@ -184,11 +176,6 @@
     padding: 6px;
     border-radius: 6px;
     margin-bottom: 10px;
-}
-
-.tabla-fondo-imagen {
-    background: #fff;
-    padding: 2px;
 }
 
 .tabla-dinamica-carpetas {
@@ -218,13 +205,7 @@
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
 
-/* Columna Derecha: Backlog y Performance */
-.panel-lateral-derecho {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
+/* Performance y Backlog a la Izquierda Abajo */
 .bloque-backlog, .bloque-performance {
     background: white;
     padding: 12px;
