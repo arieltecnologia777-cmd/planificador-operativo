@@ -48,12 +48,6 @@
 .btn-zona { background: #3182ce; }
 .btn-todas { background: #a0aec0; color: #1a202c; }
 
-.bloque-filtros-centro {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
 .grupo-filtros {
     display: flex;
     flex-direction: column;
@@ -729,7 +723,7 @@
 }
 
 /* ==========================================================
-   BLOQUE DE FILTROS CENTRAL - ESTRUCTURA LIMPIA Y HORIZONTAL
+   BLOQUE DE FILTROS CENTRAL - DISEÑO HORIZONTAL Y BOTÓN ANCHO TOTAL (CSS DEFINITIVO)
    ========================================================== */
 .bloque-filtros-centro {
     display: flex !important;
@@ -739,29 +733,47 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 10px 14px !important;
+    padding: 14px 16px !important; /* Altura simétrica idéntica a Total CD y KPIs */
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
-    gap: 8px !important;
+    gap: 10px !important;
 }
 
-/* Forzar que los grupos de filtros dentro del bloque central vayan lado a lado en una sola fila superior */
-.bloque-filtros-centro {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: flex-start !important;
-    justify-content: space-between !important;
-}
-
-/* Los dos primeros elementos (Proyecto y Departamento) ocupan la parte superior lado a lado */
-.bloque-filtros-centro .grupo-filtros {
+/* Forzar que los dos primeros grupos (Proyecto y Departamento) queden lado a lado horizontalmente */
+.bloque-filtros-centro > .grupo-filtros {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+}
+
+/* Creamos una fila superior virtual flexible para alinear los dos títulos y sus botones lado a lado */
+.bloque-filtros-centro {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    grid-template-rows: auto auto !important;
+    gap: 10px 20px !important;
+    align-items: flex-start !important;
+}
+
+/* Posicionar el grupo Proyecto arriba a la izquierda */
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(1) {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+}
+
+/* Posicionar el grupo Filtro Departamento arriba a la derecha */
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(2) {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 2 !important;
+}
+
+.grupo-filtros {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
     text-align: center !important;
-    gap: 2px !important;
-    flex: 1 !important;
+    gap: 4px;
 }
 
 .label-titulo {
@@ -772,14 +784,13 @@
     letter-spacing: 0.5px;
     text-align: center !important;
     width: 100%;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 /* Botones de Filtro y Departamentos */
 .botones-filtro, .botones-departamentos {
     display: flex;
     gap: 6px;
-    justify-content: center;
 }
 
 .btn-filtro, .btn-depto {
@@ -809,9 +820,10 @@
     text-shadow: 0 0 6px rgba(96, 165, 250, 0.6);
 }
 
-/* Botón de borrar filtros abarcando exactamente el 100% de la parte inferior de lado a lado */
+/* Botón de borrar filtros abarcando exactamente el 100% de la fila inferior de lado a lado */
 .btn-borrar-filtros {
-    flex-basis: 100% !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 / 3 !important;
     width: 100% !important;
     background: rgba(127, 29, 29, 0.3) !important;
     border: 1px solid rgba(239, 68, 68, 0.4) !important;
@@ -825,7 +837,6 @@
     justify-content: center !important;
     align-items: center !important;
     box-sizing: border-box !important;
-    margin-top: 4px !important;
     transition: all 0.2s ease;
 }
 
