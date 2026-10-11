@@ -1,5 +1,5 @@
 .dashboard-container {
-    padding: 15px 0;
+    padding: 10px 0;
     max-width: 1450px;
     margin: 0 auto;
 }
@@ -10,9 +10,9 @@
     justify-content: space-between;
     align-items: center;
     background: #e2e8f0;
-    padding: 12px 18px;
+    padding: 10px 15px;
     border-radius: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -120,25 +120,22 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL: 
-   Columna 1 (Izquierda): Mapa, Performance y Backlog apilados
-   Columna 2 (Derecha): Tabla de Cumplimiento por Carpetas
+   GRID PRINCIPAL (Estructura de Cuadrícula 2x2 exacta)
+   Columna 1: Mapa (arriba) y Performance (abajo)
+   Columna 2: Tabla de Carpetas (arriba) y Backlog (abajo)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
     grid-template-columns: 320px 1fr;
-    gap: 20px;
+    grid-template-rows: auto auto;
+    gap: 16px;
     align-items: start;
 }
 
-.columna-izq-inferior {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-/* Mapa Izquierda Arriba */
+/* 1. Mapa (Fila 1, Columna 1) */
 .mapa-regiones-container {
+    grid-column: 1;
+    grid-row: 1;
     background: #1a202c;
     border-radius: 12px;
     height: 300px;
@@ -164,70 +161,12 @@
     cursor: pointer;
 }
 
-/* Performance e Indicadores Backlog Izquierda Abajo */
-.bloque-backlog, .bloque-performance {
+/* 2. Tabla de Carpetas (Fila 1, Columna 2) */
+.tabla-carpetas-wrapper {
+    grid-column: 2;
+    grid-row: 1;
     background: white;
     padding: 14px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-size: 0.8rem;
-}
-
-.bloque-backlog h4, .bloque-performance h4 {
-    margin-top: 0;
-    font-size: 0.85rem;
-    background: #718096;
-    color: white;
-    padding: 6px;
-    border-radius: 6px;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.item-backlog-pbi {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-}
-
-.badge-cumplimiento {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.75rem;
-}
-.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
-.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
-
-.perf-bar {
-    margin-bottom: 8px;
-}
-
-.perf-bar label {
-    font-size: 0.75rem;
-    color: #4a5568;
-    display: block;
-    margin-bottom: 2px;
-}
-
-.progress {
-    background: #edf2f7;
-    height: 12px;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid #cbd5e0;
-}
-
-.progress .bar { height: 100%; }
-.progress .bar.red { background: #f56565; }
-.progress .bar.green { background: #48bb78; }
-
-/* Tabla de Cumplimiento de Carpetas a la Derecha */
-.tabla-carpetas-wrapper {
-    background: white;
-    padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
@@ -269,3 +208,87 @@
 
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
+
+/* 3. Performance (Fila 2, Columna 1) */
+.bloque-performance {
+    grid-column: 1;
+    grid-row: 2;
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
+}
+
+.bloque-performance h4 {
+    margin-top: 0;
+    font-size: 0.85rem;
+    background: #718096;
+    color: white;
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.perf-bar {
+    margin-bottom: 8px;
+}
+
+.perf-bar label {
+    font-size: 0.75rem;
+    color: #4a5568;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.progress {
+    background: #edf2f7;
+    height: 12px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #cbd5e0;
+}
+
+.progress .bar { height: 100%; }
+.progress .bar.red { background: #f56565; }
+.progress .bar.green { background: #48bb78; }
+
+/* 4. Indicador Backlog (Fila 2, Columna 2) */
+.bloque-backlog {
+    grid-column: 2;
+    grid-row: 2;
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-size: 0.8rem;
+}
+
+.bloque-backlog h4 {
+    margin-top: 0;
+    font-size: 0.85rem;
+    background: #718096;
+    color: white;
+    padding: 6px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.item-backlog-pbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+}
+
+.badge-cumplimiento {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
+.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
