@@ -18,6 +18,15 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
+// Diccionario de imágenes del mapa por departamento
+const MAPAS_DEPARTAMENTOS = {
+    "TODOS": "../assets/mapas/colombia_general.png",
+    "ANTIOQUIA": "../assets/mapas/antioquia.png",
+    "CESAR": "../assets/mapas/cesar.png",
+    "LA GUAJIRA": "../assets/mapas/guajira.png",
+    "SAI": "../assets/mapas/sai.png"
+};
+
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
@@ -76,6 +85,19 @@ async function cargarNotaDelDia() {
     }
 }
 
+// Función para cambiar dinámicamente el mapa según el departamento seleccionado
+function actualizarImagenMapa(depto) {
+    const imgElement = document.getElementById("imgMapaDepto");
+    if (imgElement) {
+        const rutaImagen = MAPAS_DEPARTAMENTOS[depto] || MAPAS_DEPARTAMENTOS["TODOS"];
+        imgElement.style.opacity = "0"; 
+        setTimeout(() => {
+            imgElement.src = rutaImagen;
+            imgElement.style.opacity = "1";
+        }, 150);
+    }
+}
+
 function aplicarColorCumplimiento(elementoId, porcentaje) {
     const el = document.getElementById(elementoId);
     if (!el) return;
@@ -104,20 +126,23 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
+    // Actualizar visualmente el mapa dinámico
+    actualizarImagenMapa(departamentoFiltroActual);
+
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T (Estado real)
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I (Total IDs afectados)
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; // Columna U
-    const colStopper = 21;  // Stopper general
-    const colStopperRepuestos = 28; // Columna AC
-    const colStopperFM = 29;        // Columna AD
-    const colRangoK = 10;           // Columna K (Rango de afectación)
+    const colCarpetaU = 20; 
+    const colStopper = 21;  
+    const colStopperRepuestos = 28; 
+    const colStopperFM = 29;        
+    const colRangoK = 10;           
 
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
@@ -134,14 +159,13 @@ function renderizarDatosDashboard() {
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
     let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
 
-    // Acumuladores para los 6 rangos de afectación de la tabla inferior
     let rangos = {
-        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // MENOR A 5 DÍAS
-        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // DE 5 A 15 DÍAS
-        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // DE 15 A 30 DÍAS
-        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // DE 30 A 45 DÍAS
-        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // DE 45 A 60 DÍAS
-        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }  // MAYOR A 60 DÍAS
+        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
     };
 
     datosFiltrados.forEach(fila => {
@@ -186,7 +210,6 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
         }
 
-        // Cruce exacto por Columna K (Rango de afectación) y Columna T (Estado real) sumando IDs (Columna I)
         let targetRango = null;
         if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5")) targetRango = rangos.r1;
         else if (rangoK.includes("5 A 15") || rangoK.includes("5-15")) targetRango = rangos.r2;
@@ -204,14 +227,12 @@ function renderizarDatosDashboard() {
         }
     });
 
-    // Neto sin stopper
     const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
     const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
     const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
     const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
     const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
 
-    // Metas y cumplimiento
     const deptoKey = departamentoFiltroActual.toUpperCase();
     const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
 
@@ -248,7 +269,6 @@ function renderizarDatosDashboard() {
 
     const totalOnline = Math.max(0, totalSitiosFijo - sumaOffline);
 
-    // Actualizar KPIs superiores
     if (document.getElementById("valOnline")) document.getElementById("valOnline").textContent = totalOnline;
     if (document.getElementById("valOffline")) document.getElementById("valOffline").textContent = sumaOffline;
     if (document.getElementById("valParcial")) document.getElementById("valParcial").textContent = sumaParcial;
@@ -256,7 +276,6 @@ function renderizarDatosDashboard() {
     if (document.getElementById("valPqrs")) document.getElementById("valPqrs").textContent = sumaPqrs;
     if (document.getElementById("valOtrosP3")) document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
 
-    // Pintar Tabla de Carpetas
     if (document.getElementById("c_neto_off")) document.getElementById("c_neto_off").textContent = sumaOffline;
     if (document.getElementById("c_neto_par")) document.getElementById("c_neto_par").textContent = sumaParcial;
     if (document.getElementById("c_neto_vel")) document.getElementById("c_neto_vel").textContent = sumaVelocidad;
@@ -287,7 +306,6 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
     if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
 
-    // --- PINTAR TABLA DE RANGOS DE AFECTACIÓN ---
     const pintarFilaRangos = (prefijo, obj) => {
         const elOff = document.getElementById(`${prefijo}_off`);
         const elPar = document.getElementById(`${prefijo}_par`);
@@ -309,7 +327,6 @@ function renderizarDatosDashboard() {
     pintarFilaRangos("r5", rangos.r5);
     pintarFilaRangos("r6", rangos.r6);
 
-    // Performance
     const divisorPerf = totalSitiosFijo || 1;
     const pctOfflineVal = ((sumaOffline / divisorPerf) * 100).toFixed(2);
     const pctOnlineVal = ((totalOnline / divisorPerf) * 100).toFixed(2);
@@ -321,7 +338,6 @@ function renderizarDatosDashboard() {
     if (document.getElementById("barPerfOnline")) document.getElementById("barPerfOnline").style.width = `${pctOnlineVal}%`;
 }
 
-// Filtros
 document.addEventListener("click", (e) => {
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
