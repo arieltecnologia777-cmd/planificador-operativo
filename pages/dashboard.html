@@ -6,16 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
-    <!-- Ruta correcta hacia tus estilos CSS -->
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <!-- Librería SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
 
-<!-- Botón hamburguesa flotante fijo en la pantalla / Tarjeta lateral colapsada -->
 <button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
     ☰
 </button>
@@ -23,7 +20,6 @@
 <div class="layout">
 
     <aside class="sidebar">
-
         <div class="logo-box">
             <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
             <div class="logo-text">
@@ -58,12 +54,10 @@
                 Reportes
             </a>
         </nav>
-
     </aside>
 
     <main class="main-content">
 
-        <!-- BLOQUE HERO HEREDADO DE PLANEACIÓN -->
         <header class="hero">
             <div class="hero-content">
                 <div class="hero-badge">
@@ -77,8 +71,16 @@
 
         <div class="dashboard-container">
             
-            <!-- SECCIÓN SUPERIOR: Filtros y KPIs de Estado -->
+            <!-- PANEL SUPERIOR: Filtros y KPIs -->
             <div class="panel-superior">
+                <!-- Bloques superiores izquierdos simulando Total CD / Zona -->
+                <div class="bloque-totales-cd">
+                    <div class="btn-total-cd">TOTAL CD</div>
+                    <div class="val-total-cd">1422</div>
+                    <div class="btn-zona">ZONA</div>
+                    <div class="btn-todas">TODAS</div>
+                </div>
+
                 <div class="grupo-filtros">
                     <span class="label-titulo">Proyecto</span>
                     <div class="botones-filtro">
@@ -102,40 +104,46 @@
                 <!-- KPIs Estado Superior -->
                 <div class="kpis-estado-superior">
                     <div class="kpi-box online">
-                        <span id="valOnline">0</span> Online 🌐
+                        <span id="valOnline">1343</span> Online 🌐
                     </div>
                     <div class="kpi-box offline">
-                        <span id="valOffline">0</span> Offline 🚫
+                        <span id="valOffline">79</span> Offline 🚫
                     </div>
                     <div class="kpi-box parcial">
-                        <span id="valParcial">0</span> Parcial ⚠️
+                        <span id="valParcial">6</span> Parcial ⚠️
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valVelocidad">0</span> Velocidad 📶
+                        <span id="valVelocidad">12</span> Velocidad 📶
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valPqrs">0</span> PQRs 🎧
+                        <span id="valPqrs">17</span> PQRs 🎧
                     </div>
                     <div class="kpi-box sub">
-                        <span id="valOtrosP3">0</span> Otros P3 📋
+                        <span id="valOtrosP3">72</span> Otros P3 📋
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN MEDIA: Mapa Geográfico y Tabla de Cumplimiento por Carpetas -->
-            <div class="panel-medio">
+            <!-- PANEL INFERIOR: Distribución exactas del PBI (Mapa izq, Tabla centro, Métricas der) -->
+            <div class="panel-layout-pbi">
                 
-                <!-- Mapa interactivo con marcadores -->
-                <div class="mapa-regiones-container">
-                    <div class="mapa-silueta">
-                        <div class="marcador-mapa" data-depto="SAI" style="top: 25%; left: 15%;" title="Filtrar SAI">SAI 📍</div>
-                        <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 35%; left: 70%;" title="Filtrar Guajira">GUAJIRA 📍</div>
-                        <div class="marcador-mapa" data-depto="CESAR" style="top: 55%; left: 55%;" title="Filtrar Cesar">CESAR 📍</div>
-                        <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 75%; left: 35%;" title="Filtrar Antioquia">ANTIOQUIA 📍</div>
+                <!-- Columna Izquierda: Mapa con silueta y notas -->
+                <div class="columna-izq-mapa">
+                    <div class="mapa-regiones-container">
+                        <div class="mapa-silueta">
+                            <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
+                            <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
+                            <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
+                            <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
+                        </div>
+                    </div>
+                    <div class="notas-importantes">
+                        <span class="icono-nota">📢</span> <strong>Notas importantes</strong>
+                        <p>1. El % de la meta de cumplimiento se calcula quitando los casos con stoppers.</p>
                     </div>
                 </div>
 
-                <!-- Tabla con imagen de fondo y valores dinámicos -->
+                <!-- Columna Central: Tabla de Cumplimiento por Carpetas -->
                 <div class="tabla-carpetas-wrapper">
                     <h3>Cumplimiento por carpetas</h3>
                     <div class="tabla-fondo-imagen">
@@ -153,19 +161,19 @@
                             <tbody>
                                 <tr>
                                     <td>Total neto</td>
-                                    <td id="c_neto_off">0</td>
-                                    <td id="c_neto_par">0</td>
-                                    <td id="c_neto_vel">0</td>
-                                    <td id="c_neto_pqr">0</td>
-                                    <td id="c_neto_p3">0</td>
+                                    <td id="c_neto_off">79</td>
+                                    <td id="c_neto_par">6</td>
+                                    <td id="c_neto_vel">12</td>
+                                    <td id="c_neto_pqr">17</td>
+                                    <td id="c_neto_p3">72</td>
                                 </tr>
                                 <tr>
                                     <td>FM/Trasl./reubicaciones</td>
-                                    <td id="c_fm_off">0</td>
-                                    <td id="c_fm_par">0</td>
-                                    <td id="c_fm_vel">0</td>
-                                    <td id="c_fm_pqr">0</td>
-                                    <td id="c_fm_p3">0</td>
+                                    <td id="c_fm_off">18</td>
+                                    <td id="c_fm_par">3</td>
+                                    <td id="c_fm_vel">2</td>
+                                    <td id="c_fm_pqr">3</td>
+                                    <td id="c_fm_p3">3</td>
                                 </tr>
                                 <tr>
                                     <td>Repuestos</td>
@@ -173,62 +181,66 @@
                                     <td id="c_rep_par">0</td>
                                     <td id="c_rep_vel">0</td>
                                     <td id="c_rep_pqr">0</td>
-                                    <td id="c_rep_p3">0</td>
+                                    <td id="c_rep_p3">20</td>
+                                </tr>
+                                <tr>
+                                    <td>Requiere atención S.O</td>
+                                    <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                                 </tr>
                                 <tr>
                                     <td>Neto sin stopper</td>
-                                    <td id="c_sin_off">0</td>
-                                    <td id="c_sin_par">0</td>
-                                    <td id="c_sin_vel">0</td>
-                                    <td id="c_sin_pqr">0</td>
-                                    <td id="c_sin_p3">0</td>
+                                    <td id="c_sin_off">61</td>
+                                    <td id="c_sin_par">3</td>
+                                    <td id="c_sin_vel">10</td>
+                                    <td id="c_sin_pqr">14</td>
+                                    <td id="c_sin_p3">49</td>
                                 </tr>
                                 <tr>
                                     <td>Meta</td>
-                                    <td id="c_meta_off">0</td>
-                                    <td id="c_meta_par">0</td>
-                                    <td id="c_meta_vel">0</td>
-                                    <td id="c_meta_pqr">0</td>
-                                    <td id="c_meta_p3">0</td>
+                                    <td id="c_meta_off">37</td>
+                                    <td id="c_meta_par">7</td>
+                                    <td id="c_meta_vel">10</td>
+                                    <td id="c_meta_pqr">1</td>
+                                    <td id="c_meta_p3">34</td>
                                 </tr>
                                 <tr class="fila-cumplimiento">
                                     <td>Cumplimiento %</td>
-                                    <td id="pct_off" class="bg-yellow">0 %</td>
-                                    <td id="pct_par" class="bg-green">0 %</td>
-                                    <td id="pct_vel" class="bg-green">0 %</td>
-                                    <td id="pct_pqr" class="bg-yellow">0 %</td>
-                                    <td id="pct_p3" class="bg-yellow">0 %</td>
+                                    <td id="pct_off" class="bg-yellow">59 %</td>
+                                    <td id="pct_par" class="bg-green">233 %</td>
+                                    <td id="pct_vel" class="bg-green">100 %</td>
+                                    <td id="pct_pqr" class="bg-yellow">7 %</td>
+                                    <td id="pct_p3" class="bg-yellow">69 %</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Panel Lateral Derecho: Backlog R1 / R2 e Indicadores de Performance -->
+                <!-- Columna Derecha: Backlog R1/R2 y Performance -->
                 <div class="panel-lateral-derecho">
                     <div class="bloque-backlog">
-                        <h4>Indicador Backlog</h4>
-                        <div class="item-backlog">
+                        <h4>Indicador Ejecución % Cumplimiento</h4>
+                        <div class="item-backlog-pbi">
                             <span>Backlog R1</span>
-                            <span id="valBacklogR1">0 %</span>
-                            <div class="barra-mini"><div class="fill green" id="barR1" style="width: 0%;"></div></div>
+                            <strong>97,17 %</strong>
+                            <span class="badge-cumplimiento green">104.49%</span>
                         </div>
-                        <div class="item-backlog">
+                        <div class="item-backlog-pbi">
                             <span>Backlog R2</span>
-                            <span id="valBacklogR2">0 %</span>
-                            <div class="barra-mini"><div class="fill red" id="barR2" style="width: 0%;"></div></div>
+                            <strong>87,53 %</strong>
+                            <span class="badge-cumplimiento red">94.12%</span>
                         </div>
                     </div>
 
                     <div class="bloque-performance">
                         <h4>% Performance</h4>
                         <div class="perf-bar">
-                            <label id="lblOfflinePerf">Offline (0%)</label>
-                            <div class="progress"><div class="bar red" id="barPerfOffline" style="width: 0%;"></div></div>
+                            <label>Offline 5.21%</label>
+                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
                         </div>
                         <div class="perf-bar">
-                            <label id="lblOnlinePerf">Online (0%)</label>
-                            <div class="progress"><div class="bar green" id="barPerfOnline" style="width: 0%;"></div></div>
+                            <label>Online 94.79%</label>
+                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
                         </div>
                     </div>
                 </div>
@@ -241,7 +253,6 @@
 
 </div>
 
-<!-- Script para controlar el botón de hamburguesa del Sidebar -->
 <script>
     document.addEventListener("click", (e) => {
         const btnToggle = e.target.closest("#btnToggleSidebar");
@@ -250,8 +261,6 @@
         }
     });
 </script>
-
-<!-- Script de lógica del Dashboard conectado al Dataset -->
 <script src="../js/dashboard.js"></script>
 
 </body>
