@@ -855,10 +855,10 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 /* ==========================================================
-   ALTURA UNIFORME Y EXACTA PARA LOS TRES BLOQUES SUPERIORES
+   ALINEACIÓN NATURAL Y EQUILIBRIO DE ALTURA DEL BLOQUE TOTAL CD
    ========================================================== */
 
-/* 1. El panel superior estira los bloques de manera uniforme */
+/* 1. Panel superior alineado al centro de manera limpia (sin estiramientos forzados) */
 .panel-superior {
     background: rgba(13, 20, 36, 0.25) !important;
     backdrop-filter: blur(10px);
@@ -869,11 +869,11 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
-    align-items: stretch !important; /* Fuerza la misma altura exacta en los tres bloques */
+    align-items: center !important; /* Mantiene todo centrado y en su tamaño natural */
     gap: 12px;
 }
 
-/* 2. Bloque Total CD con distribución vertical uniforme */
+/* 2. Bloque Total CD con el padding vertical exacto para igualar visualmente a los filtros */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(12px);
@@ -881,11 +881,12 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 10px 12px !important;
+    padding: 14px 12px !important; /* Padding vertical ajustado para empatar altura */
     display: flex;
     flex-direction: column;
-    justify-content: space-between !important; /* Distribuye el espacio para igualar altura */
-    width: 200px;
+    justify-content: space-between;
+    gap: 10px;
+    width: 205px;
     box-sizing: border-box;
 }
 
@@ -902,10 +903,9 @@
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
-    flex-grow: 1;
 }
 
-/* 4. Contenedor de KPIs (asegurando el mismo padding y simetría) */
+/* 4. Contenedor de KPIs */
 .kpis-wrapper-contenedor {
     background: transparent !important;
     border: 1px solid rgba(56, 189, 248, 0.3);
