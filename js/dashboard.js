@@ -76,19 +76,21 @@ async function cargarNotaDelDia() {
     }
 }
 
-// Función visual para renderizar la barra de cumplimiento con línea de meta al 50% (escala máx 200%)
+// Función visual para renderizar la barra de cumplimiento sin relleno en el fondo de la celda
 function aplicarColorCumplimiento(elementoId, porcentaje) {
     const el = document.getElementById(elementoId);
     if (!el) return;
 
-    let colorFondo = "#dc3545"; // Rojo por defecto (<70%)
+    el.className = ""; // Limpiar clases de fondo heredadas
+    el.style.backgroundColor = "transparent"; // Quitar relleno de color de la celda TD
+
+    let colorFondo = "#dc3545"; // Rojo (<70%)
     if (porcentaje >= 100) {
         colorFondo = "#28a745"; // Verde (>=100%)
     } else if (porcentaje >= 70) {
         colorFondo = "#ffc107"; // Amarillo (70% - 99%)
     }
 
-    // Escala donde el 100% se ubica exactamente en el centro (50% del ancho)
     const anchoBarra = Math.min(porcentaje / 2, 100);
 
     el.innerHTML = `
