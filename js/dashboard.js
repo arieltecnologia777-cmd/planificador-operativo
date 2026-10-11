@@ -110,15 +110,15 @@ function renderizarDatosDashboard() {
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; // Columna U
-    const colStopper = 21;  // Stopper general
-    const colStopperRepuestos = 28; // Columna AC
-    const colStopperFM = 29;        // Columna AD
-    const colRangoDias = 10;        // Columna K (índice 10)
+    const colCarpetaU = 20; 
+    const colStopper = 21;  
+    const colStopperRepuestos = 28; 
+    const colStopperFM = 29;        
+    const colRangoTextoT = 19;      // Columna T con los textos de rangos de afectación
 
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
@@ -135,15 +135,14 @@ function renderizarDatosDashboard() {
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
     let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
 
-    // Acumuladores para Rangos de Afectación (6 rangos)
-    // R1: <5, R2: 5-15, R3: 15-30, R4: 30-45, R5: 45-60, R6: >60
+    // Acumuladores para Rangos de Afectación (6 filas de rangos)
     let rangos = {
-        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
+        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // Menor a 5 días
+        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // De 5 a 15 días
+        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // De 15 a 30 días
+        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // De 30 a 45 días
+        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }, // De 45 a 60 días
+        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }  // Mayor a 60 días
     };
 
     datosFiltrados.forEach(fila => {
@@ -152,7 +151,7 @@ function renderizarDatosDashboard() {
         const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
         const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
-        const diasAfectacion = parseFloat(fila[colRangoDias]) || 0;
+        const textoRango = String(fila[colRangoTextoT] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
         if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
@@ -170,7 +169,7 @@ function renderizarDatosDashboard() {
         }
 
         const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
-        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS") || stopper.includes("REPUESTO");
+        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS");
 
         if (esRepuestoP3 && !esFM_P3) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
@@ -188,14 +187,14 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
         }
 
-        // Clasificación por Rangos de Días (Columna K)
+        // Clasificación por las categorías de texto en la columna de rangos
         let targetRango = null;
-        if (diasAfectacion < 5) targetRango = rangos.r1;
-        else if (diasAfectacion >= 5 && diasAfectacion < 15) targetRango = rangos.r2;
-        else if (diasAfectacion >= 15 && diasAfectacion < 30) targetRango = rangos.r3;
-        else if (diasAfectacion >= 30 && diasAfectacion < 45) targetRango = rangos.r4;
-        else if (diasAfectacion >= 45 && diasAfectacion < 60) targetRango = rangos.r5;
-        else targetRango = rangos.r6;
+        if (textoRango.includes("MENOR A 5") || textoRango.includes("< 5")) targetRango = rangos.r1;
+        else if (textoRango.includes("5 A 15") || textoRango.includes("5-15")) targetRango = rangos.r2;
+        else if (textoRango.includes("15 A 30") || textoRango.includes("15-30")) targetRango = rangos.r3;
+        else if (textoRango.includes("30 A 45") || textoRango.includes("30-45")) targetRango = rangos.r4;
+        else if (textoRango.includes("45 A 60") || textoRango.includes("45-60")) targetRango = rangos.r5;
+        else if (textoRango.includes("MAYOR A 60") || textoRango.includes("> 60")) targetRango = rangos.r6;
 
         if (targetRango) {
             if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
@@ -297,6 +296,7 @@ function renderizarDatosDashboard() {
 
     // --- PINTAR TABLA DE RANGOS DE AFECTACIÓN ---
     const pintarFilaRangos = (prefijo, obj) => {
+        // Buscamos los elementos basados en la estructura típica de IDs (ej: r1_off, r1_par...)
         const elOff = document.getElementById(`${prefijo}_off`);
         const elPar = document.getElementById(`${prefijo}_par`);
         const elVel = document.getElementById(`${prefijo}_vel`);
@@ -310,7 +310,6 @@ function renderizarDatosDashboard() {
         if (elP3)  elP3.textContent  = obj.p3;
     };
 
-    // Asegúrate de nombrar los IDs en tu HTML de rangos como r1_off, r1_par, r2_off, etc., o ajusta según tus selectores
     pintarFilaRangos("r1", rangos.r1);
     pintarFilaRangos("r2", rangos.r2);
     pintarFilaRangos("r3", rangos.r3);
