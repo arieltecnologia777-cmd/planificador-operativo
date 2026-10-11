@@ -36,7 +36,7 @@ async function inicializarDashboard() {
 
         if (filas.length < 2) return;
 
-        encabezadosGlobal = filas[0];
+        encabezadosGlobal = filas[0].map(h => h.trim());
         datosGlobal = filas.slice(1);
 
         renderizarDatosDashboard();
@@ -64,15 +64,20 @@ async function cargarNotaDelDia() {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Columna I (Total IDs afectados) -> índice 8
-    // Columna P (Estado real) -> índice 15
-    const idxTotalIds = 8;
-    const idxEstadoReal = 15;
+    // Buscar índices dinámicamente por nombre de columna para evitar errores de posición
+    const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
+    const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
+    const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
+
+    // Fallback a los índices por defecto si no los encuentra por nombre (I=8, P=15)
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 15;
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
+    const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
 
     let datosFiltrados = datosGlobal;
     if (departamentoFiltroActual !== "TODOS") {
         datosFiltrados = datosGlobal.filter(fila => {
-            const depto = String(fila[2] || "").trim().toUpperCase(); 
+            const depto = String(fila[colDepto] || "").trim().toUpperCase(); 
             return depto === departamentoFiltroActual;
         });
     }
@@ -84,8 +89,8 @@ function renderizarDatosDashboard() {
     let sumaOtrosP3 = 0;
 
     datosFiltrados.forEach(fila => {
-        const estado = (fila[idxEstadoReal] || "").toUpperCase();
-        const idsAfectados = parseInt(fila[idxTotalIds], 10) || 0;
+        const estado = String(fila[colEstado] || "").trim().toUpperCase();
+        const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
         if (estado.includes("OFFLINE")) {
             sumaOffline += idsAfectados;
@@ -100,7 +105,7 @@ function renderizarDatosDashboard() {
         }
     });
 
-    // Cálculo del Online: 1460 menos la suma de offline
+    // Cálculo del Online: 1460 menos la suma real de offline obtenida del dataset
     const totalOnline = Math.max(0, TOTAL_SITIOS_FIJO - sumaOffline);
 
     // Actualizar KPIs superiores
