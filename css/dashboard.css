@@ -839,3 +839,42 @@
     color: white !important;
     border-color: #ef4444 !important;
 }
+/* ==========================================================
+   RESTAURACIÓN DE POSICIÓN DEL PANEL SUPERIOR Y CONTENEDOR
+   ========================================================== */
+
+/* 1. Asegurar que el contenedor general del dashboard recupere su flujo normal */
+.dashboard-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: 10px !important;
+}
+
+/* 2. Fijar el panel superior de forma limpia y horizontal justo bajo el banner */
+.panel-superior {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: rgba(13, 20, 36, 0.25) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 10px 14px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box !important;
+    gap: 15px !important;
+}
+
+/* 3. Estabilizar la grilla principal inferior (Mapas y Tablas) para que no se desborde */
+.panel-layout-pbi {
+    display: grid !important;
+    grid-template-columns: 380px 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
