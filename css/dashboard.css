@@ -556,3 +556,26 @@ body {
     .panel-layout-pbi { grid-template-columns: 280px 1fr; gap: 12px; }
     .subgrid-superior-derecha, .subgrid-inferior-derecha { grid-template-columns: 1fr 280px; gap: 12px; }
 }
+/* ==========================================================
+   OCULTAR EL ICONO DE RAYO SOBRE LAS TABLAS
+   ========================================================== */
+
+.tabla-carpetas-wrapper .fa-bolt,
+.tabla-carpetas-wrapper i.fa,
+.tabla-carpetas-wrapper .icon-rayo,
+.tabla-carpetas-wrapper button:has(.fa-bolt),
+.tabla-carpetas-wrapper div:has(> .fa-bolt),
+.tabla-carpetas-wrapper span:has(> .fa-bolt),
+.tabla-carpetas-wrapper svg,
+.tabla-carpetas-wrapper img[src*="bolt"],
+.tabla-carpetas-wrapper .fas,
+.tabla-carpetas-wrapper .far {
+    display: none !important;
+}
+
+/* Selector general por si el icono está justo antes de la tabla con una clase genérica o etiqueta */
+.tabla-carpetas-wrapper > i,
+.tabla-carpetas-wrapper > span > i,
+.tabla-carpetas-wrapper > button {
+    display: none !important;
+}
