@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=10">
+    <link rel="stylesheet" href="../css/dashboard.css?v=11">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -142,7 +142,7 @@
                 <!-- COLUMNA DERECHA -->
                 <div class="columna-der-inferior">
                     
-                    <!-- FILA SUPERIOR: Tabla de Carpetas a la izquierda y Notas del Día en el cuadro rojo a la derecha -->
+                    <!-- FILA SUPERIOR: Tabla de Carpetas y Notas del Día (Sincronizadas desde localStorage) -->
                     <div class="subgrid-superior-derecha">
                         <!-- 1. Tabla Cumplimiento por Carpetas -->
                         <div class="tabla-carpetas-wrapper">
@@ -217,23 +217,18 @@
                             </div>
                         </div>
 
-                        <!-- 2. NUEVO CUADRO: Notas del Día (Ubicado exactamente en el recuadro rojo) -->
+                        <!-- 2. Notas del Día (Limpio, lectura automática sincronizada) -->
                         <div class="bloque-notas-dia">
                             <div class="notas-header">
                                 <h4>📝 Notas del Día / Bitácora</h4>
-                                <button type="button" id="btnToggleAdmin" class="btn-admin-mode" title="Cambiar a Modo Admin">🔒 Admin</button>
                             </div>
                             <div class="notas-body">
-                                <textarea id="txtNotasDia" placeholder="Escribe aquí las observaciones u novedades operativas del día..." readonly></textarea>
-                            </div>
-                            <div class="notas-footer">
-                                <span id="lblEstadoAdmin" class="estado-lectura">Modo Lectura (Bloqueado)</span>
-                                <button type="button" id="btnGuardarNotas" class="btn-guardar-notas" style="display: none;">💾 Guardar Cambios</button>
+                                <textarea id="txtNotasDia" placeholder="Sin notas registradas para hoy..." readonly></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- FILA INFERIOR: Rangos a la izquierda y [Performance + Backlog] a la derecha -->
+                    <!-- FILA INFERIOR: Rangos y [Performance + Backlog] -->
                     <div class="subgrid-inferior-derecha">
                         <!-- Tabla Rangos de Afectación -->
                         <div class="tabla-carpetas-wrapper">
@@ -280,7 +275,7 @@
                             </div>
                         </div>
 
-                        <!-- Columna derecha apilada: Performance arriba y Backlog abajo -->
+                        <!-- Columna derecha apilada: Performance y Backlog -->
                         <div class="bloques-derechos-apilados">
                             <div class="bloque-performance">
                                 <h4>% Performance</h4>
@@ -328,56 +323,15 @@
         }
     });
 
-    // Lógica interactiva para el módulo de Notas del Día (Admin / Guardado local)
+    // Cargar automáticamente las notas guardadas desde localStorage
     document.addEventListener("DOMContentLoaded", () => {
         const txtNotas = document.getElementById("txtNotasDia");
-        const btnAdmin = document.getElementById("btnToggleAdmin");
-        const btnGuardar = document.getElementById("btnGuardarNotas");
-        const lblEstado = document.getElementById("lblEstadoAdmin");
-
-        // Cargar nota guardada previamente
         if (localStorage.getItem("dashboard_nota_dia")) {
             txtNotas.value = localStorage.getItem("dashboard_nota_dia");
         }
-
-        let isAdmin = false;
-
-        btnAdmin.addEventListener("click", () => {
-            if (!isAdmin) {
-                const pass = prompt("Ingrese la contraseña de Administrador:");
-                if (pass === "admin123") { // Contraseña sencilla por defecto para pruebas
-                    isAdmin = true;
-                    txtNotas.removeAttribute("readonly");
-                    txtNotas.style.background = "#fff";
-                    btnAdmin.textContent = "🔓 Admin Activo";
-                    btnAdmin.style.background = "#48bb78";
-                    lblEstado.textContent = "Modo Edición Habilitado";
-                    lblEstado.style.color = "#2b6cb0";
-                    btnGuardar.style.display = "inline-block";
-                    alert("¡Acceso concedido como Administrador!");
-                } else if (pass !== null) {
-                    alert("Contraseña incorrecta.");
-                }
-            } else {
-                isAdmin = false;
-                txtNotas.setAttribute("readonly", "true");
-                txtNotas.style.background = "#f7fafc";
-                btnAdmin.textContent = "🔒 Admin";
-                btnAdmin.style.background = "#718096";
-                lblEstado.textContent = "Modo Lectura (Bloqueado)";
-                lblEstado.style.color = "#718096";
-                btnGuardar.style.display = "none";
-                alert("Sesión de administrador cerrada.");
-            }
-        });
-
-        btnGuardar.addEventListener("click", () => {
-            localStorage.setItem("dashboard_nota_dia", txtNotas.value);
-            alert("¡Notas del día guardadas correctamente en el sistema!");
-        });
     });
 </script>
-<script src="../js/dashboard.js?v=10"></script>
+<script src="../js/dashboard.js?v=11"></script>
 
 </body>
 </html>
