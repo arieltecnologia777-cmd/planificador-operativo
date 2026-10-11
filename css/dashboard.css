@@ -120,7 +120,7 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL (Estructura limpia en 2 Columnas)
+   GRID PRINCIPAL (2 Columnas Exactas: Izq y Der)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -129,14 +129,12 @@
     align-items: start;
 }
 
-/* Columna Izquierda (Mapa arriba, Performance abajo) */
 .columna-izq {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* Columna Derecha (Tabla arriba, Backlog abajo) */
 .columna-der {
     display: flex;
     flex-direction: column;
