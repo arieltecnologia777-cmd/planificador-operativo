@@ -1,37 +1,32 @@
-const DATASET_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vRUdWw76b-hysCr5vGj2sS6PsMR2a7IuV_7fOL1HO_gaq5Bq-Aa5dqjhGKogvgXR3uH_HHb8oEYqfY_/pub?output=csv";
+const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
+const TOTAL_SITIOS_FIJO = 1460;
 
 let datosGlobal = [];
-let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
 
 async function inicializarDashboard() {
     try {
         const resp = await fetch(DATASET_URL);
-        const texto = await resp.text();
+        const htmlText = await resp.text();
 
-        const filas = texto.trim().split(/\r?\n/).map(fila => {
-            const valores = [];
-            let actual = "";
-            let dentroComillas = false;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const tablaHtml = doc.querySelector('table');
 
-            for(let i=0; i<fila.length; i++){
-                const caracter = fila[i];
-                if(caracter === '"'){
-                    dentroComillas = !dentroComillas;
-                } else if(caracter === "," && !dentroComillas){
-                    valores.push(actual);
-                    actual = "";
-                } else {
-                    actual += caracter;
-                }
-            }
-            valores.push(actual);
-            return valores;
-        });
+        if (!tablaHtml) {
+            console.warn("No se encontró la tabla en el pubhtml.");
+            return;
+        }
 
-        encabezadosGlobal = filas[0];
-        datosGlobal = filas.slice(1);
+        const rows = Array.from(tablaHtml.querySelectorAll('tr')).map(tr =>
+            Array.from(tr.querySelectorAll('th, td')).map(td => td.textContent.trim())
+        );
+
+        if (rows.length < 2) return;
+
+        // Cabecera de la tabla (fila 0) y datos (desde la fila 1 en adelante)
+        const encabezados = rows[0];
+        datosGlobal = rows.slice(1);
 
         renderizarDatosDashboard();
     } catch (error) {
@@ -42,71 +37,99 @@ async function inicializarDashboard() {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    const idxDepto = encabezadosGlobal.findIndex(h => h.trim() === "Departamento");
-    const idxOnline = encabezadosGlobal.findIndex(h => h.trim() === "Online");
-    const idxOffline = encabezadosGlobal.findIndex(h => h.trim() === "Offline");
-    const idxParcial = encabezadosGlobal.findIndex(h => h.trim() === "Parcial");
-    const idxVelocidad = encabezadosGlobal.findIndex(h => h.trim() === "Velocidad");
-    const idxPQR = encabezadosGlobal.findIndex(h => h.trim() === "PQR");
-    const idxP3 = encabezadosGlobal.findIndex(h => h.trim() === "P3");
+    // Índice Columna I (Total IDs afectados) -> índice 8
+    // Índice Columna P (Estado real) -> índice 15
+    // Índice Departamento (por si se filtra por departamento, ej: índice aproximado o buscando en encabezados)
+    const idxTotalIds = 8;
+    const idxEstadoReal = 15;
 
-    // Filtrar por departamento si hay uno seleccionado
     let datosFiltrados = datosGlobal;
     if (departamentoFiltroActual !== "TODOS") {
         datosFiltrados = datosGlobal.filter(fila => {
-            const depto = String(fila[idxDepto] || "").trim().toUpperCase();
+            const depto = String(fila[2] || "").trim().toUpperCase(); // Ajustar índice de columna de depto si es necesario
             return depto === departamentoFiltroActual;
         });
     }
 
-    let totalOnline = 0;
-    let totalOffline = 0;
-    let totalParcial = 0;
-    let totalVelocidad = 0;
-    let totalPQR = 0;
-    let totalP3 = 0;
+    let sumaOffline = 0;
+    let sumaParcial = 0;
+    let sumaVelocidad = 0;
+    let sumaPqrs = 0;
+    let sumaOtrosP3 = 0;
 
     datosFiltrados.forEach(fila => {
-        if (String(fila[idxOnline]).trim() === "1" || String(fila[idxOnline]).trim().toUpperCase() === "ONLINE") totalOnline++;
-        if (String(fila[idxOffline]).trim() === "1" || String(fila[idxOffline]).trim().toUpperCase() === "OFFLINE") totalOffline++;
-        if (String(fila[idxParcial]).trim() === "1" || String(fila[idxParcial]).trim().toUpperCase() === "PARCIAL") totalParcial++;
-        
-        totalVelocidad += parseInt(fila[idxVelocidad]) || 0;
-        totalPQR += parseInt(fila[idxPQR]) || 0;
-        totalP3 += parseInt(fila[idxP3]) || 0;
+        const estado = (fila[idxEstadoReal] || "").toUpperCase();
+        const idsAfectados = parseInt(fila[idxTotalIds], 10) || 0;
+
+        if (estado.includes("OFFLINE")) {
+            sumaOffline += idsAfectados;
+        } else if (estado.includes("PARCIAL")) {
+            sumaParcial += idsAfectados;
+        } else if (estado.includes("VELOCIDAD")) {
+            sumaVelocidad += idsAfectados;
+        } else if (estado.includes("PQR")) {
+            sumaPqrs += idsAfectados;
+        } else if (estado.includes("P3") || estado.includes("OTROS")) {
+            sumaOtrosP3 += idsAfectados;
+        }
     });
 
-    // Actualizar KPIs superiores
-    document.getElementById("valOnline").textContent = totalOnline || datosFiltrados.length;
-    document.getElementById("valOffline").textContent = totalOffline;
-    document.getElementById("valParcial").textContent = totalParcial;
-    document.getElementById("valVelocidad").textContent = totalVelocidad;
-    document.getElementById("valPqrs").textContent = totalPQR;
-    document.getElementById("valOtrosP3").textContent = totalP3;
+    // Cálculo del Online: 1460 menos la suma de offline
+    const totalOnline = Math.max(0, TOTAL_SITIOS_FIJO - sumaOffline);
 
-    // Actualizar Tabla de Carpetas
-    document.getElementById("c_neto_off").textContent = totalOffline;
-    document.getElementById("c_neto_par").textContent = totalParcial;
-    document.getElementById("c_neto_vel").textContent = totalVelocidad;
-    document.getElementById("c_neto_pqr").textContent = totalPQR;
-    document.getElementById("c_neto_p3").textContent = totalP3;
+    // Actualizar KPIs superiores
+    const elOnline = document.getElementById("valOnline");
+    const elOffline = document.getElementById("valOffline");
+    const elParcial = document.getElementById("valParcial");
+    const elVelocidad = document.getElementById("valVelocidad");
+    const elPqrs = document.getElementById("valPqrs");
+    const elOtrosP3 = document.getElementById("valOtrosP3");
+
+    if (elOnline) elOnline.textContent = totalOnline;
+    if (elOffline) elOffline.textContent = sumaOffline;
+    if (elParcial) elParcial.textContent = sumaParcial;
+    if (elVelocidad) elVelocidad.textContent = sumaVelocidad;
+    if (elPqrs) elPqrs.textContent = sumaPqrs;
+    if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
+
+    // Actualizar Tabla de Carpetas si existen los elementos
+    const netOff = document.getElementById("c_neto_off");
+    const netPar = document.getElementById("c_neto_par");
+    const netVel = document.getElementById("c_neto_vel");
+    const netPqr = document.getElementById("c_neto_pqr");
+    const netP3 = document.getElementById("c_neto_p3");
+
+    if (netOff) netOff.textContent = sumaOffline;
+    if (netPar) netPar.textContent = sumaParcial;
+    if (netVel) netVel.textContent = sumaVelocidad;
+    if (netPqr) netPqr.textContent = sumaPqrs;
+    if (netP3) netP3.textContent = sumaOtrosP3;
 
     // Actualizar % Performance
-    const totalSitios = (totalOnline + totalOffline + totalParcial) || 1;
-    const pctOfflineVal = ((totalOffline / totalSitios) * 100).toFixed(2);
+    const totalSitios = TOTAL_SITIOS_FIJO || 1;
+    const pctOfflineVal = ((sumaOffline / totalSitios) * 100).toFixed(2);
     const pctOnlineVal = ((totalOnline / totalSitios) * 100).toFixed(2);
 
-    document.getElementById("lblOfflinePerf").textContent = `Offline (${pctOfflineVal}%)`;
-    document.getElementById("barPerfOffline").style.width = `${pctOfflineVal}%`;
+    const lblOffPerf = document.getElementById("lblOfflinePerf");
+    const barOffPerf = document.getElementById("barPerfOffline");
+    if (lblOffPerf) lblOffPerf.textContent = `Offline (${pctOfflineVal}%)`;
+    if (barOffPerf) barOffPerf.style.width = `${pctOfflineVal}%`;
 
-    document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
-    document.getElementById("barPerfOnline").style.width = `${pctOnlineVal}%`;
+    const lblOnPerf = document.getElementById("lblOnlinePerf");
+    const barOnPerf = document.getElementById("barPerfOnline");
+    if (lblOnPerf) lblOnPerf.textContent = `Online (${pctOnlineVal}%)`;
+    if (barOnPerf) barOnPerf.style.width = `${pctOnlineVal}%`;
 
     // Indicadores Backlog
-    document.getElementById("valBacklogR1").textContent = "97,17 %";
-    document.getElementById("barR1").style.width = "97.17%";
-    document.getElementById("valBacklogR2").textContent = "87,53 %";
-    document.getElementById("barR2").style.width = "87.53%";
+    const valR1 = document.getElementById("valBacklogR1");
+    const barR1 = document.getElementById("barR1");
+    if (valR1) valR1.textContent = "97,17 %";
+    if (barR1) barR1.style.width = "97.17%";
+
+    const valR2 = document.getElementById("valBacklogR2");
+    const barR2 = document.getElementById("barR2");
+    if (valR2) valR2.textContent = "87,53 %";
+    if (barR2) barR2.style.width = "87.53%";
 }
 
 // Eventos de selección de departamento mediante botones o marcadores del mapa
