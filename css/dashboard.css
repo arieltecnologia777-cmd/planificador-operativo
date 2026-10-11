@@ -729,13 +729,21 @@
     display: grid !important;
     grid-template-columns: auto 1fr !important;
     grid-template-rows: auto auto !important;
-    gap: 7px 20px !important; /* Espacio vertical perfectamente calibrado */
+    
+    /* 🎯 MUEVE ESTO (1): Espacio vertical entre la fila superior y el botón de abajo. 
+       Si quieres que sea más delgado, baja el "7px" (ej: 5px). Si quieres más espacio, súbelo (ej: 9px). */
+    gap: 7px 20px !important; 
+    
     align-items: center !important;
     background: rgba(15, 23, 42, 0.45) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 11px 14px !important; /* Padding vertical ajustado para empalmar exacto */
+    
+    /* 🎯 MUEVE ESTO (2): Padding superior e inferior de toda la tarjeta central. 
+       Si el bloque se ve muy alto, baja el "11px" (ej: 9px o 8px). Si se ve muy bajo, súbelo (ej: 13px). */
+    padding: 10px 14px !important; 
+    
     border-radius: 16px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box !important;
