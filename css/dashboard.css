@@ -12,7 +12,7 @@
     background: #e2e8f0;
     padding: 10px 15px;
     border-radius: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -98,7 +98,7 @@
     margin-top: 4px;
 }
 
-/* KPIs Arriba a la Derecha */
+/* KPIs Arriba a la Derecha (Sin deformaciones) */
 .kpis-estado-superior {
     display: flex;
     gap: 6px;
@@ -120,34 +120,33 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL PBI FLUIDO (Ocupa el espacio de forma equilibrada)
+   GRID PRINCIPAL PBI (Estructura limpia y alineada)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 16px;
-    align-items: stretch;
+    align-items: start; /* Alineados naturalmente arriba sin estirar de más */
 }
 
 .columna-izq {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 14px;
+    gap: 16px;
 }
 
 .columna-der-inferior {
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 16px;
-    align-items: stretch; /* Estira la tabla y el backlog para que toquen el límite inferior exacto */
+    align-items: end; /* Mantiene la tabla y el backlog abajo perfectamente nivelados */
 }
 
-/* Mapa dinámico */
+/* Mapa */
 .mapa-regiones-container {
     background: #1a202c;
     border-radius: 12px;
-    height: 310px; /* Altura ideal para pantallas grandes */
+    height: 300px;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -176,9 +175,6 @@
     padding: 14px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .tabla-carpetas-wrapper h3 {
@@ -189,7 +185,7 @@
     background: #cbd5e0;
     padding: 6px;
     border-radius: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .tabla-dinamica-carpetas {
@@ -269,9 +265,6 @@
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .bloque-backlog-al-lado h4 {
@@ -282,14 +275,14 @@
     padding: 6px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .item-backlog-pbi {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 0.8rem;
 }
 
@@ -301,32 +294,3 @@
 }
 .badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
 .badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
-
-
-/* ==========================================================
-   MEDIA QUERIES PARA LAPTOPS (Ajuste fino sin scroll)
-   ========================================================== */
-@media (max-width: 1400px) {
-    .dashboard-container {
-        max-width: 1200px;
-    }
-
-    .panel-layout-pbi {
-        grid-template-columns: 280px 1fr;
-        gap: 12px;
-    }
-
-    .columna-der-inferior {
-        grid-template-columns: 1fr 290px;
-        gap: 12px;
-    }
-
-    .mapa-regiones-container {
-        height: 250px;
-    }
-
-    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-        padding: 6px;
-        font-size: 0.78rem;
-    }
-}
