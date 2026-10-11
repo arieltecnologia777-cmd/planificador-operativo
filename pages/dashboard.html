@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=23">
+    <link rel="stylesheet" href="../css/dashboard.css?v=24">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -301,7 +301,7 @@
                                     <span>Backlog R1</span>
                                     <strong>97,17 %</strong>
                                     <span class="badge-cumplimiento green">104.49%</span>
-                               querySelectorAll</div>
+                                </div>
                                 <div class="item-backlog-pbi">
                                     <span>Backlog R2</span>
                                     <strong>87,53 %</strong>
@@ -322,14 +322,13 @@
 </div>
 
 <!-- Scripts -->
-<script src="../js/dashboard.js?v=23"></script>
+<script src="../js/dashboard.js?v=24"></script>
 
 <script>
     const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
-    const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
     const TOTAL_SITIOS_FIJO = 1460;
 
-    // Cargar automáticamente la nota del día
+    // Cargar automáticamente la nota del día al abrir el dashboard
     async function cargarNotaDelDia() {
         try {
             const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
@@ -345,21 +344,18 @@
         }
     }
 
-    // Cargar y procesar el dataset de Google Sheets para calcular los KPIs
-    async function procesarDatasetDashboard() {
+    // Procesar dataset público de Google Sheets para los KPIs (Columna P y Columna I)
+    async function procesarDatasetDashboardCompleto() {
         try {
-            const resp = await fetch(DATASET_URL);
+            const pubhtmlUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
+            const resp = await fetch(pubhtmlUrl);
             const htmlText = await resp.text();
 
-            // Usar DOMParser para extraer la tabla del pubhtml de Google Sheets
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             const tablaHtml = doc.querySelector('table');
 
-            if (!tablaHtml) {
-                console.warn("No se encontró la tabla en el pubhtml.");
-                return;
-            }
+            if (!tablaHtml) return;
 
             const rows = Array.from(tablaHtml.querySelectorAll('tr')).map(tr =>
                 Array.from(tr.querySelectorAll('th, td')).map(td => td.textContent.trim())
@@ -378,7 +374,6 @@
             let sumaPqrs = 0;
             let sumaOtrosP3 = 0;
 
-            // Omitimos la cabecera (fila 0)
             for (let i = 1; i < rows.length; i++) {
                 const fila = rows[i];
                 const estado = (fila[idxEstadoReal] || "").toUpperCase();
@@ -397,25 +392,37 @@
                 }
             }
 
-            // Cálculo del Online: Total de sitios fijo (1460) menos la suma de Offline
             const totalOnline = Math.max(0, TOTAL_SITIOS_FIJO - sumaOffline);
 
-            // Pintar en los elementos del DOM del Dashboard
-            document.getElementById("valOnline").textContent = totalOnline;
-            document.getElementById("valOffline").textContent = sumaOffline;
-            document.getElementById("valParcial").textContent = sumaParcial;
-            document.getElementById("valVelocidad").textContent = sumaVelocidad;
-            document.getElementById("valPqrs").textContent = sumaPqrs;
-            document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
+            // Forzar actualización y evitar que dashboard.js los pise usando un intervalo corto y asignación directa
+            const actualizarKPIsDom = () => {
+                const elOnline = document.getElementById("valOnline");
+                const elOffline = document.getElementById("valOffline");
+                const elParcial = document.getElementById("valParcial");
+                const elVelocidad = document.getElementById("valVelocidad");
+                const elPqrs = document.getElementById("valPqrs");
+                const elOtrosP3 = document.getElementById("valOtrosP3");
+
+                if (elOnline) elOnline.textContent = totalOnline;
+                if (elOffline) elOffline.textContent = sumaOffline;
+                if (elParcial) elParcial.textContent = sumaParcial;
+                if (elVelocidad) elVelocidad.textContent = sumaVelocidad;
+                if (elPqrs) elPqrs.textContent = sumaPqrs;
+                if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
+            };
+
+            actualizarKPIsDom();
+            setTimeout(actualizarKPIsDom, 500);
+            setTimeout(actualizarKPIsDom, 1200);
 
         } catch (err) {
-            console.error("Error al procesar el dataset del dashboard:", err);
+            console.error("Error al procesar el dataset:", err);
         }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         cargarNotaDelDia();
-        procesarDatasetDashboard();
+        procesarDatasetDashboardCompleto();
     });
 </script>
 
