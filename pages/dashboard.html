@@ -71,7 +71,7 @@
 
         <div class="dashboard-container">
             
-            <!-- PANEL SUPERIOR: Filtros y KPIs -->
+            <!-- PANEL SUPERIOR -->
             <div class="panel-superior">
                 <div class="bloque-totales-cd">
                     <div class="btn-total-cd">TOTAL CD</div>
@@ -124,48 +124,20 @@
                 </div>
             </div>
 
-            <!-- GRID PRINCIPAL -->
+            <!-- GRID PRINCIPAL (4 ELEMENTOS EN DISTRIBUCIÓN EXACTA) -->
             <div class="panel-layout-pbi">
                 
-                <!-- Columna Izquierda: Mapa, Performance y Backlog apilados -->
-                <div class="columna-izq-inferior">
-                    <div class="mapa-regiones-container">
-                        <div class="mapa-silueta">
-                            <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
-                            <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
-                            <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
-                            <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
-                        </div>
-                    </div>
-
-                    <div class="bloque-performance">
-                        <h4>% Performance</h4>
-                        <div class="perf-bar">
-                            <label>Offline 5.21%</label>
-                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
-                        </div>
-                        <div class="perf-bar">
-                            <label>Online 94.79%</label>
-                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
-                        </div>
-                    </div>
-
-                    <div class="bloque-backlog">
-                        <h4>Indicador Ejecución % Cumplimiento</h4>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R1</span>
-                            <strong>97,17 %</strong>
-                            <span class="badge-cumplimiento green">104.49%</span>
-                        </div>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R2</span>
-                            <strong>87,53 %</strong>
-                            <span class="badge-cumplimiento red">94.12%</span>
-                        </div>
+                <!-- 1. MAPA (Izquierda Arriba) -->
+                <div class="mapa-regiones-container">
+                    <div class="mapa-silueta">
+                        <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
+                        <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
+                        <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
+                        <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha / Centro: Tabla de Cumplimiento por Carpetas -->
+                <!-- 2. TABLA DE CARPETAS (Derecha Arriba) -->
                 <div class="tabla-carpetas-wrapper">
                     <h3>Cumplimiento por carpetas</h3>
                     <div class="tabla-fondo-imagen">
@@ -235,6 +207,34 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- 3. PERFORMANCE (Izquierda Abajo) -->
+                <div class="bloque-performance">
+                    <h4>% Performance</h4>
+                    <div class="perf-bar">
+                        <label>Offline 5.21%</label>
+                        <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
+                    </div>
+                    <div class="perf-bar">
+                        <label>Online 94.79%</label>
+                        <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
+                    </div>
+                </div>
+
+                <!-- 4. INDICADOR BACKLOG (Derecha Abajo) -->
+                <div class="bloque-backlog">
+                    <h4>Indicador Ejecución % Cumplimiento</h4>
+                    <div class="item-backlog-pbi">
+                        <span>Backlog R1</span>
+                        <strong>97,17 %</strong>
+                        <span class="badge-cumplimiento green">104.49%</span>
+                    </div>
+                    <div class="item-backlog-pbi">
+                        <span>Backlog R2</span>
+                        <strong>87,53 %</strong>
+                        <span class="badge-cumplimiento red">94.12%</span>
                     </div>
                 </div>
 
