@@ -855,10 +855,10 @@
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
 /* ==========================================================
-   CORRECCIÓN SIMÉTRICA Y COMPACTA DE LA BARRA SUPERIOR
+   ALTURA UNIFORME Y EXACTA PARA LOS TRES BLOQUES SUPERIORES
    ========================================================== */
 
-/* 1. Contenedor general del panel superior alineado al centro (sin estirarse) */
+/* 1. El panel superior estira los bloques de manera uniforme */
 .panel-superior {
     background: rgba(13, 20, 36, 0.25) !important;
     backdrop-filter: blur(10px);
@@ -869,11 +869,11 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
-    align-items: center !important; /* Alineación centrada para que conserven su tamaño natural */
+    align-items: stretch !important; /* Fuerza la misma altura exacta en los tres bloques */
     gap: 12px;
 }
 
-/* 2. Bloque Total CD compacto y simétrico */
+/* 2. Bloque Total CD con distribución vertical uniforme */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(12px);
@@ -881,16 +881,15 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 8px 10px !important;
+    padding: 10px 12px !important;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-    width: 200px; /* Ancho controlado y simétrico */
+    justify-content: space-between !important; /* Distribuye el espacio para igualar altura */
+    width: 200px;
     box-sizing: border-box;
 }
 
-/* 3. Bloque de filtros central con tamaño armónico */
+/* 3. Bloque de filtros central */
 .bloque-filtros-centro {
     display: flex;
     gap: 15px;
@@ -899,8 +898,21 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 8px 14px !important;
+    padding: 10px 16px !important;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+/* 4. Contenedor de KPIs (asegurando el mismo padding y simetría) */
+.kpis-wrapper-contenedor {
+    background: transparent !important;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 10px 8px !important;
+    display: flex;
+    align-items: center;
     box-sizing: border-box;
 }
