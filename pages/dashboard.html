@@ -71,9 +71,9 @@
 
         <div class="dashboard-container">
             
-            <!-- PANEL SUPERIOR: Filtros y KPIs -->
+            <!-- PANEL SUPERIOR: Distribución idéntica a PBI -->
             <div class="panel-superior">
-                <!-- Bloques superiores izquierdos simulando Total CD / Zona -->
+                <!-- Bloques TOTAL CD y ZONA a la izquierda -->
                 <div class="bloque-totales-cd">
                     <div class="btn-total-cd">TOTAL CD</div>
                     <div class="val-total-cd">1422</div>
@@ -81,27 +81,30 @@
                     <div class="btn-todas">TODAS</div>
                 </div>
 
-                <div class="grupo-filtros">
-                    <span class="label-titulo">Proyecto</span>
-                    <div class="botones-filtro">
-                        <button class="btn-filtro active">MinTic 7K</button>
-                        <button class="btn-filtro">ODH 5G</button>
+                <!-- Filtros en la mitad -->
+                <div class="bloque-filtros-centro">
+                    <div class="grupo-filtros">
+                        <span class="label-titulo">Proyecto</span>
+                        <div class="botones-filtro">
+                            <button class="btn-filtro active">MinTic 7K</button>
+                            <button class="btn-filtro">ODH 5G</button>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="grupo-filtros">
-                    <span class="label-titulo">Filtro Departamento</span>
-                    <div class="botones-departamentos" id="filtroDeptosWeb">
-                        <button class="btn-depto active" data-depto="TODOS">TODOS</button>
-                        <button class="btn-depto" data-depto="ANTIOQUIA">ANTIOQUIA</button>
-                        <button class="btn-depto" data-depto="CESAR">CESAR</button>
-                        <button class="btn-depto" data-depto="LA GUAJIRA">LA GUAJIRA</button>
-                        <button class="btn-depto" data-depto="SAI">SAI</button>
+                    
+                    <div class="grupo-filtros">
+                        <span class="label-titulo">Filtro Departamento</span>
+                        <div class="botones-departamentos" id="filtroDeptosWeb">
+                            <button class="btn-depto active" data-depto="TODOS">TODOS</button>
+                            <button class="btn-depto" data-depto="ANTIOQUIA">ANTIOQUIA</button>
+                            <button class="btn-depto" data-depto="CESAR">CESAR</button>
+                            <button class="btn-depto" data-depto="LA GUAJIRA">LA GUAJIRA</button>
+                            <button class="btn-depto" data-depto="SAI">SAI</button>
+                        </div>
+                        <button class="btn-borrar-filtros" id="btnBorrarFiltros">🧹 Borrar filtros</button>
                     </div>
-                    <button class="btn-borrar-filtros" id="btnBorrarFiltros">🧹 Borrar filtros</button>
                 </div>
 
-                <!-- KPIs Estado Superior -->
+                <!-- KPIs en la parte superior derecha -->
                 <div class="kpis-estado-superior">
                     <div class="kpi-box online">
                         <span id="valOnline">1343</span> Online 🌐
@@ -124,11 +127,11 @@
                 </div>
             </div>
 
-            <!-- PANEL INFERIOR: Distribución exactas del PBI (Mapa izq, Tabla centro, Métricas der) -->
+            <!-- GRID PRINCIPAL -->
             <div class="panel-layout-pbi">
                 
-                <!-- Columna Izquierda: Mapa con silueta y notas -->
-                <div class="columna-izq-mapa">
+                <!-- Columna Izquierda: Mapa Arriba, Performance y Backlog Abajo -->
+                <div class="columna-izq-inferior">
                     <div class="mapa-regiones-container">
                         <div class="mapa-silueta">
                             <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
@@ -137,13 +140,37 @@
                             <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
                         </div>
                     </div>
-                    <div class="notas-importantes">
-                        <span class="icono-nota">📢</span> <strong>Notas importantes</strong>
-                        <p>1. El % de la meta de cumplimiento se calcula quitando los casos con stoppers.</p>
+
+                    <!-- % Performance a la izquierda abajo -->
+                    <div class="bloque-performance">
+                        <h4>% Performance</h4>
+                        <div class="perf-bar">
+                            <label>Offline 5.21%</label>
+                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
+                        </div>
+                        <div class="perf-bar">
+                            <label>Online 94.79%</label>
+                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Indicadores Backlog a la izquierda abajo -->
+                    <div class="bloque-backlog">
+                        <h4>Indicador Ejecución % Cumplimiento</h4>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R1</span>
+                            <strong>97,17 %</strong>
+                            <span class="badge-cumplimiento green">104.49%</span>
+                        </div>
+                        <div class="item-backlog-pbi">
+                            <span>Backlog R2</span>
+                            <strong>87,53 %</strong>
+                            <span class="badge-cumplimiento red">94.12%</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Columna Central: Tabla de Cumplimiento por Carpetas -->
+                <!-- Columna Derecha / Centro: Tabla de Cumplimiento por Carpetas -->
                 <div class="tabla-carpetas-wrapper">
                     <h3>Cumplimiento por carpetas</h3>
                     <div class="tabla-fondo-imagen">
@@ -213,35 +240,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-
-                <!-- Columna Derecha: Backlog R1/R2 y Performance -->
-                <div class="panel-lateral-derecho">
-                    <div class="bloque-backlog">
-                        <h4>Indicador Ejecución % Cumplimiento</h4>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R1</span>
-                            <strong>97,17 %</strong>
-                            <span class="badge-cumplimiento green">104.49%</span>
-                        </div>
-                        <div class="item-backlog-pbi">
-                            <span>Backlog R2</span>
-                            <strong>87,53 %</strong>
-                            <span class="badge-cumplimiento red">94.12%</span>
-                        </div>
-                    </div>
-
-                    <div class="bloque-performance">
-                        <h4>% Performance</h4>
-                        <div class="perf-bar">
-                            <label>Offline 5.21%</label>
-                            <div class="progress"><div class="bar red" style="width: 5.21%;"></div></div>
-                        </div>
-                        <div class="perf-bar">
-                            <label>Online 94.79%</label>
-                            <div class="progress"><div class="bar green" style="width: 94.79%;"></div></div>
-                        </div>
                     </div>
                 </div>
 
