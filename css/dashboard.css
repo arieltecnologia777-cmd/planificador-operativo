@@ -120,7 +120,7 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRILLA PBI DEFINITIVA (Control total de posicionamiento)
+   GRILLA PBI DEFINITIVA (Estructura de 2 Columnas y 2 Filas)
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -130,7 +130,7 @@
     align-items: start;
 }
 
-/* 1. Mapa (Izquierda Arriba) */
+/* 1. Mapa (Fila 1, Columna 1) */
 .mapa-regiones-container {
     grid-column: 1;
     grid-row: 1;
@@ -159,7 +159,7 @@
     cursor: pointer;
 }
 
-/* 2. Tabla de Carpetas (Derecha Arriba, ocupando todo el down superior) */
+/* 2. Tabla de Carpetas (Fila 1, Columna 2) */
 .tabla-carpetas-wrapper {
     grid-column: 2;
     grid-row: 1;
@@ -207,7 +207,7 @@
 .bg-yellow { background-color: #feebc8; font-weight: bold; }
 .bg-green { background-color: #c6f6d5; font-weight: bold; }
 
-/* 3. Performance (Izquierda Abajo, debajo del mapa) */
+/* 3. Performance (Fila 2, Columna 1) */
 .bloque-performance {
     grid-column: 1;
     grid-row: 2;
@@ -252,7 +252,7 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* 4. Indicador Backlog (Derecha Abajo, pegado a la derecha de la tabla) */
+/* 4. Indicador Backlog (Fila 2, Columna 2) */
 .bloque-backlog {
     grid-column: 2;
     grid-row: 2;
