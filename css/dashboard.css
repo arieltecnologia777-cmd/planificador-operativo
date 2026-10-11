@@ -100,6 +100,77 @@
     margin-top: 4px;
 }
 
+/* ==========================================================
+   KPI CARDS SUPERIORES (CONTENEDOR Y ESTILOS 3D NEÓN)
+   ========================================================== */
+.kpis-wrapper-contenedor {
+    background: rgba(30, 41, 59, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 14px;
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.kpis-estado-superior {
+    display: flex !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.kpi-box {
+    background: rgba(30, 41, 59, 0.8) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 10px !important;
+    padding: 6px 12px !important;
+    font-weight: bold;
+    font-size: 0.75rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.kpi-box span { 
+    font-size: 1.1rem !important; 
+    display: block !important; 
+    font-weight: 800 !important;
+}
+
+/* Colores y brillos neón exactos por estado */
+.kpi-box.online { 
+    background: rgba(16, 185, 129, 0.15) !important; 
+    border: 1.5px solid rgba(16, 185, 129, 0.7) !important; 
+    color: #34d399 !important; 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25) !important;
+}
+.kpi-box.offline { 
+    background: rgba(239, 68, 68, 0.15) !important; 
+    border: 1.5px solid rgba(239, 68, 68, 0.7) !important; 
+    color: #f87171 !important; 
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important;
+}
+.kpi-box.parcial { 
+    background: rgba(245, 158, 11, 0.15) !important; 
+    border: 1.5px solid rgba(245, 158, 11, 0.7) !important; 
+    color: #fbbf24 !important; 
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) !important;
+}
+.kpi-box.sub { 
+    background: rgba(56, 189, 248, 0.15) !important; 
+    border: 1.5px solid rgba(56, 189, 248, 0.6) !important; 
+    color: #38bdf8 !important; 
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2) !important;
+}
+
 .panel-layout-pbi {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -357,7 +428,6 @@
 .badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
 .badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
 
-
 /* ==========================================================
    OPTIMIZACIÓN PARA LAPTOPS
    ========================================================== */
@@ -440,80 +510,4 @@
         margin-bottom: 2px;
         font-size: 0.72rem;
     }
-}
-
-/* ==========================================================
-   KPI CARDS 3D - AISLADAS Y EXACTAS A LA REFERENCIA
-   ========================================================== */
-
-/* Contenedor general que envuelve a las 6 tarjetas KPI */
-.kpis-wrapper-contenedor {
-    background: rgba(26, 32, 44, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    border-radius: 14px;
-    padding: 6px;
-    display: inline-flex;
-    align-items: center;
-}
-
-/* Alineación de las 6 tarjetas dentro del contenedor */
-.kpis-estado-superior {
-    display: flex !important;
-    gap: 6px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Estilo individual de cada tarjeta KPI */
-.kpis-estado-superior .kpi-box,
-.kpi-card-neon {
-    background: rgba(30, 41, 59, 0.65) !important;
-    backdrop-filter: blur(8px);
-    border-radius: 10px !important;
-    padding: 8px 10px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    min-width: 65px;
-    box-sizing: border-box;
-}
-
-/* Tamaños de texto e iconos limpios */
-.kpi-box span, .kpi-card-neon span {
-    font-size: 1.1rem !important;
-    font-weight: 800 !important;
-    display: block !important;
-    margin: 2px 0 !important;
-}
-
-/* Bordes y brillos neón específicos por estado */
-.kpi-box.online, .kpi-card-neon.online {
-    border: 1.5px solid rgba(16, 185, 129, 0.6) !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2) !important;
-    color: #34d399 !important;
-}
-
-.kpi-box.offline, .kpi-card-neon.offline {
-    border: 1.5px solid rgba(239, 68, 68, 0.6) !important;
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.2) !important;
-    color: #f87171 !important;
-}
-
-.kpi-box.parcial, .kpi-card-neon.parcial {
-    border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
-    color: #fbbf24 !important;
-}
-
-.kpi-box.sub, .kpi-card-neon.velocidad, .kpi-card-neon.pqrs, .kpi-card-neon.otros {
-    border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.15) !important;
-    color: #38bdf8 !important;
 }
