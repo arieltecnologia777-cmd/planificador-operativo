@@ -81,8 +81,8 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
     const el = document.getElementById(elementoId);
     if (!el) return;
 
-    el.className = ""; // Limpiar clases de fondo heredadas
-    el.style.backgroundColor = "transparent"; // Quitar relleno de color de la celda TD
+    el.className = "";
+    el.style.backgroundColor = "transparent";
 
     let colorFondo = "#dc3545"; // Rojo (<70%)
     if (porcentaje >= 100) {
@@ -110,14 +110,15 @@ function renderizarDatosDashboard() {
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19;
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; 
-    const colStopper = 21;  
-    const colStopperRepuestos = 28; 
-    const colStopperFM = 29;        
+    const colCarpetaU = 20; // Columna U
+    const colStopper = 21;  // Stopper general
+    const colStopperRepuestos = 28; // Columna AC
+    const colStopperFM = 29;        // Columna AD
+    const colRangoDias = 10;        // Columna K (índice 10)
 
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
@@ -134,12 +135,24 @@ function renderizarDatosDashboard() {
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
     let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
 
+    // Acumuladores para Rangos de Afectación (6 rangos)
+    // R1: <5, R2: 5-15, R3: 15-30, R4: 30-45, R5: 45-60, R6: >60
+    let rangos = {
+        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
+    };
+
     datosFiltrados.forEach(fila => {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
         const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
         const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
+        const diasAfectacion = parseFloat(fila[colRangoDias]) || 0;
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
         if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
@@ -174,6 +187,23 @@ function renderizarDatosDashboard() {
             else if (estado.includes("PQR")) reqPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
         }
+
+        // Clasificación por Rangos de Días (Columna K)
+        let targetRango = null;
+        if (diasAfectacion < 5) targetRango = rangos.r1;
+        else if (diasAfectacion >= 5 && diasAfectacion < 15) targetRango = rangos.r2;
+        else if (diasAfectacion >= 15 && diasAfectacion < 30) targetRango = rangos.r3;
+        else if (diasAfectacion >= 30 && diasAfectacion < 45) targetRango = rangos.r4;
+        else if (diasAfectacion >= 45 && diasAfectacion < 60) targetRango = rangos.r5;
+        else targetRango = rangos.r6;
+
+        if (targetRango) {
+            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
+            else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
+            else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
+        }
     });
 
     // Neto sin stopper
@@ -183,7 +213,7 @@ function renderizarDatosDashboard() {
     const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
     const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
 
-    // Obtener las Metas correspondientes al departamento actual
+    // Metas
     const deptoKey = departamentoFiltroActual.toUpperCase();
     const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
 
@@ -199,7 +229,7 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_meta_pqr")) document.getElementById("c_meta_pqr").textContent = metaPqr;
     if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent  = metaP3;
 
-    // Calcular Cumplimiento % (Meta / Neto sin stopper)
+    // Cumplimiento %
     const pctOffVal = sinOff > 0 ? (metaOff / sinOff) * 100 : 100;
     const pctParVal = sinPar > 0 ? (metaPar / sinPar) * 100 : 100;
     const pctVelVal = sinVel > 0 ? (metaVel / sinVel) * 100 : 100;
@@ -212,7 +242,7 @@ function renderizarDatosDashboard() {
     aplicarColorCumplimiento("pct_pqr", pctPqrVal);
     aplicarColorCumplimiento("pct_p3",  pctP3Val);
 
-    // Total de sitios fijo según la combinación de filtros
+    // Total sitios fijo
     const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
         ? TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual]
         : 1460;
@@ -264,6 +294,29 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_sin_vel")) document.getElementById("c_sin_vel").textContent = sinVel;
     if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
     if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
+
+    // --- PINTAR TABLA DE RANGOS DE AFECTACIÓN ---
+    const pintarFilaRangos = (prefijo, obj) => {
+        const elOff = document.getElementById(`${prefijo}_off`);
+        const elPar = document.getElementById(`${prefijo}_par`);
+        const elVel = document.getElementById(`${prefijo}_vel`);
+        const elPqr = document.getElementById(`${prefijo}_pqr`);
+        const elP3  = document.getElementById(`${prefijo}_p3`);
+
+        if (elOff) elOff.textContent = obj.off;
+        if (elPar) elPar.textContent = obj.par;
+        if (elVel) elVel.textContent = obj.vel;
+        if (elPqr) elPqr.textContent = obj.pqr;
+        if (elP3)  elP3.textContent  = obj.p3;
+    };
+
+    // Asegúrate de nombrar los IDs en tu HTML de rangos como r1_off, r1_par, r2_off, etc., o ajusta según tus selectores
+    pintarFilaRangos("r1", rangos.r1);
+    pintarFilaRangos("r2", rangos.r2);
+    pintarFilaRangos("r3", rangos.r3);
+    pintarFilaRangos("r4", rangos.r4);
+    pintarFilaRangos("r5", rangos.r5);
+    pintarFilaRangos("r6", rangos.r6);
 
     // Actualizar % Performance
     const divisorPerf = totalSitiosFijo || 1;
