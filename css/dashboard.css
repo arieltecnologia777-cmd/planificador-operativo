@@ -393,20 +393,20 @@ body {
 }
 
 /* ==========================================================
-   ESTILO DE ENCABEZADOS DE TABLA: AZUL SUAVE CON EFECTO ESPEJO
+   ESTILO DE ENCABEZADOS DE TABLA: DEGRADADO HORIZONTAL TIPO ESPEJO
    ========================================================== */
 
 .tabla-dinamica-carpetas th {
-    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     padding: 8px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.7rem;
     letter-spacing: 0.5px;
     text-align: center;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4); /* Efecto espejo de luz superior */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5); /* Reflejo superior estilo espejo */
 }
 
 .tabla-dinamica-carpetas th:first-child, 
