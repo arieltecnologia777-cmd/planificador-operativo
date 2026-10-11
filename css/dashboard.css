@@ -1,13 +1,5 @@
-body {
-    background-color: #f0f4f8;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-}
-
 .dashboard-container {
-    padding: 15px;
+    padding: 5px 0;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -19,8 +11,8 @@ body {
     align-items: center;
     background: #e2e8f0;
     padding: 12px 15px;
-    border-radius: 6px;
-    margin-bottom: 15px;
+    border-radius: 12px;
+    margin-bottom: 16px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -47,7 +39,7 @@ body {
     background: #cbd5e0;
     border: none;
     padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.85rem;
@@ -68,7 +60,7 @@ body {
     background: #fff;
     border: 1px solid #cbd5e0;
     padding: 6px 10px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.8rem;
     font-weight: 600;
@@ -81,7 +73,7 @@ body {
     background: #edf2f7;
 }
 
-/* KPIs Superiores */
+/* KPIs Superiores del Dashboard */
 .kpis-estado-superior {
     display: flex;
     gap: 8px;
@@ -89,7 +81,7 @@ body {
 
 .kpi-box {
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: 10px;
     font-weight: bold;
     font-size: 0.85rem;
     text-align: center;
@@ -112,18 +104,17 @@ body {
 .panel-medio {
     display: grid;
     grid-template-columns: 280px 1fr 280px;
-    gap: 15px;
+    gap: 16px;
     align-items: start;
 }
 
 /* Mapa Silueta Estilizado */
 .mapa-regiones-container {
     background: #1a202c;
-    border-radius: 8px;
+    border-radius: 16px;
     height: 400px;
     position: relative;
     overflow: hidden;
-    /* Puedes poner tu imagen de mapa de fondo aquí: background-image: url('tu-mapa.png'); */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -143,7 +134,7 @@ body {
     font-size: 0.75rem;
     font-weight: bold;
     padding: 3px 8px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     transition: transform 0.2s, background 0.2s;
@@ -154,11 +145,11 @@ body {
     background: #3182ce;
 }
 
-/* Tabla con fondo superpuesto */
+/* Tabla de Cumplimiento por Carpetas */
 .tabla-carpetas-wrapper {
     background: white;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 16px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
@@ -167,26 +158,25 @@ body {
     font-size: 1rem;
     color: #2d3748;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .tabla-fondo-imagen {
-    /* Aquí puedes superponer la textura o imagen difuminada de carpetas con url('tu-imagen.png') */
     background: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92));
     background-size: cover;
     padding: 5px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .tabla-dinamica-carpetas {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
 }
 
 .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
     border: 1px solid #cbd5e0;
-    padding: 6px;
+    padding: 8px;
     text-align: center;
 }
 
@@ -209,13 +199,13 @@ body {
 .panel-lateral-derecho {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
 }
 
 .bloque-backlog, .bloque-performance {
     background: white;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 16px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.85rem;
 }
@@ -226,7 +216,7 @@ body {
     color: #2d3748;
     border-bottom: 2px solid #edf2f7;
     padding-bottom: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .item-backlog {
@@ -253,20 +243,20 @@ body {
 .barra-mini .fill.red { background: #f56565; height: 100%; }
 
 .perf-bar {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .perf-bar label {
     font-size: 0.8rem;
     color: #4a5568;
     display: block;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
 }
 
 .progress {
     background: #edf2f7;
     height: 14px;
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
     border: 1px solid #e2e8f0;
 }
