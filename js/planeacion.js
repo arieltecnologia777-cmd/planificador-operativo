@@ -520,7 +520,6 @@ function actualizarKPIs(datos){
     const otsNoCumple = new Set();
     const otsProgramadas = new Set();
     
-    // Usamos un mapa o Set para evitar duplicar OTs al sumar los IDs afectados
     const otsProcesadasIds = new Set();
     let sumaIdsAfectados = 0;
 
@@ -528,7 +527,6 @@ function actualizarKPIs(datos){
         const ot = (fila[idxOT] || "").trim();
         const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
 
-        // Suma única por OT para evitar duplicados en IDs afectados
         if (ot && !otsProcesadasIds.has(ot)) {
             otsProcesadasIds.add(ot);
             const valIds = parseInt(fila[idxIdsAfectados], 10);
@@ -611,6 +609,13 @@ function actualizarOpcionesFiltros(datos) {
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
 
+    // --- FILTRADO EN CASCADA PARA OPCIONES ---
+    // Determinamos qué subconjunto base usar para poblar las listas dependientes
+    let datosParaOpciones = datosGlobal;
+    if (departamentosSeleccionados.length > 0) {
+        datosParaOpciones = datosParaOpciones.filter(f => departamentosSeleccionados.includes(f[idxDepto]));
+    }
+
     const nEl = document.getElementById("listaNuevo");
     if(nEl) {
         const nuevosDisp = ["Sí", "No"];
@@ -649,7 +654,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const estadosDisp = [...new Set(datosGlobal.map(f => {
+    const estadosDisp = [...new Set(datosParaOpciones.map(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         return reg.estadoGestion || "";
     }))].filter(Boolean).sort();
@@ -671,7 +676,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const afecDisp = [...new Set(datosGlobal.map(f => f[idxAfectacion]))].filter(Boolean).sort();
+    const afecDisp = [...new Set(datosParaOpciones.map(f => f[idxAfectacion]))].filter(Boolean).sort();
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
         aEl.innerHTML = `
@@ -688,7 +693,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + afecDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const stopDisp = [...new Set(datosGlobal.map(f => f[idxStoppers]))].filter(Boolean).sort();
+    const stopDisp = [...new Set(datosParaOpciones.map(f => f[idxStoppers]))].filter(Boolean).sort();
     const sEl = document.getElementById("listaStoppers");
     if(sEl) {
         sEl.innerHTML = `
@@ -705,7 +710,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const diasOtDisp = [...new Set(datosGlobal.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasOtDisp = [...new Set(datosParaOpciones.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
     const diasEl = document.getElementById("listaDiasOT");
     if(diasEl) {
         diasEl.innerHTML = `
@@ -722,7 +727,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const rangDisp = [...new Set(datosGlobal.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rangDisp = [...new Set(datosParaOpciones.map(f => f[idxRango]))].filter(Boolean).sort();
     const rEl = document.getElementById("listaRango");
     if(rEl) {
         rEl.innerHTML = `
@@ -760,7 +765,7 @@ function actualizarOpcionesFiltros(datos) {
     const arbolFechas = {};
     const idxOTCol = encabezadosGlobal.findIndex(h => h.trim() === "OT");
     
-    datosGlobal.forEach(f => {
+    datosParaOpciones.forEach(f => {
         const reg = (window.registrosD1 || {})[f[idxOTCol]] || {};
         const fechaVal = reg.fechaProgramacion;
         if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
