@@ -757,3 +757,100 @@
     color: white !important;
     border-color: #ef4444 !important;
 }
+/* ==========================================================
+   BLOQUE TOTALES CD - IDÉNTICO A LA REFERENCIA
+   ========================================================== */
+.bloque-totales-cd {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 175px;
+}
+
+.cd-header-principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cd-icon-box {
+    width: 38px;
+    height: 38px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(37, 99, 235, 0.2) 70%);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.cd-text-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-titulo-cd {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.val-total-cd {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+    background: transparent !important;
+    padding: 0 !important;
+    text-align: left !important;
+}
+
+.cd-botones-inferiores {
+    display: flex;
+    gap: 6px;
+}
+
+.cd-botones-inferiores .btn-zona {
+    flex: 1;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8) !important;
+    color: white !important;
+    border: 1px solid #60a5fa !important;
+    padding: 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+.cd-botones-inferiores .btn-todas {
+    flex: 1;
+    background: rgba(30, 41, 59, 0.7) !important;
+    color: #94a3b8 !important;
+    border: 1px solid rgba(148, 163, 184, 0.25) !important;
+    padding: 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cd-botones-inferiores .btn-todas:hover {
+    background: rgba(51, 65, 85, 0.9) !important;
+    color: #e2e8f0 !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+}
