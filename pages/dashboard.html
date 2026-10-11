@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=17">
+    <link rel="stylesheet" href="../css/dashboard.css?v=18">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -322,14 +322,11 @@
 </div>
 
 <!-- Scripts -->
-<script src="../js/dashboard.js?v=17"></script>
+<script src="../js/dashboard.js?v=18"></script>
 
-<!-- Definición segura de API_URL para que settings.js la reconozca sin duplicados -->
+<!-- Declaración exacta de API_URL idéntica a la que usa planeacion.js -->
 <script>
-    if (typeof API_URL === 'undefined') {
-        const API_URL = "https://planeacion-api.72cb4457b889685d50ea254f04c24a64.workers.dev";
-        window.API_URL = API_URL;
-    }
+    const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
 </script>
 <script src="../js/settings.js"></script>
 
