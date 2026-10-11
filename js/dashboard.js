@@ -70,20 +70,18 @@ async function cargarNotaDelDia() {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Buscar columnas dinámicamente o usar índices estándar
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
 
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; // Columna T aprox
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         // Columna I
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19;
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; // Columna U (FM/Trasl./reubicaciones)
-    const colStopper = 21;  // Columna de stoppers (Repuestos, Requiere atención S.O, Sin stopper)
+    const colCarpetaU = 20; 
+    const colStopper = 21;  
 
-    // Filtrar datos por Departamento y Proyecto
     let datosFiltrados = datosGlobal.filter(fila => {
         const depto = String(fila[colDepto] || "").trim().toUpperCase();
         const proyecto = String(fila[colProj] || "").trim().toUpperCase();
@@ -98,7 +96,6 @@ function renderizarDatosDashboard() {
     let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
     let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
-    let sinOff = 0, sinPar = 0, sinVel = 0, sinPqr = 0, sinP3 = 0;
 
     datosFiltrados.forEach(fila => {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
@@ -106,7 +103,7 @@ function renderizarDatosDashboard() {
         const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-        // 1. Totales netos (Universo completo filtrado)
+        // 1. Totales netos (Universo completo)
         if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
         else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
         else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
@@ -139,16 +136,14 @@ function renderizarDatosDashboard() {
             else if (estado.includes("PQR")) reqPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
         }
-
-        // 5. Neto sin stopper (Stopper)
-        if (stopper.includes("SIN STOPPER") || stopper.includes("SIN_STOPPER")) {
-            if (estado.includes("OFFLINE")) sinOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) sinPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) sinVel += idsAfectados;
-            else if (estado.includes("PQR")) sinPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) sinP3 += idsAfectados;
-        }
     });
+
+    // 5. Neto sin stopper: Resta del total neto menos las demás carpetas con stopper
+    const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
+    const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
+    const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
+    const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
+    const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
 
     // Total de sitios fijo según la combinación de filtros
     const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
