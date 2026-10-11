@@ -951,3 +951,48 @@
 .bloque-filtros-centro .grupo-filtros:last-child {
     width: 100%;
 }
+/* ==========================================================
+   CORRECCIÓN DEFINITIVA: ALTURA SIMÉTRICA Y BOTÓN ANCHO TOTAL
+   ========================================================== */
+
+/* 1. Igualar la altura exacta del bloque central de filtros con Total CD y KPIs */
+.bloque-filtros-centro {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    padding: 14px 14px !important; /* Mismo padding vertical para empatar altura */
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    box-sizing: border-box !important;
+    gap: 10px 15px !important;
+}
+
+/* 2. Distribuir los grupos superiores de manera limpia */
+.bloque-filtros-centro .grupo-filtros {
+    flex: 1;
+    box-sizing: border-box;
+}
+
+.bloque-filtros-centro .grupo-filtros:first-child {
+    min-width: 140px;
+}
+
+.bloque-filtros-centro .grupo-filtros:last-child {
+    min-width: 320px;
+}
+
+/* 3. Hacer que el botón de borrar filtros ocupe todo el ancho inferior del cuadro central */
+.btn-borrar-filtros {
+    width: 100% !important;
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 4px !important;
+    box-sizing: border-box !important;
+}
