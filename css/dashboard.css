@@ -860,3 +860,163 @@
     background: rgba(239, 68, 68, 0.2) !important;
     color: #b91c1c !important;
 }
+/* ==========================================================
+   DOMINION DASHBOARD - MODO CLARO PROFESIONAL DEFINITIVO
+   ========================================================== */
+
+/* 1. Fondo general de la página y tipografía */
+body {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+
+/* Área principal */
+.main-content {
+    background: #f8fafc !important;
+}
+
+/* 2. Barra lateral (Sidebar) en modo claro translúcido */
+.sidebar {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+/* 3. Contenedores y tarjetas generales en modo claro */
+.tabla-carpetas-wrapper,
+.mapa-departamento-container,
+.bloque-notas-dia,
+.bloque-performance,
+.bloque-backlog-al-lado,
+.bloque-totales-cd,
+.bloque-filtros-centro {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. Encabezados de tarjetas y tablas (Barra azul vibrante clásica) */
+.tabla-carpetas-wrapper h3,
+.bloque-performance h4,
+.bloque-backlog-al-lado h4,
+.notas-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
+    padding: 9px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    margin-bottom: 14px !important;
+}
+
+.notas-header {
+    margin-bottom: 0 !important;
+}
+
+/* 5. Estilo para el bloque Total CD y Filtros en modo claro */
+.bloque-totales-cd {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.bloque-totales-cd .label-titulo-cd {
+    color: #64748b !important;
+}
+
+.bloque-totales-cd .val-total-cd {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+
+.bloque-totales-cd .cd-icon-box {
+    background: rgba(37, 99, 235, 0.1) !important;
+    border: 1px solid rgba(37, 99, 235, 0.2) !important;
+    color: #2563eb !important;
+}
+
+.bloque-filtros-centro {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.bloque-filtros-centro .label-titulo {
+    color: #475569 !important;
+}
+
+.btn-borrar-filtros {
+    background: rgba(239, 68, 68, 0.08) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    color: #dc2626 !important;
+}
+
+.btn-borrar-filtros:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+
+/* 6. Estructura y celdas de las tablas dinámicas (Modo claro nítido) */
+.tabla-fondo-imagen {
+    background: transparent !important;
+}
+
+.tabla-dinamica-carpetas {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 0.78rem;
+    background: transparent !important;
+}
+
+.tabla-dinamica-carpetas th {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 8px 10px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.tabla-dinamica-carpetas th:first-child {
+    text-align: left !important;
+}
+
+.tabla-dinamica-carpetas td {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 7px 10px !important;
+    text-align: center;
+}
+
+.tabla-dinamica-carpetas td:first-child,
+.tabla-rangos td:first-child {
+    text-align: left !important;
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+.tabla-dinamica-carpetas tbody tr:hover td {
+    background: #f1f5f9 !important;
+}
+
+/* 7. Notas del día y elementos de soporte */
+#txtNotasDia {
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.progress {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+}
