@@ -462,33 +462,38 @@
     }
 }
 /* ==========================================================
-   CONTENEDOR GENERAL DE KPIS (MARCO VIDRIOSO EXTERIOR)
+   KPI CARDS 3D - EFECTO VIDRIOSO (GLASSMORPHISM) Y NEÓN EXACTO
    ========================================================== */
+
+/* Contenedor general que enmarca las tarjetas */
 .kpis-wrapper-contenedor {
-    background: rgba(13, 20, 36, 0.45);
+    background: rgba(13, 20, 36, 0.35);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 10px;
-    display: flex;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    padding: 8px;
+    display: inline-flex;
     align-items: center;
 }
 
 .kpis-estado-superior {
     display: flex;
     gap: 8px;
-    width: 100%;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
+/* Tarjetas individuales con fondo de cristal traslúcido (cero negro sólido) */
 .kpi-card-neon {
-    /* Efecto vidrioso traslúcido real (sin negro sólido) */
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(15, 23, 42, 0.4) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border-radius: 14px;
-    padding: 12px 6px;
+    border-radius: 12px;
+    padding: 10px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -528,68 +533,74 @@
     white-space: nowrap;
 }
 
-/* 1. Online (Verde Esmeralda Vidrioso) */
+/* 1. Online (Verde Esmeralda Vidrioso y Neón) */
 .kpi-card-neon.online {
-    border: 1px solid rgba(16, 185, 129, 0.5);
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(16, 185, 129, 0.75);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
 }
 .kpi-card-neon.online .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.05) 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0.05) 70%);
     color: #34d399;
 }
 .kpi-card-neon.online span { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline (Rojo Coral Vidrioso) */
+/* 2. Offline (Rojo Coral Vidrioso y Neón) */
 .kpi-card-neon.offline {
-    border: 1px solid rgba(239, 68, 68, 0.5);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(239, 68, 68, 0.75);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
 }
 .kpi-card-neon.offline .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, rgba(239, 68, 68, 0.05) 70%);
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, rgba(239, 68, 68, 0.05) 70%);
     color: #f87171;
 }
 .kpi-card-neon.offline span { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
 
-/* 3. Parcial (Ámbar Vidrioso) */
+/* 3. Parcial (Ámbar Vidrioso y Neón) */
 .kpi-card-neon.parcial {
-    border: 1px solid rgba(245, 158, 11, 0.5);
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.3) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(245, 158, 11, 0.75);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
 }
 .kpi-card-neon.parcial .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(245, 158, 11, 0.05) 70%);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0.05) 70%);
     color: #fbbf24;
 }
 .kpi-card-neon.parcial span { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
 
-/* 4. Velocidad (Azul Cielo Vidrioso) */
+/* 4. Velocidad (Azul Cielo Vidrioso y Neón) */
 .kpi-card-neon.velocidad {
-    border: 1px solid rgba(56, 189, 248, 0.5);
-    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.25) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.65);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.18);
 }
 .kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(56, 189, 248, 0.05) 70%);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(56, 189, 248, 0.05) 70%);
     color: #38bdf8;
 }
 .kpi-card-neon.velocidad span { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
 
-/* 5. PQR's (Morado Vidrioso) */
+/* 5. PQR's (Morado Vidrioso y Neón) */
 .kpi-card-neon.pqrs {
-    border: 1px solid rgba(168, 85, 247, 0.5);
-    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(168, 85, 247, 0.25) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(168, 85, 247, 0.65);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.18);
 }
 .kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.05) 70%);
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.05) 70%);
     color: #c084fc;
 }
 .kpi-card-neon.pqrs span { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
 
-/* 6. Otros P3 (Índigo Vidrioso) */
+/* 6. Otros P3 (Índigo Vidrioso y Neón) */
 .kpi-card-neon.otros {
-    border: 1px solid rgba(99, 102, 241, 0.5);
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+    background: radial-gradient(circle at 50% 25%, rgba(99, 102, 241, 0.25) 0%, rgba(15, 23, 42, 0.45) 75%) !important;
+    border: 1.5px solid rgba(99, 102, 241, 0.65);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.18);
 }
 .kpi-card-neon.otros .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0.05) 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0.05) 70%);
     color: #818cf8;
 }
 .kpi-card-neon.otros span { color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6); }
