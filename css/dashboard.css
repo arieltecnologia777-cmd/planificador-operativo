@@ -1020,3 +1020,143 @@ body {
     background: #f1f5f9 !important;
     border: 1px solid #cbd5e1 !important;
 }
+/* ==========================================================
+   CORRECCIÓN DEFINITIVA DE LAYOUT, SIDEBAR Y HERO (MODO CLARO)
+   ========================================================== */
+
+/* 1. Estructura general de la página para acomodar sidebar y contenido */
+body {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* 2. Barra lateral (Sidebar) fija, limpia y ordenada a la izquierda */
+.sidebar {
+    width: 260px;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.logo-img {
+    width: 36px;
+    height: auto;
+}
+
+.logo-text h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.logo-text span {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.sidebar-nav {
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+}
+
+/* 3. Área de contenido principal */
+.main-content {
+    flex-grow: 1;
+    background: #f8fafc !important;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* 4. Banner Superior (.hero) panorámico idéntico a la referencia */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 160px; /* Ajusta esta altura si tu imagen es más alta o baja */
+    background: url('../assets/banner.jpg') center/cover no-repeat !important; /* Asegúrate de que la ruta a tu imagen del banner sea correcta */
+    border-radius: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* Si usas la etiqueta img dentro del hero o texto superpuesto */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(37, 99, 235, 0.85);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.hero p {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #f1f5f9;
+}
