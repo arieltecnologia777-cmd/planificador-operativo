@@ -823,3 +823,40 @@
     background: rgba(241, 245, 249, 0.8) !important;
     color: #0f172a !important;
 }
+/* ==========================================================
+   CORRECCIÓN DE CONTRASTE PARA TARJETAS CLARAS (TOTAL CD Y FILTROS)
+   ========================================================== */
+
+/* 1. Bloque Total CD: Textos y valores en tonos oscuros de alta visibilidad */
+.bloque-totales-cd .label-titulo-cd {
+    color: #475569 !important; /* Gris oscuro elegante */
+}
+
+.bloque-totales-cd .val-total-cd {
+    color: #0f172a !important; /* Negro azulado profundo para los números */
+    text-shadow: none !important;
+}
+
+/* Icono de Total CD adaptado */
+.bloque-totales-cd .cd-icon-box {
+    background: rgba(37, 99, 235, 0.1) !important;
+    border: 1px solid rgba(37, 99, 235, 0.3) !important;
+    color: #2563eb !important;
+}
+
+/* 2. Bloque de Filtros (Proyecto y Departamento): Etiquetas superiores */
+.bloque-filtros-centro .label-titulo {
+    color: #334155 !important; /* Azul grisáceo oscuro bien contrastado */
+}
+
+/* Botón de borrar filtros adaptado al tema claro */
+.btn-borrar-filtros {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #dc2626 !important;
+}
+
+.btn-borrar-filtros:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #b91c1c !important;
+}
