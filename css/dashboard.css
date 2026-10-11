@@ -120,7 +120,7 @@
 .kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 /* ==========================================================
-   GRID PRINCIPAL PBI: Mapa/Perf a la izq, Tabla/Backlog a la der
+   GRID PRINCIPAL PBI
    ========================================================== */
 .panel-layout-pbi {
     display: grid;
@@ -135,11 +135,12 @@
     gap: 16px;
 }
 
+/* AQUÍ ESTABLECEMOS QUE LA TABLA BAJE DEL TODO (flex-end) Y EL BACKLOG QUEDE ARRIBA A SU DERECHA */
 .columna-der-inferior {
     display: grid;
-    grid-template-columns: 1fr 340px; /* Tabla ancha a la izq, Backlog angosto a la der */
+    grid-template-columns: 1fr 340px;
     gap: 16px;
-    align-items: start;
+    align-items: end; /* Fuerza a que la tabla y el backlog se alinien hacia la parte inferior */
 }
 
 /* Mapa */
@@ -169,7 +170,7 @@
     cursor: pointer;
 }
 
-/* Tabla de Cumplimiento por Carpetas */
+/* Tabla de Cumplimiento por Carpetas (Baja del todo) */
 .tabla-carpetas-wrapper {
     background: white;
     padding: 14px;
@@ -258,7 +259,7 @@
 .progress .bar.red { background: #f56565; }
 .progress .bar.green { background: #48bb78; }
 
-/* Indicador Backlog al lado derecho de la tabla */
+/* Indicador Backlog al lado derecho */
 .bloque-backlog-al-lado {
     background: white;
     padding: 14px;
