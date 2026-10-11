@@ -443,148 +443,77 @@
 }
 
 /* ==========================================================
-   NUEVAS KPI CARDS 3D - ESTILO VIDRIOSO Y NEÓN EXACTO
+   KPI CARDS 3D - AISLADAS Y EXACTAS A LA REFERENCIA
    ========================================================== */
+
+/* Contenedor general que envuelve a las 6 tarjetas KPI */
 .kpis-wrapper-contenedor {
-    background: rgba(26, 32, 44, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    border-radius: 16px;
-    padding: 8px;
-    display: flex;
+    background: rgba(26, 32, 44, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 14px;
+    padding: 6px;
+    display: inline-flex;
     align-items: center;
 }
 
+/* Alineación de las 6 tarjetas dentro del contenedor */
 .kpis-estado-superior {
-    display: flex;
-    gap: 8px;
-    width: 100%;
+    display: flex !important;
+    gap: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
+/* Estilo individual de cada tarjeta KPI */
+.kpis-estado-superior .kpi-box,
 .kpi-card-neon {
-    background: rgba(30, 41, 59, 0.45);
+    background: rgba(30, 41, 59, 0.65) !important;
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 12px;
-    padding: 10px 6px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    text-align: center;
-    flex: 1;
+    border-radius: 10px !important;
+    padding: 8px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
     min-width: 65px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.kpi-icon-wrap {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2px;
+/* Tamaños de texto e iconos limpios */
+.kpi-box span, .kpi-card-neon span {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    display: block !important;
+    margin: 2px 0 !important;
 }
 
-.kpi-card-neon span {
-    font-size: 1.15rem;
-    font-weight: 800;
-    margin: 2px 0;
-    letter-spacing: 0.5px;
+/* Bordes y brillos neón específicos por estado */
+.kpi-box.online, .kpi-card-neon.online {
+    border: 1.5px solid rgba(16, 185, 129, 0.6) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
 }
 
-.kpi-label-row {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #cbd5e0;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    white-space: nowrap;
+.kpi-box.offline, .kpi-card-neon.offline {
+    border: 1.5px solid rgba(239, 68, 68, 0.6) !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.2) !important;
+    color: #f87171 !important;
 }
 
-/* 1. Online */
-.kpi-card-neon.online {
-    border: 1.5px solid rgba(16, 185, 129, 0.6);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+.kpi-box.parcial, .kpi-card-neon.parcial {
+    border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
 }
-.kpi-card-neon.online .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0.05) 70%);
-    color: #34d399;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-}
-.kpi-card-neon.online span { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.6); }
 
-/* 2. Offline */
-.kpi-card-neon.offline {
-    border: 1.5px solid rgba(239, 68, 68, 0.6);
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-}
-.kpi-card-neon.offline .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, rgba(239, 68, 68, 0.05) 70%);
-    color: #f87171;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-}
-.kpi-card-neon.offline span { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.6); }
-
-/* 3. Parcial */
-.kpi-card-neon.parcial {
-    border: 1.5px solid rgba(245, 158, 11, 0.6);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-}
-.kpi-card-neon.parcial .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0.05) 70%);
-    color: #fbbf24;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-}
-.kpi-card-neon.parcial span { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
-
-/* 4. Velocidad */
-.kpi-card-neon.velocidad {
-    border: 1.5px solid rgba(56, 189, 248, 0.6);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-}
-.kpi-card-neon.velocidad .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(56, 189, 248, 0.05) 70%);
-    color: #38bdf8;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-}
-.kpi-card-neon.velocidad span { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
-
-/* 5. PQR's */
-.kpi-card-neon.pqrs {
-    border: 1.5px solid rgba(168, 85, 247, 0.6);
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
-}
-.kpi-card-neon.pqrs .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.05) 70%);
-    color: #c084fc;
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-}
-.kpi-card-neon.pqrs span { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.6); }
-
-/* 6. Otros P3 */
-.kpi-card-neon.otros {
-    border: 1.5px solid rgba(99, 102, 241, 0.6);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
-}
-.kpi-card-neon.otros .kpi-icon-wrap {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0.05) 70%);
-    color: #818cf8;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-}
-.kpi-card-neon.otros span { color: #818cf8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6); }
-
-.dot-green {
-    width: 5px;
-    height: 5px;
-    background-color: #34d399;
-    border-radius: 50%;
-    box-shadow: 0 0 6px #34d399;
-    display: inline-block;
+.kpi-box.sub, .kpi-card-neon.velocidad, .kpi-card-neon.pqrs, .kpi-card-neon.otros {
+    border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.15) !important;
+    color: #38bdf8 !important;
 }
