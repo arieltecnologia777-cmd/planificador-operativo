@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=16">
+    <link rel="stylesheet" href="../css/dashboard.css?v=17">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -321,8 +321,16 @@
 
 </div>
 
-<!-- Scripts (dashboard.js ya declara API_URL, solo cargamos el archivo de configuración) -->
-<script src="../js/dashboard.js?v=16"></script>
+<!-- Scripts -->
+<script src="../js/dashboard.js?v=17"></script>
+
+<!-- Definición segura de API_URL para que settings.js la reconozca sin duplicados -->
+<script>
+    if (typeof API_URL === 'undefined') {
+        const API_URL = "https://planeacion-api.72cb4457b889685d50ea254f04c24a64.workers.dev";
+        window.API_URL = API_URL;
+    }
+</script>
 <script src="../js/settings.js"></script>
 
 <script>
