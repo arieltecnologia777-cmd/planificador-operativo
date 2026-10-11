@@ -464,14 +464,15 @@
 /* ==========================================================
    KPI CARDS 3D - CRISTAL TEÑIDO CON EL COLOR EXACTO DE CADA ESTADO
    ========================================================== */
-
-/* Contenedor general principal (marco traslúcido azul suave) */
+/* ==========================================================
+   CONTENEDOR GENERAL DE KPIS - FONDO SUAVE Y TRANSPARENTE
+   ========================================================== */
 .kpis-wrapper-contenedor {
-    background: rgba(13, 20, 36, 0.45);
+    background: rgba(226, 232, 240, 0.6) !important; /* Fondo suave integrado al panel superior */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(203, 213, 224, 0.8);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     border-radius: 16px;
     padding: 6px 8px;
     display: inline-flex;
