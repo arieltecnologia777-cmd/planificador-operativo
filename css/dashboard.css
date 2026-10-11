@@ -221,11 +221,10 @@
     width: 30%;
     text-align: left;
     font-weight: 600;
-    color: white !important; /* CORREGIDO: Texto blanco en encabezados Carpeta y Rango de Días */
+    color: white !important;
     font-size: 0.75rem;
 }
 
-/* Las celdas normales de la primera columna (las filas de datos) sí van en gris oscuro */
 .tabla-dinamica-carpetas td:first-child,
 .tabla-rangos td:first-child {
     width: 30%;
@@ -267,7 +266,7 @@
 }
 
 /* ==========================================================
-   ESTILOS DE NOTAS DEL DÍA
+   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA (Limpio y sin candados)
    ========================================================== */
 .bloque-notas-dia {
     background: white;
@@ -295,22 +294,6 @@
     color: white;
 }
 
-.btn-admin-mode {
-    background: #2b6cb0;
-    color: white;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-admin-mode:hover {
-    background: #2c5282;
-}
-
 .notas-body {
     flex-grow: 1;
     display: flex;
@@ -319,7 +302,7 @@
 #txtNotasDia {
     width: 100%;
     height: 100%;
-    min-height: 140px;
+    min-height: 155px;
     resize: none;
     border: 1px solid #cbd5e0;
     border-radius: 6px;
@@ -333,34 +316,6 @@
 
 #txtNotasDia:focus {
     border-color: #3182ce;
-}
-
-.notas-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    font-size: 0.72rem;
-}
-
-.estado-lectura {
-    color: #718096;
-    font-weight: 600;
-}
-
-.btn-guardar-notas {
-    background: #3182ce;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 0.72rem;
-}
-
-.btn-guardar-notas:hover {
-    background: #2b6cb0;
 }
 
 .bloque-performance {
