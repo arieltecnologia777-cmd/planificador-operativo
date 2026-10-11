@@ -758,7 +758,7 @@
     border-color: #ef4444 !important;
 }
 /* ==========================================================
-   BLOQUE TOTALES CD - IDÉNTICO A LA REFERENCIA
+   BLOQUE TOTALES CD - DEFINITIVO Y SIMÉTRICO
    ========================================================== */
 .bloque-totales-cd {
     background: rgba(15, 23, 42, 0.45);
@@ -767,11 +767,13 @@
     border: 1px solid rgba(56, 189, 248, 0.3);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
-    padding: 10px;
+    padding: 18px 12px !important; /* Padding vertical ajustado para la altura simétrica */
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-width: 175px;
+    justify-content: space-between;
+    gap: 12px;
+    width: 205px;
+    box-sizing: border-box;
 }
 
 .cd-header-principal {
@@ -854,11 +856,11 @@
     color: #e2e8f0 !important;
     border-color: rgba(56, 189, 248, 0.4) !important;
 }
+
 /* ==========================================================
-   ALINEACIÓN NATURAL Y EQUILIBRIO DE ALTURA DEL BLOQUE TOTAL CD
+   PANEL SUPERIOR Y RESTO DE CONTENEDORES
    ========================================================== */
 
-/* 1. Panel superior alineado al centro de manera limpia (sin estiramientos forzados) */
 .panel-superior {
     background: rgba(13, 20, 36, 0.25) !important;
     backdrop-filter: blur(10px);
@@ -869,28 +871,10 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
-    align-items: center !important; /* Mantiene todo centrado y en su tamaño natural */
+    align-items: center !important;
     gap: 12px;
 }
 
-/* 2. Bloque Total CD con el padding vertical exacto para igualar visualmente a los filtros */
-.bloque-totales-cd {
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    border-radius: 16px;
-    padding: 14px 12px !important; /* Padding vertical ajustado para empatar altura */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-    width: 205px;
-    box-sizing: border-box;
-}
-
-/* 3. Bloque de filtros central */
 .bloque-filtros-centro {
     display: flex;
     gap: 15px;
@@ -905,7 +889,6 @@
     box-sizing: border-box;
 }
 
-/* 4. Contenedor de KPIs */
 .kpis-wrapper-contenedor {
     background: transparent !important;
     border: 1px solid rgba(56, 189, 248, 0.3);
