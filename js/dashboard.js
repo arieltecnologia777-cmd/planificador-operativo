@@ -35,7 +35,7 @@ async function inicializarDashboard() {
 
         renderizarDatosDashboard();
     } catch (error) {
-        console.error("Error al cargar los datos del dataset:", error);
+        console.error("Error al cargar los datos del dataset en el dashboard:", error);
     }
 }
 
@@ -49,7 +49,6 @@ function renderizarDatosDashboard() {
     const idxVelocidad = encabezadosGlobal.findIndex(h => h.trim() === "Velocidad");
     const idxPQR = encabezadosGlobal.findIndex(h => h.trim() === "PQR");
     const idxP3 = encabezadosGlobal.findIndex(h => h.trim() === "P3");
-    const idxBacklog = encabezadosGlobal.findIndex(h => h.trim() === "Indicador backlog");
 
     // Filtrar por departamento si hay uno seleccionado
     let datosFiltrados = datosGlobal;
@@ -60,7 +59,6 @@ function renderizarDatosDashboard() {
         });
     }
 
-    // 1. Calcular KPIs superiores
     let totalOnline = 0;
     let totalOffline = 0;
     let totalParcial = 0;
@@ -78,22 +76,22 @@ function renderizarDatosDashboard() {
         totalP3 += parseInt(fila[idxP3]) || 0;
     });
 
-    // Actualizar elementos en DOM superior
-    document.getElementById("valOnline").textContent = totalOnline || datosFiltrados.length; // fallback si los contadores vienen directos
+    // Actualizar KPIs superiores
+    document.getElementById("valOnline").textContent = totalOnline || datosFiltrados.length;
     document.getElementById("valOffline").textContent = totalOffline;
     document.getElementById("valParcial").textContent = totalParcial;
     document.getElementById("valVelocidad").textContent = totalVelocidad;
     document.getElementById("valPqrs").textContent = totalPQR;
     document.getElementById("valOtrosP3").textContent = totalP3;
 
-    // 2. Rellenar Tabla Dinámica de Carpetas (Ejemplo con totales calculados o estandarizados)
+    // Actualizar Tabla de Carpetas
     document.getElementById("c_neto_off").textContent = totalOffline;
     document.getElementById("c_neto_par").textContent = totalParcial;
     document.getElementById("c_neto_vel").textContent = totalVelocidad;
     document.getElementById("c_neto_pqr").textContent = totalPQR;
     document.getElementById("c_neto_p3").textContent = totalP3;
 
-    // 3. Performance %
+    // Actualizar % Performance
     const totalSitios = (totalOnline + totalOffline + totalParcial) || 1;
     const pctOfflineVal = ((totalOffline / totalSitios) * 100).toFixed(2);
     const pctOnlineVal = ((totalOnline / totalSitios) * 100).toFixed(2);
@@ -104,14 +102,14 @@ function renderizarDatosDashboard() {
     document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
     document.getElementById("barPerfOnline").style.width = `${pctOnlineVal}%`;
 
-    // 4. Indicadores Backlog R1 / R2 simulados o dinámicos basados en filtros
+    // Indicadores Backlog
     document.getElementById("valBacklogR1").textContent = "97,17 %";
     document.getElementById("barR1").style.width = "97.17%";
     document.getElementById("valBacklogR2").textContent = "87,53 %";
     document.getElementById("barR2").style.width = "87.53%";
 }
 
-// Manejo de eventos para los botones de filtro y marcadores del mapa
+// Eventos de selección de departamento mediante botones o marcadores del mapa
 document.addEventListener("click", (e) => {
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
@@ -119,7 +117,6 @@ document.addEventListener("click", (e) => {
         if (depto) {
             departamentoFiltroActual = depto;
             
-            // Actualizar botones activos
             document.querySelectorAll(".btn-depto").forEach(b => {
                 if (b.getAttribute("data-depto") === depto) {
                     b.classList.add("active");
