@@ -11,12 +11,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1a202c; /* Fondo oscuro elegante */
-    padding: 12px 18px;
+    background: #e2e8f0;
+    padding: 10px 15px;
     border-radius: 12px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .bloque-totales-cd {
@@ -37,8 +36,8 @@
 }
 
 .val-total-cd {
-    background: #2d3748;
-    color: #63b3ed;
+    background: #cbd5e0;
+    color: #1a202c;
     font-size: 0.85rem;
     font-weight: 900;
     text-align: center;
@@ -47,7 +46,7 @@
 }
 
 .btn-zona { background: #3182ce; }
-.btn-todas { background: #4a5568; color: white; }
+.btn-todas { background: #a0aec0; color: #1a202c; }
 
 .bloque-filtros-centro {
     display: flex;
@@ -64,7 +63,7 @@
 .label-titulo {
     font-weight: bold;
     font-size: 0.75rem;
-    color: #a0aec0;
+    color: #4a5568;
     text-transform: uppercase;
 }
 
@@ -74,31 +73,30 @@
 }
 
 .btn-filtro, .btn-depto {
-    background: #2d3748;
+    background: #cbd5e0;
     border: none;
     padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.8rem;
-    color: #e2e8f0;
+    color: #2d3748;
 }
 
 .btn-filtro.active, .btn-depto.active {
     background: #3182ce;
     color: white;
-    box-shadow: 0 0 10px rgba(49, 130, 206, 0.4);
 }
 
 .btn-borrar-filtros {
-    background: #1a202c;
-    border: 1px solid #4a5568;
+    background: #fff;
+    border: 1px solid #cbd5e0;
     padding: 4px 8px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #fc8181;
+    color: #c53030;
     margin-top: 4px;
 }
 
@@ -113,14 +111,14 @@
     font-weight: bold;
     font-size: 0.75rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .kpi-box span { font-size: 1rem; display: block; }
-.kpi-box.online { background: #22543d; color: #68d391; border: 1px solid #38a169; }
-.kpi-box.offline { background: #4a5568; color: #e2e8f0; border: 1px solid #718096; }
-.kpi-box.parcial { background: #742a2a; color: #fc8181; border: 1px solid #e53e3e; }
-.kpi-box.sub { background: #2d3748; border: 1px solid #4a5568; color: #e2e8f0; }
+.kpi-box.online { background: #48bb78; color: white; }
+.kpi-box.offline { background: #a0aec0; color: white; }
+.kpi-box.parcial { background: #f56565; color: white; }
+.kpi-box.sub { background: #fff; border: 1px solid #cbd5e0; color: #2d3748; }
 
 .panel-layout-pbi {
     display: grid;
@@ -133,7 +131,6 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    height: 100%;
 }
 
 .columna-der-inferior {
@@ -163,37 +160,41 @@
     gap: 14px;
 }
 
-/* Contenedor del mapa Leaflet interactivo adaptado al tema oscuro */
-.mapa-departamento-container {
+.mapa-regiones-container {
     background: #1a202c;
     border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-#mapaLeaflet {
-    flex-grow: 1;
+.mapa-silueta {
     width: 100%;
-    min-height: 480px;
-    border-radius: 8px;
-    z-index: 1;
+    height: 100%;
+    position: relative;
+}
+
+.marcador-mapa {
+    position: absolute;
+    background: rgba(49, 130, 206, 0.9);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .tabla-carpetas-wrapper {
-    background: #1a202c;
+    background: white;
     padding: 12px 14px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 /* ==========================================================
-   ENCABEZADOS UNIFICADOS
+   ENCABEZADOS UNIFICADOS CON AZUL SUAVE Y ELEGANTE (#3182ce)
    ========================================================== */
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
@@ -213,7 +214,6 @@
     border-collapse: collapse;
     font-size: 0.8rem;
     table-layout: fixed !important;
-    color: #e2e8f0;
 }
 
 .tabla-dinamica-carpetas th:first-child, 
@@ -230,7 +230,7 @@
     width: 30%;
     text-align: left;
     font-weight: 600;
-    color: #cbd5e0;
+    color: #2d3748;
     font-size: 0.75rem;
 }
 
@@ -241,7 +241,7 @@
 }
 
 .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
-    border: 1px solid #2d3748;
+    border: 1px solid #cbd5e0;
     padding: 6px 8px;
 }
 
@@ -251,14 +251,14 @@
     font-weight: 600;
 }
 
-.bg-yellow { background-color: #d69e2e !important; color: #fff; font-weight: bold; }
-.bg-green { background-color: #38a169 !important; color: #fff; font-weight: bold; }
+.bg-yellow { background-color: #feebc8; font-weight: bold; }
+.bg-green { background-color: #c6f6d5; font-weight: bold; }
 
 .tabla-rangos td:not(:first-child) {
-    color: #e2e8f0;
+    color: #2d3748;
 }
 .fila-alerta-roja td:not(:first-child) {
-    color: #fc8181;
+    color: #e53e3e;
     font-weight: bold;
 }
 .fila-alerta-roja td:nth-child(3) {
@@ -266,14 +266,13 @@
 }
 
 /* ==========================================================
-   MÓDULO DE NOTAS DEL DÍA
+   ESTILOS DEL MÓDULO DE NOTAS DEL DÍA (Limpio y sin candados)
    ========================================================== */
 .bloque-notas-dia {
-    background: #1a202c;
+    background: white;
     padding: 12px 14px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -305,12 +304,12 @@
     height: 100%;
     min-height: 155px;
     resize: none;
-    border: 1px solid #4a5568;
+    border: 1px solid #cbd5e0;
     border-radius: 6px;
     padding: 8px;
     font-size: 0.8rem;
-    color: #e2e8f0;
-    background: #111827;
+    color: #2d3748;
+    background: #f7fafc;
     font-family: inherit;
     outline: none;
 }
@@ -320,11 +319,10 @@
 }
 
 .bloque-performance {
-    background: #1a202c;
+    background: white;
     padding: 14px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
 }
 
@@ -334,29 +332,28 @@
 
 .perf-bar label {
     font-size: 0.75rem;
-    color: #a0aec0;
+    color: #4a5568;
     display: block;
     margin-bottom: 2px;
 }
 
 .progress {
-    background: #2d3748;
+    background: #edf2f7;
     height: 12px;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #4a5568;
+    border: 1px solid #cbd5e0;
 }
 
 .progress .bar { height: 100%; }
-.progress .bar.red { background: #e53e3e; }
-.progress .bar.green { background: #38a169; }
+.progress .bar.red { background: #f56565; }
+.progress .bar.green { background: #48bb78; }
 
 .bloque-backlog-al-lado {
-    background: #1a202c;
+    background: white;
     padding: 12px 14px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-size: 0.8rem;
     display: flex;
     flex-direction: column;
@@ -369,7 +366,6 @@
     align-items: center;
     margin-bottom: 8px;
     font-size: 0.8rem;
-    color: #e2e8f0;
 }
 
 .badge-cumplimiento {
@@ -378,5 +374,225 @@
     font-weight: bold;
     font-size: 0.75rem;
 }
-.badge-cumplimiento.green { background: #22543d; color: #68d391; border: 1px solid #38a169; }
-.badge-cumplimiento.red { background: #742a2a; color: #fc8181; border: 1px solid #e53e3e; }
+.badge-cumplimiento.green { background: #c6f6d5; color: #22543d; }
+.badge-cumplimiento.red { background: #fed7d7; color: #742a2a; }
+
+
+/* ==========================================================
+   OPTIMIZACIÓN PARA LAPTOPS
+   ========================================================== */
+@media (max-width: 1400px) {
+    body {
+        overflow: hidden;
+    }
+
+    .dashboard-container {
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .panel-superior {
+        padding: 4px 10px;
+        margin-bottom: 6px;
+    }
+
+    .panel-layout-pbi {
+        grid-template-columns: 250px 1fr;
+        gap: 8px;
+    }
+
+    .columna-izq {
+        gap: 8px;
+    }
+
+    .columna-der-inferior {
+        gap: 8px;
+    }
+
+    .subgrid-superior-derecha {
+        grid-template-columns: 1fr 260px;
+        gap: 8px;
+    }
+
+    .subgrid-inferior-derecha {
+        grid-template-columns: 1fr 260px;
+        gap: 8px;
+    }
+
+    .mapa-regiones-container {
+        height: 160px;
+    }
+
+    .tabla-carpetas-wrapper {
+        padding: 6px 8px;
+    }
+
+    .tabla-carpetas-wrapper h3 {
+        margin-bottom: 4px;
+        padding: 3px;
+        font-size: 0.78rem;
+    }
+
+    .tabla-dinamica-carpetas th, .tabla-dinamica-carpetas td {
+        padding: 2px 4px;
+        font-size: 0.7rem;
+    }
+
+    .bloque-performance, .bloque-backlog-al-lado, .bloque-notas-dia {
+        padding: 6px 8px;
+    }
+
+    .tabla-carpetas-wrapper h3,
+    .bloque-performance h4,
+    .bloque-backlog-al-lado h4,
+    .notas-header h4 {
+        margin-bottom: 4px;
+        padding: 3px;
+        font-size: 0.78rem;
+    }
+
+    #txtNotasDia {
+        min-height: 100px;
+        font-size: 0.72rem;
+    }
+
+    .item-backlog-pbi {
+        margin-bottom: 2px;
+        font-size: 0.72rem;
+    }
+}
+/* ==========================================================
+   KPI CARDS 3D - ESTILO FUTURISTA EXACTO
+   ========================================================== */
+.kpis-estado-superior {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    align-items: stretch;
+}
+
+.kpi-card-neon {
+    background: linear-gradient(145deg, rgba(16, 26, 48, 0.85) 0%, rgba(8, 14, 28, 0.95) 100%);
+    border-radius: 16px;
+    padding: 14px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+
+.kpi-card-neon:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.kpi-card-neon span {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 2px 0;
+    letter-spacing: 0.5px;
+}
+
+.kpi-label-row {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 1. Online (Verde Esmeralda) */
+.kpi-card-neon.online {
+    border: 1.5px solid rgba(16, 185, 129, 0.45);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.online .kpi-icon-wrap {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.3);
+}
+.kpi-card-neon.online span { color: #34d399; text-shadow: 0 0 12px rgba(52, 211, 153, 0.5); }
+
+/* 2. Offline (Rojo Coral) */
+.kpi-card-neon.offline {
+    border: 1.5px solid rgba(239, 68, 68, 0.45);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.offline .kpi-icon-wrap {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.3);
+}
+.kpi-card-neon.offline span { color: #f87171; text-shadow: 0 0 12px rgba(248, 113, 113, 0.5); }
+
+/* 3. Parcial (Ámbar / Naranja) */
+.kpi-card-neon.parcial {
+    border: 1.5px solid rgba(245, 158, 11, 0.45);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.parcial .kpi-icon-wrap {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.3);
+}
+.kpi-card-neon.parcial span { color: #fbbf24; text-shadow: 0 0 12px rgba(251, 191, 36, 0.5); }
+
+/* 4. Velocidad (Azul Cielo) */
+.kpi-card-neon.velocidad {
+    border: 1.5px solid rgba(56, 189, 248, 0.45);
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.velocidad .kpi-icon-wrap {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.3);
+}
+.kpi-card-neon.velocidad span { color: #38bdf8; text-shadow: 0 0 12px rgba(56, 189, 248, 0.5); }
+
+/* 5. PQR's (Morado / Púrpura) */
+.kpi-card-neon.pqrs {
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.pqrs .kpi-icon-wrap {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.3);
+}
+.kpi-card-neon.pqrs span { color: #c084fc; text-shadow: 0 0 12px rgba(192, 132, 252, 0.5); }
+
+/* 6. Otros P3 (Índigo / Azul Profundo) */
+.kpi-card-neon.otros {
+    border: 1.5px solid rgba(99, 102, 241, 0.45);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+.kpi-card-neon.otros .kpi-icon-wrap {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.3);
+}
+.kpi-card-neon.otros span { color: #818cf8; text-shadow: 0 0 12px rgba(129, 140, 248, 0.5); }
+
+/* Puntito verde de estado en Online */
+.dot-green {
+    width: 6px;
+    height: 6px;
+    background-color: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #34d399;
+    display: inline-block;
+}
