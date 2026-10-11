@@ -1,32 +1,43 @@
-const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pubhtml";
+const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
 const TOTAL_SITIOS_FIJO = 1460;
 
 let datosGlobal = [];
+let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
 
 async function inicializarDashboard() {
     try {
+        // Cargar nota del día desde el Worker
+        cargarNotaDelDia();
+
+        // Cargar dataset en formato CSV
         const resp = await fetch(DATASET_URL);
-        const htmlText = await resp.text();
+        const texto = await resp.text();
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const tablaHtml = doc.querySelector('table');
+        const filas = texto.trim().split(/\r?\n/).map(fila => {
+            const valores = [];
+            let actual = "";
+            let dentroComillas = false;
 
-        if (!tablaHtml) {
-            console.warn("No se encontró la tabla en el pubhtml.");
-            return;
-        }
+            for(let i=0; i<fila.length; i++){
+                const caracter = fila[i];
+                if(caracter === '"'){
+                    dentroComillas = !dentroComillas;
+                } else if(caracter === "," && !dentroComillas){
+                    valores.push(actual);
+                    actual = "";
+                } else {
+                    actual += caracter;
+                }
+            }
+            valores.push(actual);
+            return valores;
+        });
 
-        const rows = Array.from(tablaHtml.querySelectorAll('tr')).map(tr =>
-            Array.from(tr.querySelectorAll('th, td')).map(td => td.textContent.trim())
-        );
+        if (filas.length < 2) return;
 
-        if (rows.length < 2) return;
-
-        // Cabecera de la tabla (fila 0) y datos (desde la fila 1 en adelante)
-        const encabezados = rows[0];
-        datosGlobal = rows.slice(1);
+        encabezadosGlobal = filas[0];
+        datosGlobal = filas.slice(1);
 
         renderizarDatosDashboard();
     } catch (error) {
@@ -34,19 +45,34 @@ async function inicializarDashboard() {
     }
 }
 
+// Función para sincronizar la nota del día
+async function cargarNotaDelDia() {
+    try {
+        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
+        const data = await resp.json();
+        const txtNotas = document.getElementById("txtNotasDia");
+        if (txtNotas && data.ok) {
+            txtNotas.value = data.nota || "Sin notas registradas para hoy.";
+        }
+    } catch (err) {
+        console.error("Error al cargar la nota:", err);
+        const txtNotas = document.getElementById("txtNotasDia");
+        if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
+    }
+}
+
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Índice Columna I (Total IDs afectados) -> índice 8
-    // Índice Columna P (Estado real) -> índice 15
-    // Índice Departamento (por si se filtra por departamento, ej: índice aproximado o buscando en encabezados)
+    // Columna I (Total IDs afectados) -> índice 8
+    // Columna P (Estado real) -> índice 15
     const idxTotalIds = 8;
     const idxEstadoReal = 15;
 
     let datosFiltrados = datosGlobal;
     if (departamentoFiltroActual !== "TODOS") {
         datosFiltrados = datosGlobal.filter(fila => {
-            const depto = String(fila[2] || "").trim().toUpperCase(); // Ajustar índice de columna de depto si es necesario
+            const depto = String(fila[2] || "").trim().toUpperCase(); 
             return depto === departamentoFiltroActual;
         });
     }
@@ -92,7 +118,7 @@ function renderizarDatosDashboard() {
     if (elPqrs) elPqrs.textContent = sumaPqrs;
     if (elOtrosP3) elOtrosP3.textContent = sumaOtrosP3;
 
-    // Actualizar Tabla de Carpetas si existen los elementos
+    // Actualizar Tabla de Carpetas
     const netOff = document.getElementById("c_neto_off");
     const netPar = document.getElementById("c_neto_par");
     const netVel = document.getElementById("c_neto_vel");
