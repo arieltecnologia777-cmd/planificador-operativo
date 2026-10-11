@@ -7,7 +7,7 @@
     <title>Tablero Ejecutivo - Planeación Operativa</title>
 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=27">
+    <link rel="stylesheet" href="../css/dashboard.css?v=28">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
@@ -38,7 +38,6 @@
                 Planeación
             </a>
             
-            <!-- Botón para abrir el editor de la Nota del Día (Protegido por contraseña) -->
             <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 📝 Editar Nota del Día
             </button>
@@ -133,14 +132,12 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Mapa -->
+                <!-- COLUMNA IZQUIERDA: Visor de Mapa Dinámico -->
                 <div class="columna-izq">
-                    <div class="mapa-regiones-container">
-                        <div class="mapa-silueta">
-                            <div class="marcador-mapa" data-depto="SAI" style="top: 15px; left: 10px;" title="SAI">SAI 📍</div>
-                            <div class="marcador-mapa" data-depto="LA GUAJIRA" style="top: 55px; right: 15px;" title="Guajira">GUAJIRA 📍</div>
-                            <div class="marcador-mapa" data-depto="CESAR" style="top: 130px; left: 60px;" title="Cesar">CESAR 📍</div>
-                            <div class="marcador-mapa" data-depto="ANTIOQUIA" style="top: 240px; left: 40px;" title="Antioquia">ANTIOQUIA 📍</div>
+                    <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 15px; text-align: center; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: #2d3748; font-size: 0.95rem; font-weight: 600;">Mapa de Ubicación</h4>
+                        <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img id="imgMapaDepto" src="../assets/mapas/colombia_general.png" alt="Mapa de Operación" style="max-width: 100%; max-height: 280px; object-fit: contain; transition: opacity 0.3s ease;">
                         </div>
                     </div>
                 </div>
@@ -325,8 +322,7 @@
 
 </div>
 
-<!-- Scripts y dependencias oficiales -->
-<script src="../js/dashboard.js?v=27"></script>
+<script src="../js/dashboard.js?v=28"></script>
 <script src="../js/settings.js"></script>
 
 <script>
@@ -338,7 +334,6 @@
     });
 </script>
 
-<!-- Modales de Seguridad y Edición de Nota -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
