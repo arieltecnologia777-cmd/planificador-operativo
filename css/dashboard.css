@@ -1,13 +1,11 @@
 /* ==========================================================
-   ZOOM INICIAL AL 97%
+   ZOOM INICIAL AL 95% Y ESTILOS GENERALES
    ========================================================== */
 
 html {
-    zoom: 0.95 !important;
+    zoom: 0.97 !important;
+    height: 100% !important;
 }
-/* ==========================================================
-   ESTILOS GENERALES Y DASHBOARD PROFESIONAL
-   ========================================================== */
 
 body {
     background-color: #f1f5f9 !important;
@@ -15,23 +13,25 @@ body {
     margin: 0;
     padding: 0;
     font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh !important;
 }
 
 .layout {
     display: flex !important;
     min-height: 100vh !important;
     width: 100% !important;
+    position: relative !important;
 }
 
 /* ==========================================================
-   SIDEBAR FIJO, ANCHO Y ALARGADO HACIA ABAJO
+   SIDEBAR FIJO, ANCHO Y ALARGADO AL 100% DE ALTO
    ========================================================== */
 
 aside.sidebar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    height: 100vh !important;
+    height: 100% !important;
     min-height: 100vh !important;
     width: 280px !important;
     min-width: 280px !important;
@@ -51,7 +51,7 @@ aside.sidebar {
 }
 
 /* ==========================================================
-   CONTENIDO PRINCIPAL ADAPTADO AL NUEVO ANCHO DEL SIDEBAR
+   CONTENIDO PRINCIPAL ADAPTADO
    ========================================================== */
 
 main.main-content {
@@ -484,7 +484,7 @@ main.main-content {
 }
 
 /* ==========================================================
-   TABLA RANGOS DE AFECTACIÓN: AJUSTADA AL LÍMITE DE LA TABLA
+   TABLA RANGOS DE AFECTACIÓN: AJUSTADA AL LÍMITE
    ========================================================== */
 
 .tabla-rangos-wrapper, 
@@ -498,7 +498,7 @@ div:has(> .tabla-rangos) {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
-    height: auto !important; /* Corta el espacio sobrante ajustándose al contenido */
+    height: auto !important;
 }
 
 /* Tablas dinámicas nítidas */
@@ -574,19 +574,19 @@ div:has(> .tabla-rangos) {
 }
 
 /* ==========================================================
-   INDICADOR EJECUCIÓN % CUMPLIMIENTO (ESTILO COLUMNAS REFERENCIA)
+   INDICADOR EJECUCIÓN % CUMPLIMIENTO (ESTILO COLUMNAS)
    ========================================================== */
 
 .bloque-backlog-al-lado h4,
 .bloque-indicador-cumplimiento h4 {
-    background: linear-gradient(90deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%) !important; /* Tono gris oscuro corporativo tipo referencia */
+    background: linear-gradient(90deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
     padding: 9px 14px !important;
     border-radius: 8px !important;
     font-size: 0.8rem !important;
     font-weight: 700 !important;
-    text-transform: none !important; /* Permite mostrar formato exacto como en la imagen de referencia */
+    text-transform: none !important;
     letter-spacing: 0px !important;
     box-shadow: 0 2px 8px rgba(75, 85, 99, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
