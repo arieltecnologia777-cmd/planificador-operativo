@@ -500,14 +500,14 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            const resp = await fetch(`${API_BASE_URL}/verificar-password`, {
+            const resp = await fetch(`${API_BASE_URL}/planeacion/verificar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: password })
             });
             const data = await resp.json();
 
-            if (data.ok === true) {
+            if (resp.ok && data.ok === true) {
                 const modalPass = document.getElementById("modalAdminPassword");
                 const modalTools = document.getElementById("modalAdminTools");
                 if (modalPass) modalPass.style.display = "none";
@@ -526,7 +526,6 @@ document.addEventListener("click", async (e) => {
             alert("Error de red al verificar la contraseña con el servidor.");
         }
     }
-
     const btnGuardarNota = e.target.closest("#btnGuardarNotaServidor");
     if (btnGuardarNota) {
         const txtModalNotaDia = document.getElementById("txtModalNotaDia");
