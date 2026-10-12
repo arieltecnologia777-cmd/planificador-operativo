@@ -683,8 +683,10 @@ div:has(> .tabla-rangos) {
    ========================================================== */
 #mapaLeaflet {
     background-image: url('../assets/mapa.jpg') !important;
-    background-size: cover !important;
+    background-size: contain !important; /* Cambiado de cover a contain para que se vea completo */
+    background-repeat: no-repeat !important;
     background-position: center !important;
     position: relative !important;
     overflow: hidden !important;
+    min-height: 450px !important; /* Asegura una altura generosa para el mapa */
 }
