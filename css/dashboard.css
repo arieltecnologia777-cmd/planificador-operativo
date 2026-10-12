@@ -662,3 +662,14 @@ div:has(> .tabla-rangos) {
 .tabla-carpetas-wrapper > button {
     display: none !important;
 }
+/* ==========================================================
+   TRANSLUCIDEZ Y EFECTO CRISTAL PARA BARRAS KPI EN TABLAS
+   ========================================================== */
+#pct_off div[style*="linear-gradient"],
+#pct_par div[style*="linear-gradient"],
+#pct_vel div[style*="linear-gradient"],
+#pct_pqr div[style*="linear-gradient"],
+#pct_p3 div[style*="linear-gradient"],
+.tabla-dinamica-carpetas td div[style*="linear-gradient"] {
+    opacity: 0.75 !important; /* Ajusta este valor (ej. 0.6 a 0.85) según qué tan translúcidas las quieras */
+}
