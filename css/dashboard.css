@@ -48,17 +48,17 @@ aside.sidebar {
 }
 
 /* ==========================================================
-   EXPANSIÓN TOTAL A PANTALLA COMPLETA (ANCHO Y ALTO)
+   CONTENIDO PRINCIPAL Y EXPANSIÓN MÁXIMA AL 100% DE PANTALLA
    ========================================================== */
 
 main.main-content {
     flex-grow: 1 !important;
     height: 100vh !important;
     max-height: 100vh !important;
-    width: calc(100% - 260px) !important;
-    max-width: none !important; /* Elimina cualquier tope a lo ancho */
+    width: calc(100vw - 260px) !important;
+    max-width: none !important;
     background: #f8fafc !important;
-    padding: 16px 24px !important;
+    padding: 10px 16px !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     display: flex !important;
@@ -68,11 +68,12 @@ main.main-content {
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 10px !important;
     width: 100% !important;
-    max-width: none !important; /* Permite que se estire por completo a lo ancho en pantallas grandes o laptops */
+    max-width: none !important;
     height: 100% !important;
     margin: 0 !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     justify-content: space-between !important;
     min-height: 0 !important;
@@ -388,13 +389,13 @@ main.main-content {
 }
 
 /* ==========================================================
-   GRILLA E INCORPORACIÓN DE TARJETAS Y TABLAS
+   GRILLA E INCORPORACIÓN DINÁMICA A PANTALLA COMPLETA
    ========================================================== */
 
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 360px 1fr !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
     flex-grow: 1 !important;
     min-height: 0 !important;
@@ -406,6 +407,7 @@ main.main-content {
     flex-direction: column !important;
     gap: 10px !important;
     width: 100% !important;
+    height: 100% !important;
     min-height: 0 !important;
     box-sizing: border-box !important;
 }
@@ -413,8 +415,9 @@ main.main-content {
 .subgrid-superior-derecha, .subgrid-inferior-derecha {
     display: grid !important;
     grid-template-columns: 1fr 320px !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
+    flex-grow: 1 !important;
     min-height: 0 !important;
     box-sizing: border-box !important;
     align-items: stretch !important;
@@ -430,7 +433,7 @@ main.main-content {
     box-sizing: border-box !important;
 }
 
-/* Tarjetas contenedoras generales */
+/* Tarjetas contenedoras generales que llenan el alto disponible */
 .mapa-departamento-container,
 .bloque-notas-dia,
 .bloque-performance,
@@ -444,6 +447,8 @@ main.main-content {
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
+    flex-grow: 1 !important;
+    height: 100% !important;
     min-height: 0 !important;
 }
 
