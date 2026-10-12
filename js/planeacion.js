@@ -449,4 +449,1574 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     const resp = await fetch(DATASET_URL);
-    const texto = await
+    const texto = await resp.text();
+
+    const filas = texto.trim().split(/\r?\n/).map(fila => {
+        const valores = [];
+        let actual = "";
+        let dentroComillas = false;
+
+        for(let i=0; i<fila.length; i++){
+            const caracter = fila[i];
+            if(caracter === '"'){
+                dentroComillas = !dentroComillas;
+            } else if(caracter === "," && !dentroComillas){
+                valores.push(actual);
+                actual = "";
+            } else {
+                actual += caracter;
+            }
+        }
+        valores.push(actual);
+        return valores;
+    });
+
+    encabezadosGlobal = filas[0];
+    datosGlobal = filas.slice(1);
+
+    let registrosD1 = {};
+    try {
+        const respD1 = await fetch(API_URL);
+        registrosD1 = await respD1.json();
+    } catch (error) {
+        console.error(error);
+    }
+
+    window.registrosD1 = registrosD1;
+
+    const idxOT = encabezadosGlobal.findIndex(h => h.trim() === "OT");
+    const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
+
+    Object.values(registrosD1).forEach(reg => {
+        const otReg = String(reg.ot || "").trim();
+        if (otReg && !otsConfiguesSet.has(otReg)) {
+            if (reg.estadoGestion && reg.estadoGestion !== "" || reg.estadoProgramacion && reg.estadoProgramacion !== "") {
+                let filaBase = datosGlobal.find(f => f[idxOT] === otReg);
+                if (!filaBase && datosGlobal.length > 0) {
+                    filaBase = [...datosGlobal[0]];
+                    filaBase[idxOT] = otReg;
+                }
+                if (filaBase) datosGlobal.push(filaBase);
+            }
+        }
+    });
+
+    renderizarFiltrosDinamicos(datosGlobal);
+    datosFiltradosGlobal = datosGlobal;
+    actualizarOpcionesFiltros(datosGlobal);
+    pintarTabla(datosGlobal);
+    actualizarKPIs(datosGlobal);
+}
+
+function actualizarKPIs(datos){
+    const encabezados = encabezadosGlobal;
+    const idxOT = encabezados.findIndex(h => h.trim() === "OT");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+    const idxIdsAfectados = encabezados.findIndex(h => h.trim() === "IDs afectados");
+
+    const otsAlta = new Set();
+    const otsMedia = new Set();
+    const otsBaja = new Set();
+    const otsCumple = new Set();
+    const otsNoCumple = new Set();
+    const otsProgramadas = new Set();
+    
+    const otsProcesadasIds = new Set();
+    let sumaIdsAfectados = 0;
+
+    datos.forEach(fila => {
+        const ot = (fila[idxOT] || "").trim();
+        const backlog = (fila[idxBacklog] || "").trim().toUpperCase();
+
+        if (ot && !otsProcesadasIds.has(ot)) {
+            otsProcesadasIds.add(ot);
+            const valIds = parseInt(fila[idxIdsAfectados], 10);
+            if (!isNaN(valIds)) {
+                sumaIdsAfectados += valIds;
+            }
+        }
+
+        const regD1 = (window.registrosD1 || {})[ot] || {};
+        const prioridad = (fila[encabezados.findIndex(h => h.trim() === "Tipo de prioridad")] || "").trim().toUpperCase();
+
+        if (prioridad === "ALTA") otsAlta.add(ot);
+        if (prioridad === "MEDIA") otsMedia.add(ot);
+        if (prioridad === "BAJA") otsBaja.add(ot);
+        if (backlog === "CUMPLE") otsCumple.add(ot);
+        if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
+
+        if (regD1.estadoProgramacion === "Programada") {
+            otsProgramadas.add(ot);
+        }
+    });
+
+    const elAlta = document.getElementById("kpiAltaPlaneacion");
+    const elMedia = document.getElementById("kpiMediaPlaneacion");
+    const elBaja = document.getElementById("kpiBajaPlaneacion");
+    const elCumple = document.getElementById("kpiCumpleBacklog");
+    const elNoCumple = document.getElementById("kpiNoCumpleBacklog");
+    const kpiProg = document.getElementById("kpiProgramadosD1");
+    const elSumaIds = document.getElementById("totalIdsAfectados");
+
+    if(elAlta) elAlta.textContent = otsAlta.size;
+    if(elMedia) elMedia.textContent = otsMedia.size;
+    if(elBaja) elBaja.textContent = otsBaja.size;
+    if(elCumple) elCumple.textContent = otsCumple.size;
+    if(elNoCumple) elNoCumple.textContent = otsNoCumple.size;
+    if(kpiProg) kpiProg.textContent = otsProgramadas.size;
+    if(elSumaIds) elSumaIds.textContent = sumaIdsAfectados.toLocaleString();
+}
+
+document.addEventListener("DOMContentLoaded", cargarPlaneacion);
+
+function renderizarFiltrosDinamicos(datos) {
+    actualizarOpcionesFiltros(datos);
+}
+
+function obtenerDatosBaseParaFiltros() {
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
+
+    const encabezados = encabezadosGlobal;
+    const idxID = encabezados.findIndex(h => h.trim() === "ID");
+    const idxOT = encabezados.findIndex(h => h.trim() === "OT");
+    const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
+    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+
+    return datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+
+        const cumpleTexto = !texto || 
+            String(fila[idxID] || "").toLowerCase().includes(texto) ||
+            String(fila[idxOT] || "").toLowerCase().includes(texto) ||
+            String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
+
+        let cumpleKpi = true;
+        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+
+        return cumpleTexto && cumpleKpi;
+    });
+}
+
+function actualizarOpcionesFiltros(datos) {
+    const encabezados = encabezadosGlobal;
+    const idxOT = encabezados.findIndex(h => h.trim() === "OT");
+    const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
+    const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
+    const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
+    const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
+    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+
+    const txtNuevo = document.getElementById("textoNuevo");
+    if (txtNuevo) txtNuevo.textContent = nuevosSeleccionados.length ? `Nuevo (${nuevosSeleccionados.length})` : "Nuevo / Existente";
+
+    const txtDepto = document.getElementById("textoDepartamento");
+    if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
+
+    const txtEstado = document.getElementById("textoEstado");
+    if (txtEstado) txtEstado.textContent = estadosGestionSeleccionados.length ? `Estado (${estadosGestionSeleccionados.length})` : "Estado";
+
+    const txtAfec = document.getElementById("textoAfectacion");
+    if (txtAfec) txtAfec.textContent = afectacionesSeleccionadas.length === 0 ? "Tipo de afectación" : `Afectación (${afectacionesSeleccionadas.length})`;
+
+    const txtStop = document.getElementById("textoStoppers");
+    if (txtStop) txtStop.textContent = stoppersSeleccionados.length === 0 ? "Stoppers" : `Stoppers (${stoppersSeleccionados.length})`;
+
+    const txtDiasOT = document.getElementById("textoDiasOT");
+    if (txtDiasOT) txtDiasOT.textContent = diasOtSeleccionados.length === 0 ? "Días OT" : `Días OT (${diasOtSeleccionados.length})`;
+
+    const txtRang = document.getElementById("textoRango");
+    if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
+
+    const txtBacklog = document.getElementById("textoBacklog");
+    if (txtBacklog) txtBacklog.textContent = backlogSeleccionados.length === 0 ? "Incumple Backlog" : `Backlog (${backlogSeleccionados.length})`;
+
+    const txtFP = document.getElementById("textoFechaProg");
+    if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
+
+    // --- FILTRADO EN CASCADA COMPLETO ---
+    const datosBaseKpi = obtenerDatosBaseParaFiltros();
+
+    const filtrarParaLista = (excluirFiltro) => {
+        return datosBaseKpi.filter(fila => {
+            const otVal = fila[idxOT];
+            const regD1 = (window.registrosD1 || {})[otVal] || {};
+            const estG = regD1.estadoGestion || "";
+            const fechaProgVal = regD1.fechaProgramacion || "";
+            const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+            const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
+            const esN = esCasoNuevo(otVal) ? "Sí" : "No";
+
+            if (excluirFiltro !== 'nuevo' && nuevosSeleccionados.length > 0 && !nuevosSeleccionados.includes(esN)) return false;
+            if (excluirFiltro !== 'depto' && departamentosSeleccionados.length > 0 && !departamentosSeleccionados.includes(fila[idxDepto])) return false;
+            if (excluirFiltro !== 'estado' && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
+            if (excluirFiltro !== 'afectacion' && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(fila[idxAfectacion])) return false;
+            if (excluirFiltro !== 'stoppers' && stoppersSeleccionados.length > 0 && !stoppersSeleccionados.includes(fila[idxStoppers])) return false;
+            if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(fila[idxDiasOT])) return false;
+            if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(fila[idxRango])) return false;
+            if (excluirFiltro !== 'backlog' && backlogSeleccionados.length > 0 && !backlogSeleccionados.includes(incumplidor)) return false;
+            if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
+
+            return true;
+        });
+    };
+
+    const datosParaNuevo = filtrarParaLista('nuevo');
+    const datosParaDepto = filtrarParaLista('depto');
+    const datosParaEstado = filtrarParaLista('estado');
+    const datosParaAfec = filtrarParaLista('afectacion');
+    const datosParaStoppers = filtrarParaLista('stoppers');
+    const datosParaDias = filtrarParaLista('dias');
+    const datosParaRango = filtrarParaLista('rango');
+    const datosParaBacklog = filtrarParaLista('backlog');
+    const datosParaFecha = filtrarParaLista('fecha');
+
+    const nEl = document.getElementById("listaNuevo");
+    if(nEl) {
+        const nuevosDisp = [...new Set(datosParaNuevo.map(f => esCasoNuevo(f[idxOT]) ? "Sí" : "No"))].filter(Boolean).sort();
+        nEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Nuevo', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Nuevo', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarNuevo" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarNuevo">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosNuevos"> (Seleccionar todo)</label>
+        ` + nuevosDisp.map(v => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkNuevo" ${nuevosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
+        `).join("");
+    }
+
+    const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
+    const dEl = document.getElementById("listaDepartamento");
+    if(dEl) {
+        dEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Departamento', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Departamento', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarDepartamento" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarDepartamento">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDeptos"> (Seleccionar todo)</label>
+        ` + deptosDisp.map(dep => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${dep}" class="chkDepartamento" ${departamentosSeleccionados.includes(dep) ? "checked" : ""}> ${dep}</label>
+        `).join("");
+    }
+
+    const estadosDisp = [...new Set(datosParaEstado.map(f => {
+        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+        return reg.estadoGestion || "";
+    }))].filter(Boolean).sort();
+    const eEl = document.getElementById("listaEstado");
+    if(eEl) {
+        eEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('estadoGestion', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('estadoGestion', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarEstado" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarEstado">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosEstados"> (Seleccionar todo)</label>
+        ` + estadosDisp.map(v => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkEstadoGestion" ${estadosGestionSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
+        `).join("");
+    }
+
+    const afecDisp = [...new Set(datosParaAfec.map(f => f[idxAfectacion]))].filter(Boolean).sort();
+    const aEl = document.getElementById("listaAfectacion");
+    if(aEl) {
+        aEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Tipo de afectación', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Tipo de afectación', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarAfectacion" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarAfectacion">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasAfectaciones"> (Seleccionar todo)</label>
+        ` + afecDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const stopDisp = [...new Set(datosParaStoppers.map(f => f[idxStoppers]))].filter(Boolean).sort();
+    const sEl = document.getElementById("listaStoppers");
+    if(sEl) {
+        sEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Stoppers Dominion', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Stoppers Dominion', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarStoppers" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarStoppers">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosStoppers"> (Seleccionar todo)</label>
+        ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const diasOtDisp = [...new Set(datosParaDias.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasEl = document.getElementById("listaDiasOT");
+    if(diasEl) {
+        diasEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Días OT', true)">Menor a Mayor</span>
+                    <span onclick="ordenarDesdeFiltro('Días OT', false)">Mayor a Menor</span>
+                </div>
+            </div>
+            <input type="text" id="buscarDiasOT" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarDiasOT">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDiasOT"> (Seleccionar todo)</label>
+        ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rEl = document.getElementById("listaRango");
+    if(rEl) {
+        rEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
+        ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const bEl = document.getElementById("listaBacklog");
+    if(bEl) {
+        const backlogDisp = [...new Set(datosParaBacklog.map(f => (f[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No"))].filter(Boolean).sort();
+        bEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
+        ` + backlogDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const arbolFechas = {};
+    
+    datosParaFecha.forEach(f => {
+        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+        const fechaVal = reg.fechaProgramacion;
+        if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
+            const [anio, mes, dia] = fechaVal.split("-");
+            if (!arbolFechas[anio]) arbolFechas[anio] = {};
+            if (!arbolFechas[anio][mes]) arbolFechas[anio][mes] = [];
+            if (!arbolFechas[anio][mes].includes(fechaVal)) {
+                arbolFechas[anio][mes].push(fechaVal);
+            }
+        }
+    });
+
+    const fpEl = document.getElementById("listaFechaProg");
+    if(fpEl) {
+        let htmlJerarquico = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('fechaProgramacion', true)">Antiguas</span>
+                    <span onclick="ordenarDesdeFiltro('fechaProgramacion', false)">Recientes</span>
+                </div>
+            </div>
+            <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
+            <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
+        `;
+
+        const aniosOrdenados = Object.keys(arbolFechas).sort();
+        aniosOrdenados.forEach(anio => {
+            htmlJerarquico += `
+                <div class="filtro-grupo-anio-container">
+                    <div class="filtro-grupo-anio" style="padding: 4px 5px; font-weight: bold; cursor: pointer; user-select: none;">📂 ${anio} ▾</div>
+                    <div class="filtro-contenido-anio" style="display: block;">`;
+            
+            const mesesOrdenados = Object.keys(arbolFechas[anio]).sort();
+            mesesOrdenados.forEach(mesIdx => {
+                const nombreMes = mesesNombres[parseInt(mesIdx, 10) - 1] || mesIdx;
+                htmlJerarquico += `
+                        <div class="filtro-grupo-mes-container">
+                            <div class="filtro-grupo-mes" style="padding: 3px 5px 3px 15px; font-weight: 600; color: #555; cursor: pointer; user-select: none;">📁 ${nombreMes} ▾</div>
+                            <div class="filtro-contenido-mes" style="display: block;">`;
+                
+                const diasOrdenados = arbolFechas[anio][mesIdx].sort();
+                diasOrdenados.forEach(fechaStr => {
+                    const [, , dia] = fechaStr.split("-");
+                    const estaChequeado = fechasProgSeleccionadas.includes(fechaStr) ? "checked" : "";
+                    htmlJerarquico += `
+                                <label class="multi-filtro-item" style="padding-left: 30px; display: block;">
+                                    <input type="checkbox" value="${fechaStr}" class="chkFechaProg" ${estaChequeado}> ${dia}
+                                </label>`;
+                });
+
+                htmlJerarquico += `</div></div>`;
+            });
+
+            htmlJerarquico += `</div></div>`;
+        });
+
+        fpEl.innerHTML = htmlJerarquico;
+    }
+}
+
+function aplicarFiltros(){
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
+
+    const nuevosFiltro = nuevosSeleccionados;
+    const deptos = departamentosSeleccionados;
+    const afectacionesFiltro = afectacionesSeleccionadas;
+    const stoppersFiltro = stoppersSeleccionados;
+    const rangosFiltro = rangosSeleccionados;
+    const diasOtFiltro = diasOtSeleccionados;
+    const backlogFiltro = backlogSeleccionados;
+    const fechasFiltro = fechasProgSeleccionadas;
+    const estGestionFiltro = estadosGestionSeleccionados;
+
+    const encabezados = encabezadosGlobal;
+    const idxID = encabezados.findIndex(h => h.trim() === "ID");
+    const idxOT = encabezados.findIndex(h => h.trim() === "OT");
+    const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
+    const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
+    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
+    const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
+    const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
+    const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
+    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+
+    let resultado = datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const estG = regD1.estadoGestion || "";
+        const fechaProgVal = regD1.fechaProgramacion || "";
+        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+        const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
+        const esN = esCasoNuevo(otVal) ? "Sí" : "No";
+
+        if (otsModificadasRecientemente.has(otVal)) {
+            return true;
+        }
+
+        const cumpleTexto = !texto || 
+            String(fila[idxID] || "").toLowerCase().includes(texto) ||
+            String(fila[idxOT] || "").toLowerCase().includes(texto) ||
+            String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
+
+        const cumpleNuevo = nuevosFiltro.length === 0 || nuevosFiltro.includes(esN);
+        const cumpleDepto = deptos.length === 0 || deptos.includes(fila[idxDepto]);
+        const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(fila[idxAfectacion]);
+        const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
+        const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(fila[idxRango]);
+        const cumpleDiasOT = diasOtFiltro.length === 0 || diasOtFiltro.includes(fila[idxDiasOT]);
+        const cumpleBacklog = backlogFiltro.length === 0 || backlogFiltro.includes(incumplidor);
+        const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
+        const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
+
+        let cumpleKpi = true;
+        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+
+        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleBacklog && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
+    });
+
+    if (ordenActualColumna !== null) {
+        resultado.sort((a, b) => {
+            let valA = "";
+            let valB = "";
+
+            if (ordenActualColumna === "Nuevo") {
+                valA = esCasoNuevo(a[idxOT]) ? "Sí" : "No";
+                valB = esCasoNuevo(b[idxOT]) ? "Sí" : "No";
+            } else if (ordenActualColumna === "Indicador backlog") {
+                valA = (a[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No";
+                valB = (b[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No";
+            } else if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
+                const regA = (window.registrosD1 || {})[a[idxOT]] || {};
+                const regB = (window.registrosD1 || {})[b[idxOT]] || {};
+                valA = String(regA[ordenActualColumna] || "").trim();
+                valB = String(regB[ordenActualColumna] || "").trim();
+            } else {
+                const colIdx = encabezadosGlobal.findIndex(h => h.trim() === ordenActualColumna);
+                valA = colIdx !== -1 ? String(a[colIdx] || "").trim() : "";
+                valB = colIdx !== -1 ? String(b[colIdx] || "").trim() : "";
+            }
+
+            const numA = parseFloat(valA);
+            const numB = parseFloat(valB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return ordenDireccionAsc ? numA - numB : numB - numA;
+            }
+
+            return ordenDireccionAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+    }
+
+    datosFiltradosGlobal = resultado;
+    pintarTabla(resultado);
+    actualizarKPIs(resultado);
+    actualizarOpcionesFiltros(datosGlobal);
+}
+
+function resetearTodosLosFiltros() {
+    nuevosSeleccionados = [];
+    departamentosSeleccionados = [];
+    afectacionesSeleccionadas = [];
+    stoppersSeleccionados = [];
+    rangosSeleccionados = [];
+    diasOtSeleccionados = [];
+    backlogSeleccionados = [];
+    fechasProgSeleccionadas = [];
+    estadosGestionSeleccionados = [];
+    kpiFiltroActivo = null;
+    ordenActualColumna = null;
+    ordenDireccionAsc = true;
+    otsModificadasRecientemente.clear();
+
+    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+        c.classList.remove("kpi-seleccionado");
+        c.style.borderColor = "";
+        c.style.boxShadow = "";
+    });
+
+    const contenedorKpis = document.getElementById("kpis");
+    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
+
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    if(filtroBusquedaEl) filtroBusquedaEl.value = "";
+
+    document.querySelectorAll(".multi-filtro-lista input[type='checkbox']").forEach(chk => {
+        chk.checked = false;
+    });
+
+    aplicarFiltros();
+}
+
+document.addEventListener("input", (e) => {
+    if(e.target.id === "filtroBusqueda") {
+        aplicarFiltros();
+    }
+    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
+        const textoBusq = e.target.value.toLowerCase();
+        const contenedor = e.target.closest("div");
+        if(contenedor) {
+            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
+                const contenido = item.textContent.toLowerCase();
+                item.style.display = contenido.includes(textoBusq) ? "" : "none";
+            });
+        }
+    }
+});
+
+document.addEventListener("change", (e) => {
+    const target = e.target;
+
+    if (target.classList.contains("chkNuevo")) {
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosNuevos") {
+        document.querySelectorAll(".chkNuevo").forEach(chk => chk.checked = target.checked);
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkDepartamento")) {
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosDeptos") {
+        document.querySelectorAll(".chkDepartamento").forEach(chk => chk.checked = target.checked);
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkEstadoGestion")) {
+        estadosGestionSeleccionados = Array.from(document.querySelectorAll(".chkEstadoGestion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosEstados") {
+        document.querySelectorAll(".chkEstadoGestion").forEach(chk => chk.checked = target.checked);
+        estadosGestionSeleccionados = Array.from(document.querySelectorAll(".chkEstadoGestion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkAfectacion")) {
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasAfectaciones") {
+        document.querySelectorAll(".chkAfectacion").forEach(chk => chk.checked = target.checked);
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkStoppers")) {
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(chk => chk.checked = target.checked);
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkRango")) {
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosRangos") {
+        document.querySelectorAll(".chkRango").forEach(chk => chk.checked = target.checked);
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkDiasOT")) {
+        diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosDiasOT") {
+        document.querySelectorAll(".chkDiasOT").forEach(chk => chk.checked = target.checked);
+        diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkBacklog")) {
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(chk => chk.checked = target.checked);
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkFechaProg")) {
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasFechasProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(chk => chk.checked = target.checked);
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if(target.classList.contains("estado-programacion")){
+        const fila = target.closest("tr");
+        const fecha = fila.querySelector(".fecha-input");
+        const valor = target.value;
+
+        if(valor === "Programada" || valor === "Cancelada" || valor === "Operativa"){
+            fecha.type = "date";
+            fecha.disabled = false;
+            if(!fecha.value || fecha.value.includes("Definir") || fecha.value.includes("validación") || fecha.value.includes("aplica")) {
+                fecha.value = "";
+            }
+        } else if(valor === "Pendiente"){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "En validación";
+        } else if(valor === "N/A" || valor === "Postular FM" || valor === "Postular abast."){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "No aplica";
+        } else if(valor === ""){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "⟵ Definir estado";
+        }
+    }
+
+    const filaTabla = target.closest("tr");
+    if(filaTabla && !target.closest(".multi-filtro-item")) {
+        const otMod = filaTabla.children[4].textContent.trim();
+        if (otMod) otsModificadasRecientemente.add(otMod);
+        guardarOT(filaTabla);
+    }
+});
+
+document.addEventListener("click", (e) => {
+    const target = e.target;
+
+    const btnGrupo = target.closest("#btnToggleGrupoCols");
+    if (btnGrupo) {
+        grupoColumnasColapsado = !grupoColumnasColapsado;
+        aplicarEstadoGrupoColumnas();
+        return;
+    }
+
+    const headerAnio = target.closest(".filtro-grupo-anio");
+    if (headerAnio) {
+        const contenido = headerAnio.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerAnio.textContent = headerAnio.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
+
+    const headerMes = target.closest(".filtro-grupo-mes");
+    if (headerMes) {
+        const contenido = headerMes.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerMes.textContent = headerMes.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
+
+    const kpiCard = target.closest(".kpi-card, .card");
+    if (kpiCard && !target.closest("input, select, button")) {
+        const valorEl = kpiCard.querySelector("[id^='kpi']");
+        if (valorEl) {
+            const idKpi = valorEl.id;
+            let tipoFiltro = null;
+
+            if (idKpi === "kpiAltaPlaneacion") tipoFiltro = "alta";
+            else if (idKpi === "kpiMediaPlaneacion") tipoFiltro = "media";
+            else if (idKpi === "kpiBajaPlaneacion") tipoFiltro = "baja";
+            else if (idKpi === "kpiCumpleBacklog") tipoFiltro = "cumple";
+            else if (idKpi === "kpiNoCumpleBacklog") tipoFiltro = "nocumple";
+            else if (idKpi === "kpiProgramadosD1") tipoFiltro = "programados";
+
+            if (tipoFiltro) {
+                const contenedorKpis = kpiCard.closest("#kpis") || kpiCard.parentElement;
+
+                if (kpiFiltroActivo === tipoFiltro) {
+                    kpiFiltroActivo = null;
+                    kpiCard.classList.remove("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
+                } else {
+                    kpiFiltroActivo = tipoFiltro;
+                    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+                        c.classList.remove("kpi-seleccionado");
+                    });
+                    kpiCard.classList.add("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.add("kpi-container-activo");
+                }
+                aplicarFiltros();
+                return;
+            }
+        }
+    }
+
+    if (target.closest("#btnLimpiarHeader, .btn-limpiar-header")) {
+        resetearTodosLosFiltros();
+        return;
+    }
+
+    if(target.id === "btnLimpiarNuevo") {
+        document.querySelectorAll(".chkNuevo").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosNuevos");
+        if(chkAll) chkAll.checked = false;
+        nuevosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarDepartamento") {
+        document.querySelectorAll(".chkDepartamento").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosDeptos");
+        if(chkAll) chkAll.checked = false;
+        departamentosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarEstado") {
+        document.querySelectorAll(".chkEstadoGestion").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosEstados");
+        if(chkAll) chkAll.checked = false;
+        estadosGestionSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarAfectacion") {
+        document.querySelectorAll(".chkAfectacion").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasAfectaciones");
+        if(chkAll) chkAll.checked = false;
+        afectacionesSeleccionadas = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosStoppers");
+        if(chkAll) chkAll.checked = false;
+        stoppersSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarRango") {
+        document.querySelectorAll(".chkRango").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosRangos");
+        if(chkAll) chkAll.checked = false;
+        rangosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarDiasOT") {
+        document.querySelectorAll(".chkDiasOT").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosDiasOT");
+        if(chkAll) chkAll.checked = false;
+        diasOtSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosBacklog");
+        if(chkAll) chkAll.checked = false;
+        backlogSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarFechaProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasFechasProg");
+        if(chkAll) chkAll.checked = false;
+        fechasProgSeleccionadas = [];
+        aplicarFiltros();
+    }
+
+    const dropdowns = [
+        { btn: "btnNuevo", lista: "listaNuevo" },
+        { btn: "btnDepartamento", lista: "listaDepartamento" },
+        { btn: "btnAfectacion", lista: "listaAfectacion" },
+        { btn: "btnStoppers", lista: "listaStoppers" },
+        { btn: "btnRango", lista: "listaRango" },
+        { btn: "btnDiasOT", lista: "listaDiasOT" },
+        { btn: "btnBacklog", lista: "listaBacklog" },
+        { btn: "btnFechaProg", lista: "listaFechaProg" },
+        { btn: "btnEstado", lista: "listaEstado" }
+    ];
+
+    dropdowns.forEach(item => {
+        const botonEl = document.getElementById(item.btn);
+        const listaEl = document.getElementById(item.lista);
+        if(botonEl && listaEl) {
+            if(botonEl.contains(target)) {
+                listaEl.classList.toggle("show");
+            } else if(!listaEl.contains(target)) {
+                listaEl.classList.remove("show");
+            }
+        }
+    });
+});
+
+document.addEventListener("blur", async e => {
+    if(!e.target.classList.contains("fecha-input")) return;
+    const fila = e.target.closest("tr");
+    if(!fila) return;
+    const otMod = fila.children[4].textContent.trim();
+    if (otMod) otsModificadasRecientemente.add(otMod);
+    await guardarOT(fila);
+}, true);
+
+async function guardarOT(fila, observacionForzada = null){
+    const ot = fila.children[4].textContent.trim();
+    
+    const inputFecha = fila.querySelector(".fecha-input");
+    let fechaVal = inputFecha?.value || "";
+    if(inputFecha && (fechaVal.includes("Definir") || fechaVal.includes("validación") || fechaVal.includes("aplica"))) {
+        fechaVal = "";
+    }
+
+    const inputObs = fila.querySelector(".observacion");
+    const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
+
+    const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
+
+    const payload = {
+        ot,
+        estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
+        fechaProgramacion: fechaVal,
+        observacion: obsFinal,
+        estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
+        tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
+        acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
+        fechaLocal: fechaLocalHoy
+    };
+
+    try {
+        const resp = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const resultado = await resp.json();
+
+        if (resultado.ok) {
+            window.registrosD1 = window.registrosD1 || {};
+            window.registrosD1[payload.ot] = {
+                ot: payload.ot,
+                estadoProgramacion: payload.estadoProgramacion,
+                fechaProgramacion: payload.fechaProgramacion,
+                observacion: payload.observacion,
+                estadoGestion: payload.estadoGestion,
+                tecnicoAsigned: payload.tecnicoAsignado,
+                acompanamiento: payload.acompanamiento,
+                updatedAt: new Date().toISOString(),
+                createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
+            };
+
+            actualizarKPIs(datosFiltradosGlobal);
+        }
+    } catch (err) {
+        console.error("Error al guardar OT:", err);
+    }
+}
+
+const wrapper = document.querySelector('.planeacion-table-wrapper');
+let scrollTimer;
+if(wrapper) {
+    wrapper.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const firstRow = wrapper.querySelector('tbody tr');
+            if (!firstRow) return;
+            const rowHeight = firstRow.offsetHeight;
+            const target = Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
+            wrapper.scrollTo({ top: target, behavior: 'smooth' });
+        }, 80);
+    });
+}
+
+window.addEventListener("load", () => {
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+
+    if (!topScroll || !tableWrapper || !topScrollInner) return;
+
+    function ajustarAnchoBarra() {
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        if (maxScrollTabla > 0) {
+            topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
+        }
+    }
+
+    ajustarAnchoBarra();
+    window.addEventListener("resize", ajustarAnchoBarra);
+    setTimeout(ajustarAnchoBarra, 400);
+
+    let syncing = false;
+
+    topScroll.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollBarra > 0) {
+            const porcentaje = topScroll.scrollLeft / maxScrollBarra;
+            tableWrapper.scrollLeft = porcentaje * maxScrollTabla;
+        }
+        syncing = false;
+    });
+
+    tableWrapper.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollTabla > 0 && maxScrollBarra > 0) {
+            const porcentaje = tableWrapper.scrollLeft / maxScrollTabla;
+            topScroll.scrollLeft = porcentaje * maxScrollBarra;
+        }
+        syncing = false;
+    });
+});
+
+function actualizarStickyTabla() {
+    const header = document.querySelector('.planeacion-header');
+    const filtros = document.querySelector('.planeacion-filtros-sticky');
+    if (!header || !filtros) return;
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFiltros = filtros.offsetHeight;
+
+    document.documentElement.style.setProperty(
+        '--sticky-table-top',
+        `${alturaHeader + alturaFiltros}px`
+    );
+}
+
+window.addEventListener('load', actualizarStickyTabla);
+window.addEventListener('resize', actualizarStickyTabla);
+
+function detectarZoom() {
+    const zoom = Math.round(window.devicePixelRatio * 100);
+    document.body.classList.toggle('zoom-alto', zoom > 105);
+}
+window.addEventListener('resize', detectarZoom);
+detectarZoom();
+
+document.addEventListener("click", (e) => {
+    const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
+
+    if (botonZoom) {
+        e.preventDefault();
+        document.body.classList.toggle("modo-ampliado");
+        document.body.classList.toggle("modo-zoom");
+        document.querySelector(".panel")?.classList.toggle("panel-zoom");
+    }
+});
+
+window.exportarPlaneacion = function() {
+    try {
+        if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
+            alert("No hay datos cargados para exportar todavía.");
+            return;
+        }
+
+        const exportRegionEl = document.getElementById("exportRegion");
+        const region = exportRegionEl ? exportRegionEl.value : "TODOS";
+
+        let filas = [...datosGlobal];
+
+        const buscarIndice = (nombre) =>
+            encabezadosGlobal.findIndex(h => String(h).trim() === nombre);
+
+        const idxDepto = buscarIndice("Departamento");
+
+        if (region === "R1" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                ["CESAR", "LA GUAJIRA", "SAI"].includes(
+                    String(fila[idxDepto] || "").trim().toUpperCase()
+                )
+            );
+        }
+
+        if (region === "R2" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                String(fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
+            );
+        }
+
+        const headers = [
+            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Nuevo",
+            "Total_IDs", "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
+            "Estado_Programacion", "Fecha_Programacion", "Observaciones",
+            "Estado_Gestion", "Tecnico_Asignado", "Acompanamiento",
+            "Indicador_Backlog", "Stopper_P3", "Estado_OT", "Tipo_Facturacion",
+            "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
+        ];
+
+        let registrosProcesados = filas.map(fila => {
+            const getValor = (nombre) => {
+                const index = buscarIndice(nombre);
+                return index !== -1 ? (fila[index] ?? "") : "";
+            };
+
+            const otValor = getValor("OT");
+            const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
+
+            let valorFechaExportar = "";
+            let esFechaReal = false;
+            const estadoProg = regD1.estadoProgramacion || "";
+            const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
+            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+            if ((estadoProg === "Programada" || estadoProg === "Cancelada" || estadoProg === "Operativa") && regexFecha.test(fechaStr)) {
+                const [, year, month, day] = fechaStr.match(regexFecha);
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                esFechaReal = true;
+            } else {
+                if (estadoProg === "Pendiente") {
+                    valorFechaExportar = "En validación";
+                } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
+                    valorFechaExportar = "No aplica";
+                } else {
+                    valorFechaExportar = "⟵ Definir estado";
+                }
+            }
+
+            return {
+                filaOriginal: fila,
+                esFechaReal: esFechaReal,
+                valorFechaExportar: valorFechaExportar,
+                regD1: regD1,
+                otValor: otValor
+            };
+        });
+
+        registrosProcesados.sort((a, b) => {
+            if (a.esFechaReal && !b.esFechaReal) return -1;
+            if (!a.esFechaReal && b.esFechaReal) return 1;
+            return 0;
+        });
+
+        const dataAOA = [];
+        dataAOA.push([...headers]);
+
+        registrosProcesados.forEach(item => {
+            const getValor = (nombre, esNumerico = false) => {
+                const index = buscarIndice(nombre);
+                if (index === -1) return esNumerico ? 0 : "";
+                const val = item.filaOriginal[index] ?? "";
+                if (esNumerico && val !== "") {
+                    const num = Number(val);
+                    return isNaN(num) ? val : num;
+                }
+                return val;
+            };
+
+            const limpiarTexto = (t) => t ? String(t).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim() : "";
+            const esN = esCasoNuevo(item.otValor) ? "Sí" : "No";
+
+            const idxEstadoOTCol = encabezadosGlobal.findIndex(h => h.trim() === "Estado OT" || h.trim() === "ESTADO OT" || h.trim().toUpperCase() === "ESTADO_OT");
+            const estadoOTVal = idxEstadoOTCol !== -1 ? (item.filaOriginal[idxEstadoOTCol] ?? "") : "";
+
+            dataAOA.push([
+                getValor("ID", true), 
+                getValor("Departamento"), 
+                getValor("Municipio"),
+                getValor("IM"), 
+                item.otValor, 
+                getValor("Tipo de afectación"),
+                esN,
+                getValor("IDs afectados", true), 
+                getValor("Días OT", true), 
+                getValor("Rango de afectación"),
+                getValor("Tipo de prioridad"), 
+                getValor("Stoppers Dominion"),
+                limpiarTexto(item.regD1.estadoProgramacion), 
+                item.valorFechaExportar,
+                limpiarTexto(item.regD1.observacion), 
+                limpiarTexto(item.regD1.estadoGestion),
+                limpiarTexto(item.regD1.tecnicoAsigned),
+                limpiarTexto(item.regD1.acompanamiento),
+                getValor("Indicador backlog"), 
+                getValor("Stopper P3"),
+                estadoOTVal,
+                getValor("Tipo facturación"), 
+                getValor("Fecha vencimiento FM"),
+                getValor("Alerta vencimiento FM")
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        if (ws && ws['!ref']) {
+            const rango = XLSX.utils.decode_range(ws['!ref']);
+            const colFechaIdx = 13;
+
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                const celda = ws[celdaRef];
+                if (celda && celda.v instanceof Date) {
+                    celda.t = 'd';
+                    celda.z = 'dd/mm/yyyy';
+                }
+            }
+
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
+
+    } catch (error) {
+        console.error("❌ Error detallado al exportar:", error);
+        alert("Ocurrió un error al exportar el archivo.");
+    }
+};
+
+let filaActualModal = null;
+
+document.addEventListener("click", (e) => {
+    const btnEditar = e.target.closest(".btn-abrir-modal-obs");
+
+    if (btnEditar) {
+        const fila = btnEditar.closest("tr");
+        filaActualModal = fila;
+        
+        const ot = btnEditar.getAttribute("data-ot");
+        const id = btnEditar.getAttribute("data-id");
+        const depto = btnEditar.getAttribute("data-depto");
+        const muni = btnEditar.getAttribute("data-muni");
+        const afec = btnEditar.getAttribute("data-afec");
+        
+        const inputObs = fila.querySelector(".observacion");
+        const modal = document.getElementById("modalObservacion");
+        const txtArea = document.getElementById("textareaModalObs");
+        
+        const spanOt = document.getElementById("modalValOt");
+        const spanId = document.getElementById("modalValId");
+        const spanDepto = document.getElementById("modalValDepto");
+        const spanMuni = document.getElementById("modalValMuni");
+        const spanAfec = document.getElementById("modalValAfec");
+
+       if (modal && txtArea) {
+            if (spanOt) spanOt.textContent = ot || "--";
+            if (spanId) spanId.textContent = id || "--";
+            if (spanDepto) spanDepto.textContent = depto || "--";
+            if (spanMuni) spanMuni.textContent = muni || "--";
+            if (spanAfec) spanAfec.textContent = afec || "--";
+
+            const registroActual = window.registrosD1[ot] || {};
+            let textoGuardado = registroActual.observacion || inputObs?.value || "";
+
+            if (textoGuardado.includes(" • ")) {
+                textoGuardado = textoGuardado.replace(/\s*•\s*/g, "\n");
+            } else if (textoGuardado.includes(" | ")) {
+                textoGuardado = textoGuardado.replace(/\s*\|\s*/g, "\n");
+            }
+
+            txtArea.value = textoGuardado;
+            modal.style.display = "grid";
+            txtArea.focus();
+        }
+    }
+
+    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs") {
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
+    }
+
+    if (e.target.id === "btnGuardarObs") {
+        const txtArea = document.getElementById("textareaModalObs");
+        if (filaActualModal && txtArea) {
+            const ot = filaActualModal.children[4].textContent.trim();
+            const textoConSaltos = txtArea.value;
+
+            window.registrosD1[ot] = window.registrosD1[ot] || {};
+            window.registrosD1[ot].observacion = textoConSaltos;
+
+            const inputObs = filaActualModal.querySelector(".observacion");
+            if (inputObs) {
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
+            }
+
+            if (typeof guardarOT === "function") {
+                guardarOT(filaActualModal, textoConSaltos);
+            }
+        }
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        const modal = document.getElementById("modalObservacion");
+        if (modal && modal.style.display === "grid") {
+            modal.style.display = "none";
+        }
+    }
+});
+
+let scrollInterval = null;
+
+function iniciarScroll(direccion) {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    
+    if (!tableWrapper) return;
+
+    const step = 20;
+    tableWrapper.scrollLeft += direccion * step;
+    if (topScroll) {
+        topScroll.scrollLeft += direccion * step;
+    }
+}
+
+document.addEventListener("mousedown", (e) => {
+    const btnLeft = e.target.closest("#scrollLeftTopBtn");
+    const btnRight = e.target.closest("#scrollRightTopBtn");
+
+    if (btnLeft || btnRight) {
+        const direccion = btnLeft ? -1 : 1;
+        iniciarScroll(direccion);
+        scrollInterval = setInterval(() => {
+            iniciarScroll(direccion);
+        }, 30);
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+    }
+});
+
+function ajustarAnchoScrollSuperior() {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+
+    if (tableWrapper && topScroll && topScrollInner) {
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const anchoPerfecto = topScroll.clientWidth + maxScrollTabla;
+        topScrollInner.style.width = anchoPerfecto + "px";
+    }
+}
+
+window.addEventListener("load", ajustarAnchoScrollSuperior);
+window.addEventListener("resize", ajustarAnchoScrollSuperior);
+setTimeout(ajustarAnchoScrollSuperior, 300);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const inputExcel = document.getElementById("inputExcelMasivo");
+    const containerProgreso = document.getElementById("containerProgresoMasivo");
+    const textoProgreso = document.getElementById("textoProgreso");
+    const barraProgresoAnimada = document.getElementById("barraProgresoAnimada");
+    const porcentajeProgreso = document.getElementById("porcentajeProgreso");
+
+    if (inputExcel) {
+        inputExcel.addEventListener("change", async (e) => {
+            const archivo = e.target.files[0];
+            if (!archivo) return;
+
+            const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
+            
+            if (!confirmar) {
+                inputExcel.value = "";
+                return;
+            }
+
+            if (containerProgreso) containerProgreso.style.display = "block";
+            if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
+            
+            let porcentajeActual = 0;
+            if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
+            if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
+
+            const intervaloProgreso = setInterval(() => {
+                if (porcentajeActual < 90) {
+                    porcentajeActual += Math.floor(Math.random() * 12) + 4;
+                    if (porcentajeActual > 90) porcentajeActual = 90;
+                    
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
+                }
+            }, 120);
+
+            const lector = new FileReader();
+            lector.onload = async function (evt) {
+                try {
+                    const datosBinarios = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(datosBinarios, { type: "array" });
+                    
+                    const nombreHoja = workbook.SheetNames[0];
+                    const hoja = workbook.Sheets[nombreHoja];
+                    const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+                    
+                    if (filasExcel.length === 0) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        alert("El archivo Excel está vacío.");
+                        inputExcel.value = "";
+                        return;
+                    }
+
+                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
+                    const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+
+                    const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
+                    const idxObs = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n === "OBSERVACION" || n === "OBSERVACIONES";
+                    });
+
+                    const idxFechaProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
+                    });
+
+                    const idxEstadoProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("ESTADO") && n.includes("PROGRAMACION");
+                    });
+
+                    if (idxOT === -1) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        alert("El Excel debe contener obligatoriamente la columna 'OT'.");
+                        inputExcel.value = "";
+                        return;
+                    }
+
+                    const formatearFechaExcelAInput = (valorCrudo) => {
+                        if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
+
+                        if (valorCrudo instanceof Date) {
+                            const y = valorCrudo.getFullYear();
+                            const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
+                            const d = String(valorCrudo.getDate()).padStart(2, "0");
+                            return `${y}-${m}-${d}`;
+                        }
+
+                        if (typeof valorCrudo === "number") {
+                            const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
+                            if (fechaObj) {
+                                const y = fechaObj.y;
+                                const m = String(fechaObj.m).padStart(2, "0");
+                                const d = String(fechaObj.d).padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        const texto = String(valorCrudo).trim();
+                        if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
+
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+
+                        const partes = texto.split(/[\/\-]/);
+                        if (partes.length === 3) {
+                            if (partes[2].length === 4) {
+                                const d = partes[0].padStart(2, "0");
+                                const m = partes[1].padStart(2, "0");
+                                const y = partes[2];
+                                return `${y}-${m}-${d}`;
+                            }
+                            if (partes[0].length === 4) {
+                                const y = partes[0];
+                                const m = partes[1].padStart(2, "0");
+                                const d = partes[2].padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        return "";
+                    };
+
+                    let actualizados = 0;
+
+                    for (let i = 1; i < filasExcel.length; i++) {
+                        const fila = filasExcel[i];
+                        const otVal = String(fila[idxOT] || "").trim();
+
+                        if (otVal) {
+                            const regD1Actual = window.registrosD1[otVal] || {};
+                            const obsVal = idxObs !== -1 && fila[idxObs] !== undefined ? String(fila[idxObs]).trim() : (regD1Actual.observacion || "");
+                            
+                            let fechaVal = "";
+                            if (idxFechaProg !== -1 && fila[idxFechaProg] !== undefined && fila[idxFechaProg] !== null) {
+                                fechaVal = formatearFechaExcelAInput(fila[idxFechaProg]);
+                            }
+
+                            const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
+                            if (!esFechaValida) {
+                                fechaVal = "";
+                            }
+
+                            let estadoProgVal = regD1Actual.estadoProgramacion || "";
+
+                            if (idxEstadoProg !== -1 && fila[idxEstadoProg]) {
+                                estadoProgVal = String(fila[idxEstadoProg]).trim();
+                            } else {
+                                if (esFechaValida) {
+                                    estadoProgVal = "Programada";
+                                } else {
+                                    if (estadoProgVal === "Programada") {
+                                        estadoProgVal = "";
+                                    }
+                                }
+                            }
+
+                            const payload = {
+                                ot: otVal,
+                                estadoProgramacion: estadoProgVal,
+                                fechaProgramacion: fechaVal,
+                                observacion: obsVal,
+                                estadoGestion: regD1Actual.estadoGestion || "",
+                                tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
+                                acompanamiento: regD1Actual.acompanamiento || ""
+                            };
+
+                            try {
+                                const resp = await fetch(API_URL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify(payload)
+                                });
+                                const resJson = await resp.json();
+                                if (resJson.ok) {
+                                    window.registrosD1[otVal] = { ...regD1Actual, ...payload };
+                                    actualizados++;
+                                }
+                            } catch (err) {
+                                console.error(`Error al actualizar OT ${otVal}:`, err);
+                            }
+                        }
+                    }
+
+                    clearInterval(intervaloProgreso);
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
+
+                    setTimeout(() => {
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        inputExcel.value = "";
+                        alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
+                        aplicarFiltros();
+                    }, 300);
+
+                } catch (error) {
+                    console.error("Error leyendo el Excel:", error);
+                    clearInterval(intervaloProgreso);
+                    if (containerProgreso) containerProgreso.style.display = "none";
+                    alert("Ocurrió un error al procesar el archivo Excel.");
+                    inputExcel.value = "";
+                }
+            };
+            lector.readAsArrayBuffer(archivo);
+        });
+    }
+});
