@@ -124,20 +124,23 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
     el.className = "";
     el.style.backgroundColor = "transparent";
 
-    let colorFondo = "#dc3545"; // Rojo (<70%)
+    let colorFondoStart = "#f87171";
+    let colorFondoEnd = "#dc2626"; // Rojo (<70%)
     if (porcentaje >= 100) {
-        colorFondo = "#28a745"; // Verde (>=100%)
+        colorFondoStart = "#34d399";
+        colorFondoEnd = "#059669"; // Verde (>=100%)
     } else if (porcentaje >= 70) {
-        colorFondo = "#ffc107"; // Amarillo (70% - 99%)
+        colorFondoStart = "#fbbf24";
+        colorFondoEnd = "#d97706"; // Amarillo (70% - 99%)
     }
 
     const anchoBarra = Math.min(porcentaje / 2, 100);
 
     el.innerHTML = `
-        <div style="position: relative; display: block; width: 100%; height: 26px; background: #fff; border: 1px solid #cbd5e0; border-radius: 2px; overflow: hidden; text-align: center;">
-            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background-color: ${colorFondo}; opacity: 0.85; transition: width 0.3s ease;"></div>
-            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #000; z-index: 2;"></div>
-            <span style="position: relative; z-index: 3; font-weight: bold; font-size: 0.8rem; line-height: 26px; color: #000;">${porcentaje.toFixed(0)} %</span>
+        <div style="position: relative; display: block; width: 100%; height: 26px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; overflow: hidden; text-align: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
+            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, ${colorFondoStart} 50%, ${colorFondoEnd} 100%); border-right: 2px solid rgba(0,0,0,0.3); transition: width 0.3s ease;"></div>
+            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #0f172a; z-index: 2; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>
+            <span style="position: relative; z-index: 3; font-weight: 800; font-size: 0.78rem; line-height: 26px; color: #0f172a; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">${porcentaje.toFixed(0)} %</span>
         </div>
     `;
 }
@@ -397,4 +400,4 @@ document.addEventListener("click", (e) => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", inicializarDashboard);
+document.addEventListener("DOMContentLoaded", inicializarDashboard);[cite: 13]
