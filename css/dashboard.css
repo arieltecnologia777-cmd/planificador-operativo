@@ -1,9 +1,9 @@
 /* ==========================================================
-   ZOOM INICIAL AL 98% Y ESTILOS GENERALES
+   ZOOM INICIAL AL 99% Y ESTILOS GENERALES
    ========================================================== */
 
 html {
-    zoom: 0.98 !important;
+    zoom: 0.99 !important;
     height: 100% !important;
 }
 
