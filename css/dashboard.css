@@ -1,5 +1,5 @@
 /* ==========================================================
-   ZOOM INICIAL AL 96% Y ESTILOS GENERALES
+   ZOOM INICIAL AL 97% Y ESTILOS GENERALES
    ========================================================== */
 
 html {
@@ -76,7 +76,7 @@ main.main-content {
 }
 
 /* ==========================================================
-   HERO / BANNER
+   HERO / BANNER (FOTO NITIDA Y CON TODO EL PROTAGONISMO)
    ========================================================== */
 
 .hero {
@@ -88,6 +88,8 @@ main.main-content {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
+    background-color: transparent !important;
+    background-blend-mode: normal !important;
 }
 
 .hero h1, 
@@ -97,13 +99,15 @@ main.main-content {
     font-weight: 800 !important;
     margin: 4px 0 !important;
     color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
 .hero p, 
 .hero-subtitle {
     font-size: 0.85rem !important;
     margin: 4px 0 0 0 !important;
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
 }
 
 .hero-badge, 
@@ -671,5 +675,5 @@ div:has(> .tabla-rangos) {
 #pct_pqr div[style*="linear-gradient"],
 #pct_p3 div[style*="linear-gradient"],
 .tabla-dinamica-carpetas td div[style*="linear-gradient"] {
-    opacity: 0.75 !important; /* Ajusta este valor (ej. 0.6 a 0.85) según qué tan translúcidas las quieras */
+    opacity: 0.75 !important;
 }
