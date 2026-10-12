@@ -329,7 +329,7 @@ function pintarTabla(datos){
     const idxIM = encabezados.findIndex(h => h.trim() === "IM");
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxIdsAfectados = encabezados.findIndex(h => h.trim() === "IDs afectados");
-    const idxDias = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxDias = encabezados.findIndex(h => h.trim() === "Días vigencia OT" || h.trim() === "Días OT" || h.trim().toUpperCase() === "DÍAS VIGENCIA OT");
     const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
     const idxRangoAfectacion = encabezados.findIndex(h => h.trim() === "Rango de afectación");
     const idxStoppersDominion = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
@@ -376,8 +376,8 @@ function pintarTabla(datos){
             <td>${fila[idxAfectacion] || ""}</td>
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
             <td class="${ocultarClase}">${fila[idxIdsAfectados] || ""}</td>
-            <td class="${ocultarClase}">${fila[idxDias] || ""}</td>
-            <td class="${ocultarClase}">${fila[idxRangoAfectacion] || ""}</td>
+            <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxRangoAfectacion !== -1 ? (fila[idxRangoAfectacion] || "") : ""}</td>
             <td class="${ocultarClase}">${fila[idxPrioridad] || ""}</td>
             <td class="${ocultarClase}">${fila[idxStoppersDominion] || ""}</td>
             <td>
@@ -615,7 +615,7 @@ function actualizarOpcionesFiltros(datos) {
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
-    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días vigencia OT" || h.trim() === "Días OT" || h.trim().toUpperCase() === "DÍAS VIGENCIA OT");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxEstadoOT = encabezados.findIndex(h => h.trim() === "Estado OT" || h.trim() === "ESTADO OT" || h.trim().toUpperCase() === "ESTADO_OT");
 
@@ -668,8 +668,8 @@ function actualizarOpcionesFiltros(datos) {
             if (excluirFiltro !== 'estado' && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
             if (excluirFiltro !== 'afectacion' && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(fila[idxAfectacion])) return false;
             if (excluirFiltro !== 'stoppers' && stoppersSeleccionados.length > 0 && !stoppersSeleccionados.includes(fila[idxStoppers])) return false;
-            if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(fila[idxDiasOT])) return false;
-            if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(fila[idxRango])) return false;
+            if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(fila[idxDias])) return false;
+            if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(fila[idxRangoAfectacion])) return false;
             if (excluirFiltro !== 'backlog' && backlogSeleccionados.length > 0 && !backlogSeleccionados.includes(incumplidor)) return false;
             if (excluirFiltro !== 'estadoOT' && estadoOTSeleccionados.length > 0 && !estadoOTSeleccionados.includes(estadoOTVal)) return false;
             if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
@@ -783,15 +783,15 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const diasOtDisp = [...new Set(datosParaDias.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasOtDisp = [...new Set(datosParaDias.map(f => idxDiasOT !== -1 ? f[idxDiasOT] : ""))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
     const diasEl = document.getElementById("listaDiasOT");
     if(diasEl) {
         diasEl.innerHTML = `
             <div class="filtro-sort-container">
                 <div class="filtro-sort-title">⇅ Ordenar</div>
                 <div class="filtro-sort-header">
-                    <span onclick="ordenarDesdeFiltro('Días OT', true)">Menor a Mayor</span>
-                    <span onclick="ordenarDesdeFiltro('Días OT', false)">Mayor a Menor</span>
+                    <span onclick="ordenarDesdeFiltro('Días vigencia OT', true)">Menor a Mayor</span>
+                    <span onclick="ordenarDesdeFiltro('Días vigencia OT', false)">Mayor a Menor</span>
                 </div>
             </div>
             <input type="text" id="buscarDiasOT" class="buscar-multifiltro" placeholder="Buscar...">
@@ -800,7 +800,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rangDisp = [...new Set(datosParaRango.map(f => idxRangoAfectacion !== -1 ? f[idxRangoAfectacion] : ""))].filter(Boolean).sort();
     const rEl = document.getElementById("listaRango");
     if(rEl) {
         rEl.innerHTML = `
@@ -941,7 +941,7 @@ function aplicarFiltros(){
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxRango = encabezados.findIndex(h => h.trim() === "Rango de afectación");
-    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días OT");
+    const idxDiasOT = encabezados.findIndex(h => h.trim() === "Días vigencia OT" || h.trim() === "Días OT" || h.trim().toUpperCase() === "DÍAS VIGENCIA OT");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxEstadoOT = encabezados.findIndex(h => h.trim() === "Estado OT" || h.trim() === "ESTADO OT" || h.trim().toUpperCase() === "ESTADO_OT");
 
@@ -955,6 +955,8 @@ function aplicarFiltros(){
         const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
         const esN = esCasoNuevo(otVal) ? "Sí" : "No";
         const estadoOTVal = idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : "";
+        const diasVal = idxDiasOT !== -1 ? (fila[idxDiasOT] || "") : "";
+        const rangoVal = idxRango !== -1 ? (fila[idxRango] || "") : "";
 
         if (otsModificadasRecientemente.has(otVal)) {
             return true;
@@ -969,8 +971,8 @@ function aplicarFiltros(){
         const cumpleDepto = deptos.length === 0 || deptos.includes(fila[idxDepto]);
         const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(fila[idxAfectacion]);
         const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(fila[idxStoppers]);
-        const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(fila[idxRango]);
-        const cumpleDiasOT = diasOtFiltro.length === 0 || diasOtFiltro.includes(fila[idxDiasOT]);
+        const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(rangoVal);
+        const cumpleDiasOT = diasOtFiltro.length === 0 || diasOtFiltro.includes(diasVal);
         const cumpleBacklog = backlogFiltro.length === 0 || backlogFiltro.includes(incumplidor);
         const cumpleEstadoOT = estadoOTFiltro.length === 0 || estadoOTFiltro.includes(estadoOTVal);
         const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
@@ -1001,6 +1003,12 @@ function aplicarFiltros(){
             } else if (ordenActualColumna === "Estado OT") {
                 valA = idxEstadoOT !== -1 ? String(a[idxEstadoOT] || "").trim() : "";
                 valB = idxEstadoOT !== -1 ? String(b[idxEstadoOT] || "").trim() : "";
+            } else if (ordenActualColumna === "Días vigencia OT" || ordenActualColumna === "Días OT") {
+                valA = idxDiasOT !== -1 ? String(a[idxDiasOT] || "").trim() : "";
+                valB = idxDiasOT !== -1 ? String(b[idxDiasOT] || "").trim() : "";
+            } else if (ordenActualColumna === "Rango de afectación") {
+                valA = idxRango !== -1 ? String(a[idxRango] || "").trim() : "";
+                valB = idxRango !== -1 ? String(b[idxRango] || "").trim() : "";
             } else if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
                 const regA = (window.registrosD1 || {})[a[idxOT]] || {};
                 const regB = (window.registrosD1 || {})[b[idxOT]] || {};
@@ -1598,7 +1606,7 @@ window.exportarPlaneacion = function() {
 
         const headers = [
             "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Nuevo",
-            "Total_IDs", "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
+            "Total_IDs", "Dias_vigencia_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
             "Estado_Programacion", "Fecha_Programacion", "Observaciones",
             "Estado_Gestion", "Tecnico_Asignado", "Acompanamiento",
             "Indicador_Backlog", "Stopper_P3", "Estado_OT", "Tipo_Facturacion",
@@ -1679,7 +1687,7 @@ window.exportarPlaneacion = function() {
                 getValor("Tipo de afectación"),
                 esN,
                 getValor("IDs afectados", true), 
-                getValor("Días OT", true), 
+                getValor("Días vigencia OT", true), 
                 getValor("Rango de afectación"),
                 getValor("Tipo de prioridad"), 
                 getValor("Stoppers Dominion"),
