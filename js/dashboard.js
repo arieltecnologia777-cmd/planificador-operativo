@@ -314,11 +314,12 @@ function renderizarDatosDashboard() {
         }
     }
 
-    const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
-    const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
-    const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
-    const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
-    const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
+    // El Neto sin stopper excluye ÚNICAMENTE los casos de FM / Traslado / Reubicación
+    const sinOff = Math.max(0, sumaOffline - fmOff);
+    const sinPar = Math.max(0, sumaParcial - fmPar);
+    const sinVel = Math.max(0, sumaVelocidad - fmVel);
+    const sinPqr = Math.max(0, sumaPqrs - fmPqr);
+    const sinP3  = Math.max(0, sumaOtrosP3 - fmP3);
 
     const deptoKey = departamentoFiltroActual.toUpperCase();
     const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
