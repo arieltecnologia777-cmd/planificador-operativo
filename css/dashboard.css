@@ -50,6 +50,33 @@ aside.sidebar {
     padding: 16px !important;
 }
 
+/* ==========================================================
+   LOGO LIMPIO, CENTRADO Y SIN CUADROS (CONTROL GLOBAL CSS)
+   ========================================================== */
+aside.sidebar .logo-box {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10px 0 15px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+    backdrop-filter: none !important;
+}
+
+aside.sidebar .logo-img {
+    width: 100% !important;
+    max-width: 110px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
 #btnToggleSidebar,
 .btn-sidebar-toggle {
     display: none !important;
