@@ -90,7 +90,7 @@ main.main-content {
     justify-content: center !important;
     background-color: transparent !important;
     background-blend-mode: normal !important;
-    filter: contrast(1.05) saturate(1.2) brightness(1.03) sepia(0.12) !important;
+    filter: contrast(1.08) saturate(1.25) brightness(1.05) sepia(0.28) hue-rotate(-10deg) !important;
 }
 
 .hero h1, 
@@ -462,9 +462,14 @@ main.main-content {
 }
 
 #mapaLeaflet {
+    background-image: url('../assets/mapa.jpg') !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 450px !important;
     width: 100% !important;
-    height: 100% !important;
-    min-height: 400px !important;
     flex-grow: 1 !important;
 }
 
@@ -667,6 +672,7 @@ div:has(> .tabla-rangos) {
 .tabla-carpetas-wrapper > button {
     display: none !important;
 }
+
 /* ==========================================================
    TRANSLUCIDEZ Y EFECTO CRISTAL PARA BARRAS KPI EN TABLAS
    ========================================================== */
