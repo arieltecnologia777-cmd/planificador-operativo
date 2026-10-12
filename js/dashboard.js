@@ -18,13 +18,14 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas ajustadas para que el pin inicie exactamente donde apunta tu flecha roja
+// Coordenadas con la altura actual perfecta y desplazado más a la derecha
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "45%", left: "33%", color: "#06b6d4" }, // Ajustado a la punta de la flecha
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "45%", left: "42%", color: "#06b6d4" }, // Movido a la derecha
     { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
     { depto: "SAI", nombre: "SAI", top: "15%", left: "20%", color: "#10b981" }
 ];
+
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
