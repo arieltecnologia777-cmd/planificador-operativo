@@ -1,5 +1,8 @@
 const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
 
+const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+
 // Matriz de sitios totales fijos según la tabla de distribución
 const TOTALES_MAPA = {
     "TODOS": { "TODOS": 1460, "MINTIC 7K": 1443, "ODH 5G": 17 },
@@ -125,7 +128,7 @@ function renderizarPinesEstaticos(deptoSeleccionado) {
 
 async function cargarNotaDelDia() {
     try {
-        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
+        const resp = await fetch(`${API_BASE_URL}/notas`);
         const data = await resp.json();
         const txtNotas = document.getElementById("txtNotasDia");
         if (txtNotas && data.ok) {
@@ -497,7 +500,7 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/verificar-password", {
+            const resp = await fetch(`${API_BASE_URL}/verificar-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: password })
@@ -530,7 +533,7 @@ document.addEventListener("click", async (e) => {
         const nuevaNota = txtModalNotaDia ? txtModalNotaDia.value.trim() : "";
 
         try {
-            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas", {
+            const resp = await fetch(`${API_BASE_URL}/notas`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nota: nuevaNota })
