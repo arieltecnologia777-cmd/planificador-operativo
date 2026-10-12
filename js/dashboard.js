@@ -371,7 +371,7 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_rep_p3"))  document.getElementById("c_rep_p3").textContent  = repP3;
 
     if (document.getElementById("c_req_off")) document.getElementById("c_req_off").textContent = reqOff;
-    if (document.getElementById("c_req_par")) document.getElementById("c_req_par").textContent = repPar;
+    if (document.getElementById("c_req_par")) document.getElementById("c_req_par").textContent = reqPar;
     if (document.getElementById("c_req_vel")) document.getElementById("c_req_vel").textContent = reqVel;
     if (document.getElementById("c_req_pqr")) document.getElementById("c_req_pqr").textContent = reqPqr;
     if (document.getElementById("c_req_p3"))  document.getElementById("c_req_p3").textContent  = reqP3;
