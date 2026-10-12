@@ -24,7 +24,7 @@ body {
 }
 
 /* ==========================================================
-   SIDEBAR FIJO, ANCHO Y ALARGADO AL 100% DE ALTO (CON SOMBRA A LA DERECHA)
+   SIDEBAR DESTACADO Y CON ALTA ELEVACIÓN (MÁXIMO ÉNFASIS)
    ========================================================== */
 
 html body aside.sidebar,
@@ -40,13 +40,11 @@ aside.sidebar {
     display: flex !important;
     flex-direction: column !important;
     z-index: 1000 !important;
-    background: rgba(255, 255, 255, 0.92) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border-right: none !important;
-    box-shadow: 10px 0 40px rgba(15, 23, 42, 0.12), 4px 0 15px rgba(0, 0, 0, 0.05) !important;
-    border-top-right-radius: 20px !important;
-    border-bottom-right-radius: 20px !important;
+    background: #ffffff !important;
+    border-right: 2px solid rgba(37, 99, 235, 0.2) !important; /* Borde lateral sutil pero definido */
+    box-shadow: 20px 0 50px rgba(15, 23, 42, 0.22), 8px 0 20px rgba(0, 0, 0, 0.08) !important; /* Sombra muy amplia y profunda hacia la derecha */
+    border-top-right-radius: 22px !important;
+    border-bottom-right-radius: 22px !important;
     box-sizing: border-box !important;
     overflow-y: auto !important;
     padding: 16px !important;
