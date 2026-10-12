@@ -18,12 +18,12 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas porcentuales fijas para ubicar los pines estáticos sobre mapa.jpg
+// Coordenadas porcentuales corregidas según las indicaciones de las flechas
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "52%", left: "38%", color: "#06b6d4" },
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "58%", left: "43%", color: "#06b6d4" }, // Flecha roja
     { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "45%", left: "50%", color: "#10b981" }
+    { depto: "SAI", nombre: "SAI", top: "15%", left: "20%", color: "#10b981" } // Flecha amarilla (islas arriba a la izquierda)
 ];
 
 let datosGlobal = [];
@@ -33,7 +33,7 @@ let proyectoFiltroActual = "MINTIC 7K";
 
 async function inicializarDashboard() {
     try {
-        inicializarMapaEstatico();
+        renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
         const resp = await fetch(DATASET_URL);
@@ -68,20 +68,6 @@ async function inicializarDashboard() {
     } catch (error) {
         console.error("Error al cargar los datos del dataset en el dashboard:", error);
     }
-}
-
-// Inicializar el mapa estático con mapa.jpg
-function inicializarMapaEstatico() {
-    const contenedor = document.getElementById("mapaLeaflet");
-    if (!contenedor) return;
-
-    contenedor.style.position = "relative";
-    contenedor.style.overflow = "hidden";
-    contenedor.style.backgroundImage = "url('mapa.jpg')";
-    contenedor.style.backgroundSize = "cover";
-    contenedor.style.backgroundPosition = "center";
-
-    renderizarPinesEstaticos("TODOS");
 }
 
 function renderizarPinesEstaticos(deptoSeleccionado) {
@@ -160,13 +146,13 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
     el.style.backgroundColor = "transparent";
 
     let colorFondoStart = "#f87171";
-    let colorFondoEnd = "#dc2626"; // Rojo (<70%)
+    let colorFondoEnd = "#dc2626";
     if (porcentaje >= 100) {
         colorFondoStart = "#34d399";
-        colorFondoEnd = "#059669"; // Verde (>=100%)
+        colorFondoEnd = "#059669";
     } else if (porcentaje >= 70) {
         colorFondoStart = "#fbbf24";
-        colorFondoEnd = "#d97706"; // Amarillo (70% - 99%)
+        colorFondoEnd = "#d97706";
     }
 
     const anchoBarra = Math.min(porcentaje / 2, 100);
