@@ -18,12 +18,12 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas porcentuales corregidas según las indicaciones de las flechas
+// Coordenadas porcentuales corregidas con Antioquia dentro del recuadro rojo
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "58%", left: "43%", color: "#06b6d4" }, // Flecha roja
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "39%", left: "41%", color: "#06b6d4" }, // Ubicado en el recuadro rojo
     { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "15%", left: "20%", color: "#10b981" } // Flecha amarilla (islas arriba a la izquierda)
+    { depto: "SAI", nombre: "SAI", top: "15%", left: "20%", color: "#10b981" }
 ];
 
 let datosGlobal = [];
