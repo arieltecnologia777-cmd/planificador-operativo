@@ -26,7 +26,7 @@ aside.sidebar {
     left: 0 !important;
     height: 100vh !important;
     min-height: 100vh !important;
-    width: 280px !important; /* Estirado más hacia la derecha */
+    width: 280px !important;
     min-width: 280px !important;
     max-width: 280px !important;
     display: flex !important;
@@ -49,7 +49,7 @@ aside.sidebar {
 
 main.main-content {
     flex-grow: 1 !important;
-    margin-left: 280px !important; /* Compensa el nuevo ancho del sidebar fijo */
+    margin-left: 280px !important;
     width: calc(100% - 280px) !important;
     background: #f8fafc !important;
     padding: 12px 24px 24px 24px !important;
@@ -74,7 +74,7 @@ main.main-content {
 
 .hero {
     width: 100% !important;
-    padding: 16px 24px !important; /* Espaciado superior generoso para separar el botón del borde */
+    padding: 16px 24px !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
     box-sizing: border-box !important;
@@ -83,7 +83,6 @@ main.main-content {
     justify-content: center !important;
 }
 
-/* Título principal más grande y legible */
 .hero h1, 
 .hero-title, 
 .hero span[class*="title"] {
@@ -93,7 +92,6 @@ main.main-content {
     color: #ffffff !important;
 }
 
-/* Slogan / subtítulo más visible */
 .hero p, 
 .hero-subtitle {
     font-size: 0.85rem !important;
@@ -101,7 +99,6 @@ main.main-content {
     color: rgba(255, 255, 255, 0.9) !important;
 }
 
-/* Botón o badge del hero despegado del borde */
 .hero-badge, 
 .hero .badge-dashboard,
 .hero button {
@@ -346,7 +343,6 @@ main.main-content {
     white-space: nowrap;
 }
 
-/* Estilos individuales KPI */
 .kpi-card-neon.online {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 243, 208, 0.85) 50%, rgba(209, 250, 229, 0.95) 100%) !important;
     border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
@@ -480,20 +476,40 @@ main.main-content {
     margin-bottom: 0 !important;
 }
 
-/* Tablas dinámicas nítidas y ordenadas */
+/* ==========================================================
+   TABLA RANGOS DE AFECTACIÓN: AJUSTADA AL LÍMITE DE LA TABLA
+   ========================================================== */
+
+.tabla-rangos-wrapper, 
+div:has(> .tabla-rangos) {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important; /* Corta el espacio sobrante ajustándose al contenido */
+}
+
+/* Tablas dinámicas nítidas */
 .tabla-fondo-imagen {
     background: transparent !important;
     width: 100% !important;
 }
 
-.tabla-dinamica-carpetas {
+.tabla-dinamica-carpetas, 
+.tabla-rangos {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 0.78rem;
     background: transparent !important;
 }
 
-.tabla-dinamica-carpetas th {
+.tabla-dinamica-carpetas th,
+.tabla-rangos th {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
@@ -513,16 +529,20 @@ main.main-content {
 }
 
 .tabla-dinamica-carpetas th:not(:first-child), 
-.tabla-dinamica-carpetas td:not(:first-child) {
+.tabla-dinamica-carpetas td:not(:first-child),
+.tabla-rangos th:not(:first-child), 
+.tabla-rangos td:not(:first-child) {
     width: 13.6%;
     text-align: center !important;
 }
 
-.tabla-dinamica-carpetas th:last-child {
+.tabla-dinamica-carpetas th:last-child,
+.tabla-rangos th:last-child {
     border-top-right-radius: 6px;
 }
 
-.tabla-dinamica-carpetas td {
+.tabla-dinamica-carpetas td,
+.tabla-rangos td {
     background: #ffffff !important;
     color: #1e293b !important;
     border: 1px solid #e2e8f0 !important;
@@ -536,13 +556,35 @@ main.main-content {
     font-weight: 600;
 }
 
-.tabla-dinamica-carpetas tbody tr:hover td {
+.tabla-dinamica-carpetas tbody tr:hover td,
+.tabla-rangos tbody tr:hover td {
     background: #f1f5f9 !important;
 }
 
 .fila-alerta-roja td:not(:first-child) {
     color: #dc2626 !important;
     font-weight: bold;
+}
+
+/* ==========================================================
+   INDICADOR EJECUCIÓN % CUMPLIMIENTO (ESTILO COLUMNAS REFERENCIA)
+   ========================================================== */
+
+.bloque-backlog-al-lado h4,
+.bloque-indicador-cumplimiento h4 {
+    background: linear-gradient(90deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%) !important; /* Tono gris oscuro corporativo tipo referencia */
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    padding: 9px 14px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important; /* Permite mostrar formato exacto como en la imagen de referencia */
+    letter-spacing: 0px !important;
+    box-shadow: 0 2px 8px rgba(75, 85, 99, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+    text-align: left;
 }
 
 /* Notas del día */
