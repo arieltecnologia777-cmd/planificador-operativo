@@ -1,442 +1,473 @@
-<!DOCTYPE html>
-<html lang="es">
+const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero Ejecutivo - Planeación Operativa</title>
+// Matriz de sitios totales fijos según la tabla de distribución
+const TOTALES_MAPA = {
+    "TODOS": { "TODOS": 1460, "MINTIC 7K": 1443, "ODH 5G": 17 },
+    "ANTIOQUIA": { "TODOS": 396, "MINTIC 7K": 379, "ODH 5G": 17 },
+    "CESAR": { "TODOS": 554, "MINTIC 7K": 554, "ODH 5G": 0 },
+    "LA GUAJIRA": { "TODOS": 489, "MINTIC 7K": 489, "ODH 5G": 0 },
+    "SAI": { "TODOS": 21, "MINTIC 7K": 21, "ODH 5G": 0 }
+};
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css?v=29">
-    
-    <!-- Librerías oficiales de Leaflet.js para el mapa real interactivo -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-</head>
+// Metas fijas actualizadas por Departamento
+const METAS_DEPARTAMENTO = {
+    "ANTIOQUIA": { offline: 9, parcial: 2, velocidad: 3, pqr: 0, p3: 9 },
+    "CESAR": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 14 },
+    "LA GUAJIRA": { offline: 14, parcial: 2, velocidad: 3, pqr: 0, p3: 12 },
+    "SAI": { offline: 1, parcial: 0, velocidad: 0, pqr: 0, p3: 0 },
+    "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
+};
 
-<body>
+// Coordenadas con SAI y Antioquia subidos un poquito más
+const PINES_ESTATICOS = [
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "43%", left: "46%", color: "#06b6d4" },
+    { depto: "CESAR", nombre: "Cesar", top: "25%", left: "62%", color: "#f59e0b" },
+    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "75%", color: "#a855f7" },
+    { depto: "SAI", nombre: "SAI", top: "4%", left: "17%", color: "#10b981" }
+];
 
-<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-    ☰
-</button>
+let datosGlobal = [];
+let encabezadosGlobal = [];
+let departamentoFiltroActual = "TODOS";
+let proyectoFiltroActual = "MINTIC 7K";
 
-<div class="layout">
+async function inicializarDashboard() {
+    try {
+        renderizarPinesEstaticos("TODOS");
+        cargarNotaDelDia();
 
-    <aside class="sidebar">
-        <div class="logo-box">
-            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion">
-            <div class="logo-text">
-                <h3>Dashboard</h3>
-                <span>Tablero Ejecutivo</span>
-            </div>
+        const resp = await fetch(DATASET_URL);
+        const texto = await resp.text();
+
+        const filas = texto.trim().split(/\r?\n/).map(fila => {
+            const valores = [];
+            let actual = "";
+            let dentroComillas = false;
+
+            for(let i=0; i<fila.length; i++){
+                const caracter = fila[i];
+                if(caracter === '"'){
+                    dentroComillas = !dentroComillas;
+                } else if(caracter === "," && !dentroComillas){
+                    valores.push(actual);
+                    actual = "";
+                } else {
+                    actual += caracter;
+                }
+            }
+            valores.push(actual);
+            return valores;
+        });
+
+        if (filas.length < 2) return;
+
+        encabezadosGlobal = filas[0].map(h => h.trim());
+        datosGlobal = filas.slice(1);
+
+        renderizarDatosDashboard();
+    } catch (error) {
+        console.error("Error al cargar los datos del dataset en el dashboard:", error);
+    }
+}
+
+function renderizarPinesEstaticos(deptoSeleccionado) {
+    const contenedor = document.getElementById("mapaLeaflet");
+    if (!contenedor) return;
+
+    const pinesPrevios = contenedor.querySelectorAll(".pin-estatico-neon");
+    pinesPrevios.forEach(p => p.remove());
+
+    PINES_ESTATICOS.forEach(pin => {
+        const activo = (deptoSeleccionado === "TODOS" || deptoSeleccionado === pin.depto);
+        const opacidad = activo ? "1" : "0.35";
+        const escala = activo ? "scale(1.15)" : "scale(0.9)";
+        const boxShadow = activo ? `0 0 16px ${pin.color}` : `0 0 4px rgba(0,0,0,0.5)`;
+
+        const divPin = document.createElement("div");
+        divPin.className = "pin-estatico-neon";
+        divPin.style.cssText = `
+            position: absolute;
+            top: ${pin.top};
+            left: ${pin.left};
+            transform: translate(-50%, -50%) ${escala};
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid ${pin.color};
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: ${boxShadow};
+            opacity: ${opacidad};
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            white-space: nowrap;
+        `;
+
+        divPin.innerHTML = `
+            <div style="width: 10px; height: 10px; background: ${pin.color}; border-radius: 50%; box-shadow: 0 0 8px ${pin.color};"></div>
+            <span style="color: #ffffff; font-weight: 700; font-size: 0.75rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${pin.nombre}</span>
+        `;
+
+        divPin.addEventListener("click", () => {
+            departamentoFiltroActual = pin.depto;
+            document.querySelectorAll(".btn-depto").forEach(b => {
+                if (b.getAttribute("data-depto") === pin.depto) b.classList.add("active");
+                else b.classList.remove("active");
+            });
+            renderizarDatosDashboard();
+        });
+
+        contenedor.appendChild(divPin);
+    });
+}
+
+async function cargarNotaDelDia() {
+    try {
+        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
+        const data = await resp.json();
+        const txtNotas = document.getElementById("txtNotasDia");
+        if (txtNotas && data.ok) {
+            txtNotas.value = data.nota || "Sin notas registradas para hoy.";
+        }
+    } catch (err) {
+        console.error("Error al cargar la nota:", err);
+        const txtNotas = document.getElementById("txtNotasDia");
+        if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
+    }
+}
+
+function aplicarColorCumplimiento(elementoId, porcentaje) {
+    const el = document.getElementById(elementoId);
+    if (!el) return;
+
+    el.className = "";
+    el.style.backgroundColor = "transparent";
+
+    let colorFondoStart = "#f87171";
+    let colorFondoEnd = "#dc2626";
+    if (porcentaje >= 100) {
+        colorFondoStart = "#34d399";
+        colorFondoEnd = "#059669";
+    } else if (porcentaje >= 70) {
+        colorFondoStart = "#fbbf24";
+        colorFondoEnd = "#d97706";
+    }
+
+    const anchoBarra = Math.min(porcentaje / 2, 100);
+
+    el.innerHTML = `
+        <div style="position: relative; display: block; width: 100%; height: 24px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; text-align: center;">
+            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, ${colorFondoStart} 50%, ${colorFondoEnd} 100%); transition: width 0.3s ease;"></div>
+            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #0f172a; z-index: 2; box-shadow: 0 0 3px rgba(0,0,0,0.4);"></div>
+            <span style="position: relative; z-index: 3; font-weight: 800; font-size: 0.75rem; line-height: 24px; color: #0f172a; text-shadow: 0 1px 1px rgba(255,255,255,0.7);">${porcentaje.toFixed(0)} %</span>
         </div>
+    `;
+}
 
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="active">
-                <span class="nav-icon">📊</span>
-                Dashboard
-            </a>
-            <a href="planeacion.html">
-                <span class="nav-icon">📅</span>
-                Planeación
-            </a>
-            
-            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                📝 Editar Nota del Día
-            </button>
+function renderizarDatosDashboard() {
+    if (!datosGlobal.length) return;
 
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📋</span>
-                Seguimiento
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
-                Centros Digitales
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
-                Mapa
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
-                Reportes
-            </a>
-        </nav>
-    </aside>
+    renderizarPinesEstaticos(departamentoFiltroActual);
 
-    <main class="main-content">
+    // Actualizar etiqueta visual del filtro activo de departamento
+    const lblRegion = document.getElementById("lblRegionActiva");
+    if (lblRegion) {
+        lblRegion.textContent = departamentoFiltroActual;
+    }
 
-        <header class="hero">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span></span>
-                    DASHBOARD
-                </div>
-                <h1>Tablero Ejecutivo</h1>
-                <p>Monitoreo en tiempo real, cumplimiento por carpetas y estado general de la red.</p>
-            </div>
-        </header>
+    const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
+    const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
+    const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
+    const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
+    const idxMunicipio = encabezadosGlobal.findIndex(h => h.toUpperCase() === "MUNICIPIO" || h.toUpperCase() === "CIUDAD");
 
-        <div class="dashboard-container">
-            
-            <!-- CONTENEDOR UNIFICADO SUPERIOR (Agrupa Total CD, Filtros y KPIs) -->
-            <div class="panel-superior">
-                
-                <div class="bloque-totales-cd">
-                    <div class="cd-header-principal">
-                        <div class="cd-icon-box">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"></path><path d="M4 20V10l8-6 8 6v10"></path><path d="M10 20v-6h4v6"></path></svg>
-                        </div>
-                        <div class="cd-text-box">
-                            <span class="label-titulo-cd">TOTAL CD</span>
-                            <span class="val-total-cd" id="valTotalCD">1443</span>
-                        </div>
-                    </div>
-                    <div class="cd-botones-inferiores">
-                        <button type="button" class="btn-zona active">ZONA</button>
-                        <button type="button" class="btn-todas">TODAS</button>
-                    </div>
-                </div>
+    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
+    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
+    const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
+    const colProj = idxProyecto !== -1 ? idxProyecto : 3;
+    const colMun = idxMunicipio !== -1 ? idxMunicipio : 5;
+    const colCarpetaU = 20; 
+    const colStopper = 21;  
+    const colStopperRepuestos = 28; 
+    const colStopperFM = 29;        
+    const colRangoK = 10;           
 
-                <div class="bloque-filtros-centro">
-                    <div class="grupo-filtros">
-                        <span class="label-titulo">Proyecto</span>
-                        <div class="botones-filtro">
-                            <button class="btn-filtro active">MinTic 7K</button>
-                            <button class="btn-filtro">ODH 5G</button>
-                        </div>
-                    </div>
-                    
-                    <div class="grupo-filtros">
-                        <span class="label-titulo">Filtro Departamento</span>
-                        <div class="botones-departamentos" id="filtroDeptosWeb">
-                            <button class="btn-depto active" data-depto="TODOS">TODOS</button>
-                            <button class="btn-depto" data-depto="ANTIOQUIA">ANTIOQUIA</button>
-                            <button class="btn-depto" data-depto="CESAR">CESAR</button>
-                            <button class="btn-depto" data-depto="LA GUAJIRA">LA GUAJIRA</button>
-                            <button class="btn-depto" data-depto="SAI">SAI</button>
-                        </div>
-                    </div>
+    let datosFiltrados = datosGlobal.filter(fila => {
+        const depto = String(fila[colDepto] || "").trim().toUpperCase();
+        const proyecto = String(fila[colProj] || "").trim().toUpperCase();
 
-                    <button class="btn-borrar-filtros" id="btnBorrarFiltros">🧹 Borrar filtros</button>
-                </div>
+        const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual);
+        const matchProyecto = (proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual));
 
-                <div class="kpis-wrapper-contenedor">
-                    <div class="kpis-estado-superior">
-                        <div class="kpi-card-neon online">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                            </div>
-                            <span id="valOnline">0</span>
-                            <div class="kpi-label-row">Online <span class="dot-green"></span></div>
-                        </div>
+        return matchDepto && matchProyecto;
+    });
 
-                        <div class="kpi-card-neon offline">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                            </div>
-                            <span id="valOffline">0</span>
-                            <div class="kpi-label-row">Offline</div>
-                        </div>
+    let sumaOffline = 0, sumaParcial = 0, sumaVelocidad = 0, sumaPqrs = 0, sumaOtrosP3 = 0;
+    let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
+    let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
+    let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
 
-                        <div class="kpi-card-neon parcial">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                            </div>
-                            <span id="valParcial">0</span>
-                            <div class="kpi-label-row">Parcial</div>
-                        </div>
+    let municipiosOfflineMap = {};
 
-                        <div class="kpi-card-neon velocidad">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-                            </div>
-                            <span id="valVelocidad">0</span>
-                            <div class="kpi-label-row">Velocidad</div>
-                        </div>
+    let rangos = {
+        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
+        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
+    };
 
-                        <div class="kpi-card-neon pqrs">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                            </div>
-                            <span id="valPqrs">0</span>
-                            <div class="kpi-label-row">PQR's</div>
-                        </div>
+    datosFiltrados.forEach(fila => {
+        const estado = String(fila[colEstado] || "").trim().toUpperCase();
+        const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
+        const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
+        const stopper = String(fila[colStopper] || "").trim().toUpperCase();
+        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
+        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
+        const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
+        const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-                        <div class="kpi-card-neon otros">
-                            <div class="kpi-icon-wrap">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                            </div>
-                            <span id="valOtrosP3">0</span>
-                            <div class="kpi-label-row">Otros P3</div>
-                        </div>
-                    </div>
-                </div>
+        if (estado.includes("OFFLINE")) {
+            sumaOffline += idsAfectados;
+            if (!municipiosOfflineMap[municipio]) {
+                municipiosOfflineMap[municipio] = 0;
+            }
+            municipiosOfflineMap[municipio] += idsAfectados;
+        }
+        else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
+        else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
+        else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
+        else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
 
-            </div>
+        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
+            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
+            else if (estado.includes("PQR")) fmPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
+        }
 
-            <!-- GRID PRINCIPAL PBI -->
-            <div class="panel-layout-pbi">
-                
-                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo y Top Municipios Offline (Sin espacios extra) -->
-                <div class="columna-izq" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; margin-bottom: 0;">
-                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #2d3748; font-size: 0.95rem; font-weight: 600;">Mapa Geográfico</h4>
-                        <div id="mapaLeaflet" style="flex-grow: 1; width: 100%; min-height: 280px; border-radius: 6px; z-index: 1;"></div>
-                    </div>
+        const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
+        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS");
 
-                    <!-- TARJETA INTEGRADA: Top Municipios Offline -->
-                    <div class="bloque-estado-filtro" style="background: #ffffff !important; border: 1px solid #cbd5e0 !important; border-radius: 8px !important; padding: 10px 12px !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; margin-top: 0 !important;">
-                        <h4 style="margin-top: 0; margin-bottom: 6px; color: #2d3748; font-size: 0.95rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
-                            <span>Top Municipios Offline</span>
-                            <span>⚠️</span>
-                        </h4>
-                        <div class="filtro-estado-body" style="display: flex; flex-direction: column; gap: 6px;">
-                            <div class="filtro-activo-badge" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; color: #475569;">
-                                <span>Región:</span>
-                                <strong id="lblRegionActiva" style="color: #2563eb; font-weight: 700;">TODOS</strong>
-                            </div>
-                            <div id="listaTopMunicipios" style="display: flex; flex-direction: column; gap: 4px;">
-                                <!-- Se llena dinámicamente con JS -->
-                                <div style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 4px;">Cargando municipios...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        if (esRepuestoP3 && !esFM_P3) {
+            if (estado.includes("OFFLINE")) repOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) repPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
+            else if (estado.includes("PQR")) repPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
+        }
 
-                <!-- COLUMNA DERECHA -->
-                <div class="columna-der-inferior">
-                    
-                    <!-- FILA SUPERIOR: Tabla de Carpetas y Notas del Día -->
-                    <div class="subgrid-superior-derecha">
-                        <!-- 1. Tabla Cumplimiento por Carpetas -->
-                        <div class="tabla-carpetas-wrapper">
-                            <div class="card-header-flex">
-                                <h3><span class="icon-titulo">🎯</span> Cumplimiento por carpetas</h3>
-                            </div>
-                            <div class="tabla-fondo-imagen">
-                                <table class="tabla-dinamica-carpetas">
-                                    <thead>
-                                        <tr>
-                                            <th>Carpeta</th>
-                                            <th>Offline</th>
-                                            <th>Parcial</th>
-                                            <th>Velocidad</th>
-                                            <th>PQR</th>
-                                            <th>P3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Total neto</td>
-                                            <td id="c_neto_off">0</td>
-                                            <td id="c_neto_par">0</td>
-                                            <td id="c_neto_vel">0</td>
-                                            <td id="c_neto_pqr">0</td>
-                                            <td id="c_neto_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>FM/Trasl./reubicaciones</td>
-                                            <td id="c_fm_off">0</td>
-                                            <td id="c_fm_par">0</td>
-                                            <td id="c_fm_vel">0</td>
-                                            <td id="c_fm_pqr">0</td>
-                                            <td id="c_fm_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Repuestos</td>
-                                            <td id="c_rep_off">0</td>
-                                            <td id="c_rep_par">0</td>
-                                            <td id="c_rep_vel">0</td>
-                                            <td id="c_rep_pqr">0</td>
-                                            <td id="c_rep_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Requiere atención S.O</td>
-                                            <td id="c_req_off">0</td>
-                                            <td id="c_req_par">0</td>
-                                            <td id="c_req_vel">0</td>
-                                            <td id="c_req_pqr">0</td>
-                                            <td id="c_req_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Neto sin stopper</td>
-                                            <td id="c_sin_off">0</td>
-                                            <td id="c_sin_par">0</td>
-                                            <td id="c_sin_vel">0</td>
-                                            <td id="c_sin_pqr">0</td>
-                                            <td id="c_sin_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Meta</td>
-                                            <td id="c_meta_off">0</td>
-                                            <td id="c_meta_par">0</td>
-                                            <td id="c_meta_vel">0</td>
-                                            <td id="c_meta_pqr">0</td>
-                                            <td id="c_meta_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-cumplimiento">
-                                            <td>Cumplimiento %</td>
-                                            <td id="pct_off">0 %</td>
-                                            <td id="pct_par">0 %</td>
-                                            <td id="pct_vel">0 %</td>
-                                            <td id="pct_pqr">0 %</td>
-                                            <td id="pct_p3">0 %</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+        if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
+            if (estado.includes("OFFLINE")) reqOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) reqVel += idsAfectados;
+            else if (estado.includes("PQR")) reqPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
+        }
 
-                        <!-- 2. Notas del Día -->
-                        <div class="bloque-notas-dia">
-                            <div class="notas-header">
-                                <h4>📝 Notas del Día / Bitácora</h4>
-                            </div>
-                            <div class="notas-body">
-                                <textarea id="txtNotasDia" placeholder="Cargando nota del día..." readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
+        let targetRango = null;
+        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5")) targetRango = rangos.r1;
+        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15")) targetRango = rangos.r2;
+        else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
+        else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
+        else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
+        else if (rangoK.includes("MAYOR A 60") || rangoK.includes("> 60")) targetRango = rangos.r6;
 
-                    <!-- FILA INFERIOR: Rangos y [Performance + Backlog] -->
-                    <div class="subgrid-inferior-derecha">
-                        <!-- Tabla Rangos de Afectación -->
-                        <div class="tabla-carpetas-wrapper">
-                            <div class="card-header-flex">
-                                <h3><span class="icon-titulo">📅</span> Rangos de Afectación por Días</h3>
-                            </div>
-                            <div class="tabla-fondo-imagen">
-                                <table class="tabla-dinamica-carpetas tabla-rangos">
-                                    <thead>
-                                        <tr>
-                                            <th>Rango de Días</th>
-                                            <th>Offline</th>
-                                            <th>Parcial</th>
-                                            <th>Velocidad</th>
-                                            <th>PQR</th>
-                                            <th>P3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1. MENOR A 5 DÍAS</td>
-                                            <td id="r1_off">0</td><td id="r1_par">0</td><td id="r1_vel">0</td><td id="r1_pqr">0</td><td id="r1_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2. DE 5 A 15 DÍAS</td>
-                                            <td id="r2_off">0</td><td id="r2_par">0</td><td id="r2_vel">0</td><td id="r2_pqr">0</td><td id="r2_p3">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3. DE 15 A 30 DÍAS</td>
-                                            <td id="r3_off">0</td><td id="r3_par">0</td><td id="r3_vel">0</td><td id="r3_pqr">0</td><td id="r3_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>4. DE 30 A 45 DÍAS</td>
-                                            <td id="r4_off">0</td><td id="r4_par">0</td><td id="r4_vel">0</td><td id="r4_pqr">0</td><td id="r4_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>5. DE 45 A 60 DÍAS</td>
-                                            <td id="r5_off">0</td><td id="r5_par">0</td><td id="r5_vel">0</td><td id="r5_pqr">0</td><td id="r5_p3">0</td>
-                                        </tr>
-                                        <tr class="fila-alerta-roja">
-                                            <td>6. MAYOR A 60 DÍAS</td>
-                                            <td id="r6_off">0</td><td id="r6_par">0</td><td id="r6_vel">0</td><td id="r6_pqr">0</td><td id="r6_p3">0</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Columna derecha apilada -->
-                        <div class="bloques-derechos-apilados">
-                            <div class="bloque-performance">
-                                <h4>% Performance</h4>
-                                <div class="perf-bar">
-                                    <label id="lblOfflinePerf">Offline (0.00%)</label>
-                                    <div class="progress"><div class="bar red" id="barPerfOffline" style="width: 0%;"></div></div>
-                                </div>
-                                <div class="perf-bar">
-                                    <label id="lblOnlinePerf">Online (100%)</label>
-                                    <div class="progress"><div class="bar green" id="barPerfOnline" style="width: 100%;"></div></div>
-                                </div>
-                            </div>
-
-                            <div class="bloque-backlog-al-lado">
-                                <h4>Indicador Ejecución % Cumplimiento</h4>
-                                <div class="item-backlog-pbi">
-                                    <span>Backlog R1</span>
-                                    <strong id="valBacklogR1">97,17 %</strong>
-                                    <span class="badge-cumplimiento green" id="badgeR1">104.49%</span>
-                                </div>
-                                <div class="item-backlog-pbi">
-                                    <span>Backlog R2</span>
-                                    <strong id="valBacklogR2">87,53 %</strong>
-                                    <span class="badge-cumplimiento red" id="badgeR2">94.12%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </main>
-
-</div>
-
-<script src="../js/dashboard.js?v=29"></script>
-<script src="../js/settings.js"></script>
-
-<script>
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
-            document.body.classList.toggle("sidebar-colapsado");
+        if (targetRango) {
+            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
+            else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
+            else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
         }
     });
-</script>
 
-<div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 400px;">
-        <div class="obs-modal-header">
-            <h3>🔒 Acceso Restringido</h3>
-            <button type="button" id="cerrarModalPassword" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="text-align: center;">
-            <p style="margin-bottom: 15px; color: #4a5568;">Ingresa la contraseña de administrador:</p>
-            <input type="password" id="inputAdminPassword" placeholder="Contraseña..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 1rem;">
-        </div>
-        <div class="obs-modal-footer" style="justify-content: space-between;">
-            <button type="button" id="btnCancelarPassword" class="obs-btn-secundario">Cancelar</button>
-            <button type="button" id="btnVerificarPassword" class="obs-btn-principal">Ingresar</button>
-        </div>
-    </div>
-</div>
+    // Renderizar Top 2 Municipios Offline (reducido a 2 para evitar estiramiento)
+    let topMunicipiosArray = Object.entries(municipiosOfflineMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2);
 
-<div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 500px;">
-        <div class="obs-modal-header">
-            <h3>📝 Editar Nota del Día / Seguimiento</h3>
-            <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
-        </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="font-size: 0.9rem; color: #4a5568;">Escribe o actualiza la bitácora que se mostrará en el tablero para todos los usuarios:</p>
-            <textarea id="txtModalNotaDia" rows="6" placeholder="Escribe la nota del día aquí..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.95rem;"></textarea>
-            <button type="button" id="btnGuardarNotaServidor" style="padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 500;">
-                💾 Guardar y Sincronizar Nota
-            </button>
-        </div>
-        <div class="obs-modal-footer">
-            <button type="button" id="btnCerrarTools" class="obs-btn-secundario">Cerrar</button>
-        </div>
-    </div>
-</div>
+    const contenedorTopMun = document.getElementById("listaTopMunicipios");
+    if (contenedorTopMun) {
+        if (topMunicipiosArray.length === 0) {
+            contenedorTopMun.innerHTML = `<div style="font-size: 0.75rem; color: #10b981; text-align: center; padding: 4px; font-weight: 600;">✨ ¡Sin municipios offline!</div>`;
+        } else {
+            contenedorTopMun.innerHTML = topMunicipiosArray.map(([mun, count], index) => `
+                <div class="item-municipio-top" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem;">
+                    <span class="mun-nombre" title="${mun}" style="color: #334155; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">⚠️ ${index + 1}. ${mun}</span>
+                    <span class="mun-badge" style="background: #fee2e2; color: #dc2626; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #fca5a5;">${count} off</span>
+                </div>
+            `).join('');
+        }
+    }
 
-</body>
-</html>
+    const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
+    const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
+    const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
+    const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
+    const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
+
+    const deptoKey = departamentoFiltroActual.toUpperCase();
+    const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
+
+    const metaOff = metasActivas.offline;
+    const metaPar = metasActivas.parcial;
+    const metaVel = metasActivas.velocidad;
+    const metaPqr = metasActivas.pqr;
+    const metaP3  = metasActivas.p3;
+
+    if (document.getElementById("c_meta_off")) document.getElementById("c_meta_off").textContent = metaOff;
+    if (document.getElementById("c_meta_par")) document.getElementById("c_meta_par").textContent = metaPar;
+    if (document.getElementById("c_meta_vel")) document.getElementById("c_meta_vel").textContent = metaVel;
+    if (document.getElementById("c_meta_pqr")) document.getElementById("c_meta_pqr").textContent = metaPqr;
+    if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent  = metaP3;
+
+    const pctOffVal = sinOff > 0 ? (metaOff / sinOff) * 100 : 100;
+    const pctParVal = sinPar > 0 ? (metaPar / sinPar) * 100 : 100;
+    const pctVelVal = sinVel > 0 ? (metaVel / sinVel) * 100 : 100;
+    const pctPqrVal = sinPqr > 0 ? (metaPqr / sinPqr) * 100 : 100;
+    const pctP3Val  = sinP3 > 0  ? (metaP3 / sinP3) * 100  : 100;
+
+    aplicarColorCumplimiento("pct_off", pctOffVal);
+    aplicarColorCumplimiento("pct_par", pctParVal);
+    aplicarColorCumplimiento("pct_vel", pctVelVal);
+    aplicarColorCumplimiento("pct_pqr", pctPqrVal);
+    aplicarColorCumplimiento("pct_p3",  pctP3Val);
+
+    const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
+        ? TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual]
+        : 1460;
+
+    const elTotalCd = document.querySelector(".val-total-cd");
+    if (elTotalCd) elTotalCd.textContent = totalSitiosFijo;
+
+    const totalOnline = Math.max(0, totalSitiosFijo - sumaOffline);
+
+    if (document.getElementById("valOnline")) document.getElementById("valOnline").textContent = totalOnline;
+    if (document.getElementById("valOffline")) document.getElementById("valOffline").textContent = sumaOffline;
+    if (document.getElementById("valParcial")) document.getElementById("valParcial").textContent = sumaParcial;
+    if (document.getElementById("valVelocidad")) document.getElementById("valVelocidad").textContent = sumaVelocidad;
+    if (document.getElementById("valPqrs")) document.getElementById("valPqrs").textContent = sumaPqrs;
+    if (document.getElementById("valOtrosP3")) document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
+
+    if (document.getElementById("c_neto_off")) document.getElementById("c_neto_off").textContent = sumaOffline;
+    if (document.getElementById("c_neto_par")) document.getElementById("c_neto_par").textContent = sumaParcial;
+    if (document.getElementById("c_neto_vel")) document.getElementById("c_neto_vel").textContent = sumaVelocidad;
+    if (document.getElementById("c_neto_pqr")) document.getElementById("c_neto_pqr").textContent = sumaPqrs;
+    if (document.getElementById("c_neto_p3"))  document.getElementById("c_neto_p3").textContent  = sumaOtrosP3;
+
+    if (document.getElementById("c_fm_off")) document.getElementById("c_fm_off").textContent = fmOff;
+    if (document.getElementById("c_fm_par")) document.getElementById("c_fm_par").textContent = fmPar;
+    if (document.getElementById("c_fm_vel")) document.getElementById("c_fm_vel").textContent = fmVel;
+    if (document.getElementById("c_fm_pqr")) document.getElementById("c_fm_pqr").textContent = fmPqr;
+    if (document.getElementById("c_fm_p3"))  document.getElementById("c_fm_p3").textContent  = fmP3;
+
+    if (document.getElementById("c_rep_off")) document.getElementById("c_rep_off").textContent = repOff;
+    if (document.getElementById("c_rep_par")) document.getElementById("c_rep_par").textContent = repPar;
+    if (document.getElementById("c_rep_vel")) document.getElementById("c_rep_vel").textContent = repVel;
+    if (document.getElementById("c_rep_pqr")) document.getElementById("c_rep_pqr").textContent = repPqr;
+    if (document.getElementById("c_rep_p3"))  document.getElementById("c_rep_p3").textContent  = repP3;
+
+    if (document.getElementById("c_req_off")) document.getElementById("c_req_off").textContent = reqOff;
+    if (document.getElementById("c_req_par")) document.getElementById("c_req_par").textContent = reqPar;
+    if (document.getElementById("c_req_vel")) document.getElementById("c_req_vel").textContent = reqVel;
+    if (document.getElementById("c_req_pqr")) document.getElementById("c_req_pqr").textContent = reqPqr;
+    if (document.getElementById("c_req_p3"))  document.getElementById("c_req_p3").textContent  = reqP3;
+
+    if (document.getElementById("c_sin_off")) document.getElementById("c_sin_off").textContent = sinOff;
+    if (document.getElementById("c_sin_par")) document.getElementById("c_sin_par").textContent = sinPar;
+    if (document.getElementById("c_sin_vel")) document.getElementById("c_sin_vel").textContent = sinVel;
+    if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
+    if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
+
+    const pintarFilaRangos = (prefijo, obj) => {
+        const elOff = document.getElementById(`${prefijo}_off`);
+        const elPar = document.getElementById(`${prefijo}_par`);
+        const elVel = document.getElementById(`${prefijo}_vel`);
+        const elPqr = document.getElementById(`${prefijo}_pqr`);
+        const elP3  = document.getElementById(`${prefijo}_p3`);
+
+        if (elOff) elOff.textContent = obj.off;
+        if (elPar) elPar.textContent = obj.par;
+        if (elVel) elVel.textContent = obj.vel;
+        if (elPqr) elPqr.textContent = obj.pqr;
+        if (elP3)  elP3.textContent  = obj.p3;
+    };
+
+    pintarFilaRangos("r1", rangos.r1);
+    pintarFilaRangos("r2", rangos.r2);
+    pintarFilaRangos("r3", rangos.r3);
+    pintarFilaRangos("r4", rangos.r4);
+    pintarFilaRangos("r5", rangos.r5);
+    pintarFilaRangos("r6", rangos.r6);
+
+    const divisorPerf = totalSitiosFijo || 1;
+    const pctOfflineVal = ((sumaOffline / divisorPerf) * 100).toFixed(2);
+    const pctOnlineVal = ((totalOnline / divisorPerf) * 100).toFixed(2);
+
+    if (document.getElementById("lblOfflinePerf")) document.getElementById("lblOfflinePerf").textContent = `Offline (${pctOfflineVal}%)`;
+    const barOff = document.getElementById("barPerfOffline");
+    if (barOff) {
+        barOff.style.width = `${pctOfflineVal}%`;
+        barOff.style.height = "12px";
+        barOff.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%)";
+        barOff.style.borderRadius = "6px";
+        barOff.style.boxShadow = "0 2px 4px rgba(220,38,38,0.2)";
+    }
+
+    if (document.getElementById("lblOnlinePerf")) document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
+    const barOn = document.getElementById("barPerfOnline");
+    if (barOn) {
+        barOn.style.width = `${pctOnlineVal}%`;
+        barOn.style.height = "12px";
+        barOn.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%)";
+        barOn.style.borderRadius = "6px";
+        barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
+    }
+}
+
+document.addEventListener("click", (e) => {
+    const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
+    if (btnDepto) {
+        const depto = btnDepto.getAttribute("data-depto");
+        if (depto) {
+            departamentoFiltroActual = depto;
+            document.querySelectorAll(".btn-depto").forEach(b => {
+                if (b.getAttribute("data-depto") === depto) b.classList.add("active");
+                else b.classList.remove("active");
+            });
+            renderizarDatosDashboard();
+        }
+    }
+
+    const btnFiltroProyecto = e.target.closest(".botones-filtro button");
+    if (btnFiltroProyecto) {
+        document.querySelectorAll(".botones-filtro button").forEach(b => b.classList.remove("active"));
+        btnFiltroProyecto.classList.add("active");
+        
+        const textoProyecto = btnFiltroProyecto.textContent.trim().toUpperCase();
+        if (textoProyecto.includes("MINTIC")) {
+            proyectoFiltroActual = "MINTIC 7K";
+        } else if (textoProyecto.includes("ODH")) {
+            proyectoFiltroActual = "ODH 5G";
+        } else {
+            proyectoFiltroActual = "TODOS";
+        }
+        renderizarDatosDashboard();
+    }
+
+    if (e.target.id === "btnBorrarFiltros") {
+        departamentoFiltroActual = "TODOS";
+        document.querySelectorAll(".btn-depto").forEach(b => {
+            if (b.getAttribute("data-depto") === "TODOS") b.classList.add("active");
+            else b.classList.remove("active");
+        });
+        renderizarDatosDashboard();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", inicializarDashboard);
