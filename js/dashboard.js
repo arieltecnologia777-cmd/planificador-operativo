@@ -171,7 +171,6 @@ function renderizarDatosDashboard() {
 
     renderizarPinesEstaticos(departamentoFiltroActual);
 
-    // Actualizar etiqueta visual del filtro activo de departamento
     const lblRegion = document.getElementById("lblRegionActiva");
     if (lblRegion) {
         lblRegion.textContent = departamentoFiltroActual;
@@ -286,7 +285,6 @@ function renderizarDatosDashboard() {
         }
     });
 
-    // Renderizar Top 2 Municipios Offline
     let topMunicipiosArray = Object.entries(municipiosOfflineMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 2);
@@ -379,4 +377,179 @@ function renderizarDatosDashboard() {
     if (document.getElementById("c_req_p3"))  document.getElementById("c_req_p3").textContent  = reqP3;
 
     if (document.getElementById("c_sin_off")) document.getElementById("c_sin_off").textContent = sinOff;
-    if (document.getElementById("c_sin_par")) do
+    if (document.getElementById("c_sin_par")) document.getElementById("c_sin_par").textContent = sinPar;
+    if (document.getElementById("c_sin_vel")) document.getElementById("c_sin_vel").textContent = sinVel;
+    if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
+    if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
+
+    const pintarFilaRangos = (prefijo, obj) => {
+        const elOff = document.getElementById(`${prefijo}_off`);
+        const elPar = document.getElementById(`${prefijo}_par`);
+        const elVel = document.getElementById(`${prefijo}_vel`);
+        const elPqr = document.getElementById(`${prefijo}_pqr`);
+        const elP3  = document.getElementById(`${prefijo}_p3`);
+
+        if (elOff) elOff.textContent = obj.off;
+        if (elPar) elPar.textContent = obj.par;
+        if (elVel) elVel.textContent = obj.vel;
+        if (elPqr) elPqr.textContent = obj.pqr;
+        if (elP3)  elP3.textContent  = obj.p3;
+    };
+
+    pintarFilaRangos("r1", rangos.r1);
+    pintarFilaRangos("r2", rangos.r2);
+    pintarFilaRangos("r3", rangos.r3);
+    pintarFilaRangos("r4", rangos.r4);
+    pintarFilaRangos("r5", rangos.r5);
+    pintarFilaRangos("r6", rangos.r6);
+
+    const divisorPerf = totalSitiosFijo || 1;
+    const pctOfflineVal = ((sumaOffline / divisorPerf) * 100).toFixed(2);
+    const pctOnlineVal = ((totalOnline / divisorPerf) * 100).toFixed(2);
+
+    if (document.getElementById("lblOfflinePerf")) document.getElementById("lblOfflinePerf").textContent = `Offline (${pctOfflineVal}%)`;
+    const barOff = document.getElementById("barPerfOffline");
+    if (barOff) {
+        barOff.style.width = `${pctOfflineVal}%`;
+        barOff.style.height = "12px";
+        barOff.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%)";
+        barOff.style.borderRadius = "6px";
+        barOff.style.boxShadow = "0 2px 4px rgba(220,38,38,0.2)";
+    }
+
+    if (document.getElementById("lblOnlinePerf")) document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
+    const barOn = document.getElementById("barPerfOnline");
+    if (barOn) {
+        barOn.style.width = `${pctOnlineVal}%`;
+        barOn.style.height = "12px";
+        barOn.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%)";
+        barOn.style.borderRadius = "6px";
+        barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
+    }
+}
+
+document.addEventListener("click", async (e) => {
+    const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
+    if (btnDepto) {
+        const depto = btnDepto.getAttribute("data-depto");
+        if (depto) {
+            departamentoFiltroActual = depto;
+            document.querySelectorAll(".btn-depto").forEach(b => {
+                if (b.getAttribute("data-depto") === depto) b.classList.add("active");
+                else b.classList.remove("active");
+            });
+            renderizarDatosDashboard();
+        }
+    }
+
+    const btnFiltroProyecto = e.target.closest(".botones-filtro button");
+    if (btnFiltroProyecto) {
+        document.querySelectorAll(".botones-filtro button").forEach(b => b.classList.remove("active"));
+        btnFiltroProyecto.classList.add("active");
+        
+        const textoProyecto = btnFiltroProyecto.textContent.trim().toUpperCase();
+        if (textoProyecto.includes("MINTIC")) {
+            proyectoFiltroActual = "MINTIC 7K";
+        } else if (textoProyecto.includes("ODH")) {
+            proyectoFiltroActual = "ODH 5G";
+        } else {
+            proyectoFiltroActual = "TODOS";
+        }
+        renderizarDatosDashboard();
+    }
+
+    if (e.target.id === "btnBorrarFiltros") {
+        departamentoFiltroActual = "TODOS";
+        document.querySelectorAll(".btn-depto").forEach(b => {
+            if (b.getAttribute("data-depto") === "TODOS") b.classList.add("active");
+            else b.classList.remove("active");
+        });
+        renderizarDatosDashboard();
+    }
+
+    const btnAbrirConfig = e.target.closest("#btnAbrirConfig");
+    if (btnAbrirConfig) {
+        const modalPass = document.getElementById("modalAdminPassword");
+        const inputPass = document.getElementById("inputAdminPassword");
+        if (inputPass) inputPass.value = "";
+        if (modalPass) modalPass.style.display = "flex";
+        if (inputPass) inputPass.focus();
+    }
+
+    if (e.target.closest("#cerrarModalPassword") || e.target.closest("#btnCancelarPassword")) {
+        const modalPass = document.getElementById("modalAdminPassword");
+        if (modalPass) modalPass.style.display = "none";
+    }
+
+    if (e.target.closest("#cerrarModalTools") || e.target.closest("#btnCerrarTools")) {
+        const modalTools = document.getElementById("modalAdminTools");
+        if (modalTools) modalTools.style.display = "none";
+    }
+
+    const btnVerificar = e.target.closest("#btnVerificarPassword");
+    if (btnVerificar) {
+        const inputPass = document.getElementById("inputAdminPassword");
+        const password = inputPass ? inputPass.value.trim() : "";
+
+        if (!password) {
+            alert("Por favor, ingresa la contraseña.");
+            return;
+        }
+
+        try {
+            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/verificar-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password })
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+                const modalPass = document.getElementById("modalAdminPassword");
+                const modalTools = document.getElementById("modalAdminTools");
+                if (modalPass) modalPass.style.display = "none";
+                if (modalTools) modalTools.style.display = "flex";
+
+                const txtNotasDia = document.getElementById("txtNotasDia");
+                const txtModalNotaDia = document.getElementById("txtModalNotaDia");
+                if (txtModalNotaDia && txtNotasDia) {
+                    txtModalNotaDia.value = txtNotasDia.value;
+                }
+            } else {
+                alert("Contraseña incorrecta.");
+            }
+        } catch (err) {
+            console.error("Error al verificar contraseña:", err);
+            alert("Error de red al verificar la contraseña con el servidor.");
+        }
+    }
+
+    const btnGuardarNota = e.target.closest("#btnGuardarNotaServidor");
+    if (btnGuardarNota) {
+        const txtModalNotaDia = document.getElementById("txtModalNotaDia");
+        const nuevaNota = txtModalNotaDia ? txtModalNotaDia.value.trim() : "";
+
+        try {
+            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nota: nuevaNota })
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+                alert("¡Nota guardada y sincronizada con éxito!");
+                const modalTools = document.getElementById("modalAdminTools");
+                if (modalTools) modalTools.style.display = "none";
+                cargarNotaDelDia();
+            } else {
+                alert("Error al guardar la nota en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error al guardar la nota:", err);
+            alert("Error de red al intentar guardar la nota.");
+        }
+    }
+});
+
+document.addEventListener("DOMContentLoaded", inicializarDashboard);
