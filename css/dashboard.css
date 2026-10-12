@@ -24,9 +24,10 @@ body {
 }
 
 /* ==========================================================
-   SIDEBAR FIJO, ANCHO Y ALARGADO AL 100% DE ALTO (CON SOMBRA SUTIL)
+   SIDEBAR FIJO, ANCHO Y ALARGADO AL 100% DE ALTO (CON MÁXIMA ESPECIFICIDAD Y SOMBRA)
    ========================================================== */
 
+html body aside.sidebar,
 aside.sidebar {
     position: fixed !important;
     top: 0 !important;
@@ -42,8 +43,8 @@ aside.sidebar {
     background: #ffffff !important;
     border-right: none !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08), 1px 0 6px rgba(0, 0, 0, 0.04) !important;
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
+    border-top-right-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
     box-sizing: border-box !important;
     overflow-y: auto !important;
 }
