@@ -1,5 +1,5 @@
 /* ==========================================================
-   DASHBOARD EQUILIBRADO: ANCHO MÁXIMO CONTROLADO Y SIDEBAR FIJO
+   ESTILOS GENERALES Y DASHBOARD EQUILIBRADO
    ========================================================== */
 
 body {
@@ -42,35 +42,45 @@ aside.sidebar {
 }
 
 /* ==========================================================
-   CONTENIDO PRINCIPAL Y ANCHO MÁXIMO EQUILIBRADO
+   CONTENIDO PRINCIPAL PEGADO AL BORDE SUPERIOR
    ========================================================== */
 
 main.main-content {
     flex-grow: 1 !important;
     width: calc(100% - 260px) !important;
     background: #f8fafc !important;
-    padding: 24px !important;
+    padding: 10px 24px 24px 24px !important; /* Padding superior reducido a 10px para eliminar el espacio vacío de arriba */
     box-sizing: border-box !important;
     overflow-y: auto !important;
 }
 
-/* Limita el ancho máximo para evitar que las tablas se estiren exageradamente en pantallas grandes */
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 14px !important;
     width: 100% !important;
     max-width: 1450px !important; 
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
 
-/* Cabecera Hero */
+/* Cabecera Hero totalmente arriba */
 .hero {
     width: 100% !important;
-    padding: 14px 20px !important;
+    padding: 12px 18px !important;
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
     box-sizing: border-box !important;
+}
+
+.hero h1 {
+    font-size: 1rem !important;
+    margin: 0 !important;
+}
+
+.hero p {
+    font-size: 0.7rem !important;
+    margin: 2px 0 0 0 !important;
 }
 
 /* ==========================================================
@@ -86,7 +96,7 @@ main.main-content {
     border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    padding: 14px 18px !important;
+    padding: 12px 16px !important;
     box-sizing: border-box !important;
     gap: 14px !important;
 }
@@ -96,7 +106,7 @@ main.main-content {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 12px !important;
-    padding: 12px 16px !important;
+    padding: 10px 14px !important;
     box-sizing: border-box !important;
 }
 
@@ -104,7 +114,7 @@ main.main-content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     width: 280px !important;
     min-width: 280px !important;
 }
@@ -116,8 +126,8 @@ main.main-content {
 }
 
 .cd-icon-box {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     background: rgba(37, 99, 235, 0.1);
     border: 1px solid rgba(37, 99, 235, 0.2);
     border-radius: 8px;
@@ -140,7 +150,7 @@ main.main-content {
 }
 
 .val-total-cd {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #0f172a;
 }
@@ -153,7 +163,7 @@ main.main-content {
 .cd-botones-inferiores .btn-zona,
 .cd-botones-inferiores .btn-todas {
     flex: 1;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
     font-weight: 700;
     font-size: 0.7rem;
@@ -218,7 +228,7 @@ main.main-content {
 .btn-filtro, .btn-depto {
     background: #f1f5f9 !important;
     border: 1px solid #cbd5e1 !important;
-    padding: 6px 10px !important;
+    padding: 5px 8px !important;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
@@ -239,7 +249,7 @@ main.main-content {
     width: 100% !important;
     background: rgba(239, 68, 68, 0.08) !important;
     border: 1px solid rgba(239, 68, 68, 0.2) !important;
-    padding: 6px !important;
+    padding: 5px !important;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.7rem;
@@ -248,7 +258,7 @@ main.main-content {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    margin-top: 4px !important;
+    margin-top: 2px !important;
 }
 
 /* ==========================================================
@@ -260,7 +270,7 @@ main.main-content {
     border: 1px solid #cbd5e1;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     border-radius: 12px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     display: inline-flex;
     align-items: center;
 }
@@ -272,7 +282,7 @@ main.main-content {
 
 .kpi-card-neon {
     border-radius: 10px !important;
-    padding: 8px 10px !important;
+    padding: 6px 8px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -285,17 +295,17 @@ main.main-content {
 }
 
 .kpi-icon-wrap {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .kpi-card-neon span {
-    font-size: 1.1rem !important;
+    font-size: 1.05rem !important;
     font-weight: 800 !important;
     margin: 2px 0 !important;
 }
@@ -368,21 +378,21 @@ main.main-content {
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 380px 1fr !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: 100% !important;
 }
 
 .columna-izq, .columna-der-inferior {
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: 100% !important;
 }
 
 .subgrid-superior-derecha, .subgrid-inferior-derecha {
     display: grid !important;
     grid-template-columns: 1fr 350px !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: 100% !important;
     align-items: stretch !important;
 }
@@ -391,7 +401,7 @@ main.main-content {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: 100% !important;
 }
 
@@ -426,15 +436,15 @@ main.main-content {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
-    padding: 9px 14px !important;
+    padding: 8px 12px !important;
     border-radius: 8px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
     text-align: left;
 }
 
@@ -461,7 +471,7 @@ main.main-content {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    padding: 8px 10px !important;
+    padding: 7px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.7rem;
@@ -490,7 +500,7 @@ main.main-content {
     background: #ffffff !important;
     color: #1e293b !important;
     border: 1px solid #e2e8f0 !important;
-    padding: 8px 10px !important;
+    padding: 7px 10px !important;
 }
 
 .tabla-dinamica-carpetas td:first-child,
@@ -518,7 +528,7 @@ main.main-content {
 
 #txtNotasDia {
     width: 100% !important;
-    min-height: 140px;
+    min-height: 120px;
     resize: vertical;
     background: #f8fafc !important;
     color: #1e293b !important;
@@ -530,12 +540,12 @@ main.main-content {
 }
 
 /* Performance y Backlog */
-.perf-bar { margin-bottom: 10px; }
-.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 4px; }
+.perf-bar { margin-bottom: 8px; }
+.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 3px; }
 
 .progress {
     background: #f1f5f9 !important;
-    height: 10px;
+    height: 9px;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid #cbd5e1 !important;
@@ -548,7 +558,7 @@ main.main-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-size: 0.8rem;
     color: #1e293b;
 }
