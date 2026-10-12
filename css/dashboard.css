@@ -698,3 +698,40 @@ main.main-content {
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
+/* ==========================================================
+   AJUSTE COMPACTO Y SIMÉTRICO GENERAL (ESTILO REFERENCIA)
+   ========================================================== */
+
+/* Reducir el margen superior e inferior del contenido de la página */
+main.main-content {
+    padding: 16px 24px 24px 24px !important;
+}
+
+/* Recoger y compactar el contenedor general del tablero */
+.dashboard-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important; /* Reduce la separación vertical entre secciones */
+    width: 100% !important;
+    max-width: 1420px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Compactar los espacios internos del panel superior para que todo quede en bloque */
+.panel-superior {
+    margin-bottom: 0 !important;
+    padding: 10px 14px !important;
+    gap: 10px !important;
+}
+
+/* Asegurar que las tarjetas y tablas internas tengan una separación equilibrada y compacta */
+.panel-layout-pbi {
+    gap: 14px !important;
+}
+
+.columna-izq, .columna-der-inferior,
+.subgrid-superior-derecha, .subgrid-inferior-derecha,
+.bloques-derechos-apilados {
+    gap: 14px !important;
+}
