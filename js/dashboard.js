@@ -18,33 +18,22 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas geográficas, zoom y configuración visual por departamento
-const COORDENADAS_DEPTOS = {
-    "TODOS": { lat: 8.5, lng: -74.0, zoom: 6 },
-    "ANTIOQUIA": { lat: 7.25, lng: -75.58, zoom: 7 },
-    "CESAR": { lat: 9.89, lng: -73.58, zoom: 8 },
-    "LA GUAJIRA": { lat: 11.54, lng: -72.9, zoom: 8 },
-    "SAI": { lat: 12.58, lng: -81.71, zoom: 11 }
-};
-
-// Pines geográficos modernos con estilo neón corporativo
-const PINES_DEPARTAMENTOS = [
-    { depto: "ANTIOQUIA", lat: 7.25, lng: -75.58, nombre: "Antioquia", color: "#06b6d4" },
-    { depto: "CESAR", lat: 9.89, lng: -73.58, nombre: "Cesar", color: "#f59e0b" },
-    { depto: "LA GUAJIRA", lat: 11.54, lng: -72.9, nombre: "La Guajira", color: "#a855f7" },
-    { depto: "SAI", lat: 12.58, lng: -81.71, nombre: "SAI", color: "#10b981" }
+// Coordenadas porcentuales fijas para ubicar los pines estáticos sobre el mapa de Colombia
+const PINES_ESTATICOS = [
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "52%", left: "38%", color: "#06b6d4" },
+    { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
+    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
+    { depto: "SAI", nombre: "SAI", top: "45%", left: "50%", color: "#10b981" }
 ];
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
 let proyectoFiltroActual = "MINTIC 7K";
-let mapaLeaflet = null;
-let marcadoresMapa = [];
 
 async function inicializarDashboard() {
     try {
-        inicializarMapaLeaflet();
+        inicializarMapaEstatico();
         cargarNotaDelDia();
 
         const resp = await fetch(DATASET_URL);
@@ -81,55 +70,63 @@ async function inicializarDashboard() {
     }
 }
 
-// Inicializar el mapa interactivo con estilo oscuro futurista (CartoDB Dark Matter)
-function inicializarMapaLeaflet() {
+// Inicializar el mapa estático moderno con los pines interactivos
+function inicializarMapaEstatico() {
     const contenedor = document.getElementById("mapaLeaflet");
-    if (!contenedor || mapaLeaflet) return;
+    if (!contenedor) return;
 
-    mapaLeaflet = L.map("mapaLeaflet", {
-        zoomControl: true,
-        attributionControl: false
-    }).setView([8.5, -74.0], 6);
+    // Transformamos el contenedor para que use la imagen de fondo tipo centro de control
+    contenedor.style.position = "relative";
+    contenedor.style.overflow = "hidden";
+    contenedor.style.backgroundImage = "url('tu-imagen-mapa.jpg')"; // Reemplaza o asegúrate que el contenedor tenga la clase con la imagen
+    contenedor.style.backgroundSize = "cover";
+    contenedor.style.backgroundPosition = "center";
 
-    // Capa base moderna y oscura tipo centro de control
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        subdomains: 'abcd'
-    }).addTo(mapaLeaflet);
-
-    actualizarPinesMapa("TODOS");
+    renderizarPinesEstaticos("TODOS");
 }
 
-// Actualizar los pines luminosos en el mapa según el filtro de departamento
-function actualizarPinesMapa(deptoSeleccionado) {
-    if (!mapaLeaflet) return;
+function renderizarPinesEstaticos(deptoSeleccionado) {
+    const contenedor = document.getElementById("mapaLeaflet");
+    if (!contenedor) return;
 
-    // Limpiar marcadores anteriores
-    marcadoresMapa.forEach(m => mapaLeaflet.removeLayer(m));
-    marcadoresMapa = [];
+    // Limpiar pines previos
+    const pinesPrevios = contenedor.querySelectorAll(".pin-estatico-neon");
+    pinesPrevios.forEach(p => p.remove());
 
-    PINES_DEPARTAMENTOS.forEach(pin => {
+    PINES_ESTATICOS.forEach(pin => {
         const activo = (deptoSeleccionado === "TODOS" || deptoSeleccionado === pin.depto);
-        const opacidad = activo ? 1 : 0.35;
-        const escala = activo ? "scale(1.2)" : "scale(0.9)";
+        const opacidad = activo ? "1" : "0.35";
+        const escala = activo ? "scale(1.15)" : "scale(0.9)";
+        const boxShadow = activo ? `0 0 16px ${pin.color}` : `0 0 4px rgba(0,0,0,0.5)`;
 
-        const iconoHtml = `
-            <div style="display: flex; align-items: center; gap: 6px; background: rgba(15, 23, 42, 0.85); border: 1.5px solid ${pin.color}; padding: 4px 10px; border-radius: 20px; box-shadow: 0 0 12px ${pin.color}88; opacity: ${opacidad}; transform: ${escala}; transition: all 0.3s ease; white-space: nowrap;">
-                <div style="width: 10px; height: 10px; background: ${pin.color}; border-radius: 50%; box-shadow: 0 0 8px ${pin.color};"></div>
-                <span style="color: #ffffff; font-weight: 700; font-size: 0.75rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${pin.nombre}</span>
-            </div>
+        const divPin = document.createElement("div");
+        divPin.className = "pin-estatico-neon";
+        divPin.style.cssText = `
+            position: absolute;
+            top: ${pin.top};
+            left: ${pin.left};
+            transform: translate(-50%, -50%) ${escala};
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid ${pin.color};
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: ${boxShadow};
+            opacity: ${opacidad};
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            white-space: nowrap;
         `;
 
-        const customIcon = L.divIcon({
-            className: 'custom-neon-pin',
-            html: iconoHtml,
-            iconSize: [110, 32],
-            iconAnchor: [55, 16]
-        });
+        divPin.innerHTML = `
+            <div style="width: 10px; height: 10px; background: ${pin.color}; border-radius: 50%; box-shadow: 0 0 8px ${pin.color};"></div>
+            <span style="color: #ffffff; font-weight: 700; font-size: 0.75rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${pin.nombre}</span>
+        `;
 
-        const marker = L.marker([pin.lat, pin.lng], { icon: customIcon }).addTo(mapaLeaflet);
-        
-        marker.on('click', () => {
+        divPin.addEventListener("click", () => {
             departamentoFiltroActual = pin.depto;
             document.querySelectorAll(".btn-depto").forEach(b => {
                 if (b.getAttribute("data-depto") === pin.depto) b.classList.add("active");
@@ -138,22 +135,8 @@ function actualizarPinesMapa(deptoSeleccionado) {
             renderizarDatosDashboard();
         });
 
-        marcadoresMapa.push(marker);
+        contenedor.appendChild(divPin);
     });
-}
-
-// Mover, hacer zoom y actualizar iluminación en el mapa según el departamento
-function actualizarMapaInteractivo(depto) {
-    if (!mapaLeaflet) return;
-
-    const configCoord = COORDENADAS_DEPTOS[depto] || COORDENADAS_DEPTOS["TODOS"];
-    mapaLeaflet.setView([configCoord.lat, configCoord.lng], configCoord.zoom);
-
-    actualizarPinesMapa(depto);
-
-    setTimeout(() => {
-        mapaLeaflet.invalidateSize();
-    }, 200);
 }
 
 async function cargarNotaDelDia() {
@@ -202,7 +185,8 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    actualizarMapaInteractivo(departamentoFiltroActual);
+    // Actualizar iluminación de los pines en el mapa estático según el filtro actual
+    renderizarPinesEstaticos(departamentoFiltroActual);
 
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
