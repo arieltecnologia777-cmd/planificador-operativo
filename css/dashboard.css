@@ -588,3 +588,52 @@ body {
 .tabla-carpetas-wrapper > button {
     display: none !important;
 }
+/* ==========================================================
+   FORZAR SIDEBAR FIJO Y PERMANENTE SOLO EN ESTE DASHBOARD
+   ========================================================== */
+
+/* 1. Forzar que el layout ocupe toda la pantalla de forma estable */
+.layout {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+}
+
+/* 2. Fijar el menú lateral permanentemente a la izquierda */
+aside.sidebar {
+    position: sticky !important;
+    top: 0 !important;
+    height: 100vh !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 100 !important;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+
+/* 3. Ocultar el botón de hamburguesa / toggle en esta vista */
+#btnToggleSidebar,
+.btn-sidebar-toggle {
+    display: none !important;
+}
+
+/* 4. Adaptar el área de contenido principal al espacio restante */
+main.main-content {
+    flex-grow: 1 !important;
+    width: calc(100% - 260px) !important;
+    max-width: calc(100% - 260px) !important;
+    padding: 24px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+}
+
+/* 5. Mantener las tablas y tarjetas con un ancho cómodo y simétrico */
+.dashboard-container {
+    max-width: 1380px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+}
