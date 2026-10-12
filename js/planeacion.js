@@ -2036,7 +2036,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 fechaProgramacion: fechaVal,
                                 observacion: obsVal,
                                 estadoGestion: regD1Actual.estadoGestion || "",
-                                tecnicoAsignado: regD1Actual.tecnicoAsigned || "",
+                                tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
                                 acompanamiento: regD1Actual.acompanamiento || ""
                             };
 
