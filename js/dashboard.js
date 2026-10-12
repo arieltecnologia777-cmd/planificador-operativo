@@ -20,10 +20,10 @@ const METAS_DEPARTAMENTO = {
 
 // Coordenadas con SAI y Antioquia subidos un poquito más
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "43%", left: "46%", color: "#06b6d4" }, // Subido ligeramente (45% -> 43%)
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "43%", left: "46%", color: "#06b6d4" },
     { depto: "CESAR", nombre: "Cesar", top: "25%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "75%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "4%", left: "17%", color: "#10b981" }               // Subido ligeramente (6% -> 4%)
+    { depto: "SAI", nombre: "SAI", top: "4%", left: "17%", color: "#10b981" }
 ];
 
 let datosGlobal = [];
@@ -181,11 +181,13 @@ function renderizarDatosDashboard() {
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
     const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
     const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
+    const idxMunicipio = encabezadosGlobal.findIndex(h => h.toUpperCase() === "MUNICIPIO" || h.toUpperCase() === "CIUDAD");
 
     const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
     const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
     const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
+    const colMun = idxMunicipio !== -1 ? idxMunicipio : 5;
     const colCarpetaU = 20; 
     const colStopper = 21;  
     const colStopperRepuestos = 28; 
@@ -207,6 +209,8 @@ function renderizarDatosDashboard() {
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
     let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
 
+    let municipiosOfflineMap = {};
+
     let rangos = {
         r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
         r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
@@ -218,6 +222,7 @@ function renderizarDatosDashboard() {
 
     datosFiltrados.forEach(fila => {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
+        const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
         const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
@@ -225,7 +230,13 @@ function renderizarDatosDashboard() {
         const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-        if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
+        if (estado.includes("OFFLINE")) {
+            sumaOffline += idsAfectados;
+            if (!municipiosOfflineMap[municipio]) {
+                municipiosOfflineMap[municipio] = 0;
+            }
+            municipiosOfflineMap[municipio] += idsAfectados;
+        }
         else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
         else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
         else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
@@ -274,6 +285,25 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
         }
     });
+
+    // Renderizar Top 3 Municipios Offline
+    let topMunicipiosArray = Object.entries(municipiosOfflineMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+    const contenedorTopMun = document.getElementById("listaTopMunicipios");
+    if (contenedorTopMun) {
+        if (topMunicipiosArray.length === 0) {
+            contenedorTopMun.innerHTML = `<div style="font-size: 0.75rem; color: #10b981; text-align: center; padding: 6px; font-weight: 600;">✨ ¡Sin municipios offline!</div>`;
+        } else {
+            contenedorTopMun.innerHTML = topMunicipiosArray.map(([mun, count], index) => `
+                <div class="item-municipio-top" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem;">
+                    <span class="mun-nombre" title="${mun}" style="color: #334155; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">${index + 1}. ${mun}</span>
+                    <span class="mun-badge" style="background: #fee2e2; color: #dc2626; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #fca5a5;">${count} off</span>
+                </div>
+            `).join('');
+        }
+    }
 
     const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
     const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
