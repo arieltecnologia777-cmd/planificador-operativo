@@ -457,6 +457,14 @@ main.main-content {
 }
 
 .mapa-departamento-container {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 10px 16px 14px 16px !important; /* Reducimos el padding superior a 10px */
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
     flex-grow: 1 !important;
     height: 100% !important;
 }
@@ -465,12 +473,13 @@ main.main-content {
     background-image: url('../assets/mapa.jpg') !important;
     background-size: contain !important;
     background-repeat: no-repeat !important;
-    background-position: center !important;
+    background-position: center top !important; /* Alineamos el mapa hacia arriba */
     position: relative !important;
     overflow: hidden !important;
     min-height: 450px !important;
     width: 100% !important;
     flex-grow: 1 !important;
+    margin-top: -4px !important; /* Subimos aún más el mapa hacia el título */
 }
 
 /* ==========================================================
