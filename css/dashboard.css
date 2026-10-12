@@ -1,437 +1,686 @@
-const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
+/* ==========================================================
+   ZOOM INICIAL AL 97% Y ESTILOS GENERALES
+   ========================================================== */
 
-// Matriz de sitios totales fijos según la tabla de distribución
-const TOTALES_MAPA = {
-    "TODOS": { "TODOS": 1460, "MINTIC 7K": 1443, "ODH 5G": 17 },
-    "ANTIOQUIA": { "TODOS": 396, "MINTIC 7K": 379, "ODH 5G": 17 },
-    "CESAR": { "TODOS": 554, "MINTIC 7K": 554, "ODH 5G": 0 },
-    "LA GUAJIRA": { "TODOS": 489, "MINTIC 7K": 489, "ODH 5G": 0 },
-    "SAI": { "TODOS": 21, "MINTIC 7K": 21, "ODH 5G": 0 }
-};
-
-// Metas fijas actualizadas por Departamento
-const METAS_DEPARTAMENTO = {
-    "ANTIOQUIA": { offline: 9, parcial: 2, velocidad: 3, pqr: 0, p3: 9 },
-    "CESAR": { offline: 13, parcial: 3, velocidad: 4, pqr: 1, p3: 14 },
-    "LA GUAJIRA": { offline: 14, parcial: 2, velocidad: 3, pqr: 0, p3: 12 },
-    "SAI": { offline: 1, parcial: 0, velocidad: 0, pqr: 0, p3: 0 },
-    "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
-};
-
-// Coordenadas porcentuales corregidas según las indicaciones de las flechas
-const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "58%", left: "43%", color: "#06b6d4" }, // Flecha roja
-    { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
-    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "15%", left: "20%", color: "#10b981" } // Flecha amarilla (islas arriba a la izquierda)
-];
-
-let datosGlobal = [];
-let encabezadosGlobal = [];
-let departamentoFiltroActual = "TODOS";
-let proyectoFiltroActual = "MINTIC 7K";
-
-async function inicializarDashboard() {
-    try {
-        renderizarPinesEstaticos("TODOS");
-        cargarNotaDelDia();
-
-        const resp = await fetch(DATASET_URL);
-        const texto = await resp.text();
-
-        const filas = texto.trim().split(/\r?\n/).map(fila => {
-            const valores = [];
-            let actual = "";
-            let dentroComillas = false;
-
-            for(let i=0; i<fila.length; i++){
-                const caracter = fila[i];
-                if(caracter === '"'){
-                    dentroComillas = !dentroComillas;
-                } else if(caracter === "," && !dentroComillas){
-                    valores.push(actual);
-                    actual = "";
-                } else {
-                    actual += caracter;
-                }
-            }
-            valores.push(actual);
-            return valores;
-        });
-
-        if (filas.length < 2) return;
-
-        encabezadosGlobal = filas[0].map(h => h.trim());
-        datosGlobal = filas.slice(1);
-
-        renderizarDatosDashboard();
-    } catch (error) {
-        console.error("Error al cargar los datos del dataset en el dashboard:", error);
-    }
+html {
+    zoom: 0.97 !important;
+    height: 100% !important;
 }
 
-function renderizarPinesEstaticos(deptoSeleccionado) {
-    const contenedor = document.getElementById("mapaLeaflet");
-    if (!contenedor) return;
-
-    const pinesPrevios = contenedor.querySelectorAll(".pin-estatico-neon");
-    pinesPrevios.forEach(p => p.remove());
-
-    PINES_ESTATICOS.forEach(pin => {
-        const activo = (deptoSeleccionado === "TODOS" || deptoSeleccionado === pin.depto);
-        const opacidad = activo ? "1" : "0.35";
-        const escala = activo ? "scale(1.15)" : "scale(0.9)";
-        const boxShadow = activo ? `0 0 16px ${pin.color}` : `0 0 4px rgba(0,0,0,0.5)`;
-
-        const divPin = document.createElement("div");
-        divPin.className = "pin-estatico-neon";
-        divPin.style.cssText = `
-            position: absolute;
-            top: ${pin.top};
-            left: ${pin.left};
-            transform: translate(-50%, -50%) ${escala};
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1.5px solid ${pin.color};
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: ${boxShadow};
-            opacity: ${opacidad};
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            white-space: nowrap;
-        `;
-
-        divPin.innerHTML = `
-            <div style="width: 10px; height: 10px; background: ${pin.color}; border-radius: 50%; box-shadow: 0 0 8px ${pin.color};"></div>
-            <span style="color: #ffffff; font-weight: 700; font-size: 0.75rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${pin.nombre}</span>
-        `;
-
-        divPin.addEventListener("click", () => {
-            departamentoFiltroActual = pin.depto;
-            document.querySelectorAll(".btn-depto").forEach(b => {
-                if (b.getAttribute("data-depto") === pin.depto) b.classList.add("active");
-                else b.classList.remove("active");
-            });
-            renderizarDatosDashboard();
-        });
-
-        contenedor.appendChild(divPin);
-    });
+body {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh !important;
 }
 
-async function cargarNotaDelDia() {
-    try {
-        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/notas");
-        const data = await resp.json();
-        const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas && data.ok) {
-            txtNotas.value = data.nota || "Sin notas registradas para hoy.";
-        }
-    } catch (err) {
-        console.error("Error al cargar la nota:", err);
-        const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
-    }
+.layout {
+    display: flex !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+    position: relative !important;
 }
 
-function aplicarColorCumplimiento(elementoId, porcentaje) {
-    const el = document.getElementById(elementoId);
-    if (!el) return;
+/* ==========================================================
+   SIDEBAR FIJO, ANCHO Y ALARGADO AL 100% DE ALTO
+   ========================================================== */
 
-    el.className = "";
-    el.style.backgroundColor = "transparent";
-
-    let colorFondoStart = "#f87171";
-    let colorFondoEnd = "#dc2626";
-    if (porcentaje >= 100) {
-        colorFondoStart = "#34d399";
-        colorFondoEnd = "#059669";
-    } else if (porcentaje >= 70) {
-        colorFondoStart = "#fbbf24";
-        colorFondoEnd = "#d97706";
-    }
-
-    const anchoBarra = Math.min(porcentaje / 2, 100);
-
-    el.innerHTML = `
-        <div style="position: relative; display: block; width: 100%; height: 24px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; text-align: center;">
-            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, ${colorFondoStart} 50%, ${colorFondoEnd} 100%); transition: width 0.3s ease;"></div>
-            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #0f172a; z-index: 2; box-shadow: 0 0 3px rgba(0,0,0,0.4);"></div>
-            <span style="position: relative; z-index: 3; font-weight: 800; font-size: 0.75rem; line-height: 24px; color: #0f172a; text-shadow: 0 1px 1px rgba(255,255,255,0.7);">${porcentaje.toFixed(0)} %</span>
-        </div>
-    `;
+aside.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 1000 !important;
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
 }
 
-function renderizarDatosDashboard() {
-    if (!datosGlobal.length) return;
-
-    renderizarPinesEstaticos(departamentoFiltroActual);
-
-    const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
-    const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
-    const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
-    const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
-
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
-    const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
-    const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colCarpetaU = 20; 
-    const colStopper = 21;  
-    const colStopperRepuestos = 28; 
-    const colStopperFM = 29;        
-    const colRangoK = 10;           
-
-    let datosFiltrados = datosGlobal.filter(fila => {
-        const depto = String(fila[colDepto] || "").trim().toUpperCase();
-        const proyecto = String(fila[colProj] || "").trim().toUpperCase();
-
-        const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual);
-        const matchProyecto = (proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual));
-
-        return matchDepto && matchProyecto;
-    });
-
-    let sumaOffline = 0, sumaParcial = 0, sumaVelocidad = 0, sumaPqrs = 0, sumaOtrosP3 = 0;
-    let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
-    let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
-    let reqOff = 0, reqPar = 0, reqVel = 0, reqPqr = 0, reqP3 = 0;
-
-    let rangos = {
-        r1: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r2: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r3: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r4: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
-        r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
-    };
-
-    datosFiltrados.forEach(fila => {
-        const estado = String(fila[colEstado] || "").trim().toUpperCase();
-        const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
-        const stopper = String(fila[colStopper] || "").trim().toUpperCase();
-        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
-        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
-        const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
-        const idsAfectados = parseInt(fila[colIds], 10) || 0;
-
-        if (estado.includes("OFFLINE")) sumaOffline += idsAfectados;
-        else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
-        else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
-        else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
-        else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
-
-        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
-            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
-            else if (estado.includes("PQR")) fmPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
-        }
-
-        const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
-        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS");
-
-        if (esRepuestoP3 && !esFM_P3) {
-            if (estado.includes("OFFLINE")) repOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) repPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
-            else if (estado.includes("PQR")) repPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
-        }
-
-        if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
-            if (estado.includes("OFFLINE")) reqOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) reqVel += idsAfectados;
-            else if (estado.includes("PQR")) reqPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
-        }
-
-        let targetRango = null;
-        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5")) targetRango = rangos.r1;
-        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15")) targetRango = rangos.r2;
-        else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
-        else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
-        else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
-        else if (rangoK.includes("MAYOR A 60") || rangoK.includes("> 60")) targetRango = rangos.r6;
-
-        if (targetRango) {
-            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
-            else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
-            else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
-        }
-    });
-
-    const sinOff = Math.max(0, sumaOffline - (fmOff + repOff + reqOff));
-    const sinPar = Math.max(0, sumaParcial - (fmPar + repPar + reqPar));
-    const sinVel = Math.max(0, sumaVelocidad - (fmVel + repVel + reqVel));
-    const sinPqr = Math.max(0, sumaPqrs - (fmPqr + repPqr + reqPqr));
-    const sinP3  = Math.max(0, sumaOtrosP3 - (fmP3 + repP3 + reqP3));
-
-    const deptoKey = departamentoFiltroActual.toUpperCase();
-    const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
-
-    const metaOff = metasActivas.offline;
-    const metaPar = metasActivas.parcial;
-    const metaVel = metasActivas.velocidad;
-    const metaPqr = metasActivas.pqr;
-    const metaP3  = metasActivas.p3;
-
-    if (document.getElementById("c_meta_off")) document.getElementById("c_meta_off").textContent = metaOff;
-    if (document.getElementById("c_meta_par")) document.getElementById("c_meta_par").textContent = metaPar;
-    if (document.getElementById("c_meta_vel")) document.getElementById("c_meta_vel").textContent = metaVel;
-    if (document.getElementById("c_meta_pqr")) document.getElementById("c_meta_pqr").textContent = metaPqr;
-    if (document.getElementById("c_meta_p3"))  document.getElementById("c_meta_p3").textContent  = metaP3;
-
-    const pctOffVal = sinOff > 0 ? (metaOff / sinOff) * 100 : 100;
-    const pctParVal = sinPar > 0 ? (metaPar / sinPar) * 100 : 100;
-    const pctVelVal = sinVel > 0 ? (metaVel / sinVel) * 100 : 100;
-    const pctPqrVal = sinPqr > 0 ? (metaPqr / sinPqr) * 100 : 100;
-    const pctP3Val  = sinP3 > 0  ? (metaP3 / sinP3) * 100  : 100;
-
-    aplicarColorCumplimiento("pct_off", pctOffVal);
-    aplicarColorCumplimiento("pct_par", pctParVal);
-    aplicarColorCumplimiento("pct_vel", pctVelVal);
-    aplicarColorCumplimiento("pct_pqr", pctPqrVal);
-    aplicarColorCumplimiento("pct_p3",  pctP3Val);
-
-    const totalSitiosFijo = (TOTALES_MAPA[departamentoFiltroActual] && TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual] !== undefined)
-        ? TOTALES_MAPA[departamentoFiltroActual][proyectoFiltroActual]
-        : 1460;
-
-    const elTotalCd = document.querySelector(".val-total-cd");
-    if (elTotalCd) elTotalCd.textContent = totalSitiosFijo;
-
-    const totalOnline = Math.max(0, totalSitiosFijo - sumaOffline);
-
-    if (document.getElementById("valOnline")) document.getElementById("valOnline").textContent = totalOnline;
-    if (document.getElementById("valOffline")) document.getElementById("valOffline").textContent = sumaOffline;
-    if (document.getElementById("valParcial")) document.getElementById("valParcial").textContent = sumaParcial;
-    if (document.getElementById("valVelocidad")) document.getElementById("valVelocidad").textContent = sumaVelocidad;
-    if (document.getElementById("valPqrs")) document.getElementById("valPqrs").textContent = sumaPqrs;
-    if (document.getElementById("valOtrosP3")) document.getElementById("valOtrosP3").textContent = sumaOtrosP3;
-
-    if (document.getElementById("c_neto_off")) document.getElementById("c_neto_off").textContent = sumaOffline;
-    if (document.getElementById("c_neto_par")) document.getElementById("c_neto_par").textContent = sumaParcial;
-    if (document.getElementById("c_neto_vel")) document.getElementById("c_neto_vel").textContent = sumaVelocidad;
-    if (document.getElementById("c_neto_pqr")) document.getElementById("c_neto_pqr").textContent = sumaPqrs;
-    if (document.getElementById("c_neto_p3"))  document.getElementById("c_neto_p3").textContent  = sumaOtrosP3;
-
-    if (document.getElementById("c_fm_off")) document.getElementById("c_fm_off").textContent = fmOff;
-    if (document.getElementById("c_fm_par")) document.getElementById("c_fm_par").textContent = fmPar;
-    if (document.getElementById("c_fm_vel")) document.getElementById("c_fm_vel").textContent = fmVel;
-    if (document.getElementById("c_fm_pqr")) document.getElementById("c_fm_pqr").textContent = fmPqr;
-    if (document.getElementById("c_fm_p3"))  document.getElementById("c_fm_p3").textContent  = fmP3;
-
-    if (document.getElementById("c_rep_off")) document.getElementById("c_rep_off").textContent = repOff;
-    if (document.getElementById("c_rep_par")) document.getElementById("c_rep_par").textContent = repPar;
-    if (document.getElementById("c_rep_vel")) document.getElementById("c_rep_vel").textContent = repVel;
-    if (document.getElementById("c_rep_pqr")) document.getElementById("c_rep_pqr").textContent = repPqr;
-    if (document.getElementById("c_rep_p3"))  document.getElementById("c_rep_p3").textContent  = repP3;
-
-    if (document.getElementById("c_req_off")) document.getElementById("c_req_off").textContent = reqOff;
-    if (document.getElementById("c_req_par")) document.getElementById("c_req_par").textContent = reqPar;
-    if (document.getElementById("c_req_vel")) document.getElementById("c_req_vel").textContent = reqVel;
-    if (document.getElementById("c_req_pqr")) document.getElementById("c_req_pqr").textContent = reqPqr;
-    if (document.getElementById("c_req_p3"))  document.getElementById("c_req_p3").textContent  = reqP3;
-
-    if (document.getElementById("c_sin_off")) document.getElementById("c_sin_off").textContent = sinOff;
-    if (document.getElementById("c_sin_par")) document.getElementById("c_sin_par").textContent = sinPar;
-    if (document.getElementById("c_sin_vel")) document.getElementById("c_sin_vel").textContent = sinVel;
-    if (document.getElementById("c_sin_pqr")) document.getElementById("c_sin_pqr").textContent = sinPqr;
-    if (document.getElementById("c_sin_p3"))  document.getElementById("c_sin_p3").textContent  = sinP3;
-
-    const pintarFilaRangos = (prefijo, obj) => {
-        const elOff = document.getElementById(`${prefijo}_off`);
-        const elPar = document.getElementById(`${prefijo}_par`);
-        const elVel = document.getElementById(`${prefijo}_vel`);
-        const elPqr = document.getElementById(`${prefijo}_pqr`);
-        const elP3  = document.getElementById(`${prefijo}_p3`);
-
-        if (elOff) elOff.textContent = obj.off;
-        if (elPar) elPar.textContent = obj.par;
-        if (elVel) elVel.textContent = obj.vel;
-        if (elPqr) elPqr.textContent = obj.pqr;
-        if (elP3)  elP3.textContent  = obj.p3;
-    };
-
-    pintarFilaRangos("r1", rangos.r1);
-    pintarFilaRangos("r2", rangos.r2);
-    pintarFilaRangos("r3", rangos.r3);
-    pintarFilaRangos("r4", rangos.r4);
-    pintarFilaRangos("r5", rangos.r5);
-    pintarFilaRangos("r6", rangos.r6);
-
-    const divisorPerf = totalSitiosFijo || 1;
-    const pctOfflineVal = ((sumaOffline / divisorPerf) * 100).toFixed(2);
-    const pctOnlineVal = ((totalOnline / divisorPerf) * 100).toFixed(2);
-
-    if (document.getElementById("lblOfflinePerf")) document.getElementById("lblOfflinePerf").textContent = `Offline (${pctOfflineVal}%)`;
-    const barOff = document.getElementById("barPerfOffline");
-    if (barOff) {
-        barOff.style.width = `${pctOfflineVal}%`;
-        barOff.style.height = "12px";
-        barOff.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%)";
-        barOff.style.borderRadius = "6px";
-        barOff.style.boxShadow = "0 2px 4px rgba(220,38,38,0.2)";
-    }
-
-    if (document.getElementById("lblOnlinePerf")) document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
-    const barOn = document.getElementById("barPerfOnline");
-    if (barOn) {
-        barOn.style.width = `${pctOnlineVal}%`;
-        barOn.style.height = "12px";
-        barOn.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%)";
-        barOn.style.borderRadius = "6px";
-        barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
-    }
+#btnToggleSidebar,
+.btn-sidebar-toggle {
+    display: none !important;
 }
 
-document.addEventListener("click", (e) => {
-    const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
-    if (btnDepto) {
-        const depto = btnDepto.getAttribute("data-depto");
-        if (depto) {
-            departamentoFiltroActual = depto;
-            document.querySelectorAll(".btn-depto").forEach(b => {
-                if (b.getAttribute("data-depto") === depto) b.classList.add("active");
-                else b.classList.remove("active");
-            });
-            renderizarDatosDashboard();
-        }
-    }
+/* ==========================================================
+   CONTENIDO PRINCIPAL ADAPTADO
+   ========================================================== */
 
-    const btnFiltroProyecto = e.target.closest(".botones-filtro button");
-    if (btnFiltroProyecto) {
-        document.querySelectorAll(".botones-filtro button").forEach(b => b.classList.remove("active"));
-        btnFiltroProyecto.classList.add("active");
-        
-        const textoProyecto = btnFiltroProyecto.textContent.trim().toUpperCase();
-        if (textoProyecto.includes("MINTIC")) {
-            proyectoFiltroActual = "MINTIC 7K";
-        } else if (textoProyecto.includes("ODH")) {
-            proyectoFiltroActual = "ODH 5G";
-        } else {
-            proyectoFiltroActual = "TODOS";
-        }
-        renderizarDatosDashboard();
-    }
+main.main-content {
+    flex-grow: 1 !important;
+    margin-left: 280px !important;
+    width: calc(100% - 280px) !important;
+    background: #f8fafc !important;
+    padding: 12px 24px 24px 24px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    min-height: 100vh !important;
+}
 
-    if (e.target.id === "btnBorrarFiltros") {
-        departamentoFiltroActual = "TODOS";
-        document.querySelectorAll(".btn-depto").forEach(b => {
-            if (b.getAttribute("data-depto") === "TODOS") b.classList.add("active");
-            else b.classList.remove("active");
-        });
-        renderizarDatosDashboard();
-    }
-});
+.dashboard-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 1480px !important; 
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
 
-document.addEventListener("DOMContentLoaded", inicializarDashboard);
+/* ==========================================================
+   HERO / BANNER (TONOS CÁLIDOS, VÍVIDOS Y NATURALES)
+   ========================================================== */
+
+.hero {
+    width: 100% !important;
+    padding: 16px 24px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    background-color: transparent !important;
+    background-blend-mode: normal !important;
+    filter: contrast(1.08) saturate(1.25) brightness(1.05) sepia(0.28) hue-rotate(-10deg) !important;
+}
+
+.hero h1, 
+.hero-title, 
+.hero span[class*="title"] {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    margin: 4px 0 !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+}
+
+.hero p, 
+.hero-subtitle {
+    font-size: 0.85rem !important;
+    margin: 4px 0 0 0 !important;
+    color: rgba(255, 255, 255, 0.98) !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+.hero-badge, 
+.hero .badge-dashboard,
+.hero button {
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+}
+
+/* ==========================================================
+   PANEL SUPERIOR Y KPIS
+   ========================================================== */
+
+.panel-superior {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 14px 18px !important;
+    box-sizing: border-box !important;
+    gap: 14px !important;
+}
+
+.bloque-totales-cd,
+.bloque-filtros-centro {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+}
+
+.bloque-totales-cd {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    width: 280px !important;
+    min-width: 280px !important;
+}
+
+.cd-header-principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cd-icon-box {
+    width: 36px;
+    height: 36px;
+    background: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+}
+
+.cd-text-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-titulo-cd {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.val-total-cd {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.cd-botones-inferiores {
+    display: flex;
+    gap: 8px;
+}
+
+.cd-botones-inferiores .btn-zona,
+.cd-botones-inferiores .btn-todas {
+    flex: 1;
+    padding: 6px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+.cd-botones-inferiores .btn-zona {
+    background: #2563eb !important;
+    color: white !important;
+    border: 1px solid #1d4ed8 !important;
+}
+
+.cd-botones-inferiores .btn-todas {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* Filtros centro */
+.bloque-filtros-centro {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    grid-template-rows: auto auto !important;
+    gap: 4px 16px !important; 
+    align-items: center !important;
+    flex-grow: 1 !important;
+}
+
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(1) {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+}
+
+.bloque-filtros-centro > .grupo-filtros:nth-of-type(2) {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 2 !important;
+}
+
+.grupo-filtros {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 4px !important;
+}
+
+.label-titulo {
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: #475569;
+    text-transform: uppercase;
+    text-align: center !important;
+    width: 100%;
+}
+
+.botones-filtro, .botones-departamentos {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-filtro, .btn-depto {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 6px 10px !important;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #475569 !important;
+}
+
+.btn-filtro.active, .btn-depto.active {
+    background: #2563eb !important;
+    color: white !important;
+    border: 1px solid #1d4ed8 !important;
+    font-weight: 700;
+}
+
+.btn-borrar-filtros {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 / 3 !important;
+    width: 100% !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    padding: 6px !important;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #dc2626 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 4px !important;
+}
+
+/* ==========================================================
+   KPIS SUPERIORES CON EFECTO ESPEJO LUMINOSO
+   ========================================================== */
+
+.kpis-wrapper-contenedor {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.kpis-estado-superior {
+    display: flex !important;
+    gap: 8px !important;
+}
+
+.kpi-card-neon {
+    border-radius: 10px !important;
+    padding: 8px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: center !important;
+    flex: 1;
+    min-width: 68px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-icon-wrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.kpi-card-neon span {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    margin: 2px 0 !important;
+}
+
+.kpi-label-row {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+}
+
+.kpi-card-neon.online {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 243, 208, 0.85) 50%, rgba(209, 250, 229, 0.95) 100%) !important;
+    border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
+}
+.kpi-card-neon.online .kpi-icon-wrap { background: rgba(5, 150, 105, 0.25); color: #047857; }
+.kpi-card-neon.online span { color: #047857 !important; }
+
+.kpi-card-neon.offline {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 202, 202, 0.85) 50%, rgba(254, 226, 226, 0.95) 100%) !important;
+    border: 1.5px solid rgba(220, 38, 38, 0.6) !important;
+}
+.kpi-card-neon.offline .kpi-icon-wrap { background: rgba(220, 38, 38, 0.25); color: #b91c1c; }
+.kpi-card-neon.offline span { color: #b91c1c !important; }
+
+.kpi-card-neon.parcial {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 230, 138, 0.85) 50%, rgba(254, 243, 199, 0.95) 100%) !important;
+    border: 1.5px solid rgba(217, 119, 6, 0.6) !important;
+}
+.kpi-card-neon.parcial .kpi-icon-wrap { background: rgba(217, 119, 6, 0.25); color: #b45309; }
+.kpi-card-neon.parcial span { color: #b45309 !important; }
+
+.kpi-card-neon.velocidad {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(186, 230, 253, 0.85) 50%, rgba(224, 242, 254, 0.95) 100%) !important;
+    border: 1.5px solid rgba(2, 132, 199, 0.6) !important;
+}
+.kpi-card-neon.velocidad .kpi-icon-wrap { background: rgba(2, 132, 199, 0.25); color: #0369a1; }
+.kpi-card-neon.velocidad span { color: #0369a1 !important; }
+
+.kpi-card-neon.pqrs {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(233, 213, 255, 0.85) 50%, rgba(243, 232, 255, 0.95) 100%) !important;
+    border: 1.5px solid rgba(147, 51, 234, 0.6) !important;
+}
+.kpi-card-neon.pqrs .kpi-icon-wrap { background: rgba(147, 51, 234, 0.25); color: #7e22ce; }
+.kpi-card-neon.pqrs span { color: #7e22ce !important; }
+
+.kpi-card-neon.otros {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(199, 210, 254, 0.85) 50%, rgba(224, 231, 255, 0.95) 100%) !important;
+    border: 1.5px solid rgba(79, 70, 229, 0.6) !important;
+}
+.kpi-card-neon.otros .kpi-icon-wrap { background: rgba(79, 70, 229, 0.25); color: #4338ca; }
+.kpi-card-neon.otros span { color: #4338ca !important; }
+
+.dot-green {
+    width: 6px;
+    height: 6px;
+    background-color: #059669;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ==========================================================
+   GRILLA PRINCIPAL PBI
+   ========================================================== */
+
+.panel-layout-pbi {
+    display: grid !important;
+    grid-template-columns: 380px 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    align-items: stretch !important;
+}
+
+.columna-izq, .columna-der-inferior {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+.subgrid-superior-derecha, .subgrid-inferior-derecha {
+    display: grid !important;
+    grid-template-columns: 1fr 350px !important;
+    gap: 12px !important;
+    width: 100% !important;
+    align-items: stretch !important;
+}
+
+.bloques-derechos-apilados {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+/* Tarjetas contenedoras generales */
+.mapa-departamento-container,
+.bloque-notas-dia,
+.bloque-performance,
+.bloque-backlog-al-lado,
+.tabla-carpetas-wrapper {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.mapa-departamento-container {
+    flex-grow: 1 !important;
+    height: 100% !important;
+}
+
+#mapaLeaflet {
+    background-image: url('../assets/mapa.jpg') !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 450px !important;
+    width: 100% !important;
+    flex-grow: 1 !important;
+}
+
+/* ==========================================================
+   TÍTULOS Y ENCABEZADOS EN AZUL CORPORATIVO
+   ========================================================== */
+
+.tabla-carpetas-wrapper h3,
+.bloque-performance h4,
+.bloque-backlog-al-lado h4,
+.bloque-indicador-cumplimiento h4,
+.notas-header h4,
+.mapa-departamento-container h4,
+.tabla-rangos-wrapper h3,
+div:has(> .tabla-rangos) h3 {
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    text-align: left;
+}
+
+.tabla-dinamica-carpetas th,
+.tabla-rangos th {
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    padding: 7px 10px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-rangos th:first-child {
+    width: 32%;
+    text-align: left !important;
+    border-top-left-radius: 6px;
+}
+
+.tabla-dinamica-carpetas th:last-child,
+.tabla-rangos th:last-child {
+    border-top-right-radius: 6px;
+}
+
+.notas-header {
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* ==========================================================
+   TABLA RANGOS DE AFECTACIÓN: AJUSTADA AL LÍMITE
+   ========================================================== */
+
+.tabla-rangos-wrapper, 
+div:has(> .tabla-rangos) {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important;
+}
+
+.tabla-fondo-imagen {
+    background: transparent !important;
+    width: 100% !important;
+}
+
+.tabla-dinamica-carpetas, 
+.tabla-rangos {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 0.78rem;
+    background: transparent !important;
+}
+
+.tabla-dinamica-carpetas th:not(:first-child), 
+.tabla-dinamica-carpetas td:not(:first-child),
+.tabla-rangos th:not(:first-child), 
+.tabla-rangos td:not(:first-child) {
+    width: 13.6%;
+    text-align: center !important;
+}
+
+.tabla-dinamica-carpetas td,
+.tabla-rangos td {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 7px 10px !important;
+}
+
+.tabla-dinamica-carpetas td:first-child,
+.tabla-rangos td:first-child {
+    text-align: left !important;
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+.tabla-dinamica-carpetas tbody tr:hover td,
+.tabla-rangos tbody tr:hover td {
+    background: #f1f5f9 !important;
+}
+
+.fila-alerta-roja td:not(:first-child) {
+    color: #dc2626 !important;
+    font-weight: bold;
+}
+
+/* ==========================================================
+   BARRAS DE PERFORMANCE (GROSOR Y ESTILO)
+   ========================================================== */
+
+.progress {
+    background: #f1f5f9 !important;
+    height: 12px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    border: 1px solid #cbd5e1 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.progress .bar {
+    height: 100% !important;
+    border-radius: 5px !important;
+}
+
+/* Notas del día */
+.notas-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1 !important;
+}
+
+#txtNotasDia {
+    width: 100% !important;
+    min-height: 120px;
+    resize: vertical;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+}
+
+/* Performance y Backlog */
+.perf-bar { margin-bottom: 8px; }
+.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 3px; }
+
+.item-backlog-pbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: #1e293b;
+}
+
+.badge-cumplimiento {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+.badge-cumplimiento.green { background: #d1fae5; color: #065f46; }
+.badge-cumplimiento.red { background: #fee2e2; color: #991b1b; }
+
+/* Ocultar iconos de rayos en tablas */
+.tabla-carpetas-wrapper .fa-bolt,
+.tabla-carpetas-wrapper i.fa,
+.tabla-carpetas-wrapper .icon-rayo,
+.tabla-carpetas-wrapper button:has(.fa-bolt),
+.tabla-carpetas-wrapper div:has(> .fa-bolt),
+.tabla-carpetas-wrapper span:has(> .fa-bolt),
+.tabla-carpetas-wrapper svg,
+.tabla-carpetas-wrapper img[src*="bolt"],
+.tabla-carpetas-wrapper .fas,
+.tabla-carpetas-wrapper .far,
+.tabla-carpetas-wrapper > i,
+.tabla-carpetas-wrapper > span > i,
+.tabla-carpetas-wrapper > button {
+    display: none !important;
+}
+
+/* ==========================================================
+   TRANSLUCIDEZ Y EFECTO CRISTAL PARA BARRAS KPI EN TABLAS
+   ========================================================== */
+#pct_off div[style*="linear-gradient"],
+#pct_par div[style*="linear-gradient"],
+#pct_vel div[style*="linear-gradient"],
+#pct_pqr div[style*="linear-gradient"],
+#pct_p3 div[style*="linear-gradient"],
+.tabla-dinamica-carpetas td div[style*="linear-gradient"] {
+    opacity: 0.75 !important;
+}
