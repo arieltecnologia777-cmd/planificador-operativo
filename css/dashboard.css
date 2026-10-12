@@ -588,11 +588,3 @@ body {
 .tabla-carpetas-wrapper > button {
     display: none !important;
 }
-/* ==========================================================
-   SOLUCIÓN LOCAL PARA EVITAR QUE EL CONTENIDO SE ESTIRE EN EXCESO
-   ========================================================== */
-
-.dashboard-container {
-    max-width: 1400px !important; /* Limita el ancho máximo para que las tablas tengan una medida cómoda y compacta */
-    margin: 0 auto !important;     /* Centra todo de forma simétrica */
-}
