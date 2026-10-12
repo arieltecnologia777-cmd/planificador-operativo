@@ -18,12 +18,12 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas
+// Coordenadas con SAI y Antioquia subidos un poquito más
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "45%", left: "46%", color: "#06b6d4" },
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "43%", left: "46%", color: "#06b6d4" }, // Subido ligeramente (45% -> 43%)
     { depto: "CESAR", nombre: "Cesar", top: "25%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "75%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "6%", left: "17%", color: "#10b981" }               // Ajustado a top: 6% y left: 17%
+    { depto: "SAI", nombre: "SAI", top: "4%", left: "17%", color: "#10b981" }               // Subido ligeramente (6% -> 4%)
 ];
 
 let datosGlobal = [];
