@@ -18,12 +18,12 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas con los pines subidos verticalmente para alinearlos al nuevo espacio del mapa
+// Coordenadas ajustadas: Antioquia más abajo, Cesar más abajo, SAI más arriba
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "33%", left: "46%", color: "#06b6d4" },
-    { depto: "CESAR", nombre: "Cesar", top: "18%", left: "62%", color: "#f59e0b" },
-    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "68%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "5%", left: "20%", color: "#10b981" }
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "45%", left: "46%", color: "#06b6d4" },
+    { depto: "CESAR", nombre: "Cesar", top: "32%", left: "62%", color: "#f59e0b" },
+    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "18%", left: "68%", color: "#a855f7" },
+    { depto: "SAI", nombre: "SAI", top: "2%", left: "20%", color: "#10b981" }
 ];
 
 let datosGlobal = [];
