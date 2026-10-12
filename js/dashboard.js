@@ -18,20 +18,29 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas geográficas y zoom por departamento para el mapa real
+// Coordenadas geográficas, zoom y configuración visual por departamento
 const COORDENADAS_DEPTOS = {
-    "TODOS": { lat: 8.5, lng: -74.0, zoom: 6 },      // Vista general norte de Colombia
-    "ANTIOQUIA": { lat: 7.25, lng: -75.58, zoom: 7 }, // Antioquia
-    "CESAR": { lat: 9.89, lng: -73.58, zoom: 8 },     // Cesar
-    "LA GUAJIRA": { lat: 11.54, lng: -72.9, zoom: 8 },// Guajira
-    "SAI": { lat: 12.58, lng: -81.71, zoom: 11 }      // San Andrés y Providencia
+    "TODOS": { lat: 8.5, lng: -74.0, zoom: 6 },
+    "ANTIOQUIA": { lat: 7.25, lng: -75.58, zoom: 7 },
+    "CESAR": { lat: 9.89, lng: -73.58, zoom: 8 },
+    "LA GUAJIRA": { lat: 11.54, lng: -72.9, zoom: 8 },
+    "SAI": { lat: 12.58, lng: -81.71, zoom: 11 }
 };
+
+// Pines geográficos modernos con estilo neón corporativo
+const PINES_DEPARTAMENTOS = [
+    { depto: "ANTIOQUIA", lat: 7.25, lng: -75.58, nombre: "Antioquia", color: "#06b6d4" },
+    { depto: "CESAR", lat: 9.89, lng: -73.58, nombre: "Cesar", color: "#f59e0b" },
+    { depto: "LA GUAJIRA", lat: 11.54, lng: -72.9, nombre: "La Guajira", color: "#a855f7" },
+    { depto: "SAI", lat: 12.58, lng: -81.71, nombre: "SAI", color: "#10b981" }
+];
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
 let departamentoFiltroActual = "TODOS";
 let proyectoFiltroActual = "MINTIC 7K";
-let mapaLeaflet = null; // Instancia global del mapa
+let mapaLeaflet = null;
+let marcadoresMapa = [];
 
 async function inicializarDashboard() {
     try {
@@ -72,31 +81,76 @@ async function inicializarDashboard() {
     }
 }
 
-// Inicializar el mapa interactivo real
+// Inicializar el mapa interactivo con estilo oscuro futurista (CartoDB Dark Matter)
 function inicializarMapaLeaflet() {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor || mapaLeaflet) return;
 
-    // Crear mapa centrado por defecto en Colombia
     mapaLeaflet = L.map("mapaLeaflet", {
         zoomControl: true,
         attributionControl: false
     }).setView([8.5, -74.0], 6);
 
-    // Añadir capa base limpia estilo minimalista de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base moderna y oscura tipo centro de control
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 18,
+        subdomains: 'abcd'
     }).addTo(mapaLeaflet);
+
+    actualizarPinesMapa("TODOS");
 }
 
-// Mover y hacer zoom en el mapa según el departamento seleccionado
+// Actualizar los pines luminosos en el mapa según el filtro de departamento
+function actualizarPinesMapa(deptoSeleccionado) {
+    if (!mapaLeaflet) return;
+
+    // Limpiar marcadores anteriores
+    marcadoresMapa.forEach(m => mapaLeaflet.removeLayer(m));
+    marcadoresMapa = [];
+
+    PINES_DEPARTAMENTOS.forEach(pin => {
+        const activo = (deptoSeleccionado === "TODOS" || deptoSeleccionado === pin.depto);
+        const opacidad = activo ? 1 : 0.35;
+        const escala = activo ? "scale(1.2)" : "scale(0.9)";
+
+        const iconoHtml = `
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(15, 23, 42, 0.85); border: 1.5px solid ${pin.color}; padding: 4px 10px; border-radius: 20px; box-shadow: 0 0 12px ${pin.color}88; opacity: ${opacidad}; transform: ${escala}; transition: all 0.3s ease; white-space: nowrap;">
+                <div style="width: 10px; height: 10px; background: ${pin.color}; border-radius: 50%; box-shadow: 0 0 8px ${pin.color};"></div>
+                <span style="color: #ffffff; font-weight: 700; font-size: 0.75rem; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${pin.nombre}</span>
+            </div>
+        `;
+
+        const customIcon = L.divIcon({
+            className: 'custom-neon-pin',
+            html: iconoHtml,
+            iconSize: [110, 32],
+            iconAnchor: [55, 16]
+        });
+
+        const marker = L.marker([pin.lat, pin.lng], { icon: customIcon }).addTo(mapaLeaflet);
+        
+        marker.on('click', () => {
+            departamentoFiltroActual = pin.depto;
+            document.querySelectorAll(".btn-depto").forEach(b => {
+                if (b.getAttribute("data-depto") === pin.depto) b.classList.add("active");
+                else b.classList.remove("active");
+            });
+            renderizarDatosDashboard();
+        });
+
+        marcadoresMapa.push(marker);
+    });
+}
+
+// Mover, hacer zoom y actualizar iluminación en el mapa según el departamento
 function actualizarMapaInteractivo(depto) {
     if (!mapaLeaflet) return;
 
     const configCoord = COORDENADAS_DEPTOS[depto] || COORDENADAS_DEPTOS["TODOS"];
     mapaLeaflet.setView([configCoord.lat, configCoord.lng], configCoord.zoom);
 
-    // Forzar redibujado para evitar problemas de renderizado al cambiar pestañas/filtros
+    actualizarPinesMapa(depto);
+
     setTimeout(() => {
         mapaLeaflet.invalidateSize();
     }, 200);
@@ -148,7 +202,6 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Actualizar el enfoque del mapa interactivo real
     actualizarMapaInteractivo(departamentoFiltroActual);
 
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
