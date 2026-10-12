@@ -48,7 +48,7 @@ aside.sidebar {
 }
 
 /* ==========================================================
-   CONTENIDO PRINCIPAL Y VISTA DE GOLPE
+   EXPANSIÓN TOTAL A PANTALLA COMPLETA (ANCHO Y ALTO)
    ========================================================== */
 
 main.main-content {
@@ -56,8 +56,9 @@ main.main-content {
     height: 100vh !important;
     max-height: 100vh !important;
     width: calc(100% - 260px) !important;
+    max-width: none !important; /* Elimina cualquier tope a lo ancho */
     background: #f8fafc !important;
-    padding: 12px 20px !important;
+    padding: 16px 24px !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     display: flex !important;
@@ -67,11 +68,11 @@ main.main-content {
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
-    max-width: 1420px !important;
+    max-width: none !important; /* Permite que se estire por completo a lo ancho en pantallas grandes o laptops */
     height: 100% !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
     justify-content: space-between !important;
     min-height: 0 !important;
