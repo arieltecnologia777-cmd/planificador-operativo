@@ -137,10 +137,10 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
     const anchoBarra = Math.min(porcentaje / 2, 100);
 
     el.innerHTML = `
-        <div style="position: relative; display: block; width: 100%; height: 26px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; overflow: hidden; text-align: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);">
-            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, ${colorFondoStart} 50%, ${colorFondoEnd} 100%); border-right: 2px solid rgba(0,0,0,0.3); transition: width 0.3s ease;"></div>
-            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #0f172a; z-index: 2; box-shadow: 0 0 4px rgba(0,0,0,0.5);"></div>
-            <span style="position: relative; z-index: 3; font-weight: 800; font-size: 0.78rem; line-height: 26px; color: #0f172a; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">${porcentaje.toFixed(0)} %</span>
+        <div style="position: relative; display: block; width: 100%; height: 24px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; text-align: center;">
+            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${anchoBarra}%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, ${colorFondoStart} 50%, ${colorFondoEnd} 100%); transition: width 0.3s ease;"></div>
+            <div style="position: absolute; top: 0; left: 50%; height: 100%; width: 2px; background-color: #0f172a; z-index: 2; box-shadow: 0 0 3px rgba(0,0,0,0.4);"></div>
+            <span style="position: relative; z-index: 3; font-weight: 800; font-size: 0.75rem; line-height: 24px; color: #0f172a; text-shadow: 0 1px 1px rgba(255,255,255,0.7);">${porcentaje.toFixed(0)} %</span>
         </div>
     `;
 }
