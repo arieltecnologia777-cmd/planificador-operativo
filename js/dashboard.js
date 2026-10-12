@@ -357,24 +357,20 @@ function renderizarDatosDashboard() {
     const barOff = document.getElementById("barPerfOffline");
     if (barOff) {
         barOff.style.width = `${pctOfflineVal}%`;
+        barOff.style.height = "12px";
         barOff.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%)";
-        barOff.style.borderRadius = "4px";
+        barOff.style.borderRadius = "6px";
+        barOff.style.boxShadow = "0 2px 4px rgba(220,38,38,0.2)";
     }
 
     if (document.getElementById("lblOnlinePerf")) document.getElementById("lblOnlinePerf").textContent = `Online (${pctOnlineVal}%)`;
     const barOn = document.getElementById("barPerfOnline");
     if (barOn) {
         barOn.style.width = `${pctOnlineVal}%`;
+        barOn.style.height = "12px";
         barOn.style.background = "linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%)";
-        barOn.style.borderRadius = "4px";
-    }
-
-    // Indicador ejecución % cumplimiento (limpio y preparado para conectar con dataset más adelante)
-    const contenedorEjecucion = document.querySelector(".bloque-backlog-al-lado, .bloque-indicador-cumplimiento");
-    if (contenedorEjecucion) {
-        // Buscamos el contenedor interno de datos o lo dejamos limpio
-        const items = contenedorEjecucion.querySelectorAll(".item-backlog-pbi");
-        items.forEach(item => item.remove());
+        barOn.style.borderRadius = "6px";
+        barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
     }
 }
 
