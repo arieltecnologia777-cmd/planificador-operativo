@@ -23,7 +23,7 @@ const PINES_ESTATICOS = [
     { depto: "ANTIOQUIA", nombre: "Antioquia", top: "45%", left: "46%", color: "#06b6d4" },
     { depto: "CESAR", nombre: "Cesar", top: "25%", left: "62%", color: "#f59e0b" },
     { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "75%", color: "#a855f7" },
-    { depto: "SAI", nombre: "SAI", top: "3%", left: "22%", color: "#10b981" }               // Subido a top: 3% y movido a left: 22%
+    { depto: "SAI", nombre: "SAI", top: "6%", left: "17%", color: "#10b981" }               // Ajustado a top: 6% y left: 17%
 ];
 
 let datosGlobal = [];
