@@ -68,7 +68,7 @@ main.main-content {
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 12px !important; /* Espaciado general optimizado */
     width: 100% !important;
     max-width: 1480px !important; 
     margin: 0 auto !important;
@@ -76,7 +76,7 @@ main.main-content {
 }
 
 /* ==========================================================
-   HERO / BANNER (TÍTULO, SLOGAN Y BOTÓN AJUSTADOS)
+   HERO / BANNER
    ========================================================== */
 
 .hero {
@@ -401,27 +401,28 @@ main.main-content {
 }
 
 /* ==========================================================
-   GRILLA PRINCIPAL PBI
+   GRILLA PRINCIPAL PBI (ESPACIADO VERTICAL REDUCIDO)
    ========================================================== */
 
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 380px 1fr !important;
-    gap: 20px !important;
+    gap: 12px !important; /* Reducido para simetría vertical */
     width: 100% !important;
+    align-items: stretch !important;
 }
 
 .columna-izq, .columna-der-inferior {
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 12px !important; /* Espacio reducido entre el mapa y los bloques */
     width: 100% !important;
 }
 
 .subgrid-superior-derecha, .subgrid-inferior-derecha {
     display: grid !important;
     grid-template-columns: 1fr 350px !important;
-    gap: 20px !important;
+    gap: 12px !important;
     width: 100% !important;
     align-items: stretch !important;
 }
@@ -430,7 +431,7 @@ main.main-content {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    gap: 20px !important;
+    gap: 12px !important;
     width: 100% !important;
 }
 
@@ -444,15 +445,22 @@ main.main-content {
     border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    padding: 16px !important;
+    padding: 14px 16px !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
 }
 
+/* Mapa geográfico alineado y estirado simétricamente con todo */
+.mapa-departamento-container {
+    flex-grow: 1 !important;
+    height: 100% !important;
+}
+
 #mapaLeaflet {
     width: 100% !important;
-    min-height: 380px !important;
+    height: 100% !important;
+    min-height: 400px !important;
     flex-grow: 1 !important;
 }
 
@@ -465,15 +473,15 @@ main.main-content {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
-    padding: 9px 14px !important;
+    padding: 8px 12px !important;
     border-radius: 8px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
     text-align: left;
 }
 
@@ -493,7 +501,7 @@ div:has(> .tabla-rangos) {
     border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    padding: 16px !important;
+    padding: 14px 16px !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
@@ -520,7 +528,7 @@ div:has(> .tabla-rangos) {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    padding: 8px 10px !important;
+    padding: 7px 10px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.7rem;
@@ -553,7 +561,7 @@ div:has(> .tabla-rangos) {
     background: #ffffff !important;
     color: #1e293b !important;
     border: 1px solid #e2e8f0 !important;
-    padding: 8px 10px !important;
+    padding: 7px 10px !important;
 }
 
 .tabla-dinamica-carpetas td:first-child,
@@ -582,7 +590,7 @@ div:has(> .tabla-rangos) {
     background: linear-gradient(90deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
-    padding: 9px 14px !important;
+    padding: 8px 12px !important;
     border-radius: 8px !important;
     font-size: 0.8rem !important;
     font-weight: 700 !important;
@@ -590,7 +598,7 @@ div:has(> .tabla-rangos) {
     letter-spacing: 0px !important;
     box-shadow: 0 2px 8px rgba(75, 85, 99, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
     text-align: left;
 }
 
@@ -603,7 +611,7 @@ div:has(> .tabla-rangos) {
 
 #txtNotasDia {
     width: 100% !important;
-    min-height: 140px;
+    min-height: 120px;
     resize: vertical;
     background: #f8fafc !important;
     color: #1e293b !important;
@@ -615,12 +623,12 @@ div:has(> .tabla-rangos) {
 }
 
 /* Performance y Backlog */
-.perf-bar { margin-bottom: 10px; }
-.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 4px; }
+.perf-bar { margin-bottom: 8px; }
+.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 3px; }
 
 .progress {
     background: #f1f5f9 !important;
-    height: 10px;
+    height: 9px;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid #cbd5e1 !important;
@@ -633,7 +641,7 @@ div:has(> .tabla-rangos) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-size: 0.8rem;
     color: #1e293b;
 }
