@@ -400,4 +400,4 @@ document.addEventListener("click", (e) => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", inicializarDashboard);[cite: 13]
+document.addEventListener("DOMContentLoaded", inicializarDashboard);
