@@ -464,7 +464,7 @@ main.main-content {
 }
 
 /* ==========================================================
-   TÍTULOS Y ENCABEZADOS EN AZUL CORPORATIVO
+   TÍTULOS, ENCABEZADOS Y BLOQUE DE INDICADOR EN AZUL CORPORATIVO
    ========================================================== */
 
 .tabla-carpetas-wrapper h3,
@@ -490,6 +490,7 @@ div:has(> .tabla-rangos) h3 {
     text-align: left;
 }
 
+/* ENCABEZADOS DE LAS TABLAS (FONDOS EN AZUL) */
 .tabla-dinamica-carpetas th,
 .tabla-rangos th {
     background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
@@ -519,42 +520,6 @@ div:has(> .tabla-rangos) h3 {
     background: transparent !important;
     padding: 0 !important;
     margin-bottom: 0 !important;
-}
-
-/* ==========================================================
-   ESTILO NEÓN / ESPEJO PARA LOS KPIS DE CUMPLIMIENTO EN TABLAS
-   ========================================================== */
-
-.tabla-dinamica-carpetas td div,
-.tabla-rangos td div,
-.tabla-dinamica-carpetas td span,
-.tabla-rangos td span {
-    border-radius: 6px !important;
-}
-
-/* Celdas o contenedores que actúan como barras/indicadores de cumplimiento */
-.tabla-dinamica-carpetas td:has(> div),
-.tabla-dinamica-carpetas td:has(> span),
-.tabla-rangos td:has(> div),
-.tabla-rangos td:has(> span) {
-    border-radius: 6px !important;
-}
-
-/* Estilo para las barras o badges de porcentaje de cumplimiento en tablas con borde derecho brillante */
-td span[class*="cumplimiento"], 
-td div[class*="cumplimiento"],
-.tabla-dinamica-carpetas td > div,
-.tabla-dinamica-carpetas td > span {
-    border-radius: 6px !important;
-    position: relative;
-}
-
-/* Forzar aspecto neón/espejo con borde derecho marcado en todos los contenedores de celdas de cumplimiento */
-.tabla-dinamica-carpetas td div[style*="background"],
-.tabla-rangos td div[style*="background"],
-.tabla-dinamica-carpetas td span[style*="background"] {
-    border-radius: 6px !important;
-    box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* ==========================================================
@@ -590,4 +555,114 @@ div:has(> .tabla-rangos) {
 
 .tabla-dinamica-carpetas th:not(:first-child), 
 .tabla-dinamica-carpetas td:not(:first-child),
-.tabla-rangos th:not(:first-child
+.tabla-rangos th:not(:first-child), 
+.tabla-rangos td:not(:first-child) {
+    width: 13.6%;
+    text-align: center !important;
+}
+
+.tabla-dinamica-carpetas td,
+.tabla-rangos td {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 7px 10px !important;
+}
+
+.tabla-dinamica-carpetas td:first-child,
+.tabla-rangos td:first-child {
+    text-align: left !important;
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+.tabla-dinamica-carpetas tbody tr:hover td,
+.tabla-rangos tbody tr:hover td {
+    background: #f1f5f9 !important;
+}
+
+.fila-alerta-roja td:not(:first-child) {
+    color: #dc2626 !important;
+    font-weight: bold;
+}
+
+/* ==========================================================
+   ESTILO NEÓN / ESPEJO Y BORDES REDONDEADOS PARA KPIS DE CUMPLIMIENTO %
+   ========================================================== */
+
+.tabla-dinamica-carpetas td div[style*="background"],
+.tabla-rangos td div[style*="background"],
+.tabla-dinamica-carpetas td span[style*="background"] {
+    border-radius: 6px !important;
+    box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Notas del día */
+.notas-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1 !important;
+}
+
+#txtNotasDia {
+    width: 100% !important;
+    min-height: 120px;
+    resize: vertical;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+}
+
+/* Performance y Backlog */
+.perf-bar { margin-bottom: 8px; }
+.perf-bar label { font-size: 0.75rem; color: #475569; display: block; margin-bottom: 3px; }
+
+.progress {
+    background: #f1f5f9 !important;
+    height: 9px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1 !important;
+}
+.progress .bar { height: 100%; }
+.progress .bar.red { background: #ef4444; }
+.progress .bar.green { background: #10b981; }
+
+.item-backlog-pbi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: #1e293b;
+}
+
+.badge-cumplimiento {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+.badge-cumplimiento.green { background: #d1fae5; color: #065f46; }
+.badge-cumplimiento.red { background: #fee2e2; color: #991b1b; }
+
+/* Ocultar iconos de rayos en tablas */
+.tabla-carpetas-wrapper .fa-bolt,
+.tabla-carpetas-wrapper i.fa,
+.tabla-carpetas-wrapper .icon-rayo,
+.tabla-carpetas-wrapper button:has(.fa-bolt),
+.tabla-carpetas-wrapper div:has(> .fa-bolt),
+.tabla-carpetas-wrapper span:has(> .fa-bolt),
+.tabla-carpetas-wrapper svg,
+.tabla-carpetas-wrapper img[src*="bolt"],
+.tabla-carpetas-wrapper .fas,
+.tabla-carpetas-wrapper .far,
+.tabla-carpetas-wrapper > i,
+.tabla-carpetas-wrapper > span > i,
+.tabla-carpetas-wrapper > button {
+    display: none !important;
+}
