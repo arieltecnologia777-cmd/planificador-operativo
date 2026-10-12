@@ -1,5 +1,5 @@
 /* ==========================================================
-   DASHBOARD EQUILIBRADO: SCROLL NATURAL Y SIDEBAR DE ALTO TOTAL
+   DASHBOARD EQUILIBRADO: ANCHO MÁXIMO CONTROLADO Y SIDEBAR FIJO
    ========================================================== */
 
 body {
@@ -42,25 +42,25 @@ aside.sidebar {
 }
 
 /* ==========================================================
-   CONTENIDO PRINCIPAL CON ANCHO EXTENDIDO Y SCROLL FLUIDO
+   CONTENIDO PRINCIPAL Y ANCHO MÁXIMO EQUILIBRADO
    ========================================================== */
 
 main.main-content {
     flex-grow: 1 !important;
     width: calc(100% - 260px) !important;
-    max-width: none !important;
     background: #f8fafc !important;
-    padding: 20px 28px !important;
+    padding: 24px !important;
     box-sizing: border-box !important;
     overflow-y: auto !important;
 }
 
+/* Limita el ancho máximo para evitar que las tablas se estiren exageradamente en pantallas grandes */
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;
     width: 100% !important;
-    max-width: none !important;
+    max-width: 1450px !important; 
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
@@ -362,27 +362,27 @@ main.main-content {
 }
 
 /* ==========================================================
-   GRILLA PRINCIPAL EXTENDIDA AL 100%
+   GRILLA PRINCIPAL PBI
    ========================================================== */
 
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 380px 1fr !important;
-    gap: 16px !important;
+    gap: 20px !important;
     width: 100% !important;
 }
 
 .columna-izq, .columna-der-inferior {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;
     width: 100% !important;
 }
 
 .subgrid-superior-derecha, .subgrid-inferior-derecha {
     display: grid !important;
     grid-template-columns: 1fr 350px !important;
-    gap: 16px !important;
+    gap: 20px !important;
     width: 100% !important;
     align-items: stretch !important;
 }
@@ -391,7 +391,7 @@ main.main-content {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    gap: 16px !important;
+    gap: 20px !important;
     width: 100% !important;
 }
 
@@ -444,7 +444,7 @@ main.main-content {
     margin-bottom: 0 !important;
 }
 
-/* Tablas dinámicas nítidas y cómodas */
+/* Tablas dinámicas nítidas y con ancho equilibrado */
 .tabla-fondo-imagen {
     background: transparent !important;
     width: 100% !important;
