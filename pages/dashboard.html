@@ -180,11 +180,28 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo -->
+                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo y Estado de Vista -->
                 <div class="columna-izq">
-                    <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; text-align: center; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+                    <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
                         <h4 style="margin-top: 0; margin-bottom: 8px; color: #2d3748; font-size: 0.95rem; font-weight: 600;">Mapa Geográfico</h4>
                         <div id="mapaLeaflet" style="flex-grow: 1; width: 100%; min-height: 280px; border-radius: 6px; z-index: 1;"></div>
+                    </div>
+
+                    <!-- TARJETA INTEGRADA: Estado de Vista -->
+                    <div class="bloque-estado-filtro">
+                        <h4>Estado de Vista</h4>
+                        <div class="filtro-estado-body">
+                            <div class="filtro-activo-badge">
+                                <span>Región Activa:</span>
+                                <strong id="lblRegionActiva">TODOS</strong>
+                            </div>
+                            <div class="leyenda-pines-neon">
+                                <div class="item-leyenda"><span class="punto-neon" style="background: #06b6d4; box-shadow: 0 0 6px #06b6d4;"></span> Antioquia</div>
+                                <div class="item-leyenda"><span class="punto-neon" style="background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span> Cesar</div>
+                                <div class="item-leyenda"><span class="punto-neon" style="background: #a855f7; box-shadow: 0 0 6px #a855f7;"></span> La Guajira</div>
+                                <div class="item-leyenda"><span class="punto-neon" style="background: #10b981; box-shadow: 0 0 6px #10b981;"></span> SAI</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
