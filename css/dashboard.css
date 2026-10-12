@@ -598,10 +598,9 @@ div:has(> .tabla-rangos) {
 .tabla-rangos {
     width: 100% !important;
     border-collapse: collapse !important;
-    font-size: 0.78rem;
+    font-size: 0.92rem !important; /* <--- Actualiza este valor */
     background: transparent !important;
 }
-
 .tabla-dinamica-carpetas th:not(:first-child), 
 .tabla-dinamica-carpetas td:not(:first-child),
 .tabla-rangos th:not(:first-child), 
@@ -616,6 +615,7 @@ div:has(> .tabla-rangos) {
     color: #1e293b !important;
     border: 1px solid #e2e8f0 !important;
     padding: 7px 10px !important;
+    font-weight: 700 !important; /* <--- Añade esta línea para darles más grosor */
 }
 
 .tabla-dinamica-carpetas td:first-child,
