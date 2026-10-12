@@ -334,6 +334,7 @@ function pintarTabla(datos){
     const idxStoppersDominion = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
     const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
     const idxStopperP3 = encabezados.findIndex(h => h.trim() === "Stopper P3");
+    const idxEstadoOT = encabezados.findIndex(h => h.trim() === "Estado OT" || h.trim() === "ESTADO OT" || h.trim().toUpperCase() === "ESTADO_OT");
     const idxTipoFacturacion = encabezados.findIndex(h => h.trim() === "Tipo facturación");
     const idxFechaFM = encabezados.findIndex(h => h.trim() === "Fecha vencimiento FM");
     const idxAlertaFM = encabezados.findIndex(h => h.trim() === "Alerta vencimiento FM");
@@ -434,6 +435,7 @@ function pintarTabla(datos){
             </td>
             <td>${fila[idxBacklog] || ""}</td>
             <td>${fila[idxStopperP3] || ""}</td>
+            <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
             <td>${fila[idxTipoFacturacion] || ""}</td>
             <td>${fila[idxFechaFM] || ""}</td>
             <td>${fila[idxAlertaFM] || ""}</td>
@@ -571,10 +573,43 @@ function renderizarFiltrosDinamicos(datos) {
     actualizarOpcionesFiltros(datos);
 }
 
+function obtenerDatosBaseParaFiltros() {
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
+
+    const encabezados = encabezadosGlobal;
+    const idxID = encabezados.findIndex(h => h.trim() === "ID");
+    const idxOT = encabezados.findIndex(h => h.trim() === "OT");
+    const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
+    const idxPrioridad = encabezados.findIndex(h => h.trim() === "Tipo de prioridad");
+    const idxBacklog = encabezados.findIndex(h => h.trim() === "Indicador backlog");
+
+    return datosGlobal.filter(fila => {
+        const otVal = fila[idxOT];
+        const regD1 = (window.registrosD1 || {})[otVal] || {};
+        const prioridadVal = (fila[idxPrioridad] || "").trim().toUpperCase();
+        const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+
+        const cumpleTexto = !texto || 
+            String(fila[idxID] || "").toLowerCase().includes(texto) ||
+            String(fila[idxOT] || "").toLowerCase().includes(texto) ||
+            String(fila[idxMunicipio] || "").toLowerCase().includes(texto);
+
+        let cumpleKpi = true;
+        if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
+        if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
+        if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
+        if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
+
+        return cumpleTexto && cumpleKpi;
+    });
+}
+
 function actualizarOpcionesFiltros(datos) {
     const encabezados = encabezadosGlobal;
     const idxOT = encabezados.findIndex(h => h.trim() === "OT");
-    const idxMunicipio = encabezados.findIndex(h => h.trim() === "Municipio");
     const idxDepto = encabezados.findIndex(h => h.trim() === "Departamento");
     const idxAfectacion = encabezados.findIndex(h => h.trim() === "Tipo de afectación");
     const idxStoppers = encabezados.findIndex(h => h.trim() === "Stoppers Dominion");
@@ -608,16 +643,46 @@ function actualizarOpcionesFiltros(datos) {
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
 
-    // --- FILTRADO EN CASCADA PARA OPCIONES ---
-    // Determinamos qué subconjunto base usar para poblar las listas dependientes
-    let datosParaOpciones = datosGlobal;
-    if (departamentosSeleccionados.length > 0) {
-        datosParaOpciones = datosParaOpciones.filter(f => departamentosSeleccionados.includes(f[idxDepto]));
-    }
+    // --- FILTRADO EN CASCADA COMPLETO ---
+    const datosBaseKpi = obtenerDatosBaseParaFiltros();
+
+    const filtrarParaLista = (excluirFiltro) => {
+        return datosBaseKpi.filter(fila => {
+            const otVal = fila[idxOT];
+            const regD1 = (window.registrosD1 || {})[otVal] || {};
+            const estG = regD1.estadoGestion || "";
+            const fechaProgVal = regD1.fechaProgramacion || "";
+            const valorBacklogCol = (fila[idxBacklog] || "").trim().toUpperCase();
+            const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
+            const esN = esCasoNuevo(otVal) ? "Sí" : "No";
+
+            if (excluirFiltro !== 'nuevo' && nuevosSeleccionados.length > 0 && !nuevosSeleccionados.includes(esN)) return false;
+            if (excluirFiltro !== 'depto' && departamentosSeleccionados.length > 0 && !departamentosSeleccionados.includes(fila[idxDepto])) return false;
+            if (excluirFiltro !== 'estado' && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
+            if (excluirFiltro !== 'afectacion' && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(fila[idxAfectacion])) return false;
+            if (excluirFiltro !== 'stoppers' && stoppersSeleccionados.length > 0 && !stoppersSeleccionados.includes(fila[idxStoppers])) return false;
+            if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(fila[idxDiasOT])) return false;
+            if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(fila[idxRango])) return false;
+            if (excluirFiltro !== 'backlog' && backlogSeleccionados.length > 0 && !backlogSeleccionados.includes(incumplidor)) return false;
+            if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
+
+            return true;
+        });
+    };
+
+    const datosParaNuevo = filtrarParaLista('nuevo');
+    const datosParaDepto = filtrarParaLista('depto');
+    const datosParaEstado = filtrarParaLista('estado');
+    const datosParaAfec = filtrarParaLista('afectacion');
+    const datosParaStoppers = filtrarParaLista('stoppers');
+    const datosParaDias = filtrarParaLista('dias');
+    const datosParaRango = filtrarParaLista('rango');
+    const datosParaBacklog = filtrarParaLista('backlog');
+    const datosParaFecha = filtrarParaLista('fecha');
 
     const nEl = document.getElementById("listaNuevo");
     if(nEl) {
-        const nuevosDisp = ["Sí", "No"];
+        const nuevosDisp = [...new Set(datosParaNuevo.map(f => esCasoNuevo(f[idxOT]) ? "Sí" : "No"))].filter(Boolean).sort();
         nEl.innerHTML = `
             <div class="filtro-sort-container">
                 <div class="filtro-sort-title">⇅ Ordenar</div>
@@ -634,7 +699,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const deptosDisp = [...new Set(datosGlobal.map(f => f[idxDepto]))].filter(Boolean).sort();
+    const deptosDisp = [...new Set(datosParaDepto.map(f => f[idxDepto]))].filter(Boolean).sort();
     const dEl = document.getElementById("listaDepartamento");
     if(dEl) {
         dEl.innerHTML = `
@@ -653,7 +718,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const estadosDisp = [...new Set(datosParaOpciones.map(f => {
+    const estadosDisp = [...new Set(datosParaEstado.map(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         return reg.estadoGestion || "";
     }))].filter(Boolean).sort();
@@ -675,7 +740,7 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const afecDisp = [...new Set(datosParaOpciones.map(f => f[idxAfectacion]))].filter(Boolean).sort();
+    const afecDisp = [...new Set(datosParaAfec.map(f => f[idxAfectacion]))].filter(Boolean).sort();
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
         aEl.innerHTML = `
@@ -692,7 +757,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + afecDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const stopDisp = [...new Set(datosParaOpciones.map(f => f[idxStoppers]))].filter(Boolean).sort();
+    const stopDisp = [...new Set(datosParaStoppers.map(f => f[idxStoppers]))].filter(Boolean).sort();
     const sEl = document.getElementById("listaStoppers");
     if(sEl) {
         sEl.innerHTML = `
@@ -709,7 +774,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const diasOtDisp = [...new Set(datosParaOpciones.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasOtDisp = [...new Set(datosParaDias.map(f => f[idxDiasOT]))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
     const diasEl = document.getElementById("listaDiasOT");
     if(diasEl) {
         diasEl.innerHTML = `
@@ -726,7 +791,7 @@ function actualizarOpcionesFiltros(datos) {
         ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
-    const rangDisp = [...new Set(datosParaOpciones.map(f => f[idxRango]))].filter(Boolean).sort();
+    const rangDisp = [...new Set(datosParaRango.map(f => f[idxRango]))].filter(Boolean).sort();
     const rEl = document.getElementById("listaRango");
     if(rEl) {
         rEl.innerHTML = `
@@ -745,7 +810,7 @@ function actualizarOpcionesFiltros(datos) {
 
     const bEl = document.getElementById("listaBacklog");
     if(bEl) {
-        const backlogDisp = ["Sí", "No"];
+        const backlogDisp = [...new Set(datosParaBacklog.map(f => (f[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No"))].filter(Boolean).sort();
         bEl.innerHTML = `
             <div class="filtro-sort-container">
                 <div class="filtro-sort-title">⇅ Ordenar</div>
@@ -762,10 +827,9 @@ function actualizarOpcionesFiltros(datos) {
 
     const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
     const arbolFechas = {};
-    const idxOTCol = encabezadosGlobal.findIndex(h => h.trim() === "OT");
     
-    datosParaOpciones.forEach(f => {
-        const reg = (window.registrosD1 || {})[f[idxOTCol]] || {};
+    datosParaFecha.forEach(f => {
+        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         const fechaVal = reg.fechaProgramacion;
         if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
             const [anio, mes, dia] = fechaVal.split("-");
@@ -1483,7 +1547,7 @@ window.exportarPlaneacion = function() {
             "Total_IDs", "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
             "Estado_Programacion", "Fecha_Programacion", "Observaciones",
             "Estado_Gestion", "Tecnico_Asignado", "Acompanamiento",
-            "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion",
+            "Indicador_Backlog", "Stopper_P3", "Estado_OT", "Tipo_Facturacion",
             "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
         ];
 
@@ -1549,6 +1613,9 @@ window.exportarPlaneacion = function() {
             const limpiarTexto = (t) => t ? String(t).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim() : "";
             const esN = esCasoNuevo(item.otValor) ? "Sí" : "No";
 
+            const idxEstadoOTCol = encabezadosGlobal.findIndex(h => h.trim() === "Estado OT" || h.trim() === "ESTADO OT" || h.trim().toUpperCase() === "ESTADO_OT");
+            const estadoOTVal = idxEstadoOTCol !== -1 ? (item.filaOriginal[idxEstadoOTCol] ?? "") : "";
+
             dataAOA.push([
                 getValor("ID", true), 
                 getValor("Departamento"), 
@@ -1570,6 +1637,7 @@ window.exportarPlaneacion = function() {
                 limpiarTexto(item.regD1.acompanamiento),
                 getValor("Indicador backlog"), 
                 getValor("Stopper P3"),
+                estadoOTVal,
                 getValor("Tipo facturación"), 
                 getValor("Fecha vencimiento FM"),
                 getValor("Alerta vencimiento FM")
