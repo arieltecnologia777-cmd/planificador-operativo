@@ -76,7 +76,7 @@ main.main-content {
 }
 
 /* ==========================================================
-   HERO / BANNER (FOTO NITIDA Y CON TODO EL PROTAGONISMO)
+   HERO / BANNER (FOTO VÍVIDA, BRILLANTE Y NÍTIDA)
    ========================================================== */
 
 .hero {
@@ -90,6 +90,7 @@ main.main-content {
     justify-content: center !important;
     background-color: transparent !important;
     background-blend-mode: normal !important;
+    filter: contrast(1.08) saturate(1.25) brightness(1.05) !important;
 }
 
 .hero h1, 
@@ -99,15 +100,15 @@ main.main-content {
     font-weight: 800 !important;
     margin: 4px 0 !important;
     color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
 }
 
 .hero p, 
 .hero-subtitle {
     font-size: 0.85rem !important;
     margin: 4px 0 0 0 !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+    color: rgba(255, 255, 255, 0.98) !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
 }
 
 .hero-badge, 
