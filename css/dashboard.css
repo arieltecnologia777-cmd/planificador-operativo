@@ -758,84 +758,62 @@ div:has(> .tabla-rangos) {
     border: 1px solid #fca5a5;
 }
 /* ==========================================================
-   DISEÑO MODALIDAD INFORMATIVA - NOTAS DEL DÍA / BITÁCORA
+   NOTAS DEL DÍA / BITÁCORA (BLOQUE INFORMATIVO ESTÁTICO CON DESTELLOS AZULES)
    ========================================================== */
 
 .bloque-notas-dia {
-    background: linear-gradient(135deg, #09152b 0%, #0d2247 100%T) !important;
-    background: #09152b !important;
-    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(5, 13, 29, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-    padding: 16px 18px !important;
-    color: #ffffff !important;
-    position: relative !important;
-    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    padding: 14px 16px !important;
+    box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
-    min-height: 160px !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-/* Efecto de destellos / ondas luminosas inferiores */
+/* Efecto de destellos / ondas luminosas internas con tu azul corporativo (#2563eb) */
 .bloque-notas-dia::after {
     content: "" !important;
     position: absolute !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    height: 70px !important;
-    background: radial-gradient(ellipse at bottom, rgba(59, 130, 246, 0.25) 0%, rgba(147, 51, 234, 0.15) 50%, transparent 80%) !important;
+    height: 55px !important;
+    background: radial-gradient(ellipse at bottom, rgba(37, 99, 235, 0.12) 0%, rgba(59, 130, 246, 0.05) 55%, transparent 80%) !important;
     pointer-events: none !important;
     z-index: 1 !important;
 }
 
-/* Sobrescribir el título azul corporativo para este bloque específico si lo deseas oscuro/futurista */
-.bloque-notas-dia h4,
-.bloque-notas-dia .notas-header h4 {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
-    font-size: 0.85rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.5px !important;
-    padding: 0 !important;
-    margin-bottom: 12px !important;
+.notas-body {
     display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
-/* Contenedor interior tipo tarjeta de información estática */
-.notas-contenido-estatico {
-    background: rgba(13, 31, 63, 0.6) !important;
-    border: 1px solid rgba(59, 130, 246, 0.25) !important;
-    border-radius: 12px !important;
-    padding: 14px 16px !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
     position: relative !important;
     z-index: 2 !important;
-    flex-grow: 1 !important;
-    display: flex !important;
-    align-items: center !important;
 }
 
-.nota-item-texto {
-    display: flex !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-}
-
-.nota-icono {
-    font-size: 1.1rem !important;
-    color: #3b82f6 !important;
-    flex: none !important;
-    margin-top: 2px !important;
-}
-
-.nota-item-texto p {
-    margin: 0 !important;
-    font-size: 0.84rem !important;
-    color: rgba(255, 255, 255, 0.92) !important;
+/* Transformar el textarea para que sea un cuadro estático puro sin interacción ni redimensionamiento */
+#txtNotasDia {
+    width: 100% !important;
+    min-height: 110px !important;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    font-size: 0.8rem !important;
     line-height: 1.5 !important;
-    font-weight: 400 !important;
+    box-sizing: border-box !important;
+    resize: none !important;          /* Bloquea el redimensionamiento manual */
+    outline: none !important;
+    cursor: default !important;     /* Evita apariencia de caja de texto interactiva */
+    box-shadow: none !important;
+}
+
+/* Ocultar la esquina de redimensionamiento en navegadores webkit */
+#txtNotasDia::-webkit-resizer {
+    display: none !important;
 }
