@@ -180,27 +180,30 @@
             <!-- GRID PRINCIPAL PBI -->
             <div class="panel-layout-pbi">
                 
-                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo y Estado de Vista -->
+                <!-- COLUMNA IZQUIERDA: Mapa Real Interactivo y Top Municipios Offline -->
                 <div class="columna-izq">
                     <div class="mapa-departamento-container" style="background: #ffffff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
                         <h4 style="margin-top: 0; margin-bottom: 8px; color: #2d3748; font-size: 0.95rem; font-weight: 600;">Mapa Geográfico</h4>
                         <div id="mapaLeaflet" style="flex-grow: 1; width: 100%; min-height: 280px; border-radius: 6px; z-index: 1;"></div>
                     </div>
 
-                  <!-- TARJETA INTEGRADA: Top Municipios Offline -->
-<div class="bloque-estado-filtro">
-    <h4> Top Municipios Offline ⚠️</h4>
-    <div class="filtro-estado-body">
-        <div class="filtro-activo-badge">
-            <span>Región:</span>
-            <strong id="lblRegionActiva">TODOS</strong>
-        </div>
-        <div id="listaTopMunicipios" style="display: flex; flex-direction: column; gap: 5px; margin-top: 4px;">
-            <!-- Se llena dinámicamente con JS -->
-            <div style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 6px;">Cargando municipios...</div>
-        </div>
-    </div>
-</div>
+                    <!-- TARJETA INTEGRADA: Top Municipios Offline con contenedor -->
+                    <div class="bloque-estado-filtro" style="background: #ffffff !important; border: 1px solid #cbd5e0 !important; border-radius: 8px !important; padding: 12px !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; margin-top: 12px !important;">
+                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #2d3748; font-size: 0.95rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Top Municipios Offline</span>
+                            <span>⚠️</span>
+                        </h4>
+                        <div class="filtro-estado-body" style="display: flex; flex-direction: column; gap: 8px;">
+                            <div class="filtro-activo-badge" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; color: #475569;">
+                                <span>Región:</span>
+                                <strong id="lblRegionActiva" style="color: #2563eb; font-weight: 700;">TODOS</strong>
+                            </div>
+                            <div id="listaTopMunicipios" style="display: flex; flex-direction: column; gap: 5px;">
+                                <!-- Se llena dinámicamente con JS -->
+                                <div style="font-size: 0.75rem; color: #64748b; text-align: center; padding: 6px;">Cargando municipios...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- COLUMNA DERECHA -->
