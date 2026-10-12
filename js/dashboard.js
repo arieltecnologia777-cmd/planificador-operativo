@@ -18,7 +18,7 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
-// Coordenadas porcentuales fijas para ubicar los pines estáticos sobre el mapa de Colombia
+// Coordenadas porcentuales fijas para ubicar los pines estáticos sobre mapa.jpg
 const PINES_ESTATICOS = [
     { depto: "ANTIOQUIA", nombre: "Antioquia", top: "52%", left: "38%", color: "#06b6d4" },
     { depto: "CESAR", nombre: "Cesar", top: "28%", left: "62%", color: "#f59e0b" },
@@ -70,15 +70,14 @@ async function inicializarDashboard() {
     }
 }
 
-// Inicializar el mapa estático moderno con los pines interactivos
+// Inicializar el mapa estático con mapa.jpg
 function inicializarMapaEstatico() {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor) return;
 
-    // Transformamos el contenedor para que use la imagen de fondo tipo centro de control
     contenedor.style.position = "relative";
     contenedor.style.overflow = "hidden";
-    contenedor.style.backgroundImage = "url('tu-imagen-mapa.jpg')"; // Reemplaza o asegúrate que el contenedor tenga la clase con la imagen
+    contenedor.style.backgroundImage = "url('mapa.jpg')";
     contenedor.style.backgroundSize = "cover";
     contenedor.style.backgroundPosition = "center";
 
@@ -89,7 +88,6 @@ function renderizarPinesEstaticos(deptoSeleccionado) {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor) return;
 
-    // Limpiar pines previos
     const pinesPrevios = contenedor.querySelectorAll(".pin-estatico-neon");
     pinesPrevios.forEach(p => p.remove());
 
@@ -185,7 +183,6 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
-    // Actualizar iluminación de los pines en el mapa estático según el filtro actual
     renderizarPinesEstaticos(departamentoFiltroActual);
 
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
