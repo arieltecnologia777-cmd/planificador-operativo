@@ -252,17 +252,25 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        const esFM_P3 = stopperFM.includes("SI") || stopperFM.includes("FM") || stopperFM.includes("TRASLADO");
-        const esRepuestoP3 = stopperRep.includes("REPUESTO") || stopperRep.includes("REPUESTOS");
+       // Búsqueda unificada y robusta de repuestos en cualquier variante de texto o columna de stoppers
+        const textoStopperCompleto = (stopper + " " + stopperRep + " " + stopperFM + " " + String(fila[21] || "")).toUpperCase();
+        
+        const esFM_o_Traslado = textoStopperCompleto.includes("FM") || 
+                               textoStopperCompleto.includes("TRASLADO") || 
+                               textoStopperCompleto.includes("REUBICACION") || 
+                               textoStopperCompleto.includes("FUERZA MAYOR");
 
-        if (esRepuestoP3 && !esFM_P3) {
+        const esRepuesto = textoStopperCompleto.includes("REPUESTO") || 
+                           textoStopperCompleto.includes("REPUESTOS") || 
+                           textoStopperCompleto.includes("SATELITALES");
+
+        if (esRepuesto && !esFM_o_Traslado) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
             else if (estado.includes("PQR")) repPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
-
         if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
             if (estado.includes("OFFLINE")) reqOff += idsAfectados;
             else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
