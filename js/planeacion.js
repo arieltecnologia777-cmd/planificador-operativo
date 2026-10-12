@@ -629,8 +629,13 @@ function actualizarOpcionesFiltros(datos) {
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
 
     const txtNuevo = document.getElementById("textoNuevo");
-    if (txtNuevo) txtNuevo.textContent = nuevosSeleccionados.length ? `Nuevo (${nuevosSeleccionados.length})` : "Nuevo / Existente";
-
+    if (txtNuevo) {
+        if (nuevosSeleccionados.length === 1) {
+            txtNuevo.textContent = `¿Caso nuevo?: ${nuevosSeleccionados[0]}`;
+        } else {
+            txtNuevo.textContent = "¿Caso nuevo?";
+        }
+    }
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
 
