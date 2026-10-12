@@ -638,68 +638,63 @@ main.main-content {
     width: 100% !important;
 }
 /* ==========================================================
-   DISEÑO DEFINITIVO: SIDEBAR VERTICAL FIJO Y CONTENIDO COMPACTO
+   CORRECCIÓN: SIDEBAR ALTO NATURAL Y CONTENEDOR FLUIDO SIN SCROLLS
    ========================================================== */
 
-/* 1. Fijar el contenedor general de la página en altura completa */
+/* 1. Eliminar restricciones estrictas de altura para evitar aplastamientos */
 html, body {
-    height: 100% !important;
-    overflow: hidden !important;
-}
-
-body {
-    margin: 0 !important;
-    padding: 0 !important;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
 }
 
 .layout {
     display: flex !important;
-    height: 100vh !important;
-    width: 100vw !important;
-    overflow: hidden !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+    overflow: visible !important;
 }
 
-/* 2. Sidebar fijo ocupando todo el alto de la pantalla */
+/* 2. Sidebar fijo en posición pero adaptado al alto completo sin forzar el body */
 aside.sidebar {
-    position: relative !important;
+    position: sticky !important;
     top: 0 !important;
     height: 100vh !important;
     min-height: 100vh !important;
     width: 260px !important;
     min-width: 260px !important;
-    max-width: 260px !important;
     background: #ffffff !important;
     border-right: 1px solid #e2e8f0 !important;
     display: flex !important;
     flex-direction: column !important;
     box-sizing: border-box !important;
-    z-index: 1000 !important;
+    z-index: 100 !important;
     flex-shrink: 0 !important;
 }
 
-/* Ocultar botón hamburguesa y pestaña de colapso */
+/* Ocultar botón hamburguesa y pestaña */
 #btnToggleSidebar,
 .btn-sidebar-toggle {
     display: none !important;
 }
 
-/* 3. Área de contenido principal con scroll independiente y fluido */
+/* 3. Contenido principal con ancho fluido y sin barras de desplazamiento forzadas */
 main.main-content {
     flex-grow: 1 !important;
-    height: 100vh !important;
-    overflow-y: auto !important;
+    width: calc(100% - 260px) !important;
     background: #f8fafc !important;
     padding: 24px !important;
     box-sizing: border-box !important;
+    overflow: visible !important;
 }
 
-/* 4. Contenedor compacto y simétrico para que todo encaje a la perfección */
+/* 4. Contenedor general amplio y proporcionado */
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
     gap: 20px !important;
     width: 100% !important;
-    max-width: 1400px !important;
+    max-width: 1420px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
