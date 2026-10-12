@@ -693,3 +693,35 @@ div:has(> .tabla-rangos) {
 .tabla-dinamica-carpetas td div[style*="linear-gradient"] {
     opacity: 0.75 !important;
 }
+/* ==========================================================
+   ESTILOS PARA EL TOP DE MUNICIPIOS OFFLINE
+   ========================================================== */
+.item-municipio-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.item-municipio-top .mun-nombre {
+    color: #334155;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.item-municipio-top .mun-badge {
+    background: #fee2e2;
+    color: #dc2626;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    border: 1px solid #fca5a5;
+}
