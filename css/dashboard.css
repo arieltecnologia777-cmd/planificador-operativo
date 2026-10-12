@@ -678,3 +678,13 @@ div:has(> .tabla-rangos) {
 .tabla-dinamica-carpetas td div[style*="linear-gradient"] {
     opacity: 0.75 !important;
 }
+/* ==========================================================
+   MAPA ESTÁTICO CON IMAGEN DESDE ASSETS
+   ========================================================== */
+#mapaLeaflet {
+    background-image: url('../assets/mapa.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
