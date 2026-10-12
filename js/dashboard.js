@@ -191,7 +191,7 @@ function renderizarDatosDashboard() {
     const colProj = idxProyecto !== -1 ? idxProyecto : 3;
     const colMun = idxMunicipio !== -1 ? idxMunicipio : 5;
     const colCarpetaU = 20; 
-    const colStopper = 21;  
+    const colStopper = 20;
     const colStopperRepuestos = 28; 
     const colStopperFM = 29;        
     const colRangoK = 10;           
