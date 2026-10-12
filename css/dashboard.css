@@ -68,7 +68,7 @@ main.main-content {
 .dashboard-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important; /* Espaciado general optimizado */
+    gap: 12px !important;
     width: 100% !important;
     max-width: 1480px !important; 
     margin: 0 auto !important;
@@ -401,13 +401,13 @@ main.main-content {
 }
 
 /* ==========================================================
-   GRILLA PRINCIPAL PBI (ESPACIADO VERTICAL REDUCIDO)
+   GRILLA PRINCIPAL PBI
    ========================================================== */
 
 .panel-layout-pbi {
     display: grid !important;
     grid-template-columns: 380px 1fr !important;
-    gap: 12px !important; /* Reducido para simetría vertical */
+    gap: 12px !important;
     width: 100% !important;
     align-items: stretch !important;
 }
@@ -415,7 +415,7 @@ main.main-content {
 .columna-izq, .columna-der-inferior {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important; /* Espacio reducido entre el mapa y los bloques */
+    gap: 12px !important;
     width: 100% !important;
 }
 
@@ -451,7 +451,6 @@ main.main-content {
     flex-direction: column !important;
 }
 
-/* Mapa geográfico alineado y estirado simétricamente con todo */
 .mapa-departamento-container {
     flex-grow: 1 !important;
     height: 100% !important;
@@ -464,13 +463,17 @@ main.main-content {
     flex-grow: 1 !important;
 }
 
-/* Títulos con degradado espejo */
+/* ==========================================================
+   TÍTULOS Y ENCABEZADOS EN ESTILO NEGRO / GRIS OSCURO CORPORATIVO
+   ========================================================== */
+
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
-.bloque-backlog-al-lado h4,
 .notas-header h4,
-.mapa-departamento-container h4 {
-    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+.mapa-departamento-container h4,
+.tabla-rangos-wrapper h3,
+div:has(> .tabla-rangos) h3 {
+    background: linear-gradient(90deg, #334155 0%, #475569 50%, #64748b 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
     padding: 8px 12px !important;
@@ -479,6 +482,50 @@ main.main-content {
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(51, 65, 85, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    text-align: left;
+}
+
+/* ENCABEZADOS DE LAS TABLAS (FONDOS EN GRIS OSCURO / NEGRO) */
+.tabla-dinamica-carpetas th,
+.tabla-rangos th {
+    background: linear-gradient(90deg, #334155 0%, #475569 50%, #64748b 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    padding: 7px 10px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.tabla-dinamica-carpetas th:first-child, 
+.tabla-rangos th:first-child {
+    width: 32%;
+    text-align: left !important;
+    border-top-left-radius: 6px;
+}
+
+.tabla-dinamica-carpetas th:last-child,
+.tabla-rangos th:last-child {
+    border-top-right-radius: 6px;
+}
+
+/* BLOQUE DE INDICADOR DE EJECUCIÓN EN AZUL (COMO LOS DEMÁS) */
+.bloque-backlog-al-lado h4,
+.bloque-indicador-cumplimiento h4 {
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
     margin-bottom: 10px !important;
@@ -509,7 +556,6 @@ div:has(> .tabla-rangos) {
     height: auto !important;
 }
 
-/* Tablas dinámicas nítidas */
 .tabla-fondo-imagen {
     background: transparent !important;
     width: 100% !important;
@@ -523,37 +569,12 @@ div:has(> .tabla-rangos) {
     background: transparent !important;
 }
 
-.tabla-dinamica-carpetas th,
-.tabla-rangos th {
-    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    padding: 7px 10px !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    text-align: center;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.tabla-dinamica-carpetas th:first-child, 
-.tabla-rangos th:first-child {
-    width: 32%;
-    text-align: left !important;
-    border-top-left-radius: 6px;
-}
-
 .tabla-dinamica-carpetas th:not(:first-child), 
 .tabla-dinamica-carpetas td:not(:first-child),
 .tabla-rangos th:not(:first-child), 
 .tabla-rangos td:not(:first-child) {
     width: 13.6%;
     text-align: center !important;
-}
-
-.tabla-dinamica-carpetas th:last-child,
-.tabla-rangos th:last-child {
-    border-top-right-radius: 6px;
 }
 
 .tabla-dinamica-carpetas td,
@@ -579,27 +600,6 @@ div:has(> .tabla-rangos) {
 .fila-alerta-roja td:not(:first-child) {
     color: #dc2626 !important;
     font-weight: bold;
-}
-
-/* ==========================================================
-   INDICADOR EJECUCIÓN % CUMPLIMIENTO (ESTILO COLUMNAS)
-   ========================================================== */
-
-.bloque-backlog-al-lado h4,
-.bloque-indicador-cumplimiento h4 {
-    background: linear-gradient(90deg, #4b5563 0%, #6b7280 50%, #9ca3af 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    color: #ffffff !important;
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    text-transform: none !important;
-    letter-spacing: 0px !important;
-    box-shadow: 0 2px 8px rgba(75, 85, 99, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    margin-top: 0 !important;
-    margin-bottom: 10px !important;
-    text-align: left;
 }
 
 /* Notas del día */
