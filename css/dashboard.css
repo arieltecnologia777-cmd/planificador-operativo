@@ -3,7 +3,7 @@
    ========================================================== */
 
 html {
-    zoom: 0.97 !important;
+    zoom: 0.95 !important;
     height: 100% !important;
 }
 
@@ -464,16 +464,18 @@ main.main-content {
 }
 
 /* ==========================================================
-   TÍTULOS Y ENCABEZADOS EN ESTILO NEGRO / GRIS OSCURO CORPORATIVO
+   TÍTULOS, ENCABEZADOS Y BLOQUE DE INDICADOR EN AZUL CORPORATIVO
    ========================================================== */
 
 .tabla-carpetas-wrapper h3,
 .bloque-performance h4,
+.bloque-backlog-al-lado h4,
+.bloque-indicador-cumplimiento h4,
 .notas-header h4,
 .mapa-departamento-container h4,
 .tabla-rangos-wrapper h3,
 div:has(> .tabla-rangos) h3 {
-    background: linear-gradient(90deg, #334155 0%, #475569 50%, #64748b 100%) !important;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
     padding: 8px 12px !important;
@@ -482,16 +484,16 @@ div:has(> .tabla-rangos) h3 {
     font-weight: 700 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(51, 65, 85, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin-top: 0 !important;
     margin-bottom: 10px !important;
     text-align: left;
 }
 
-/* ENCABEZADOS DE LAS TABLAS (FONDOS EN GRIS OSCURO / NEGRO) */
+/* ENCABEZADOS DE LAS TABLAS (FONDOS EN AZUL) */
 .tabla-dinamica-carpetas th,
 .tabla-rangos th {
-    background: linear-gradient(90deg, #334155 0%, #475569 50%, #64748b 100%) !important;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     padding: 7px 10px !important;
@@ -512,24 +514,6 @@ div:has(> .tabla-rangos) h3 {
 .tabla-dinamica-carpetas th:last-child,
 .tabla-rangos th:last-child {
     border-top-right-radius: 6px;
-}
-
-/* BLOQUE DE INDICADOR DE EJECUCIÓN EN AZUL (COMO LOS DEMÁS) */
-.bloque-backlog-al-lado h4,
-.bloque-indicador-cumplimiento h4 {
-    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    color: #ffffff !important;
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    margin-top: 0 !important;
-    margin-bottom: 10px !important;
-    text-align: left;
 }
 
 .notas-header {
