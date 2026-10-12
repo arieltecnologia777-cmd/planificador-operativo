@@ -134,8 +134,8 @@ button{
 }
 
 /* =========================
-   HERO
-========================= */
+   HERO (COLORES ORIGINALES SIN FILTROS)
+   ========================= */
 
 .hero{
     position:relative;
@@ -154,6 +154,7 @@ button{
     padding:25px 28px;
     box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
+    /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
 
 .hero::before{
@@ -164,14 +165,13 @@ button{
     background:
     linear-gradient(
         90deg,
-        rgba(4,37,95,.72),
-        rgba(4,37,95,.35),
-        rgba(4,37,95,.10)
+        rgba(4,37,95,.45),
+        rgba(4,37,95,.20),
+        rgba(4,37,95,.05)
     );
 
     z-index:1;
 }
-
 .hero-content{
     position:relative;
     z-index:3;
