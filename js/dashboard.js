@@ -20,10 +20,10 @@ const METAS_DEPARTAMENTO = {
 
 // Coordenadas con los pines subidos verticalmente para alinearlos al nuevo espacio del mapa
 const PINES_ESTATICOS = [
-    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "33%", left: "46%", color: "#06b6d4" }, // Subido verticalmente
-    { depto: "CESAR", nombre: "Cesar", top: "18%", left: "62%", color: "#f59e0b" },       // Subido verticalmente
-    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "68%", color: "#a855f7" },  // Subido verticalmente
-    { depto: "SAI", nombre: "SAI", top: "5%", left: "20%", color: "#10b981" }              // Subido verticalmente
+    { depto: "ANTIOQUIA", nombre: "Antioquia", top: "33%", left: "46%", color: "#06b6d4" },
+    { depto: "CESAR", nombre: "Cesar", top: "18%", left: "62%", color: "#f59e0b" },
+    { depto: "LA GUAJIRA", nombre: "La Guajira", top: "8%", left: "68%", color: "#a855f7" },
+    { depto: "SAI", nombre: "SAI", top: "5%", left: "20%", color: "#10b981" }
 ];
 
 let datosGlobal = [];
@@ -170,6 +170,12 @@ function renderizarDatosDashboard() {
     if (!datosGlobal.length) return;
 
     renderizarPinesEstaticos(departamentoFiltroActual);
+
+    // Actualizar etiqueta visual del filtro activo de departamento
+    const lblRegion = document.getElementById("lblRegionActiva");
+    if (lblRegion) {
+        lblRegion.textContent = departamentoFiltroActual;
+    }
 
     const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
     const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
