@@ -314,13 +314,13 @@ function renderizarDatosDashboard() {
         }
     }
 
-  // El Neto sin stopper excluye Offline, Parcial y Velocidad solo con FM, y descuenta Repuestos en PQR y P3
+  // El Neto sin stopper descuenta FM en las primeras tres, y FM + Repuestos de forma dinámica en PQR y P3
     const sinOff = Math.max(0, sumaOffline - fmOff);
     const sinPar = Math.max(0, sumaParcial - fmPar);
     const sinVel = Math.max(0, sumaVelocidad - fmVel);
     const sinPqr = Math.max(0, sumaPqrs - fmPqr - repPqr);
     const sinP3  = Math.max(0, sumaOtrosP3 - fmP3 - repP3);
-
+    
     const deptoKey = departamentoFiltroActual.toUpperCase();
     const metasActivas = METAS_DEPARTAMENTO[deptoKey] || METAS_DEPARTAMENTO["TODOS"];
 
