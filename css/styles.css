@@ -2138,53 +2138,106 @@ body.sidebar-colapsado .sidebar {
 }
 
 /* ==========================================
-   PESTAÑA VERTICAL Y TOOLTIP FIJO EN EL BANNER
+   PESTAÑA / TARJETA VERTICAL CON EFECTO VIDRIO AZULADO (CUANDO ESTÁ CERRADO)
    ========================================== */
-
-/* Mantiene la pestaña vertical que cubre todo el alto de la pantalla */
 body.sidebar-colapsado .btn-sidebar-toggle {
-    top: 16px !important; 
-    left: 0px !important; 
-    width: 24px !important;  
-    height: calc(100vh - 32px) !important; 
-    border-radius: 0 16px 16px 0 !important; 
+    top: 16px; 
+    left: 0px; 
+    width: 22px;  
+    height: calc(100vh - 32px); 
+    border-radius: 0 16px 16px 0; 
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.85), rgba(29, 78, 216, 0.95)) !important; 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.35);
-    border-left: none !important;
+    border-left: none;
     box-shadow: 8px 0 35px rgba(37, 99, 235, 0.4);
     color: #ffffff !important; 
     font-size: 1.05rem;
-    display: flex !important;
-    align-items: flex-start !important; /* Mantiene las 3 líneas (icono) arriba */
-    justify-content: center !important;
-    padding-top: 135px !important; /* Baja exclusivamente el icono de hamburguesa de la pestaña para que coincida con la altura del banner */
-    animation: pulsoVidrioAzul 2s infinite ease-in-out, reboteEntrada 1.5s ease-in-out 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: pulsoVidrioAzul 2s infinite ease-in-out;
 }
 
-/* Tooltip 3D fijo y permanente ubicado a la altura exacta del banner al lado del icono */
+body.sidebar-colapsado .btn-sidebar-toggle:hover {
+    transform: none !important;
+    width: 22px !important;
+    height: calc(100vh - 32px) !important;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 1)) !important;
+    box-shadow: 10px 0 40px rgba(37, 99, 235, 0.6) !important;
+}
+
+@keyframes pulsoVidrioAzul {
+    0% {
+        box-shadow: 6px 0 20px rgba(37, 99, 235, 0.35);
+    }
+    50% {
+        box-shadow: 12px 0 38px rgba(37, 99, 235, 0.7);
+    }
+    100% {
+        box-shadow: 6px 0 20px rgba(37, 99, 235, 0.35);
+    }
+}
+@keyframes reboteEntrada {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+}
+
+body.sidebar-colapsado .btn-sidebar-toggle {
+    animation: pulsoVidrioAzul 2s infinite ease-in-out, reboteEntrada 1.5s ease-in-out 3;
+}
+/* ==========================================
+   TOOLTIP 3D FLOTANTE PARA EL SIDEBAR COLAPSADO
+   ========================================== */
+body.sidebar-colapsado .btn-sidebar-toggle {
+    position: fixed;
+    /* ... (mantiene las propiedades que ya tienes) ... */
+}
+
+/* Contenedor del tooltip 3D que aparece al lado de la pestaña */
 body.sidebar-colapsado .btn-sidebar-toggle::after {
     content: "💡 Clic para acceder al menú";
     position: absolute;
-    left: 32px; 
-    top: 135px !important; /* Ubica el tooltip fijo justo a la altura del banner */
-    transform: translateY(-50%) perspective(600px) rotateY(0deg);
+    left: 32px; /* Se posiciona justo a la derecha de la pestaña flotante (que mide 22px) */
+    top: 50%;
+    transform: translateY(-50%) perspective(600px) rotateY(10deg);
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 0.98));
     color: #ffffff;
-    padding: 8px 14px;
+    padding: 10px 16px;
     border-radius: 10px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
     box-shadow: 
-        0 10px 25px rgba(37, 99, 235, 0.35),
-        0 4px 10px rgba(0, 0, 0, 0.15),
+        0 15px 35px rgba(37, 99, 235, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.25);
     pointer-events: none;
     z-index: 99999;
-    opacity: 1 !important; /* Siempre visible de forma fija */
-    visibility: visible !important;
-    animation: none !important; /* Sin desvanecimientos */
+    opacity: 0;
+    animation: mostrarTooltip3D 4s ease-in-out forwards;
+}
+
+/* Animación para que aparezca llamativo tras un segundo, se luzca y luego se oculte suavemente para no estorbar */
+@keyframes mostrarTooltip3D {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) perspective(600px) rotateY(20deg) translateX(-10px);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(-50%) perspective(600px) rotateY(0deg) translateX(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(-50%) perspective(600px) rotateY(0deg) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50%) perspective(600px) rotateY(-10deg) translateX(-5px);
+        visibility: hidden;
+    }
 }
