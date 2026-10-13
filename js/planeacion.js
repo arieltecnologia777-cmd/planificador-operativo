@@ -997,9 +997,6 @@ function aplicarFiltros(){
         const afecVal = idxAfectacion !== -1 ? fila[idxAfectacion] : "";
         const stopVal = idxStoppers !== -1 ? fila[idxStoppers] : "";
 
-        if (otsModificadasRecientemente.has(otVal)) {
-            return true;
-        }
 
         const cumpleTexto = !texto || 
             String(idxID !== -1 ? fila[idxID] : "").toLowerCase().includes(texto) ||
@@ -1508,13 +1505,16 @@ async function guardarOT(fila, observacionForzada = null){
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
 
-            actualizarKPIs(datosFiltradosGlobal);
+            // Limpiamos el caché de modificación reciente para que el filtro actúe de inmediato
+            otsModificadasRecientemente.delete(ot);
+            
+            // Re-aplicamos los filtros para que la tabla respete los cambios y se oculte lo que ya no pertenezca al filtro
+            aplicarFiltros();
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
     }
 }
-
 const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
