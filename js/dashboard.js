@@ -567,24 +567,22 @@ document.addEventListener("click", async (e) => {
 
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 // ==========================================================
-// CARGA Y CÁLCULO INDEPENDIENTE DEL INDICADOR BACKLOG (R1 y R2)
+// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (DESDE EL CSV PUBLICADO)
 // ==========================================================
-async function cargarYCalcularBacklogIndependiente() {
-    const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/1cv6tnLtEdrhcvcwLFhzUUS8g8qgBrrj6VdaYVyU8gM8/export?format=csv&gid=290150389";
+async function cargarYCalcularBacklogUnificado() {
+    const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv&gid=290150389";
 
     try {
         const response = await fetch(BACKLOG_CSV_URL);
         const textoCsv = await response.text();
         
-        // Usamos tu misma función de parseo de CSV para mantener consistencia
         const filasBacklog = parsearCSV(textoCsv);
-
         if (!filasBacklog || filasBacklog.length < 2) return;
 
         let r1Total = 0, r1Ceros = 0;
         let r2Total = 0, r2Ceros = 0;
 
-        // Omitir cabecera (fila 0) y recorrer las filas
+        // Omitir cabecera (fila 0)
         const filasDatos = filasBacklog.slice(1);
 
         filasDatos.forEach(fila => {
@@ -633,8 +631,6 @@ async function cargarYCalcularBacklogIndependiente() {
         }
 
     } catch (error) {
-        console.error("Error al calcular el indicador independiente de Backlog:", error);
+        console.error("Error al calcular el Backlog desde la pestaña unificada:", error);
     }
 }
-
-// Llama a esta función dentro de tu función inicializarDashboard() justo después de renderizar los datos
