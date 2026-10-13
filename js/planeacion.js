@@ -99,10 +99,15 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
+    
+    /* --- ENCABEZADOS FIJOS VERTICALMENTE CONSERVANDO LA POSICIÓN HORIZONTAL --- */
     .planeacion-table th {
-        position: relative;
+        position: sticky !important;
+        top: var(--sticky-table-top, 0px) !important;
+        z-index: 15;
         user-select: none;
     }
+
     .table-resizer {
         position: absolute;
         top: 0;
