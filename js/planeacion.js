@@ -114,11 +114,12 @@ styleGrupoExcel.innerHTML = `
         z-index: 20 !important;
         user-select: none;
     }
-
-    /* Prioridad absoluta para las 3 primeras columnas fijas horizontalmente */
+/* Ajuste milimétrico para la primera columna (ID) y las siguientes fijas horizontalmente */
     .planeacion-table th:nth-child(1),
     .planeacion-table th:nth-child(2),
     .planeacion-table th:nth-child(3) {
+        position: sticky !important;
+        top: 0px !important;
         z-index: 40 !important;
         background-color: #f1f5f9 !important;
     }
