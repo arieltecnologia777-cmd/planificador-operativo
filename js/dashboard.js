@@ -568,19 +568,31 @@ document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
 // ==========================================================
 // CÁLCULO DINÁMICO Y PINTADO DEL INDICADOR BACKLOG (R1 y R2)
+// Meta fija: 93%
 // ==========================================================
 function calcularYPintarIndicadorBacklog(datosBacklog) {
-    if (!datosBacklog || datosBacklog.length === 0) return;
+    if (!datosBacklog || datosBacklog.length === 0) {
+        console.warn("⚠️ No llegaron datos para la hoja IND Backlog o está vacía.");
+        return;
+    }
 
     let r1Total = 0, r1Ceros = 0;
     let r2Total = 0, r2Ceros = 0;
 
-    datosBacklog.forEach(fila => {
+    // Omitimos la primera fila si es la cabecera (títulos de columnas)
+    const filasDatos = datosBacklog.slice(1);
+
+    filasDatos.forEach((fila, index) => {
         // Columna I (índice 8) = Regional ("R1" o "R2")
         const regional = String(fila[8] || "").trim().toUpperCase();
         
         // Columna T (índice 19) = Cumple SLA / Backlog (valores 0 o 1)
         const valorBacklog = parseInt(fila[19], 10); 
+
+        // Depuración en consola para verificar las primeras 3 filas leídas
+        if (index < 3) {
+            console.log(`Fila ${index}: Regional(col I) = "${regional}", Valor SLA(col T) = ${valorBacklog}`);
+        }
 
         if (!isNaN(valorBacklog)) {
             if (regional === "R1") {
@@ -593,27 +605,28 @@ function calcularYPintarIndicadorBacklog(datosBacklog) {
         }
     });
 
+    console.log(`📊 Totales Backlog -> R1: ${r1Ceros}/${r1Total} | R2: ${r2Ceros}/${r2Total}`);
+
     // 1. Porcentajes reales de Backlog (Ceros / Total * 100)
     const porcR1 = r1Total > 0 ? (r1Ceros / r1Total) * 100 : 0;
     const porcR2 = r2Total > 0 ? (r2Ceros / r2Total) * 100 : 0;
 
-    // 2. Definir metas (Ajusta estos valores si en tu proyecto la meta es diferente)
-    const metaR1 = 93.00; 
-    const metaR2 = 93.00; 
+    // 2. Meta fija solicitada: 93%
+    const meta = 93.00;
 
-    // 3. Cálculo de cumplimiento 
-    const cumplimientoR1 = metaR1 > 0 ? (porcR1 / metaR1) * 100 : 0;
-    const cumplimientoR2 = metaR2 > 0 ? (porcR2 / metaR2) * 100 : 0;
+    // 3. Cálculo de acercamiento a la meta (Porcentaje Real / 93 * 100)
+    const cumplimientoR1 = meta > 0 ? (porcR1 / meta) * 100 : 0;
+    const cumplimientoR2 = meta > 0 ? (porcR2 / meta) * 100 : 0;
 
-    // --- PINTAR EN LOS IDS EXACTOS DE TU HTML ---
+    // --- PINTAR EN LOS IDS DE TU HTML ---
 
-    // Valores centrales
+    // Primera columna (Porcentaje real de Backlog)
     const elR1 = document.getElementById("valBacklogR1");
     const elR2 = document.getElementById("valBacklogR2");
     if (elR1) elR1.textContent = porcR1.toFixed(2).replace('.', ',') + " %";
     if (elR2) elR2.textContent = porcR2.toFixed(2).replace('.', ',') + " %";
 
-    // Badges de cumplimiento (derecha)
+    // Segunda columna (Badge de cumplimiento respecto a la meta de 93%)
     const badgeR1 = document.getElementById("badgeR1");
     const badgeR2 = document.getElementById("badgeR2");
 
