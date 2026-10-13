@@ -100,20 +100,26 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
-    /* --- ENCABEZADOS FIJOS VERTICALMENTE CON OFFSET DINÁMICO --- */
+    /* --- SOLUCIÓN DEFINITIVA PARA ENCABEZADOS SUPERIORES --- */
+    .planeacion-table thead tr {
+        position: sticky !important;
+        top: 0px !important;
+        z-index: 30 !important;
+    }
+    
     .planeacion-table th {
         position: sticky !important;
-        top: var(--sticky-table-top, 0px) !important;
+        top: 0px !important;
         background-color: #f1f5f9 !important;
-        z-index: 10 !important;
+        z-index: 20 !important;
         user-select: none;
     }
 
-    /* --- ASEGURAR QUE LAS PRIMERAS COLUMNAS FIJAS HORIZONTALMENTE TENGAN MAYOR PRIORIDAD --- */
+    /* Prioridad absoluta para las 3 primeras columnas fijas horizontalmente */
     .planeacion-table th:nth-child(1),
     .planeacion-table th:nth-child(2),
     .planeacion-table th:nth-child(3) {
-        z-index: 30 !important;
+        z-index: 40 !important;
         background-color: #f1f5f9 !important;
     }
 
@@ -124,7 +130,7 @@ styleGrupoExcel.innerHTML = `
         width: 8px;
         cursor: col-resize;
         user-select: none;
-        z-index: 35;
+        z-index: 45;
         height: 100%;
     }
     .table-resizer:hover, .table-resizer.resizing {
