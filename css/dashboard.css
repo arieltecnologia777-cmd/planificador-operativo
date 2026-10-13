@@ -803,8 +803,9 @@ div:has(> .tabla-rangos) {
     display: none !important;
 }
 /* ==========================================================
-   ESTILO STICKY NOTE PARA LA BITÁCORA
+   CORRECCIÓN DEL ENCABEZADO Y LA NOTA ADHESIVA
    ========================================================== */
+
 .bloque-notas-dia {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -816,16 +817,25 @@ div:has(> .tabla-rangos) {
     flex-direction: column !important;
 }
 
+/* Encabezado delgado que abarca todo el ancho y alinea el texto correctamente */
 .notas-header {
-    background: #3b82f6 !important; /* Mantiene tu encabezado azul original */
+    background: #3b82f6 !important;
     color: #ffffff !important;
-    padding: 10px 14px !important;
-    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
     font-weight: 700 !important;
+    font-size: 0.82rem !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.notas-header h4 {
+    margin: 0 !important;
     font-size: 0.85rem !important;
-    margin-bottom: 12px !important;
-    display: flex !important;
-    align-items: center !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    width: 100% !important;
 }
 
 .notas-body {
@@ -834,20 +844,20 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Apariencia de Nota Adhesiva limpia, fija y sin scroll */
+/* Nota adhesiva estática que ocupa todo el ancho y alto disponible sin scroll */
 #txtNotasDia.sticky-note-content {
     width: 100% !important;
     flex-grow: 1 !important;
-    background: #fefce8 !important; /* Tono sutil amarillo tipo Post-it (o usa #f8fafc si prefieres tono papel limpio) */
+    background: #fefce8 !important;
     color: #1e293b !important;
     border: 1px solid #fef08a !important;
     border-radius: 10px !important;
-    padding: 14px !important;
+    padding: 12px !important;
     font-size: 0.82rem !important;
-    line-height: 1.6 !important;
+    line-height: 1.5 !important;
     box-sizing: border-box !important;
-    overflow: hidden !important; /* Oculta cualquier barra de scroll */
+    overflow: hidden !important;
     word-break: break-word !important;
-    white-space: pre-wrap !important; /* Mantiene los saltos de línea originales del texto */
+    white-space: pre-wrap !important;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
