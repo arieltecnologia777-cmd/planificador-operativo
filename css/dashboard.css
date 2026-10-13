@@ -884,20 +884,20 @@ div:has(> .tabla-rangos) {
     overflow: hidden !important; /* Mantiene el pliegue contenido en la tarjeta */
 }
 
-/* El pliegue de la esquina inferior derecha mejorado con relieve y sombra natural */
+/* Efecto de pliegue real levantado: sombra y luz transicional sin fondo sólido */
 .bloque-notas-dia-sticky::after {
     content: "";
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 35px;
-    height: 35px;
-    /* Gradiente del reverso de la hoja y la zona de sombra del doblez */
-    background: linear-gradient(135deg, #fde047 30%, #eab308 50%, #ca8a04 100%);
-    /* Sombra profunda proyectada por la solapa enrollada */
-    box-shadow: -5px -5px 12px rgba(0, 0, 0, 0.3), inset 2px 2px 5px rgba(255, 255, 255, 0.4);
-    /* Recorte triangular perfecto para simular la esquina doblada hacia adentro */
-    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    width: 45px;
+    height: 45px;
+    /* Gradiente suave que simula la curvatura del papel doblándose hacia arriba y mostrando la sombra interior */
+    background: radial-gradient(circle at 0% 0%, rgba(161, 98, 7, 0.45) 0%, rgba(202, 138, 4, 0.15) 40%, transparent 70%);
+    /* Sombra proyectada por la pestaña levantada sobre el cuerpo de la nota */
+    box-shadow: -6px -6px 14px rgba(0, 0, 0, 0.28);
+    /* Recorte triangular más amplio para que el pliegue se note más grande y levantado */
+    clip-path: polygon(100% 0, 15% 100%, 100% 100%);
     border-bottom-right-radius: 12px;
     pointer-events: none;
 }
