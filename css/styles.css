@@ -2180,3 +2180,11 @@ body.sidebar-colapsado .btn-sidebar-toggle:hover {
         box-shadow: 6px 0 20px rgba(37, 99, 235, 0.35);
     }
 }
+@keyframes reboteEntrada {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+}
+
+body.sidebar-colapsado .btn-sidebar-toggle {
+    animation: pulsoVidrioAzul 2s infinite ease-in-out, reboteEntrada 1.5s ease-in-out 3;
+}
