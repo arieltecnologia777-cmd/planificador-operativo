@@ -100,11 +100,12 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
-    /* --- ENCABEZADOS FIJOS VERTICALMENTE CONSERVANDO LA POSICIÓN HORIZONTAL --- */
+    /* --- ENCABEZADOS FIJOS ARRIBA CORRECTAMENTE --- */
     .planeacion-table th {
         position: sticky !important;
-        top: var(--sticky-table-top, 0px) !important;
-        z-index: 15;
+        top: 0px !important;
+        background-color: #f1f5f9 !important;
+        z-index: 20 !important;
         user-select: none;
     }
 
