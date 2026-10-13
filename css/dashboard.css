@@ -884,22 +884,58 @@ div:has(> .tabla-rangos) {
     overflow: hidden !important; /* Mantiene el pliegue contenido en la tarjeta */
 }
 
-/* Efecto de pliegue real levantado: sombra y luz transicional sin fondo sólido */
+/* La nota debe permitir posicionar el pliegue */
+.bloque-notas-dia-sticky {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Pliegue de la esquina inferior derecha */
 .bloque-notas-dia-sticky::after {
     content: "";
     position: absolute;
-    bottom: 0;
     right: 0;
-    width: 45px;
-    height: 45px;
-    /* Gradiente suave que simula la curvatura del papel doblándose hacia arriba y mostrando la sombra interior */
-    background: radial-gradient(circle at 0% 0%, rgba(161, 98, 7, 0.45) 0%, rgba(202, 138, 4, 0.15) 40%, transparent 70%);
-    /* Sombra proyectada por la pestaña levantada sobre el cuerpo de la nota */
-    box-shadow: -6px -6px 14px rgba(0, 0, 0, 0.28);
-    /* Recorte triangular más amplio para que el pliegue se note más grande y levantado */
-    clip-path: polygon(100% 0, 15% 100%, 100% 100%);
-    border-bottom-right-radius: 12px;
+    bottom: 0;
+
+    width: 36%;
+    height: 36%;
+
     pointer-events: none;
+    z-index: 5;
+
+    /* Curvatura de la esquina levantada */
+    clip-path: polygon(
+        0 58%,
+        8% 34%,
+        28% 13%,
+        55% 5%,
+        78% 9%,
+        100% 0,
+        100% 100%,
+        0 100%
+    );
+
+    /* Tonos cálidos de papel doblado */
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 225, 0.98) 0%,
+            rgba(255, 239, 171, 0.96) 24%,
+            rgba(224, 190, 98, 0.92) 52%,
+            rgba(157, 116, 35, 0.86) 76%,
+            rgba(105, 75, 22, 0.72) 100%
+        );
+
+    /* Relieve, borde iluminado y sombra */
+    box-shadow:
+        inset 3px 3px 5px rgba(255, 255, 255, 0.8),
+        inset -4px -4px 9px rgba(105, 75, 22, 0.25),
+        -5px -5px 12px rgba(0, 0, 0, 0.16);
+
+    filter: drop-shadow(-5px -5px 5px rgba(90, 65, 15, 0.18));
+
+    border-bottom-right-radius: 12px;
 }
 
 /* Tachuela / Pin rojo superior */
