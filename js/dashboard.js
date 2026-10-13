@@ -568,16 +568,21 @@ document.addEventListener("click", async (e) => {
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
 // ==========================================================
-// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (CONTANDO LOS 1)
+// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (USANDO XLSX)
 // ==========================================================
 async function cargarYCalcularBacklogUnificado() {
     const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv&gid=290150389";
 
     try {
         const response = await fetch(BACKLOG_CSV_URL);
-        const textoCsv = await response.text();
+        const dataText = await response.text();
         
-        const filasBacklog = parsearCSV(textoCsv);
+        // Convertir el texto CSV usando la librería XLSX oficial que ya tienes cargada
+        const workbook = XLSX.read(dataText, { type: 'string' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const filasBacklog = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
         if (!filasBacklog || filasBacklog.length < 2) return;
 
         let r1Total = 0, r1Unos = 0;
@@ -593,10 +598,10 @@ async function cargarYCalcularBacklogUnificado() {
             if (!isNaN(valorBacklog)) {
                 if (regional === "R1") {
                     r1Total++;
-                    if (valorBacklog === 1) r1Unos++; // <-- Cambiado a 1 según tu indicación
+                    if (valorBacklog === 1) r1Unos++; // Conteo de los 1
                 } else if (regional === "R2") {
                     r2Total++;
-                    if (valorBacklog === 1) r2Unos++; // <-- Cambiado a 1 según tu indicación
+                    if (valorBacklog === 1) r2Unos++; // Conteo de los 1
                 }
             }
         });
