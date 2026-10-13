@@ -100,7 +100,10 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     .planeacion-table th {
-        position: relative;
+        position: sticky !important;
+        top: var(--sticky-table-top, 0px) !important;
+        z-index: 20 !important;
+        background-color: #f1f5f9 !important;
         user-select: none;
     }
     .table-resizer {
