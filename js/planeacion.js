@@ -1683,8 +1683,8 @@ window.exportarPlaneacion = function() {
         dataAOA.push([...headers]);
 
         registrosProcesados.forEach(item => {
-            const getValor = (nombre, esNumerico = false) => {
-                const index = buscarIndice(nombre);
+            const getValorFlexible = (terminos, esNumerico = false) => {
+                const index = buscarIndiceColumnaFlexible(encabezadosGlobal, terminos);
                 if (index === -1) return esNumerico ? 0 : "";
                 const val = item.filaOriginal[index] ?? "";
                 if (esNumerico && val !== "") {
@@ -1698,29 +1698,29 @@ window.exportarPlaneacion = function() {
             const esN = esCasoNuevo(item.otValor) ? "Sí" : "No";
 
             dataAOA.push([
-                getValor("ID", true), 
-                getValor("Departamento"), 
-                getValor("Municipio"),
-                getValor("IM"), 
+                getValorFlexible(["ID"], true), 
+                getValorFlexible(["Departamento"]), 
+                getValorFlexible(["Municipio"]),
+                getValorFlexible(["IM"]), 
                 item.otValor, 
-                getValor("Tipo de afectación"),
+                getValorFlexible(["Tipo de afectación", "Afectación"]),
                 esN,
-                getValor("IDs afectados", true), 
-                getValor("Días OT", true), 
-                getValor("Rango de afectación"),
-                getValor("Tipo de prioridad"), 
-                getValor("Stoppers Dominion"),
+                getValorFlexible(["IDs afectados", "Total IDs afectados"], true), 
+                getValorFlexible(["Días vigencia OT", "Días OT", "Dias OT"], true), 
+                getValorFlexible(["Rango de afectación", "Rango de afect"]),
+                getValorFlexible(["Tipo de prioridad", "Prioridad"]), 
+                getValorFlexible(["Stoppers Dominion", "Stoppers"]),
                 limpiarTexto(item.regD1.estadoProgramacion), 
                 item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion), 
                 limpiarTexto(item.regD1.estadoGestion),
                 limpiarTexto(item.regD1.tecnicoAsigned),
                 limpiarTexto(item.regD1.acompanamiento),
-                getValor("Indicador backlog"), 
-                getValor("Stopper P3"),
-                getValor("Tipo facturación"), 
-                getValor("Fecha vencimiento FM"),
-                getValor("Alerta vencimiento FM")
+                getValorFlexible(["Indicador backlog", "Backlog"]), 
+                getValorFlexible(["Stopper P3"]),
+                getValorFlexible(["Tipo facturación", "Tipo facturacio"]),
+                getValorFlexible(["Fecha vencimiento FM", "Vencimiento FM"]),
+                getValorFlexible(["Alerta vencimiento FM", "Alerta FM"])
             ]);
         });
 
