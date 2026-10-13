@@ -100,13 +100,21 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
-    /* --- ENCABEZADOS FIJOS ARRIBA CORRECTAMENTE --- */
+    /* --- ENCABEZADOS FIJOS VERTICALMENTE CON OFFSET DINÁMICO --- */
     .planeacion-table th {
         position: sticky !important;
-        top: 0px !important;
+        top: var(--sticky-table-top, 0px) !important;
         background-color: #f1f5f9 !important;
-        z-index: 20 !important;
+        z-index: 10 !important;
         user-select: none;
+    }
+
+    /* --- ASEGURAR QUE LAS PRIMERAS COLUMNAS FIJAS HORIZONTALMENTE TENGAN MAYOR PRIORIDAD --- */
+    .planeacion-table th:nth-child(1),
+    .planeacion-table th:nth-child(2),
+    .planeacion-table th:nth-child(3) {
+        z-index: 30 !important;
+        background-color: #f1f5f9 !important;
     }
 
     .table-resizer {
@@ -116,7 +124,7 @@ styleGrupoExcel.innerHTML = `
         width: 8px;
         cursor: col-resize;
         user-select: none;
-        z-index: 25;
+        z-index: 35;
         height: 100%;
     }
     .table-resizer:hover, .table-resizer.resizing {
