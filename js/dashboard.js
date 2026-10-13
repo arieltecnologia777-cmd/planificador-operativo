@@ -132,12 +132,12 @@ async function cargarNotaDelDia() {
         const data = await resp.json();
         const txtNotas = document.getElementById("txtNotasDia");
         if (txtNotas && data.ok) {
-            txtNotas.value = data.nota || "Sin notas registradas para hoy.";
+            txtNotas.textContent = data.nota || "Sin notas registradas para hoy.";
         }
     } catch (err) {
         console.error("Error al cargar la nota:", err);
         const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas) txtNotas.value = "Error al sincronizar la nota del día.";
+        if (txtNotas) txtNotas.textContent = "Error al sincronizar la nota del día.";
     }
 }
 
