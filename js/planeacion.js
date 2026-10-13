@@ -2116,3 +2116,43 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// ==========================================================
+// CÁLCULO DINÁMICO DEL INDICADOR BACKLOG (R1 y R2)
+// Basado en Regional (Columna I - índice 8) y Cumple SLA / Backlog (Columna T - índice 19)
+// ==========================================================
+function calcularIndicadorBacklog(datosBacklog) {
+    if (!datosBacklog || datosBacklog.length === 0) return;
+
+    let r1Total = 0, r1Ceros = 0;
+    let r2Total = 0, r2Ceros = 0;
+
+    datosBacklog.forEach(fila => {
+        // Columna I (índice 8) = Regional ("R1" o "R2")
+        const regional = String(fila[8] || "").trim().toUpperCase();
+        
+        // Columna T (índice 19) = Cumple SLA / Backlog (valores 0 o 1)
+        const valorBacklog = parseInt(fila[19], 10); 
+
+        // Solo procesamos si la fila pertenece a R1 o R2 y tiene un número válido
+        if (!isNaN(valorBacklog)) {
+            if (regional === "R1") {
+                r1Total++;
+                if (valorBacklog === 0) r1Ceros++;
+            } else if (regional === "R2") {
+                r2Total++;
+                if (valorBacklog === 0) r2Ceros++;
+            }
+        }
+    });
+
+    // Cálculo de los porcentajes (Ceros / Total * 100)
+    const porcR1 = r1Total > 0 ? ((r1Ceros / r1Total) * 100).toFixed(2) : "0.00";
+    const porcR2 = r2Total > 0 ? ((r2Ceros / r2Total) * 100).toFixed(2) : "0.00";
+
+    // Pintar los valores dinámicamente en los elementos HTML de tu tarjeta
+    const elR1 = document.getElementById("txtBacklogR1");
+    const elR2 = document.getElementById("txtBacklogR2");
+
+    if (elR1) elR1.textContent = porcR1 + " %";
+    if (elR2) elR2.textContent = porcR2 + " %";
+}
