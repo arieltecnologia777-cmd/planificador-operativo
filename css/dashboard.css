@@ -867,20 +867,39 @@ div:has(> .tabla-rangos) {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 /* ==========================================================
-   ESTILO STICKY NOTE LIMPIA, RECTA Y PROFESIONAL
+   ESTILO STICKY NOTE CON PLIEGUE ORGÁNICO REAL
    ========================================================== */
 .bloque-notas-dia-sticky {
     position: relative;
     background: linear-gradient(135deg, #fefce8 0%, #fef08a 70%, #fde047 100%) !important;
     border: 1px solid #eab308 !important;
-    border-radius: 12px !important; /* Bordes suaves y modernos sin recortes raros */
+    border-radius: 12px !important;
     padding: 18px 16px 16px 16px !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.09), 0 3px 6px rgba(0, 0, 0, 0.05) !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 220px !important;
     transform: rotate(0deg) !important;
+    overflow: hidden !important; /* Mantiene el pliegue contenido en la tarjeta */
+}
+
+/* El pliegue de la esquina inferior derecha mejorado con relieve y sombra natural */
+.bloque-notas-dia-sticky::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 35px;
+    height: 35px;
+    /* Gradiente del reverso de la hoja y la zona de sombra del doblez */
+    background: linear-gradient(135deg, #fde047 30%, #eab308 50%, #ca8a04 100%);
+    /* Sombra profunda proyectada por la solapa enrollada */
+    box-shadow: -5px -5px 12px rgba(0, 0, 0, 0.3), inset 2px 2px 5px rgba(255, 255, 255, 0.4);
+    /* Recorte triangular perfecto para simular la esquina doblada hacia adentro */
+    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    border-bottom-right-radius: 12px;
+    pointer-events: none;
 }
 
 /* Tachuela / Pin rojo superior */
