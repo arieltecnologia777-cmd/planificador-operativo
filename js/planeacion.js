@@ -99,13 +99,21 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
+    
+    /* --- FIJAR EL ENCABEZADO VERTICALMENTE RESPETANDO LAS COLUMNAS IZQUIERDAS --- */
+    .planeacion-table thead tr {
+        position: sticky !important;
+        top: var(--sticky-table-top, 0px) !important;
+        z-index: 30 !important;
+    }
     .planeacion-table th {
         position: sticky !important;
         top: var(--sticky-table-top, 0px) !important;
-        z-index: 20 !important;
         background-color: #f1f5f9 !important;
+        z-index: 20 !important;
         user-select: none;
     }
+
     .table-resizer {
         position: absolute;
         top: 0;
