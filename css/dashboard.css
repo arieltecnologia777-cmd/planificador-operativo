@@ -867,32 +867,43 @@ div:has(> .tabla-rangos) {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 /* ==========================================================
-   ESTILO STICKY NOTE REALISTA CON TACHUELA Y SOMBRA
+   ESTILO STICKY NOTE RECTA, LIMPIA Y CON PLIEGUE REALISTA
    ========================================================== */
 .bloque-notas-dia-sticky {
     position: relative;
-    background: linear-gradient(135deg, #fffbeb 0%, #fef08a 100%) !important;
-    border: 1px solid #fde047 !important;
-    border-radius: 4px 4px 12px 12px !important;
+    /* Degradado amarillo tipo Post-it cálido */
+    background: linear-gradient(135deg, #fefce8 0%, #fef08a 70%, #fde047 100%) !important;
+    border: 1px solid #eab308 !important;
+    border-radius: 4px 4px 16px 4px !important;
     padding: 18px 16px 16px 16px !important;
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+    /* Sombra profunda simulando relieve de papel y el pliegue abajo a la derecha */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08), inset -15px -15px 20px rgba(202, 138, 4, 0.15) !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 220px !important;
-    transform: rotate(-0.8deg); /* Sutil inclinación natural a mano */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: rotate(0deg) !important; /* Completamente recta */
+    overflow: hidden !important; /* Necesario para contener el pliegue */
 }
 
-.bloque-notas-dia-sticky:hover {
-    transform: rotate(0deg) scale(1.01);
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16), 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+/* Efecto de la esquina inferior derecha doblada/levantada (Curl) */
+.bloque-notas-dia-sticky::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, transparent 50%, rgba(202, 138, 4, 0.3) 50%, rgba(161, 98, 7, 0.5) 100%);
+    box-shadow: -3px -3px 8px rgba(0, 0, 0, 0.15);
+    border-top-left-radius: 10px;
+    pointer-events: none;
 }
 
 /* Tachuela / Pin rojo realista en la parte superior central */
 .pin-tachuela {
     position: absolute;
-    top: -8px;
+    top: -6px;
     left: 50%;
     transform: translateX(-50%);
     width: 14px;
@@ -921,7 +932,7 @@ div:has(> .tabla-rangos) {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px !important;
-    border-bottom: 1px dashed rgba(133, 77, 14, 0.2);
+    border-bottom: 1px dashed rgba(133, 77, 14, 0.25);
     padding-bottom: 6px;
     display: flex;
     align-items: center;
@@ -933,7 +944,7 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Texto interno de la nota adhesiva limpia y sin scroll */
+/* Texto interno de la nota adhesiva */
 #txtNotasDia.sticky-note-real {
     width: 100% !important;
     flex-grow: 1 !important;
