@@ -100,27 +100,22 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
-    /* --- SOLUCIÓN DEFINITIVA PARA ENCABEZADOS SUPERIORES --- */
-    .planeacion-table thead tr {
-        position: sticky !important;
-        top: 0px !important;
-        z-index: 30 !important;
-    }
-    
-    .planeacion-table th {
+    /* --- FIJACIÓN GENERAL Y UNIFICADA PARA TODOS LOS TH --- */
+    .planeacion-table tr th {
         position: sticky !important;
         top: 0px !important;
         background-color: #f1f5f9 !important;
         z-index: 20 !important;
         user-select: none;
     }
-/* Ajuste milimétrico para la primera columna (ID) y las siguientes fijas horizontalmente */
-    .planeacion-table th:nth-child(1),
-    .planeacion-table th:nth-child(2),
-    .planeacion-table th:nth-child(3) {
+
+    /* --- PRIORIDAD ABSOLUTA PARA LAS COLUMNAS FIJAS IZQUIERDAS (INCLUYENDO ID) --- */
+    .planeacion-table tr th:nth-child(1),
+    .planeacion-table tr th:nth-child(2),
+    .planeacion-table tr th:nth-child(3) {
         position: sticky !important;
         top: 0px !important;
-        z-index: 40 !important;
+        z-index: 50 !important;
         background-color: #f1f5f9 !important;
     }
 
@@ -131,7 +126,7 @@ styleGrupoExcel.innerHTML = `
         width: 8px;
         cursor: col-resize;
         user-select: none;
-        z-index: 45;
+        z-index: 55;
         height: 100%;
     }
     .table-resizer:hover, .table-resizer.resizing {
