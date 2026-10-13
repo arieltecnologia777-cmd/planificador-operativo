@@ -867,50 +867,51 @@ div:has(> .tabla-rangos) {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 /* ==========================================================
-   ESTILO STICKY NOTE RECTA, LIMPIA Y CON PLIEGUE REALISTA
+   ESTILO STICKY NOTE RECTA CON PIN EN SU LUGAR Y PLIEGUE REAL DE HOJA
    ========================================================== */
 .bloque-notas-dia-sticky {
     position: relative;
-    /* Degradado amarillo tipo Post-it cálido */
+    /* Fondo amarillo Post-it con un sutil degradado de papel real */
     background: linear-gradient(135deg, #fefce8 0%, #fef08a 70%, #fde047 100%) !important;
     border: 1px solid #eab308 !important;
     border-radius: 4px 4px 16px 4px !important;
     padding: 18px 16px 16px 16px !important;
-    /* Sombra profunda simulando relieve de papel y el pliegue abajo a la derecha */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08), inset -15px -15px 20px rgba(202, 138, 4, 0.15) !important;
+    /* Sombra de elevación y profundidad interna */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08), inset -2px -2px 10px rgba(161, 98, 7, 0.12) !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 220px !important;
-    transform: rotate(0deg) !important; /* Completamente recta */
-    overflow: hidden !important; /* Necesario para contener el pliegue */
+    transform: rotate(0deg) !important;
+    overflow: hidden !important; /* Contiene el pliegue dentro de los límites */
 }
 
-/* Efecto de la esquina inferior derecha doblada/levantada (Curl) */
+/* Efecto de pliegue real (la misma hoja doblándose sobre sí misma en la esquina) */
 .bloque-notas-dia-sticky::after {
     content: "";
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 30px;
-    height: 30px;
-    background: linear-gradient(135deg, transparent 50%, rgba(202, 138, 4, 0.3) 50%, rgba(161, 98, 7, 0.5) 100%);
-    box-shadow: -3px -3px 8px rgba(0, 0, 0, 0.15);
-    border-top-left-radius: 10px;
+    width: 28px;
+    height: 28px;
+    /* Gradiente que simula el envés/reverso de la hoja doblada con su propia sombra de doblez */
+    background: linear-gradient(135deg, #fde047 50%, #facc15 50%, #ca8a04 100%);
+    box-shadow: -3px -3px 7px rgba(0, 0, 0, 0.2);
+    border-top-left-radius: 8px;
     pointer-events: none;
 }
 
-/* Tachuela / Pin rojo realista en la parte superior central */
+/* Tachuela / Pin rojo bien posicionado clavado en el margen superior */
 .pin-tachuela {
     position: absolute;
-    top: -6px;
+    top: 4px; /* Ubicado correctamente dentro de la nota */
     left: 50%;
     transform: translateX(-50%);
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     background: radial-gradient(circle at 35% 35%, #f87171 0%, #dc2626 60%, #991b1b 100%);
     border-radius: 50%;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.6);
     z-index: 10;
 }
 .pin-tachuela::after {
@@ -919,7 +920,7 @@ div:has(> .tabla-rangos) {
     bottom: -3px;
     left: 50%;
     transform: translateX(-50%);
-    width: 3px;
+    width: 2px;
     height: 4px;
     background: #7f1d1d;
     border-radius: 1px;
@@ -944,7 +945,7 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Texto interno de la nota adhesiva */
+/* Texto interno de la nota adhesiva limpio y fijo */
 #txtNotasDia.sticky-note-real {
     width: 100% !important;
     flex-grow: 1 !important;
