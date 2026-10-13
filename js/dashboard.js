@@ -252,31 +252,32 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-       // Búsqueda unificada y robusta de repuestos en cualquier variante de texto o columna de stoppers
-        const textoStopperCompleto = (stopper + " " + stopperRep + " " + stopperFM + " " + String(fila[21] || "")).toUpperCase();
-        
-        const esFM_o_Traslado = textoStopperCompleto.includes("FM") || 
-                               textoStopperCompleto.includes("TRASLADO") || 
-                               textoStopperCompleto.includes("REUBICACION") || 
-                               textoStopperCompleto.includes("FUERZA MAYOR");
+       // 1. Lectura exacta de columnas según tu regla
+        const estadoReal = String(fila[19] || "").trim().toUpperCase(); // Columna T (aprox índice 19 o 20 según tu mapeo)
+        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase(); // Columna AC: Stopper P3 (repuestos)
+        const stopperFmAD = String(fila[29] || "").trim().toUpperCase(); // Columna AD: Stopper P3 (FM/traslado/reubicaciones)
 
-        const esRepuesto = textoStopperCompleto.includes("REPUESTO") || 
-                           textoStopperCompleto.includes("REPUESTOS") || 
-                           textoStopperCompleto.includes("SATELITALES");
+        // 2. Validar frases permitidas en AC
+        const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
+                                 stopperRepuestosAC.includes("REPUESTOS") || 
+                                 stopperRepuestosAC.includes("REPUESTOS SATELITALES") || 
+                                 stopperRepuestosAC.includes("REPUESTOS SOLARES");
 
-        if (esRepuesto && !esFM_o_Traslado) {
-            if (estado.includes("OFFLINE")) repOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) repPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
-            else if (estado.includes("PQR")) repPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
-        }
-        if (stopper.includes("REQUIERE") || stopper.includes("ATENCION S.O") || stopper.includes("ATENCIÓN S.O")) {
-            if (estado.includes("OFFLINE")) reqOff += idsAfectados;
-            else if (estado.includes("PARCIAL")) reqPar += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) reqVel += idsAfectados;
-            else if (estado.includes("PQR")) reqPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) reqP3 += idsAfectados;
+        // 3. Validar que NO tenga FM/traslado/reubicaciones en AD
+        const tieneFmEnAD = stopperFmAD.includes("FM") || 
+                            stopperFmAD.includes("TRASLADO") || 
+                            stopperFmAD.includes("REUBICACION") || 
+                            stopperFmAD.includes("FUERZA MAYOR");
+
+        // 4. Conteo condicional estricto para P3 (u otras categorías si aplica)
+        const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
+
+        if (esRepuestoEstricto) {
+            if (estadoReal.includes("OFFLINE")) repOff += idsAfectados;
+            else if (estadoReal.includes("PARCIAL")) repPar += idsAfectados;
+            else if (estadoReal.includes("VELOCIDAD")) repVel += idsAfectados;
+            else if (estadoReal.includes("PQR")) repPqr += idsAfectados;
+            else if (estadoReal.includes("P3") || estadoReal.includes("OTROS")) repP3 += idsAfectados;
         }
 
         let targetRango = null;
