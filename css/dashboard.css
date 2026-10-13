@@ -886,18 +886,19 @@ div:has(> .tabla-rangos) {
     overflow: hidden !important; /* Contiene el pliegue dentro de los límites */
 }
 
-/* Efecto de pliegue real (la misma hoja doblándose sobre sí misma en la esquina) */
+/* Efecto de pliegue real: la esquina doblada hacia adentro revelando el reverso */
 .bloque-notas-dia-sticky::after {
     content: "";
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 28px;
-    height: 28px;
-    /* Gradiente que simula el envés/reverso de la hoja doblada con su propia sombra de doblez */
-    background: linear-gradient(135deg, #fde047 50%, #facc15 50%, #ca8a04 100%);
-    box-shadow: -3px -3px 7px rgba(0, 0, 0, 0.2);
-    border-top-left-radius: 8px;
+    width: 32px;
+    height: 32px;
+    /* Gradiente diagonal que simula la luz cayendo sobre el papel doblado y su reverso más oscuro */
+    background: linear-gradient(135deg, rgba(254, 240, 138, 0) 50%, rgba(202, 138, 4, 0.4) 50%, rgba(161, 98, 7, 0.75) 100%);
+    /* Sombra proyectada por la solapa doblada sobre la propia nota */
+    box-shadow: -4px -4px 10px rgba(0, 0, 0, 0.25), inset 2px 2px 4px rgba(255, 255, 255, 0.4);
+    border-top-left-radius: 100% 100%; /* Curva orgánica del doblez */
     pointer-events: none;
 }
 
