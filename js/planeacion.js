@@ -1505,9 +1505,13 @@ async function guardarOT(fila, observacionForzada = null){
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
 
+            // Actualizamos los KPIs de inmediato
             actualizarKPIs(datosFiltradosGlobal);
-            // Ya no tocamos la visibilidad de la fila: se queda estable en pantalla 
-            // exactamente igual que en Excel hasta que el usuario cambie o aplique un filtro.
+
+           
+            // Refresca los menús desplegables de los filtros en segundo plano 
+            // para que detecten el nuevo estado, departamento, fecha o rango modificado.
+            actualizarOpcionesFiltros(datosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
