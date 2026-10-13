@@ -2188,3 +2188,56 @@ body.sidebar-colapsado .btn-sidebar-toggle:hover {
 body.sidebar-colapsado .btn-sidebar-toggle {
     animation: pulsoVidrioAzul 2s infinite ease-in-out, reboteEntrada 1.5s ease-in-out 3;
 }
+/* ==========================================
+   TOOLTIP 3D FLOTANTE PARA EL SIDEBAR COLAPSADO
+   ========================================== */
+body.sidebar-colapsado .btn-sidebar-toggle {
+    position: fixed;
+    /* ... (mantiene las propiedades que ya tienes) ... */
+}
+
+/* Contenedor del tooltip 3D que aparece al lado de la pestaña */
+body.sidebar-colapsado .btn-sidebar-toggle::after {
+    content: "💡 Clic para acceder al menú";
+    position: absolute;
+    left: 32px; /* Se posiciona justo a la derecha de la pestaña flotante (que mide 22px) */
+    top: 50%;
+    transform: translateY(-50%) perspective(600px) rotateY(10deg);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 0.98));
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 
+        0 15px 35px rgba(37, 99, 235, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    pointer-events: none;
+    z-index: 99999;
+    opacity: 0;
+    animation: mostrarTooltip3D 4s ease-in-out forwards;
+}
+
+/* Animación para que aparezca llamativo tras un segundo, se luzca y luego se oculte suavemente para no estorbar */
+@keyframes mostrarTooltip3D {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) perspective(600px) rotateY(20deg) translateX(-10px);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(-50%) perspective(600px) rotateY(0deg) translateX(0);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(-50%) perspective(600px) rotateY(0deg) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50%) perspective(600px) rotateY(-10deg) translateX(-5px);
+        visibility: hidden;
+    }
+}
