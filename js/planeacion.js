@@ -1505,11 +1505,9 @@ async function guardarOT(fila, observacionForzada = null){
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
 
-            // Limpiamos el caché de modificación reciente para que el filtro actúe de inmediato
-            otsModificadasRecientemente.delete(ot);
-            
-            // Re-aplicamos los filtros para que la tabla respete los cambios y se oculte lo que ya no pertenezca al filtro
-            aplicarFiltros();
+            actualizarKPIs(datosFiltradosGlobal);
+            // Ya no tocamos la visibilidad de la fila: se queda estable en pantalla 
+            // exactamente igual que en Excel hasta que el usuario cambie o aplique un filtro.
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
