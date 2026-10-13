@@ -803,9 +803,8 @@ div:has(> .tabla-rangos) {
     display: none !important;
 }
 /* ==========================================================
-   CORRECCIÓN DEL ENCABEZADO Y LA NOTA ADHESIVA
+   ESTILO UNIFICADO PARA EL ENCABEZADO DE NOTAS DEL DÍA
    ========================================================== */
-
 .bloque-notas-dia {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -817,25 +816,31 @@ div:has(> .tabla-rangos) {
     flex-direction: column !important;
 }
 
-/* Encabezado delgado que abarca todo el ancho y alinea el texto correctamente */
+/* Encabezado idéntico al de las demás tarjetas (fondo azul limpio sin subcuadro interno) */
 .notas-header {
     background: #3b82f6 !important;
     color: #ffffff !important;
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-    font-size: 0.82rem !important;
-    margin-bottom: 10px !important;
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
+/* El título queda suelto y limpio ocupando todo el ancho en blanco */
 .notas-header h4 {
     margin: 0 !important;
     font-size: 0.85rem !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     color: #ffffff !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
     width: 100% !important;
+    text-align: left !important;
 }
 
 .notas-body {
@@ -844,7 +849,7 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Nota adhesiva estática que ocupa todo el ancho y alto disponible sin scroll */
+/* Nota adhesiva estática que ocupa el resto del espacio sin scroll */
 #txtNotasDia.sticky-note-content {
     width: 100% !important;
     flex-grow: 1 !important;
@@ -852,9 +857,9 @@ div:has(> .tabla-rangos) {
     color: #1e293b !important;
     border: 1px solid #fef08a !important;
     border-radius: 10px !important;
-    padding: 12px !important;
+    padding: 14px !important;
     font-size: 0.82rem !important;
-    line-height: 1.5 !important;
+    line-height: 1.6 !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     word-break: break-word !important;
