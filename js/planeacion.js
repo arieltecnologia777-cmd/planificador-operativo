@@ -2117,10 +2117,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 // ==========================================================
-// CÁLCULO DINÁMICO DEL INDICADOR BACKLOG (R1 y R2)
-// Basado en Regional (Columna I - índice 8) y Cumple SLA / Backlog (Columna T - índice 19)
+// CÁLCULO DINÁMICO Y PINTADO DEL INDICADOR BACKLOG (R1 y R2)
 // ==========================================================
-function calcularIndicadorBacklog(datosBacklog) {
+function calcularYPintarIndicadorBacklog(datosBacklog) {
     if (!datosBacklog || datosBacklog.length === 0) return;
 
     let r1Total = 0, r1Ceros = 0;
@@ -2133,7 +2132,6 @@ function calcularIndicadorBacklog(datosBacklog) {
         // Columna T (índice 19) = Cumple SLA / Backlog (valores 0 o 1)
         const valorBacklog = parseInt(fila[19], 10); 
 
-        // Solo procesamos si la fila pertenece a R1 o R2 y tiene un número válido
         if (!isNaN(valorBacklog)) {
             if (regional === "R1") {
                 r1Total++;
@@ -2145,14 +2143,41 @@ function calcularIndicadorBacklog(datosBacklog) {
         }
     });
 
-    // Cálculo de los porcentajes (Ceros / Total * 100)
-    const porcR1 = r1Total > 0 ? ((r1Ceros / r1Total) * 100).toFixed(2) : "0.00";
-    const porcR2 = r2Total > 0 ? ((r2Ceros / r2Total) * 100).toFixed(2) : "0.00";
+    // 1. Porcentajes reales de Backlog (Ceros / Total * 100)
+    const porcR1 = r1Total > 0 ? (r1Ceros / r1Total) * 100 : 0;
+    const porcR2 = r2Total > 0 ? (r2Ceros / r2Total) * 100 : 0;
 
-    // Pintar los valores dinámicamente en los elementos HTML de tu tarjeta
+    // 2. Definir metas (Ajusta estos valores si en tu proyecto la meta es diferente o viene de otra celda)
+    const metaR1 = 93.00; // Ejemplo de meta esperada para R1
+    const metaR2 = 93.00; // Ejemplo de meta esperada para R2
+
+    // 3. Cálculo de cumplimiento (% Obtenido / Meta o la lógica de negocio de tu app)
+    // Nota: Si tu app calcula el cumplimiento directo, ajusta esta fórmula según lo que tengas en Excel.
+    const cumplimientoR1 = metaR1 > 0 ? (porcR1 / metaR1) * 100 : 0;
+    const cumplimientoR2 = metaR2 > 0 ? (porcR2 / metaR2) * 100 : 0;
+
+    // --- SECCIÓN DE PINTADO EN EL HTML ---
+
+    // Elementos centrales (ej. Backlog R1 y R2)
     const elR1 = document.getElementById("txtBacklogR1");
     const elR2 = document.getElementById("txtBacklogR2");
+    if (elR1) elR1.textContent = porcR1.toFixed(2) + " %";
+    if (elR2) elR2.textContent = porcR2.toFixed(2) + " %";
 
-    if (elR1) elR1.textContent = porcR1 + " %";
-    if (elR2) elR2.textContent = porcR2 + " %";
+    // Elementos de cumplimiento (los badges de colores a la derecha)
+    const badgeR1 = document.getElementById("txtCumplimientoBacklogR1"); // ID de ejemplo para el badge R1
+    const badgeR2 = document.getElementById("txtCumplimientoBacklogR2"); // ID de ejemplo para el badge R2
+
+    if (badgeR1) {
+        badgeR1.textContent = cumplimientoR1.toFixed(2) + " %";
+        // Estilo dinámico: verde si cumple (>= 100), rojo si no (< 100)
+        badgeR1.style.backgroundColor = cumplimientoR1 >= 100 ? "#d1fae5" : "#fee2e2";
+        badgeR1.style.color = cumplimientoR1 >= 100 ? "#065f46" : "#991b1b";
+    }
+
+    if (badgeR2) {
+        badgeR2.textContent = cumplimientoR2.toFixed(2) + " %";
+        badgeR2.style.backgroundColor = cumplimientoR2 >= 100 ? "#d1fae5" : "#fee2e2";
+        badgeR2.style.color = cumplimientoR2 >= 100 ? "#065f46" : "#991b1b";
+    }
 }
