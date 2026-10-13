@@ -1,5 +1,4 @@
 const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
-const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?gid=290150389&single=true&output=csv";
 
 const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
 const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
@@ -22,6 +21,7 @@ const METAS_DEPARTAMENTO = {
     "TODOS": { offline: 37, parcial: 7, velocidad: 10, pqr: 1, p3: 35 }
 };
 
+// Coordenadas con SAI y Antioquia subidos un poquito más
 const PINES_ESTATICOS = [
     { depto: "ANTIOQUIA", nombre: "Antioquia", top: "43%", left: "46%", color: "#06b6d4" },
     { depto: "CESAR", nombre: "Cesar", top: "25%", left: "62%", color: "#f59e0b" },
@@ -42,43 +42,35 @@ async function inicializarDashboard() {
         const resp = await fetch(DATASET_URL);
         const texto = await resp.text();
 
-        const filas = parsearCSV(texto);
+        const filas = texto.trim().split(/\r?\n/).map(fila => {
+            const valores = [];
+            let actual = "";
+            let dentroComillas = false;
+
+            for(let i=0; i<fila.length; i++){
+                const caracter = fila[i];
+                if(caracter === '"'){
+                    dentroComillas = !dentroComillas;
+                } else if(caracter === "," && !dentroComillas){
+                    valores.push(actual);
+                    actual = "";
+                } else {
+                    actual += caracter;
+                }
+            }
+            valores.push(actual);
+            return valores;
+        });
+
         if (filas.length < 2) return;
 
         encabezadosGlobal = filas[0].map(h => h.trim());
         datosGlobal = filas.slice(1);
 
         renderizarDatosDashboard();
-
-        // Cargar el indicador de backlog de forma asíncrona sin bloquear
-        cargarYCalcularBacklog();
-
     } catch (error) {
         console.error("Error al cargar los datos del dataset en el dashboard:", error);
     }
-}
-
-function parsearCSV(texto) {
-    const lineas = texto.trim().split(/\r?\n/);
-    return lineas.map(fila => {
-        const valores = [];
-        let actual = "";
-        let dentroComillas = false;
-
-        for (let i = 0; i < fila.length; i++) {
-            const caracter = fila[i];
-            if (caracter === '"') {
-                dentroComillas = !dentroComillas;
-            } else if (caracter === "," && !dentroComillas) {
-                valores.push(actual.trim());
-                actual = "";
-            } else {
-                actual += caracter;
-            }
-        }
-        valores.push(actual.trim());
-        return valores;
-    });
 }
 
 function renderizarPinesEstaticos(deptoSeleccionado) {
@@ -234,6 +226,9 @@ function renderizarDatosDashboard() {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
         const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
+        const stopper = String(fila[colStopper] || "").trim().toUpperCase();
+        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
+        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
         const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
         const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
@@ -257,20 +252,24 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        const estadoReal = String(fila[19] || "").trim().toUpperCase();
-        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase();
-        const stopperFmAD = String(fila[29] || "").trim().toUpperCase();
+       // 1. Lectura exacta de columnas según tu regla
+        const estadoReal = String(fila[19] || "").trim().toUpperCase(); // Columna T (aprox índice 19 o 20 según tu mapeo)
+        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase(); // Columna AC: Stopper P3 (repuestos)
+        const stopperFmAD = String(fila[29] || "").trim().toUpperCase(); // Columna AD: Stopper P3 (FM/traslado/reubicaciones)
 
+        // 2. Validar frases permitidas en AC
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
                                  stopperRepuestosAC.includes("REPUESTOS") || 
                                  stopperRepuestosAC.includes("REPUESTOS SATELITALES") || 
                                  stopperRepuestosAC.includes("REPUESTOS SOLARES");
 
+        // 3. Validar que NO tenga FM/traslado/reubicaciones en AD
         const tieneFmEnAD = stopperFmAD.includes("FM") || 
                             stopperFmAD.includes("TRASLADO") || 
                             stopperFmAD.includes("REUBICACION") || 
                             stopperFmAD.includes("FUERZA MAYOR");
 
+        // 4. Conteo condicional estricto para P3 (u otras categorías si aplica)
         const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
 
         if (esRepuestoEstricto) {
@@ -316,6 +315,7 @@ function renderizarDatosDashboard() {
         }
     }
 
+  // El Neto sin stopper descuenta FM en las primeras tres, y FM + Repuestos de forma dinámica en PQR y P3
     const sinOff = Math.max(0, sumaOffline - fmOff);
     const sinPar = Math.max(0, sumaParcial - fmPar);
     const sinVel = Math.max(0, sumaVelocidad - fmVel);
@@ -441,74 +441,6 @@ function renderizarDatosDashboard() {
     }
 }
 
-// ==========================================================
-// CARGA Y CÁLCULO DINÁMICO DEL INDICADOR BACKLOG (R1 y R2)
-// ==========================================================
-async function cargarYCalcularBacklog() {
-    try {
-        const response = await fetch(BACKLOG_CSV_URL);
-        const dataText = await response.text();
-        const filasBacklog = parsearCSV(dataText);
-
-        if (!filasBacklog || filasBacklog.length < 2) return;
-
-        let r1Total = 0, r1Ceros = 0;
-        let r2Total = 0, r2Ceros = 0;
-
-        // Omitir cabecera (fila 0)
-        const filasDatos = filasBacklog.slice(1);
-
-        filasDatos.forEach(fila => {
-            const regional = String(fila[8] || "").trim().toUpperCase(); // Columna I (Regional)
-            const valorBacklog = parseInt(fila[19], 10); // Columna T (Cumple SLA / Backlog: 0 o 1)
-
-            if (!isNaN(valorBacklog)) {
-                if (regional === "R1") {
-                    r1Total++;
-                    if (valorBacklog === 0) r1Ceros++;
-                } else if (regional === "R2") {
-                    r2Total++;
-                    if (valorBacklog === 0) r2Ceros++;
-                }
-            }
-        });
-
-        // 1. Porcentajes reales de Backlog (Ceros / Total * 100)
-        const porcR1 = r1Total > 0 ? (r1Ceros / r1Total) * 100 : 0;
-        const porcR2 = r2Total > 0 ? (r2Ceros / r2Total) * 100 : 0;
-
-        // 2. Meta fija solicitada: 93%
-        const meta = 93.00;
-
-        // 3. Cálculo de cumplimiento respecto a la meta de 93%
-        const cumplimientoR1 = meta > 0 ? (porcR1 / meta) * 100 : 0;
-        const cumplimientoR2 = meta > 0 ? (porcR2 / meta) * 100 : 0;
-
-        // --- PINTAR EN LOS IDS DE TU HTML ---
-        const elR1 = document.getElementById("valBacklogR1");
-        const elR2 = document.getElementById("valBacklogR2");
-        if (elR1) elR1.textContent = porcR1.toFixed(2).replace('.', ',') + " %";
-        if (elR2) elR2.textContent = porcR2.toFixed(2).replace('.', ',') + " %";
-
-        const badgeR1 = document.getElementById("badgeR1");
-        const badgeR2 = document.getElementById("badgeR2");
-
-        if (badgeR1) {
-            badgeR1.textContent = cumplimientoR1.toFixed(2).replace('.', ',') + "%";
-            badgeR1.className = "badge-cumplimiento " + (cumplimientoR1 >= 100 ? "green" : "red");
-        }
-
-        if (badgeR2) {
-            badgeR2.textContent = cumplimientoR2.toFixed(2).replace('.', ',') + "%";
-            badgeR2.className = "badge-cumplimiento " + (cumplimientoR2 >= 100 ? "green" : "red");
-        }
-
-    } catch (error) {
-        console.error("Error al calcular el indicador de Backlog:", error);
-    }
-}
-
-// Eventos globales de interacción
 document.addEventListener("click", async (e) => {
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
@@ -604,7 +536,6 @@ document.addEventListener("click", async (e) => {
             alert("Error de red al verificar la contraseña con el servidor.");
         }
     }
-
     const btnGuardarNota = e.target.closest("#btnGuardarNotaServidor");
     if (btnGuardarNota) {
         const txtModalNotaDia = document.getElementById("txtModalNotaDia");
@@ -633,5 +564,4 @@ document.addEventListener("click", async (e) => {
     }
 });
 
-// Único punto de entrada al cargar la página
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
