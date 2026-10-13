@@ -68,6 +68,7 @@ async function inicializarDashboard() {
         datosGlobal = filas.slice(1);
 
         renderizarDatosDashboard();
+        cargarYCalcularBacklogIndependiente();
     } catch (error) {
         console.error("Error al cargar los datos del dataset en el dashboard:", error);
     }
