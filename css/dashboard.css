@@ -867,45 +867,26 @@ div:has(> .tabla-rangos) {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 /* ==========================================================
-   ESTILO STICKY NOTE RECTA CON PIN EN SU LUGAR Y PLIEGUE REAL DE HOJA
+   ESTILO STICKY NOTE LIMPIA, RECTA Y PROFESIONAL
    ========================================================== */
 .bloque-notas-dia-sticky {
     position: relative;
-    /* Fondo amarillo Post-it con un sutil degradado de papel real */
     background: linear-gradient(135deg, #fefce8 0%, #fef08a 70%, #fde047 100%) !important;
     border: 1px solid #eab308 !important;
-    border-radius: 4px 4px 16px 4px !important;
+    border-radius: 12px !important; /* Bordes suaves y modernos sin recortes raros */
     padding: 18px 16px 16px 16px !important;
-    /* Sombra de elevación y profundidad interna */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08), inset -2px -2px 10px rgba(161, 98, 7, 0.12) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05) !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 220px !important;
     transform: rotate(0deg) !important;
-    overflow: hidden !important; /* Contiene el pliegue dentro de los límites */
 }
 
-/* Efecto de pliegue real: la esquina doblada hacia adentro revelando el reverso */
-.bloque-notas-dia-sticky::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 32px;
-    height: 32px;
-    /* Gradiente diagonal que simula la luz cayendo sobre el papel doblado y su reverso más oscuro */
-    background: linear-gradient(135deg, rgba(254, 240, 138, 0) 50%, rgba(202, 138, 4, 0.4) 50%, rgba(161, 98, 7, 0.75) 100%);
-    /* Sombra proyectada por la solapa doblada sobre la propia nota */
-    box-shadow: -4px -4px 10px rgba(0, 0, 0, 0.25), inset 2px 2px 4px rgba(255, 255, 255, 0.4);
-    border-top-left-radius: 100% 100%; /* Curva orgánica del doblez */
-    pointer-events: none;
-}
-
-/* Tachuela / Pin rojo bien posicionado clavado en el margen superior */
+/* Tachuela / Pin rojo superior */
 .pin-tachuela {
     position: absolute;
-    top: 4px; /* Ubicado correctamente dentro de la nota */
+    top: 4px;
     left: 50%;
     transform: translateX(-50%);
     width: 12px;
@@ -946,7 +927,6 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Texto interno de la nota adhesiva limpio y fijo */
 #txtNotasDia.sticky-note-real {
     width: 100% !important;
     flex-grow: 1 !important;
