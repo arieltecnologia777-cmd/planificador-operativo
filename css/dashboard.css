@@ -867,241 +867,99 @@ div:has(> .tabla-rangos) {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 /* ==========================================================
-   STICKY NOTE — PAPEL AMARILLO CON ESQUINA DOBLADA
+   ESTILO STICKY NOTE COMPLETO CON PLIEGUE LEVANTADO Y TACHUELA
    ========================================================== */
-
 .bloque-notas-dia-sticky {
-    position: relative !important;
-    isolation: isolate;
-    overflow: hidden !important;
-
-    background: linear-gradient(
-        135deg,
-        #fefce8 0%,
-        #fef3a1 58%,
-        #fde047 100%
-    ) !important;
-
+    position: relative;
+    background: linear-gradient(135deg, #fefce8 0%, #fef08a 70%, #fde047 100%) !important;
     border: 1px solid #eab308 !important;
     border-radius: 12px !important;
-
-    padding: 18px 16px 16px !important;
+    padding: 18px 16px 16px 16px !important;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.09), 0 3px 6px rgba(0, 0, 0, 0.05) !important;
     box-sizing: border-box !important;
-
     display: flex !important;
     flex-direction: column !important;
     min-height: 220px !important;
-
     transform: rotate(0deg) !important;
-
-    box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.09),
-        0 3px 6px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important; /* Mantiene el pliegue dentro de los límites de la tarjeta */
 }
 
-/* ==========================================================
-   SOMBRA DEL PLIEGUE SOBRE EL PAPEL
-   ========================================================== */
-
-.bloque-notas-dia-sticky::before {
-    content: "";
-    position: absolute;
-    right: -1px;
-    bottom: -1px;
-
-    width: 37%;
-    height: 37%;
-
-    pointer-events: none;
-    z-index: 4;
-
-    clip-path: polygon(
-        0 100%,
-        0 70%,
-        8% 48%,
-        25% 25%,
-        48% 10%,
-        70% 16%,
-        100% 0,
-        100% 100%
-    );
-
-    background: linear-gradient(
-        145deg,
-        transparent 0%,
-        rgba(170, 125, 30, 0.03) 28%,
-        rgba(150, 105, 24, 0.13) 52%,
-        rgba(112, 78, 20, 0.25) 76%,
-        rgba(80, 55, 15, 0.12) 100%
-    );
-}
-
-/* ==========================================================
-   ESQUINA LEVANTADA — EFECTO DE PAPEL CURVADO
-   ========================================================== */
-
+/* Pliegue levantado más grande y profundo con sombra pronunciada */
 .bloque-notas-dia-sticky::after {
     content: "";
     position: absolute;
-    right: 0;
     bottom: 0;
-
-    width: 36%;
-    height: 35%;
-
+    right: 0;
+    width: 55px;
+    height: 55px;
+    /* Gradiente que simula la curvatura y la sombra profunda del papel levantándose */
+    background: radial-gradient(circle at 0% 0%, rgba(133, 77, 14, 0.6) 0%, rgba(202, 138, 4, 0.25) 35%, transparent 70%);
+    /* Sombra proyectada fuerte para dar la ilusión 3D de que la pestaña está despegada */
+    box-shadow: -8px -8px 18px rgba(0, 0, 0, 0.35);
+    /* Recorte poligonal más amplio para que el doblez ocupe mayor espacio en la esquina */
+    clip-path: polygon(100% 0, 5% 100%, 100% 100%);
+    border-bottom-right-radius: 12px;
     pointer-events: none;
-    z-index: 5;
-
-    /*
-       El borde diagonal crea la silueta de la hoja doblada.
-       El punto superior derecho conecta con la esquina.
-    */
-    clip-path: polygon(
-        0 100%,
-        0 68%,
-        5% 49%,
-        17% 29%,
-        35% 13%,
-        55% 7%,
-        76% 13%,
-        100% 0,
-        100% 100%
-    );
-
-    /*
-       Luz en la parte interior y tonos dorados
-       hacia la punta exterior del papel.
-    */
-    background:
-        linear-gradient(
-            137deg,
-            #fff9d8 0%,
-            #fff0ae 18%,
-            #f5dc88 37%,
-            #e5c365 57%,
-            #c9a044 76%,
-            #a77d2e 100%
-        );
-
-    /*
-       El sombreado interior y el filtro dan profundidad.
-    */
-    box-shadow:
-        inset 2px 2px 3px rgba(255, 255, 255, 0.85),
-        inset -3px -3px 7px rgba(111, 76, 17, 0.24);
-
-    filter: drop-shadow(-3px -3px 4px rgba(105, 75, 20, 0.22));
 }
 
-/* ==========================================================
-   TACHUELA ROJA
-   ========================================================== */
-
+/* Tachuela / Pin rojo superior centrado */
 .pin-tachuela {
     position: absolute;
     top: 4px;
     left: 50%;
     transform: translateX(-50%);
-
     width: 12px;
     height: 12px;
-
-    background: radial-gradient(
-        circle at 35% 30%,
-        #fca5a5 0%,
-        #ef4444 38%,
-        #dc2626 68%,
-        #991b1b 100%
-    );
-
+    background: radial-gradient(circle at 35% 35%, #f87171 0%, #dc2626 60%, #991b1b 100%);
     border-radius: 50%;
-
-    box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.30),
-        inset 0 1px 2px rgba(255, 255, 255, 0.65);
-
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.6);
     z-index: 10;
 }
-
 .pin-tachuela::after {
     content: "";
     position: absolute;
-
     bottom: -3px;
     left: 50%;
     transform: translateX(-50%);
-
     width: 2px;
     height: 4px;
-
     background: #7f1d1d;
     border-radius: 1px;
 }
 
-/* ==========================================================
-   ENCABEZADO
-   ========================================================== */
-
 .notas-header-sticky {
-    position: relative;
-    z-index: 2;
-
     font-size: 0.8rem !important;
     font-weight: 800 !important;
     color: #854d0e !important;
-
     text-transform: uppercase;
     letter-spacing: 0.05em;
-
     margin-bottom: 8px !important;
-    padding-bottom: 6px;
-
     border-bottom: 1px dashed rgba(133, 77, 14, 0.25);
-
+    padding-bottom: 6px;
     display: flex;
     align-items: center;
 }
 
-/* ==========================================================
-   CUERPO DE LA NOTA
-   ========================================================== */
-
 .notas-body-sticky {
-    position: relative;
-    z-index: 2;
-
     display: flex !important;
     flex-direction: column !important;
     flex-grow: 1 !important;
 }
 
-/* ==========================================================
-   ÁREA DE TEXTO
-   ========================================================== */
-
+/* Contenido de texto estático y limpio sin barras de scroll */
 #txtNotasDia.sticky-note-real {
-    position: relative;
-    z-index: 2;
-
     width: 100% !important;
     flex-grow: 1 !important;
-
     background: transparent !important;
     color: #422006 !important;
-
     border: none !important;
     padding: 2px 0 !important;
-
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     font-size: 0.82rem !important;
     line-height: 1.6 !important;
-
     box-sizing: border-box !important;
     overflow: hidden !important;
-
     word-break: break-word !important;
     white-space: pre-wrap !important;
-
     box-shadow: none !important;
-    outline: none;
 }
