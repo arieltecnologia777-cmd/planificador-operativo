@@ -441,7 +441,7 @@ function renderizarDatosDashboard() {
 }
 
 // ==========================================================
-// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (DESDE EL CSV UNIFICADO)
+// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (CONTANDO LOS 1)
 // ==========================================================
 async function cargarYCalcularBacklogUnificado() {
     const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv&gid=290150389";
@@ -453,30 +453,30 @@ async function cargarYCalcularBacklogUnificado() {
         const filasBacklog = parsearCSV(textoCsv);
         if (!filasBacklog || filasBacklog.length < 2) return;
 
-        let r1Total = 0, r1Ceros = 0;
-        let r2Total = 0, r2Ceros = 0;
+        let r1Total = 0, r1Unos = 0;
+        let r2Total = 0, r2Unos = 0;
 
         // Omitir cabecera (fila 0)
         const filasDatos = filasBacklog.slice(1);
 
         filasDatos.forEach(fila => {
             const regional = String(fila[8] || "").trim().toUpperCase(); // Columna I (Regional)
-            const valorBacklog = parseInt(fila[19], 10); // Columna T (Cumple SLA / Backlog: 0 o 1)
+            const valorBacklog = parseInt(fila[19], 10); // Columna T (Cumple SLA / Backlog)
 
             if (!isNaN(valorBacklog)) {
                 if (regional === "R1") {
                     r1Total++;
-                    if (valorBacklog === 0) r1Ceros++;
+                    if (valorBacklog === 1) r1Unos++; // <-- Cambiado a 1 según tu indicación
                 } else if (regional === "R2") {
                     r2Total++;
-                    if (valorBacklog === 0) r2Ceros++;
+                    if (valorBacklog === 1) r2Unos++; // <-- Cambiado a 1 según tu indicación
                 }
             }
         });
 
-        // 1. Porcentajes reales de Backlog (Ceros / Total * 100)
-        const porcR1 = r1Total > 0 ? (r1Ceros / r1Total) * 100 : 0;
-        const porcR2 = r2Total > 0 ? (r2Ceros / r2Total) * 100 : 0;
+        // 1. Porcentajes reales de Backlog (Unos / Total * 100)
+        const porcR1 = r1Total > 0 ? (r1Unos / r1Total) * 100 : 0;
+        const porcR2 = r2Total > 0 ? (r2Unos / r2Total) * 100 : 0;
 
         // 2. Meta fija solicitada: 93%
         const meta = 93.00;
@@ -508,130 +508,3 @@ async function cargarYCalcularBacklogUnificado() {
         console.error("Error al calcular el Backlog desde la pestaña unificada:", error);
     }
 }
-
-// Eventos globales de interacción
-document.addEventListener("click", async (e) => {
-    const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
-    if (btnDepto) {
-        const depto = btnDepto.getAttribute("data-depto");
-        if (depto) {
-            departamentoFiltroActual = depto;
-            document.querySelectorAll(".btn-depto").forEach(b => {
-                if (b.getAttribute("data-depto") === depto) b.classList.add("active");
-                else b.classList.remove("active");
-            });
-            renderizarDatosDashboard();
-        }
-    }
-
-    const btnFiltroProyecto = e.target.closest(".botones-filtro button");
-    if (btnFiltroProyecto) {
-        document.querySelectorAll(".botones-filtro button").forEach(b => b.classList.remove("active"));
-        btnFiltroProyecto.classList.add("active");
-        
-        const textoProyecto = btnFiltroProyecto.textContent.trim().toUpperCase();
-        if (textoProyecto.includes("MINTIC")) {
-            proyectoFiltroActual = "MINTIC 7K";
-        } else if (textoProyecto.includes("ODH")) {
-            proyectoFiltroActual = "ODH 5G";
-        } else {
-            proyectoFiltroActual = "TODOS";
-        }
-        renderizarDatosDashboard();
-    }
-
-    if (e.target.id === "btnBorrarFiltros") {
-        departamentoFiltroActual = "TODOS";
-        document.querySelectorAll(".btn-depto").forEach(b => {
-            if (b.getAttribute("data-depto") === "TODOS") b.classList.add("active");
-            else b.classList.remove("active");
-        });
-        renderizarDatosDashboard();
-    }
-
-    const btnAbrirConfig = e.target.closest("#btnAbrirConfig");
-    if (btnAbrirConfig) {
-        const modalPass = document.getElementById("modalAdminPassword");
-        const inputPass = document.getElementById("inputAdminPassword");
-        if (inputPass) inputPass.value = "";
-        if (modalPass) modalPass.style.display = "flex";
-        if (inputPass) inputPass.focus();
-    }
-
-    if (e.target.closest("#cerrarModalPassword") || e.target.closest("#btnCancelarPassword")) {
-        const modalPass = document.getElementById("modalAdminPassword");
-        if (modalPass) modalPass.style.display = "none";
-    }
-
-    if (e.target.closest("#cerrarModalTools") || e.target.closest("#btnCerrarTools")) {
-        const modalTools = document.getElementById("modalAdminTools");
-        if (modalTools) modalTools.style.display = "none";
-    }
-
-    const btnVerificar = e.target.closest("#btnVerificarPassword");
-    if (btnVerificar) {
-        const inputPass = document.getElementById("inputAdminPassword");
-        const password = inputPass ? inputPass.value.trim() : "";
-
-        if (!password) {
-            alert("Por favor, ingresa la contraseña.");
-            return;
-        }
-
-        try {
-            const resp = await fetch(`${API_BASE_URL}/planeacion/verificar`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: password })
-            });
-            const data = await resp.json();
-
-            if (resp.ok && data.ok === true) {
-                const modalPass = document.getElementById("modalAdminPassword");
-                const modalTools = document.getElementById("modalAdminTools");
-                if (modalPass) modalPass.style.display = "none";
-                if (modalTools) modalTools.style.display = "flex";
-
-                const txtNotasDia = document.getElementById("txtNotasDia");
-                const txtModalNotaDia = document.getElementById("txtModalNotaDia");
-                if (txtModalNotaDia && txtNotasDia) {
-                    txtModalNotaDia.value = txtNotasDia.value;
-                }
-            } else {
-                alert("Contraseña incorrecta.");
-            }
-        } catch (err) {
-            console.error("Error al verificar contraseña:", err);
-            alert("Error de red al verificar la contraseña con el servidor.");
-        }
-    }
-
-    const btnGuardarNota = e.target.closest("#btnGuardarNotaServidor");
-    if (btnGuardarNota) {
-        const txtModalNotaDia = document.getElementById("txtModalNotaDia");
-        const nuevaNota = txtModalNotaDia ? txtModalNotaDia.value.trim() : "";
-
-        try {
-            const resp = await fetch(`${API_BASE_URL}/notas`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nota: nuevaNota })
-            });
-            const data = await resp.json();
-
-            if (data.ok === true) {
-                alert("¡Nota guardada y sincronizada con éxito!");
-                const modalTools = document.getElementById("modalAdminTools");
-                if (modalTools) modalTools.style.display = "none";
-                cargarNotaDelDia();
-            } else {
-                alert("Error al guardar la nota en el servidor.");
-            }
-        } catch (err) {
-            console.error("Error al guardar la nota:", err);
-            alert("Error de red al intentar guardar la nota.");
-        }
-    }
-});
-
-document.addEventListener("DOMContentLoaded", inicializarDashboard);
