@@ -99,24 +99,10 @@ styleGrupoExcel.innerHTML = `
     .filtro-sort-header span:hover {
         text-decoration: underline;
     }
-    
-    /* --- FIJACIÓN VERTICAL DE ENCABEZADOS RESPETANDO EL RESTO --- */
-    .planeacion-table thead {
-        position: sticky !important;
-        top: var(--sticky-table-top, 0px) !important;
-        z-index: 30 !important;
-    }
     .planeacion-table th {
-        background-color: #f1f5f9 !important;
-        z-index: 20 !important;
+        position: relative;
         user-select: none;
     }
-    /* Asegurar que las primeras columnas en el thead mantengan su jerarquía superior al fijarse */
-    .planeacion-table thead th {
-        position: sticky !important;
-        top: var(--sticky-table-top, 0px) !important;
-    }
-
     .table-resizer {
         position: absolute;
         top: 0;
@@ -132,6 +118,7 @@ styleGrupoExcel.innerHTML = `
     }
 `;
 document.head.appendChild(styleGrupoExcel);
+
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
