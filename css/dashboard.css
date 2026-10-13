@@ -778,9 +778,10 @@ div:has(> .tabla-rangos) {
     flex-grow: 1 !important;
 }
 
-/* Caja de texto completamente estática, informativa y sin redimensionamiento */
+/* Caja de texto completamente estática, sin scroll y sin redimensionamiento */
 #txtNotasDia {
     width: 100% !important;
+    height: 100% !important;
     min-height: 110px !important;
     background: #f8fafc !important;
     color: #1e293b !important;
@@ -791,8 +792,9 @@ div:has(> .tabla-rangos) {
     line-height: 1.5 !important;
     box-sizing: border-box !important;
     resize: none !important;          /* Bloquea el redimensionamiento manual */
+    overflow: hidden !important;      /* Oculta y deshabilita por completo la barra de scroll */
     outline: none !important;
-    cursor: default !important;     /* Evita apariencia de caja interactiva */
+    cursor: default !important;       /* Evita apariencia de caja interactiva */
     box-shadow: none !important;
 }
 
