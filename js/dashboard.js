@@ -191,80 +191,78 @@ function renderizarDatosDashboard() {
     };
 
     datosFiltrados.forEach(fila => {
-        // Unimos los valores de todas las propiedades de la fila en un solo texto para buscar coincidencias exactas
-        const textoFilaCompleto = Object.values(fila).join(" ").toUpperCase();
-
+        // Extraemos el estado real de forma robusta
         const estado = String(
-            fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || 
-            fila["ESTADO REAL"] || fila["ESTADO"] || ""
+            fila["Estado real"] || 
+            fila["estadoReal"] || 
+            fila["Estado"] || 
+            ""
         ).trim().toUpperCase();
 
-        const municipio = String(fila["Municipio"] || fila["Ciudad"] || fila["MUNICIPIO"] || "SIN MUNICIPIO").trim();
+        const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
         
-        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || fila["TOTAL IDS"] || 1, 10) || 1;
+        // Extracción estricta y segura de la columna de IDs afectados
+        const idsAfectados = parseInt(fila["Total IDs afectados"], 10) || 1;
 
-        // Clasificación robusta basada tanto en el campo de estado como en el contenido global de la fila
-        if (estado.includes("OFFLINE") || estado.includes("APAGADO") || estado.includes("OFF") || textoFilaCompleto.includes("OFFLINE")) {
+        // Conteo general exacto basado en el Estado real
+        if (estado.includes("OFFLINE") || estado.includes("APAGADO")) {
             sumaOffline += idsAfectados;
             if (!municipiosOfflineMap[municipio]) {
                 municipiosOfflineMap[municipio] = 0;
             }
             municipiosOfflineMap[municipio] += idsAfectados;
         }
-        else if (estado.includes("PARCIAL") || estado.includes("PAR") || textoFilaCompleto.includes("PARCIAL")) {
+        else if (estado.includes("PARCIAL")) {
             sumaParcial += idsAfectados;
         }
-        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO") || estado.includes("VEL") || textoFilaCompleto.includes("VELOCIDAD")) {
+        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO")) {
             sumaVelocidad += idsAfectados;
         }
-        else if (estado.includes("PQR") || estado.includes("QUEJA") || textoFilaCompleto.includes("PQR")) {
+        else if (estado.includes("PQR") || estado.includes("QUEJA")) {
             sumaPqrs += idsAfectados;
         }
-        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO") || textoFilaCompleto.includes("P3")) {
-            sumaOtrosP3 += idsAfectados;
-        } else {
-            // Distribución de respaldo inteligente para que ningún dato quede en cero
+        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO")) {
             sumaOtrosP3 += idsAfectados;
         }
 
         // Clasificación por carpetas (FM, Repuestos, etc.)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
-            if (estado.includes("OFFLINE") || estado.includes("OFF")) fmOff += idsAfectados;
+            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
             else if (estado.includes("PQR")) fmPqr += idsAfectados;
-            else fmP3 += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
         if (esValidoRepuesto) {
-            if (estado.includes("OFFLINE") || estado.includes("OFF")) repOff += idsAfectados;
+            if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
             else if (estado.includes("PQR")) repPqr += idsAfectados;
-            else repP3 += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
-        // Rangos de afectación
-        let targetRango = rangos.r1;
-        if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
+        // Rangos de afectación por días
+        let targetRango = null;
+        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5") || rangoK.includes("1. MENOR")) targetRango = rangos.r1;
+        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
         else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
         else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
         else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
         else if (rangoK.includes("MAYOR A 60") || rangoK.includes("> 60")) targetRango = rangos.r6;
 
         if (targetRango) {
-            if (estado.includes("OFFLINE") || estado.includes("OFF")) targetRango.off += idsAfectados;
+            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
             else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
-            else if (estado.includes("VELOCIDAD") || estado.includes("VEL")) targetRango.vel += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
             else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
-            else targetRango.p3 += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
         }
     });
-
     let topMunicipiosArray = Object.entries(municipiosOfflineMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 2);
