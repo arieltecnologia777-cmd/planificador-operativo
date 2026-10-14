@@ -242,9 +242,9 @@ datosFiltrados.forEach(fila => {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        // Clasificación de Repuestos separada por tipo de estado:
-        // - Para Offline, Parcial y Velocidad: lee exclusivamente de la columna U (Tipo de stopper)
-        const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO") || tipoStopperColU.includes("P3") || tipoStopperColU.includes("REP");
+        // Clasificación de Repuestos estrictamente vinculada a la columna Tipo de stopper (Columna U)
+        const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO");
+        
         if (esRepuestosEstadoPrincipal) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
