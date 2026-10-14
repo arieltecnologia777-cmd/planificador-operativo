@@ -1,7 +1,5 @@
-const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
-
-const API_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+const API_BASE_URL = "https://planeacion-prueba-worker.modulo-de-exclusiones.workers.dev/api";
+const WORKER_DATA_URL = `${API_BASE_URL}/test/planeacion`;
 
 // Matriz de sitios totales fijos según la tabla de distribución
 const TOTALES_MAPA = {
@@ -39,38 +37,24 @@ async function inicializarDashboard() {
         renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
-        const resp = await fetch(DATASET_URL);
-        const texto = await resp.text();
+        // Petición directa al Worker de Cloudflare D1
+        const resp = await fetch(WORKER_DATA_URL);
+        const jsonRegistros = await resp.json();
 
-        const filas = texto.trim().split(/\r?\n/).map(fila => {
-            const valores = [];
-            let actual = "";
-            let dentroComillas = false;
+        // Convertimos el objeto JSON devuelto por D1 en un arreglo de filas para mantener compatibilidad con el dashboard
+        const valoresArray = Object.values(jsonRegistros);
+        if (!valoresArray.length) return;
 
-            for(let i=0; i<fila.length; i++){
-                const caracter = fila[i];
-                if(caracter === '"'){
-                    dentroComillas = !dentroComillas;
-                } else if(caracter === "," && !dentroComillas){
-                    valores.push(actual);
-                    actual = "";
-                } else {
-                    actual += caracter;
-                }
-            }
-            valores.push(actual);
-            return valores;
-        });
-
-        if (filas.length < 2) return;
-
-        encabezadosGlobal = filas[0].map(h => h.trim());
-        datosGlobal = filas.slice(1);
+        // Extraemos las llaves (columnas) del primer registro para armar los encabezados
+        encabezadosGlobal = Object.keys(valoresArray[0]);
+        
+        // Mapeamos cada objeto a un arreglo ordenado según los encabezados
+        datosGlobal = valoresArray.map(obj => encabezadosGlobal.map(h => obj[h] !== undefined ? obj[h] : ""));
 
         renderizarDatosDashboard();
         cargarYCalcularBacklogUnificado();
     } catch (error) {
-        console.error("Error al cargar los datos del dataset en el dashboard:", error);
+        console.error("Error al cargar los datos del Worker en el dashboard:", error);
     }
 }
 
@@ -227,7 +211,6 @@ function renderizarDatosDashboard() {
         const estado = String(fila[colEstado] || "").trim().toUpperCase();
         const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
-        const stopper = String(fila[colStopper] || "").trim().toUpperCase();
         const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
         const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
         const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
@@ -253,24 +236,20 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-       // 1. Lectura exacta de columnas según tu regla
-        const estadoReal = String(fila[19] || "").trim().toUpperCase(); // Columna T (aprox índice 19 o 20 según tu mapeo)
-        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase(); // Columna AC: Stopper P3 (repuestos)
-        const stopperFmAD = String(fila[29] || "").trim().toUpperCase(); // Columna AD: Stopper P3 (FM/traslado/reubicaciones)
+        const estadoReal = String(fila[19] || "").trim().toUpperCase();
+        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase();
+        const stopperFmAD = String(fila[29] || "").trim().toUpperCase();
 
-        // 2. Validar frases permitidas en AC
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
                                  stopperRepuestosAC.includes("REPUESTOS") || 
                                  stopperRepuestosAC.includes("REPUESTOS SATELITALES") || 
                                  stopperRepuestosAC.includes("REPUESTOS SOLARES");
 
-        // 3. Validar que NO tenga FM/traslado/reubicaciones en AD
         const tieneFmEnAD = stopperFmAD.includes("FM") || 
                             stopperFmAD.includes("TRASLADO") || 
                             stopperFmAD.includes("REUBICACION") || 
                             stopperFmAD.includes("FUERZA MAYOR");
 
-        // 4. Conteo condicional estricto para P3 (u otras categorías si aplica)
         const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
 
         if (esRepuestoEstricto) {
@@ -316,7 +295,6 @@ function renderizarDatosDashboard() {
         }
     }
 
-  // El Neto sin stopper descuenta FM en las primeras tres, y FM + Repuestos de forma dinámica en PQR y P3
     const sinOff = Math.max(0, sumaOffline - fmOff);
     const sinPar = Math.max(0, sumaParcial - fmPar);
     const sinVel = Math.max(0, sumaVelocidad - fmVel);
@@ -567,9 +545,6 @@ document.addEventListener("click", async (e) => {
 
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
-// ==========================================================
-// CÁLCULO INDEPENDIENTE DE LA PESTAÑA "IND BACKLOG" (USANDO XLSX)
-// ==========================================================
 async function cargarYCalcularBacklogUnificado() {
     const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv&gid=290150389";
 
@@ -577,7 +552,6 @@ async function cargarYCalcularBacklogUnificado() {
         const response = await fetch(BACKLOG_CSV_URL);
         const dataText = await response.text();
         
-        // Convertir el texto CSV usando la librería XLSX oficial que ya tienes cargada
         const workbook = XLSX.read(dataText, { type: 'string' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
@@ -588,36 +562,30 @@ async function cargarYCalcularBacklogUnificado() {
         let r1Total = 0, r1Unos = 0;
         let r2Total = 0, r2Unos = 0;
 
-        // Omitir cabecera (fila 0)
         const filasDatos = filasBacklog.slice(1);
 
         filasDatos.forEach(fila => {
-            const regional = String(fila[8] || "").trim().toUpperCase(); // Columna I (Regional)
-            const valorBacklog = parseInt(fila[19], 10); // Columna T (Cumple SLA / Backlog)
+            const regional = String(fila[8] || "").trim().toUpperCase(); 
+            const valorBacklog = parseInt(fila[19], 10); 
 
             if (!isNaN(valorBacklog)) {
                 if (regional === "R1") {
                     r1Total++;
-                    if (valorBacklog === 1) r1Unos++; // Conteo de los 1
+                    if (valorBacklog === 1) r1Unos++; 
                 } else if (regional === "R2") {
                     r2Total++;
-                    if (valorBacklog === 1) r2Unos++; // Conteo de los 1
+                    if (valorBacklog === 1) r2Unos++; 
                 }
             }
         });
 
-        // 1. Porcentajes reales de Backlog (Unos / Total * 100)
         const porcR1 = r1Total > 0 ? (r1Unos / r1Total) * 100 : 0;
         const porcR2 = r2Total > 0 ? (r2Unos / r2Total) * 100 : 0;
-
-        // 2. Meta fija solicitada: 93%
         const meta = 93.00;
 
-        // 3. Cálculo de cumplimiento respecto a la meta de 93%
         const cumplimientoR1 = meta > 0 ? (porcR1 / meta) * 100 : 0;
         const cumplimientoR2 = meta > 0 ? (porcR2 / meta) * 100 : 0;
 
-        // --- PINTAR EN LOS IDS DE TU HTML ---
         const elR1 = document.getElementById("valBacklogR1");
         const elR2 = document.getElementById("valBacklogR2");
         if (elR1) elR1.textContent = porcR1.toFixed(2).replace('.', ',') + " %";
