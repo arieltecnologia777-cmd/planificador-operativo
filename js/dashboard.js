@@ -199,7 +199,7 @@ function renderizarDatosDashboard() {
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
         
-        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
+        const idsAfectados = parseInt(fila["Total IDs afectados"], 10) || 1;
 
         // Conteo directo de estados generales (Total neto)
         if (estado.includes("OFFLINE") || estado.includes("APAGADO")) {
