@@ -510,36 +510,34 @@ async function cargarPlaneacion(){
 
     window.registrosD1 = registrosD1;
 
-    const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+   const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+    const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
     const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
     Object.values(registrosD1).forEach(reg => {
         const otReg = String(reg.ot || "").trim();
         if (otReg && !otsConfiguesSet.has(otReg)) {
             if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                // Buscamos una fila base de referencia en el dataset global o tomamos la primera disponible
-                let filaBase = datosGlobal.find(f => f[idxOT] === otReg);
+                // Creamos una fila limpia basada estrictamente en la estructura global
+                let filaRescatada = new Array(encabezadosGlobal.length).fill("");
                 
-                if (!filaBase && datosGlobal.length > 0) {
-                    // Clonamos la primera fila como molde para no perder las columnas de texto/estructura
-                    filaBase = [...datosGlobal[0]];
-                    filaBase[idxOT] = otReg;
-                    
-                    // Si tenemos respaldos guardados en D1, los restauramos en su columna correspondiente
-                    if (idxID !== -1 && reg.idOriginal) filaBase[idxID] = reg.idOriginal;
-                    if (idxIM !== -1 && reg.imOriginal) filaBase[idxIM] = reg.imOriginal;
-                }
-                
-                if (filaBase && !datosGlobal.some(f => f[idxOT] === otReg)) {
-                    datosGlobal.push(filaBase);
+                // Asignamos la OT y los datos propios que se guardaron en D1 (sin cruzar con otras OTs)
+                filaRescatada[idxOT] = otReg;
+                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
+                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
+                if (idxDepto !== -1 && reg.departamentoOriginal) filaRescatada[idxDepto] = reg.departamentoOriginal;
+                if (idxMuni !== -1 && reg.municipioOriginal) filaRescatada[idxMuni] = reg.municipioOriginal;
+
+                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                    datosGlobal.push(filaRescatada);
                 }
             }
         }
     });
-
+    
     renderizarFiltrosDinamicos(datosGlobal);
     datosFiltradosGlobal = datosGlobal;
     actualizarOpcionesFiltros(datosGlobal);
@@ -1485,9 +1483,11 @@ async function guardarOT(fila, observacionForzada = null){
 
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
-    // --- BLINDAJE DE IDENTIFICADORES ORIGINALES ---
+    // --- BLINDAJE COMPLETO DE IDENTIFICADORES Y DATOS FIJOS ---
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+    const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+    const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
 
     const payload = {
         ot,
@@ -1498,8 +1498,10 @@ async function guardarOT(fila, observacionForzada = null){
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
         fechaLocal: fechaLocalHoy,
-        idOriginal: fila.children[0]?.textContent || "",
-        imOriginal: idxIM !== -1 ? fila.children[idxIM]?.textContent || "" : ""
+        idOriginal: idxID !== -1 ? fila.children[idxID]?.textContent || "" : "",
+        imOriginal: idxIM !== -1 ? fila.children[idxIM]?.textContent || "" : "",
+        departamentoOriginal: idxDepto !== -1 ? fila.children[idxDepto]?.textContent || "" : "",
+        municipioOriginal: idxMuni !== -1 ? fila.children[idxMuni]?.textContent || "" : ""
     };
 
     try {
@@ -1522,6 +1524,8 @@ async function guardarOT(fila, observacionForzada = null){
                 acompanamiento: payload.acompanamiento,
                 idOriginal: payload.idOriginal,
                 imOriginal: payload.imOriginal,
+                departamentoOriginal: payload.departamentoOriginal,
+                municipioOriginal: payload.municipioOriginal,
                 updatedAt: new Date().toISOString(),
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
