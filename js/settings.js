@@ -53,7 +53,7 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            const resp = await fetch(`${API_URL}/verificar`, {
+            const resp = await fetch(`${API_URL}/planeacion/verificar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: pass })
