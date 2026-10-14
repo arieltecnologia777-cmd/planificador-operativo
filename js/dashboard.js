@@ -153,7 +153,6 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 function renderizarDatosDashboard() {
     if (!datosGlobal || typeof datosGlobal !== "object") return;
 
-    // Convertimos datosGlobal de objeto a un arreglo de objetos de forma segura
     const filasArray = Array.isArray(datosGlobal) ? datosGlobal : Object.values(datosGlobal);
     if (!filasArray.length) return;
 
@@ -191,70 +190,80 @@ function renderizarDatosDashboard() {
         r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
     };
 
-   datosFiltrados.forEach(fila => {
-        // Obtenemos el estado de forma robusta
-        const estado = String(fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || "").trim().toUpperCase();
+    datosFiltrados.forEach(fila => {
+        // Buscamos el estado real barriendo todas las posibles variaciones de columnas
+        const estado = String(
+            fila["Estado real"] || 
+            fila["estadoReal"] || 
+            fila["Estado"] || 
+            fila["ESTADO REAL"] || 
+            ""
+        ).trim().toUpperCase();
+
         const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
         
-        const idsAfectados = parseInt(fila["Total IDs afectados"], 10) || 1;
+        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
 
-        // Conteo directo de estados generales (Total neto)
-        if (estado.includes("OFFLINE") || estado.includes("APAGADO")) {
+        // Conteo general exacto cubriendo todas las denominaciones de tu base
+        if (estado.includes("OFFLINE") || estado.includes("APAGADO") || estado.includes("OFF")) {
             sumaOffline += idsAfectados;
             if (!municipiosOfflineMap[municipio]) {
                 municipiosOfflineMap[municipio] = 0;
             }
             municipiosOfflineMap[municipio] += idsAfectados;
         }
-        else if (estado.includes("PARCIAL")) {
+        else if (estado.includes("PARCIAL") || estado.includes("PAR")) {
             sumaParcial += idsAfectados;
         }
-        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO")) {
+        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO") || estado.includes("VEL")) {
             sumaVelocidad += idsAfectados;
         }
         else if (estado.includes("PQR") || estado.includes("QUEJA")) {
             sumaPqrs += idsAfectados;
         }
-        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO")) {
+        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO") || estado.includes("P.3")) {
+            sumaOtrosP3 += idsAfectados;
+        } else {
+            // Si el estado viene en blanco o con otro nombre pero pertenece al universo, 
+            // aseguramos que caiga en la categoría principal según la fila si aplica.
             sumaOtrosP3 += idsAfectados;
         }
 
-        // Clasificación por carpetas (FM, Repuestos, etc.)
+        // Clasificación por carpetas secundarias
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
-            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
+            if (estado.includes("OFFLINE") || estado.includes("OFF")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
             else if (estado.includes("PQR")) fmPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
+            else fmP3 += idsAfectados;
         }
 
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
         if (esValidoRepuesto) {
-            if (estado.includes("OFFLINE")) repOff += idsAfectados;
+            if (estado.includes("OFFLINE") || estado.includes("OFF")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
             else if (estado.includes("PQR")) repPqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
+            else repP3 += idsAfectados;
         }
 
-        // Rangos de afectación por días
-        let targetRango = null;
-        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5") || rangoK.includes("1. MENOR")) targetRango = rangos.r1;
-        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
+        // Rangos de afectación
+        let targetRango = rangos.r1; // Por defecto al primer rango si no coincide
+        if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
         else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
         else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
         else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
         else if (rangoK.includes("MAYOR A 60") || rangoK.includes("> 60")) targetRango = rangos.r6;
 
         if (targetRango) {
-            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
+            if (estado.includes("OFFLINE") || estado.includes("OFF")) targetRango.off += idsAfectados;
             else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
-            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
+            else if (estado.includes("VELOCIDAD") || estado.includes("VEL")) targetRango.vel += idsAfectados;
             else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
-            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
+            else targetRango.p3 += idsAfectados;
         }
     });
 
