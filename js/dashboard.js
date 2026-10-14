@@ -37,19 +37,16 @@ async function inicializarDashboard() {
         renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
-        // Petición directa al Worker de Cloudflare D1
+        // Petición directa al Worker de Cloudflare D1 (/base-backlog)
         const resp = await fetch(WORKER_DATA_URL);
         const jsonRegistros = await resp.json();
 
-        // Convertimos el objeto JSON devuelto por D1 en un arreglo de filas para mantener compatibilidad con el dashboard
+        // Convertimos el objeto JSON devuelto por D1 en un arreglo de objetos directos
         const valoresArray = Object.values(jsonRegistros);
         if (!valoresArray.length) return;
 
-        // Extraemos las llaves (columnas) del primer registro para armar los encabezados
-        encabezadosGlobal = Object.keys(valoresArray[0]);
-        
-        // Mapeamos cada objeto a un arreglo ordenado según los encabezados
-        datosGlobal = valoresArray.map(obj => encabezadosGlobal.map(h => obj[h] !== undefined ? obj[h] : ""));
+        // Guardamos directamente los objetos en datosGlobal para mantener las llaves por nombre
+        datosGlobal = valoresArray;
 
         renderizarDatosDashboard();
         cargarYCalcularBacklogUnificado();
@@ -57,7 +54,6 @@ async function inicializarDashboard() {
         console.error("Error al cargar los datos del Worker en el dashboard:", error);
     }
 }
-
 function renderizarPinesEstaticos(deptoSeleccionado) {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor) return;
