@@ -189,8 +189,7 @@ function renderizarDatosDashboard() {
         r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
         r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
     };
-
-    datosFiltrados.forEach(fila => {
+datosFiltrados.forEach(fila => {
         // Extraemos el estado real de forma robusta
         const estado = String(
             fila["Estado real"] || 
@@ -201,7 +200,13 @@ function renderizarDatosDashboard() {
 
         const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
+        
+        // Stopper de repuestos específico para P3 y PQR
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
+        
+        // Columna U (Tipo de stopper) exclusiva para el análisis de repuestos en Offline, Parcial y Velocidad
+        const tipoStopperColU = String(fila["Tipo de stopper"] || "").trim().toUpperCase();
+
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
         
         // Extracción estricta y segura de la columna de IDs afectados
@@ -228,7 +233,7 @@ function renderizarDatosDashboard() {
             sumaOtrosP3 += idsAfectados;
         }
 
-        // Clasificación por carpetas (FM, Repuestos, etc.)
+        // Clasificación por carpetas (FM, etc.)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
             if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
@@ -237,12 +242,19 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
-        if (esValidoRepuesto) {
+        // Clasificación de Repuestos separada por tipo de estado:
+        // - Para Offline, Parcial y Velocidad: lee exclusivamente de la columna U (Tipo de stopper)
+        const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO") || tipoStopperColU.includes("P3") || tipoStopperColU.includes("REP");
+        if (esRepuestosEstadoPrincipal) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
-            else if (estado.includes("PQR")) repPqr += idsAfectados;
+        }
+
+        // - Para P3 y PQR: mantiene la lógica de repuestos original
+        const esValidoRepuestoP3 = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
+        if (esValidoRepuestoP3) {
+            if (estado.includes("PQR")) repPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
@@ -263,6 +275,7 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
         }
     });
+  
     let topMunicipiosArray = Object.entries(municipiosOfflineMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 2);
