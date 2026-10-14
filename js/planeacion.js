@@ -521,15 +521,15 @@ async function cargarPlaneacion(){
         const otReg = String(reg.ot || "").trim();
         if (otReg && !otsConfiguesSet.has(otReg)) {
             if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                // Creamos una fila limpia basada estrictamente en la estructura global
+                // Creamos una fila limpia desde cero estructurada con el total de columnas
                 let filaRescatada = new Array(encabezadosGlobal.length).fill("");
                 
-                // Asignamos la OT y los datos propios que se guardaron en D1 (sin cruzar con otras OTs)
+                // Inyectamos únicamente los datos propios guardados en D1 (sin clonar otras filas ni cruzar IDs)
                 filaRescatada[idxOT] = otReg;
                 if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
                 if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
-                if (idxDepto !== -1 && reg.departamentoOriginal) filaRescatada[idxDepto] = reg.departamentoOriginal;
-                if (idxMuni !== -1 && reg.municipioOriginal) filaRescatada[idxMuni] = reg.municipioOriginal;
+                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
+                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
 
                 if (!datosGlobal.some(f => f[idxOT] === otReg)) {
                     datosGlobal.push(filaRescatada);
