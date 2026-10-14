@@ -242,8 +242,8 @@ datosFiltrados.forEach(fila => {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        // Clasificación de Repuestos estrictamente vinculada a la columna Tipo de stopper (Columna U)
-        const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO");
+        // Código de Rollback (versión anterior con validación amplia)
+        const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO") || tipoStopperColU.includes("P3") || tipoStopperColU.includes("REP");
         
         if (esRepuestosEstadoPrincipal) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
