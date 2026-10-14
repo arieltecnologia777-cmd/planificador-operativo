@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Prueba de Subida Privada a Cloudflare</title>
-    <!-- Librería XLSX para leer el Excel localmente -->
+    <title>Cargue Masivo Total a Cloudflare</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f4f6f9; color: #333; }
@@ -11,18 +10,18 @@
         input[type="file"] { margin: 20px 0; }
         button { background: #2b6cb0; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         button:hover { background: #2c5282; }
-        #resultado { margin-top: 15px; font-weight: bold; }
+        #resultado { margin-top: 15px; font-weight: bold; white-space: pre-line; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>🧪 Laboratorio de Prueba: Subir Excel a Cloudflare</h2>
-    <p>Selecciona tu archivo Excel local. Este script lo procesará y guardará de forma real en tu base de datos de pruebas D1.</p>
+    <h2>🧪 Cargue Masivo Total a Cloudflare D1</h2>
+    <p>Selecciona tu libro de Excel. Este script enviará <b>absolutamente todas las columnas</b> (ID, Fase, Municipio, Stopper Claro, Estado OT, etc.) al entorno de pruebas.</p>
     
     <input type="file" id="archivoExcel" accept=".xlsx, .xls, .csv">
     <br>
-    <button id="btnProcesar">Procesar y Enviar a D1</button>
+    <button id="btnProcesar">Procesar y Enviar Todo</button>
     
     <div id="resultado"></div>
 </div>
@@ -39,42 +38,26 @@
 
         const archivo = inputFiles.files[0];
         divResultado.style.color = "#2b6cb0";
-        divResultado.textContent = "Procesando archivo localmente...";
+        divResultado.textContent = "Leyendo archivo localmente...";
 
         const lector = new FileReader();
         lector.onload = async function (e) {
             try {
                 const datosBinarios = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(datosBinarios, { type: "array" });
-                
-                // Tomamos la primera hoja del Excel
-                const nombreHoja = workbook.SheetNames[0];
-                const hoja = workbook.Sheets[nombreHoja];
-                
-                // Convertimos la hoja a un arreglo de objetos JSON limpios
+                const hoja = workbook.Sheets[workbook.SheetNames[0]];
                 const filasJson = XLSX.utils.sheet_to_json(hoja);
 
-                divResultado.textContent = `¡Lectura exitosa! Se encontraron ${filasJson.length} registros. Enviando a Cloudflare...`;
+                divResultado.textContent = `¡Lectura exitosa! Se encontraron ${filasJson.length} registros. Subiendo a Cloudflare en lote...`;
 
                 let guardadosExitosos = 0;
 
-                // Enviamos los registros uno por uno (o en lote según prefieras) al Worker de prueba
+                // Envía cada fila respetando todas sus propiedades de manera dinámica
                 for (const fila of filasJson) {
-                    // Ajusta las propiedades ("ot", "estadoProgramacion", etc.) según los nombres de las columnas de tu Excel
-                    const payload = {
-                        ot: String(fila.ot || fila.OT || fila.Id || ""),
-                        estadoProgramacion: String(fila.estadoProgramacion || fila.Estado || ""),
-                        fechaProgramacion: String(fila.fechaProgramacion || fila.Fecha || ""),
-                        observacion: String(fila.observacion || fila.Observacion || ""),
-                        estadoGestion: String(fila.estadoGestion || fila.Gestion || "")
-                    };
-
-                    if (!payload.ot) continue; // Si no tiene OT, se salta la fila
-
                     const resp = await fetch("https://planeacion-prueba-worker.modulo-de-exclusiones.workers.dev/api/test/planeacion", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(fila)
                     });
 
                     const resultadoApi = await resp.json();
@@ -84,12 +67,12 @@
                 }
 
                 divResultado.style.color = "#059669";
-                divResultado.textContent = `✅ ¡Cargue masivo completado! Se guardaron ${guardadosExitosos} de ${filasJson.length} registros en la base de datos de prueba D1.`;
+                divResultado.textContent = `✅ ¡Cargue total completado!\nSe guardaron ${guardadosExitosos} de ${filasJson.length} registros con todo su contenido en D1.`;
 
             } catch (error) {
                 console.error(error);
                 divResultado.style.color = "#dc2626";
-                divResultado.textContent = "❌ Error al procesar o enviar el archivo Excel.";
+                divResultado.textContent = "❌ Error al procesar o enviar el archivo.";
             }
         };
 
