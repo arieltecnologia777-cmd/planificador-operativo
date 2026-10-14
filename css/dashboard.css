@@ -979,10 +979,10 @@ div:has(> .tabla-rangos) {
 .modal-content-box {
     margin: auto !important;
     position: relative;
-    max-width: 600px;
+    max-width: 650px;
     width: 90%;
     background: #fff;
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
