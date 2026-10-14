@@ -510,7 +510,7 @@ async function cargarPlaneacion(){
 
     window.registrosD1 = registrosD1;
 
-   const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+  const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
@@ -521,15 +521,15 @@ async function cargarPlaneacion(){
         const otReg = String(reg.ot || "").trim();
         if (otReg && !otsConfiguesSet.has(otReg)) {
             if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                // Creamos una fila limpia desde cero estructurada con el total de columnas
                 let filaRescatada = new Array(encabezadosGlobal.length).fill("");
                 
-                // Inyectamos únicamente los datos propios guardados en D1 (sin clonar otras filas ni cruzar IDs)
                 filaRescatada[idxOT] = otReg;
-                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
-                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
-                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
-                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
+                
+                // Si el registro ya tiene los respaldos nuevos de D1, los usa; si no, intenta mantenerlos limpios o asignados
+                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
+                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
+                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "Guardado en D1";
+                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
 
                 if (!datosGlobal.some(f => f[idxOT] === otReg)) {
                     datosGlobal.push(filaRescatada);
