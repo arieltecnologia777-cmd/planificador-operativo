@@ -169,12 +169,11 @@ function renderizarDatosDashboard() {
         const proyecto = String(fila["Proyecto"] || fila["proyecto"] || "").trim().toUpperCase();
 
         const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual);
-        
-        // Si el filtro de proyecto está en TODOS, pasa. Si no, revisa si incluye el texto seleccionado de manera flexible.
         const matchProyecto = (typeof proyectoFiltroActual === "undefined" || proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual.toUpperCase()));
 
         return matchDepto && matchProyecto;
     });
+
     let sumaOffline = 0, sumaParcial = 0, sumaVelocidad = 0, sumaPqrs = 0, sumaOtrosP3 = 0;
     let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
@@ -192,13 +191,13 @@ function renderizarDatosDashboard() {
     };
 
     datosFiltrados.forEach(fila => {
-        const estado = String(fila[colEstado] || "").trim().toUpperCase();
-        const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
-        const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
-        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
-        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
-        const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
-        const idsAfectados = parseInt(fila[colIds], 10) || 0;
+        const estado = String(fila["Estado real"] || fila["estadoReal"] || "").trim().toUpperCase();
+        const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
+        const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
+        const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
+        const stopperFmAD = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || "").trim().toUpperCase();
+        const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
+        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
 
         if (estado.includes("OFFLINE")) {
             sumaOffline += idsAfectados;
@@ -220,10 +219,6 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        const estadoReal = String(fila[19] || "").trim().toUpperCase();
-        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase();
-        const stopperFmAD = String(fila[29] || "").trim().toUpperCase();
-
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
                                  stopperRepuestosAC.includes("REPUESTOS") || 
                                  stopperRepuestosAC.includes("REPUESTOS SATELITALES") || 
@@ -237,11 +232,11 @@ function renderizarDatosDashboard() {
         const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
 
         if (esRepuestoEstricto) {
-            if (estadoReal.includes("OFFLINE")) repOff += idsAfectados;
-            else if (estadoReal.includes("PARCIAL")) repPar += idsAfectados;
-            else if (estadoReal.includes("VELOCIDAD")) repVel += idsAfectados;
-            else if (estadoReal.includes("PQR")) repPqr += idsAfectados;
-            else if (estadoReal.includes("P3") || estadoReal.includes("OTROS")) repP3 += idsAfectados;
+            if (estado.includes("OFFLINE")) repOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) repPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
+            else if (estado.includes("PQR")) repPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
         let targetRango = null;
@@ -403,7 +398,6 @@ function renderizarDatosDashboard() {
         barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
     }
 }
-
 document.addEventListener("click", async (e) => {
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
