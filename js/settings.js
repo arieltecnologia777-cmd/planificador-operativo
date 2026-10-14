@@ -42,7 +42,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 3. Verificar contraseña estrictamente contra Cloudflare Worker (Corregido para evitar falsos errores visuales)
+    // 3. Verificar contraseña estrictamente contra Cloudflare Worker
     if (target.closest("#btnVerificarPassword")) {
         const inputPass = document.getElementById("inputAdminPassword");
         const pass = inputPass ? inputPass.value.trim() : "";
@@ -83,7 +83,7 @@ document.addEventListener("click", async (e) => {
     }
 
     // 4. Cerrar el menú de herramientas
-    if (target.closest("#cerrarModalTools, #btnCerrarTools")) {
+    if (target.closest("#cerrarModalTools, #btnCerrarTools, #btnCerrarModalGlobal, #btnCerrarPie")) {
         document.getElementById("modalAdminTools").style.display = "none";
         return;
     }
@@ -183,7 +183,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 10. Ejecutar Borrado Masivo utilizando el modal seguro con puntos ocultos
+    // 10. Ejecutar Borrado Masivo utilizando el modal seguro
     if (target.closest("#btnAdminBorrarMasivo")) {
         solicitarClaveSegura("⚠️ DOBLE CANDADO: Ingresa la clave para vaciar toda la tabla:", async (claveSeguridad) => {
             if (!claveSeguridad) return;
@@ -218,7 +218,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 11. Ejecutar Borrado por OT Individual utilizando el modal seguro con puntos ocultos
+    // 11. Ejecutar Borrado por OT Individual utilizando el modal seguro
     if (target.closest("#btnAdminBorrarOt")) {
         const inputOtBorrar = document.getElementById("adminInputOtBorrar");
         const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
@@ -267,8 +267,9 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog (Lee todas las hojas)
-    if (target.closest("#btnProcesarBacklog")) {
+    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog con barra de progreso real y limpieza previa
+    const btnProcesar = target.closest("#btnProcesarBacklog");
+    if (btnProcesar) {
         const fileInput = document.getElementById("inputExcelBacklog");
         const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
 
@@ -286,15 +287,16 @@ document.addEventListener("click", async (e) => {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 
-                let todasLasFilas = [];
+                const primeraHojaName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[primeraHojaName];
+                
+                // Convertir a JSON
+                let todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                // Recorremos CADA UNA de las hojas del Excel para no perder ninguna
-                workbook.SheetNames.forEach(nombreHoja => {
-                    const worksheet = workbook.Sheets[nombreHoja];
-                    const filasHoja = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-                    if (filasHoja && filasHoja.length > 0) {
-                        todasLasFilas = todasLasFilas.concat(filasHoja);
-                    }
+                // 🛡️ FILTRO ESTRICTO: Eliminar filas vacías o basura al final del Excel
+                todasLasFilas = todasLasFilas.filter(fila => {
+                    const llave = String(fila["Llave"] || fila["ID"] || fila["ID MINTIC"] || "").trim();
+                    return llave !== ""; // Solo conserva filas con identificador real
                 });
 
                 if (todasLasFilas.length === 0) {
@@ -302,47 +304,97 @@ document.addEventListener("click", async (e) => {
                     return;
                 }
 
-                alert(`Leyendo un total de ${todasLasFilas.length} filas de todas las hojas del Excel. Iniciando envío al servidor...`);
+                // CREAR MODAL DE BLOQUEO Y BARRA DE PROGRESO EN VIVO
+                const modalBloqueo = document.createElement('div');
+                modalBloqueo.id = "modalProgresoCargue";
+                modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
+                modalBloqueo.innerHTML = `
+                    <div style="background:white;color:#333;padding:35px;border-radius:14px;width:420px;text-align:center;box-shadow:0 15px 30px rgba(0,0,0,0.4);">
+                        <h3 style="margin-bottom:10px;font-weight:bold;font-size:20px;color:#1e3a8a;">Sincronizando con Cloudflare D1</h3>
+                        <p id="textoProgreso" style="margin-bottom:15px;font-size:14px;color:#555;">Limpiando registros anteriores...</p>
+                        <div style="width:100%;background:#e5e7eb;border-radius:999px;height:18px;overflow:hidden;margin-bottom:15px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1);">
+                            <div id="barraProgresoReal" style="width:0%;height:100%;background:#2563eb;transition:width 0.2s ease;"></div>
+                        </div>
+                        <p id="porcentajeTexto" style="font-weight:bold;color:#2563eb;font-size:18px;">0%</p>
+                        <p style="margin-top:20px;font-size:12px;color:#dc2626;font-weight:600;line-height:1.4;">⚠️ Proceso crítico en curso.<br>No cierres ni recargues la página hasta finalizar.</p>
+                    </div>
+                `;
+                document.body.appendChild(modalBloqueo);
 
-                // Primero vaciamos la tabla antigua para evitar duplicados masivos
-                await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
-                    method: "DELETE",
-                    headers: { "x-admin-password": "admin" } // O tu clave de seguridad si aplica
-                });
+                // BLOQUEAR CIERRE / SALIDA ACCIDENTAL DE LA PÁGINA
+                window.onbeforeunload = function() {
+                    return "Hay una sincronización activa con la base de datos. Si sales ahora, se interrumpirá el proceso.";
+                };
+
+                // VACIAR LA TABLA ANTES DE CARGAR LOS NUEVOS DATOS PARA EVITAR DUPLICADOS FANTASMA
+                try {
+                    await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
+                        method: "DELETE",
+                        headers: { "x-admin-password": "admin" }
+                    });
+                } catch (err) {
+                    console.error("Aviso al vaciar tabla previa:", err);
+                }
 
                 let exitosos = 0;
                 let errores = 0;
+                const total = todasLasFilas.length;
+                const tamanoLote = 10;
 
-                for (const fila of todasLasFilas) {
-                    try {
-                        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(fila)
-                        });
-                        const resultado = await resp.json();
-                        if (resultado.ok) {
-                            exitosos++;
-                        } else {
+                for (let i = 0; i < total; i += tamanoLote) {
+                    const lote = todasLasFilas.slice(i, i + tamanoLote);
+                    
+                    const promesas = lote.map(async (fila) => {
+                        try {
+                            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(fila)
+                            });
+                            const resultado = await resp.json();
+                            if (resultado.ok) exitosos++;
+                            else errores++;
+                        } catch (err) {
                             errores++;
                         }
-                    } catch (err) {
-                        errores++;
-                    }
+                    });
+
+                    await Promise.all(promesas);
+
+                    // ACTUALIZAR BARRA DE ESTADO REAL Y PORCENTAJE
+                    const procesados = Math.min(i + tamanoLote, total);
+                    const porcentaje = Math.round((procesados / total) * 100);
+                    
+                    const barra = document.getElementById("barraProgresoReal");
+                    const textoProg = document.getElementById("textoProgreso");
+                    const textoPct = document.getElementById("porcentajeTexto");
+
+                    if (barra) barra.style.width = porcentaje + "%";
+                    if (textoProg) textoProg.innerText = `Procesando ${procesados} de ${total} registros...`;
+                    if (textoPct) textoPct.innerText = porcentaje + "%";
                 }
 
-                alert(`¡Proceso finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
-                fileInput.value = "";
+                // DESBLOQUEAR Y FINALIZAR
+                window.onbeforeunload = null;
+                if (modalBloqueo) document.body.removeChild(modalBloqueo);
+
+                alert(`¡Sincronización finalizada con éxito!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
+                window.location.reload();
 
             } catch (err) {
-                console.error("Error al leer el Excel:", err);
-                alert("Ocurrió un error al procesar el archivo Excel.");
+                window.onbeforeunload = null;
+                const modalActual = document.getElementById("modalProgresoCargue");
+                if (modalActual) document.body.removeChild(modalActual);
+                console.error("Error en cargue:", err);
+                alert("Ocurrió un error crítico durante el cargue.");
+                window.location.reload();
             }
         };
 
         reader.readAsArrayBuffer(archivo);
         return;
     }
+
     // Botones para cerrar o confirmar el modal de clave segura
     if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
         document.getElementById("modalClaveSegura").style.display = "none";
@@ -378,113 +430,4 @@ document.addEventListener("keydown", (e) => {
             if (btnConfirmar) btnConfirmar.click();
         }
     }
-});
-document.addEventListener("click", async function(e) {
-    const btnProcesar = e.target.closest("#btnProcesarBacklog");
-    if (!btnProcesar) return;
-
-    const fileInput = document.getElementById("inputExcelBacklog");
-    const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
-
-    if (!archivo) {
-        alert("Por favor selecciona un archivo Excel primero.");
-        return;
-    }
-
-    const confirmar = confirm(`¿Estás seguro de procesar el archivo "${archivo.name}" para actualizar la base de backlog?`);
-    if (!confirmar) return;
-
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            const primeraHojaName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[primeraHojaName];
-            const todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-            if (todasLasFilas.length === 0) {
-                alert("El archivo Excel está vacío o no tiene un formato válido.");
-                return;
-            }
-
-            // CREAR MODAL DE BLOQUEO Y BARRA DE PROGRESO EN VIVO
-            const modalBloqueo = document.createElement('div');
-            modalBloqueo.id = "modalProgresoCargue";
-            modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
-            modalBloqueo.innerHTML = `
-                <div style="background:white;color:#333;padding:35px;border-radius:14px;width:420px;text-align:center;box-shadow:0 15px 30px rgba(0,0,0,0.4);">
-                    <h3 style="margin-bottom:10px;font-weight:bold;font-size:20px;color:#1e3a8a;">Sincronizando con Cloudflare D1</h3>
-                    <p id="textoProgreso" style="margin-bottom:15px;font-size:14px;color:#555;">Preparando registros...</p>
-                    <div style="width:100%;background:#e5e7eb;border-radius:999px;height:18px;overflow:hidden;margin-bottom:15px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1);">
-                        <div id="barraProgresoReal" style="width:0%;height:100%;background:#2563eb;transition:width 0.2s ease;"></div>
-                    </div>
-                    <p id="porcentajeTexto" style="font-weight:bold;color:#2563eb;font-size:18px;">0%</p>
-                    <p style="margin-top:20px;font-size:12px;color:#dc2626;font-weight:600;line-height:1.4;">⚠️ Proceso crítico en curso.<br>No cierres ni recargues la página hasta finalizar.</p>
-                </div>
-            `;
-            document.body.appendChild(modalBloqueo);
-
-            // BLOQUEAR CIERRE / SALIDA ACCIDENTAL DE LA PÁGINA
-            window.onbeforeunload = function() {
-                return "Hay una sincronización activa con la base de datos. Si sales ahora, se interrumpirá el proceso.";
-            };
-
-            let exitosos = 0;
-            let errores = 0;
-            const total = todasLasFilas.length;
-            const tamanoLote = 10;
-
-            for (let i = 0; i < total; i += tamanoLote) {
-                const lote = todasLasFilas.slice(i, i + tamanoLote);
-                
-                const promesas = lote.map(async (fila) => {
-                    try {
-                        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(fila)
-                        });
-                        const resultado = await resp.json();
-                        if (resultado.ok) exitosos++;
-                        else errores++;
-                    } catch (err) {
-                        errores++;
-                    }
-                });
-
-                await Promise.all(promesas);
-
-                // ACTUALIZAR BARRA DE ESTADO REAL Y PORCENTAJE
-                const procesados = Math.min(i + tamanoLote, total);
-                const porcentaje = Math.round((procesados / total) * 100);
-                
-                const barra = document.getElementById("barraProgresoReal");
-                const textoProg = document.getElementById("textoProgreso");
-                const textoPct = document.getElementById("porcentajeTexto");
-
-                if (barra) barra.style.width = porcentaje + "%";
-                if (textoProg) textoProg.innerText = `Procesando ${procesados} de ${total} registros...`;
-                if (textoPct) textoPct.innerText = porcentaje + "%";
-            }
-
-            // DESBLOQUEAR Y FINALIZAR
-            window.onbeforeunload = null;
-            if (modalBloqueo) document.body.removeChild(modalBloqueo);
-
-            alert(`¡Sincronización finalizada con éxito!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
-            window.location.reload();
-
-        } catch (err) {
-            window.onbeforeunload = null;
-            const modalActual = document.getElementById("modalProgresoCargue");
-            if (modalActual) document.body.removeChild(modalActual);
-            console.error("Error en cargue:", err);
-            alert("Ocurrió un error crítico durante el cargue.");
-            window.location.reload();
-        }
-    };
-
-    reader.readAsArrayBuffer(archivo);
 });
