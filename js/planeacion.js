@@ -509,8 +509,7 @@ async function cargarPlaneacion(){
     }
 
     window.registrosD1 = registrosD1;
-
-  const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
@@ -521,15 +520,25 @@ async function cargarPlaneacion(){
         const otReg = String(reg.ot || "").trim();
         if (otReg && !otsConfiguesSet.has(otReg)) {
             if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                let filaRescatada = new Array(encabezadosGlobal.length).fill("");
                 
+                // Creamos una fila limpia basada en la estructura general del dataset
+                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                
+                // Limpiamos todas las celdas para que no arrastren valores de la primera fila
+                filaRescatada = filaRescatada.map(() => "");
+
+                // Asignamos la OT y los datos propios de este registro específico
                 filaRescatada[idxOT] = otReg;
-                
-                // Si el registro ya tiene los respaldos nuevos de D1, los usa; si no, intenta mantenerlos limpios o asignados
                 if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
                 if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "Guardado en D1";
-                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+                
+                // Si el departamento guardado en D1 es válido, lo usamos; si no, ponemos un indicador limpio
+                if (idxDepto !== -1) {
+                    filaRescatada[idxDepto] = (reg.departamentoOriginal && reg.departamentoOriginal !== "Guardado en D1") ? reg.departamentoOriginal : "--";
+                }
+                if (idxMuni !== -1) {
+                    filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+                }
 
                 if (!datosGlobal.some(f => f[idxOT] === otReg)) {
                     datosGlobal.push(filaRescatada);
