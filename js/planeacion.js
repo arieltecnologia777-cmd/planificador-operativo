@@ -1492,7 +1492,7 @@ async function guardarOT(fila, observacionForzada = null){
 
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
-    // --- BLINDAJE COMPLETO DE IDENTIFICADORES Y DATOS FIJOS ---
+    // --- CAPTURA DE DATOS FIJOS PARA EVITAR QUE SALGAN EN BLANCO ---
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
@@ -1529,7 +1529,7 @@ async function guardarOT(fila, observacionForzada = null){
                 fechaProgramacion: payload.fechaProgramacion,
                 observacion: payload.observacion,
                 estadoGestion: payload.estadoGestion,
-                tecnicoAsigned: payload.tecnicoAsignado,
+                tecnicoAsignado: payload.tecnicoAsignado,
                 acompanamiento: payload.acompanamiento,
                 idOriginal: payload.idOriginal,
                 imOriginal: payload.imOriginal,
@@ -1543,14 +1543,12 @@ async function guardarOT(fila, observacionForzada = null){
             actualizarKPIs(datosFiltradosGlobal);
 
             // Refresca los menús desplegables de los filtros en segundo plano 
-            // para que detecten el nuevo estado, departamento, fecha o rango modificado.
             actualizarOpcionesFiltros(datosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
     }
-}
-const wrapper = document.querySelector('.planeacion-table-wrapper');
+}const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
     wrapper.addEventListener('scroll', () => {
