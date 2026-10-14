@@ -310,7 +310,7 @@ document.addEventListener("click", async (e) => {
                 modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
                 modalBloqueo.innerHTML = `
                     <div style="background:white;color:#333;padding:35px;border-radius:14px;width:420px;text-align:center;box-shadow:0 15px 30px rgba(0,0,0,0.4);">
-                        <h3 style="margin-bottom:10px;font-weight:bold;font-size:20px;color:#1e3a8a;">Sincronizando con Cloudflare D1</h3>
+                        <h3 style="margin-bottom:10px;font-weight:bold;font-size:20px;color:#1e3a8a;">Sincronizando con servidor</h3>
                         <p id="textoProgreso" style="margin-bottom:15px;font-size:14px;color:#555;">Limpiando registros anteriores...</p>
                         <div style="width:100%;background:#e5e7eb;border-radius:999px;height:18px;overflow:hidden;margin-bottom:15px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1);">
                             <div id="barraProgresoReal" style="width:0%;height:100%;background:#2563eb;transition:width 0.2s ease;"></div>
