@@ -1,200 +1,367 @@
-export default {
- async fetch(request, env) {
-    const headers = {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "*"
-    };
+// Variable de control para evitar ejecuciones duplicadas
+let procesandoCambioFecha = false;
+let ejecutandoClickGlobal = false;
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers });
+// Variables temporales para el modal de clave segura
+let callbackClaveSegura = null;
+
+function solicitarClaveSegura(mensaje, callback) {
+    const modal = document.getElementById("modalClaveSegura");
+    const input = document.getElementById("inputClaveSegura");
+    const texto = document.getElementById("textoMensajeClave");
+    
+    if (texto) texto.textContent = mensaje;
+    if (input) input.value = "";
+    if (modal) modal.style.display = "grid";
+    if (input) input.focus();
+    
+    callbackClaveSegura = callback;
+}
+
+document.addEventListener("click", async (e) => {
+    // Evita doble ejecución si el evento se propaga rápidamente o hay scripts duplicados
+    if (ejecutandoClickGlobal) return;
+    ejecutandoClickGlobal = true;
+    setTimeout(() => { ejecutandoClickGlobal = false; }, 100);
+
+    const target = e.target;
+
+    // 1. Clic en el botón del sidebar "Herramientas Avanzadas" -> Abre modal de contraseña
+    if (target.closest("#btnAbrirConfig")) {
+        const modalPass = document.getElementById("modalAdminPassword");
+        const inputPass = document.getElementById("inputAdminPassword");
+        if (inputPass) inputPass.value = "";
+        if (modalPass) modalPass.style.display = "grid";
+        if (inputPass) inputPass.focus();
+        return;
     }
 
-    const url = new URL(request.url);
+    // 2. Botones para cerrar el modal de contraseña inicial
+    if (target.closest("#cerrarModalPassword, #btnCancelarPassword")) {
+        document.getElementById("modalAdminPassword").style.display = "none";
+        return;
+    }
 
-    // OBTENER O GUARDAR NOTAS DEL DÍA
-    if (url.pathname === '/api/notas') {
-        if (request.method === 'GET') {
-            try {
-                const { results } = await env.DB.prepare("SELECT valor FROM configuracion WHERE clave = 'nota_dia'").all();
-                const nota = results.length > 0 ? results[0].valor : "";
-                return new Response(JSON.stringify({ ok: true, nota }), { headers });
-            } catch (err) {
-                return new Response(JSON.stringify({ ok: false, error: err.message }), { headers });
-            }
+    // 3. Verificar contraseña estrictamente contra Cloudflare Worker
+    if (target.closest("#btnVerificarPassword")) {
+        const inputPass = document.getElementById("inputAdminPassword");
+        const pass = inputPass ? inputPass.value.trim() : "";
+
+        if (!pass) {
+            alert("Por favor ingresa la contraseña.");
+            return;
         }
 
-        if (request.method === 'POST') {
-            try {
-                const body = await request.json();
-                const notaTexto = body.nota || "";
-
-                await env.DB.prepare(
-                    "INSERT INTO configuracion (clave, valor) VALUES ('nota_dia', ?) ON CONFLICT(clave) DO UPDATE SET valor = ?"
-                ).bind(notaTexto, notaTexto).run();
-
-                return new Response(JSON.stringify({ ok: true, mensaje: "Nota actualizada correctamente" }), { headers });
-            } catch (err) {
-                return new Response(JSON.stringify({ ok: false, error: err.message }), { headers });
-            }
-        }
-    }
-
-    // OBTENER TODOS LOS REGISTROS
-    if (request.method === "GET" && url.pathname === "/api/planeacion") {
-      const registros = await env.DB.prepare(`
-        SELECT ot, estadoProgramacion, fechaProgramacion, observacion, estadoGestion, tecnicoAsignado, acompanamiento, updatedAt, createdAt
-        FROM planeacion
-      `).all();
-
-      const resultado = {};
-      for (const fila of registros.results) {
-        resultado[fila.ot] = fila;
-      }
-
-      return new Response(JSON.stringify(resultado), { headers });
-    }
-
-    // VERIFICAR CONTRASEÑA ADMIN
-    if (request.method === "POST" && url.pathname === "/api/planeacion/verificar") {
-      const body = await request.json();
-      if (body.password === env.ADMIN_PASSWORD) {
-        return new Response(JSON.stringify({ ok: true }), { headers });
-      }
-      return new Response(JSON.stringify({ ok: false, error: "Contraseña incorrecta" }), { status: 403, headers });
-    }
-
-    // NUEVA RUTA: CARGUE MASIVO Y LECTURA DE EXCEL (Tabla: base_backlog)
-    if (url.pathname === "/api/base-backlog") {
-      if (request.method === "GET") {
         try {
-          const { results } = await env.DB.prepare("SELECT * FROM base_backlog").all();
-          const registrosFormateados = {};
-          results.forEach(row => {
-            try {
-              registrosFormateados[row.ot] = JSON.parse(row.datos_json);
-            } catch (e) {
-              registrosFormateados[row.ot] = { OT: row.ot };
+            const resp = await fetch(`${API_URL}/verificar`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pass })
+            });
+            const resultado = await resp.json();
+
+            if (resultado.ok) {
+                document.getElementById("modalAdminPassword").style.display = "none";
+                document.getElementById("modalAdminTools").style.display = "grid";
+                if (inputPass) inputPass.value = "";
+            } else {
+                alert("Contraseña incorrecta.");
+                inputPass.value = "";
+                inputPass.focus();
             }
-          });
-          return new Response(JSON.stringify(registrosFormateados), { headers });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers });
+            console.error("Error:", err);
+            alert("Error de red al verificar la contraseña con el servidor.");
+            inputPass.value = "";
+            inputPass.focus();
         }
-      }
+        return;
+    }
 
-      if (request.method === "POST") {
+    // 4. Cerrar el menú de herramientas
+    if (target.closest("#cerrarModalTools, #btnCerrarTools")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        return;
+    }
+
+    // 5. Desde el menú de herramientas, seleccionar "Forzar Fecha OT"
+    if (target.closest("#btnAbrirForzarFecha")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        document.getElementById("modalAdminFecha").style.display = "grid";
+        return;
+    }
+
+    // 6. Volver del modal de fecha al menú de herramientas
+    if (target.closest("#btnVolverTools, #cerrarModalAdmin")) {
+        document.getElementById("modalAdminFecha").style.display = "none";
+        document.getElementById("modalAdminTools").style.display = "grid";
+        return;
+    }
+
+    // 7. Guardar la nueva fecha forzada para la OT en el servidor
+    if (target.closest("#btnAdminGuardarFecha")) {
+        if (procesandoCambioFecha) return;
+
+        const inputOt = document.getElementById("adminInputOt");
+        const inputFecha = document.getElementById("adminInputFecha");
+
+        const otVal = inputOt ? inputOt.value.trim() : "";
+        const fechaVal = inputFecha ? inputFecha.value : "";
+
+        if (!otVal || !fechaVal) {
+            alert("Por favor ingresa tanto el número de la OT como la fecha correcta.");
+            return;
+        }
+
+        const confirmar = window.confirm(`¿Estás seguro de cambiar la fecha de creación de la OT ${otVal} a ${fechaVal}?`);
+        if (!confirmar) return;
+
+        procesandoCambioFecha = true;
+        const regActual = window.registrosD1[otVal] || {};
+
+        const payload = {
+            ot: otVal,
+            estadoProgramacion: regActual.estadoProgramacion || "",
+            fechaProgramacion: regActual.fechaProgramacion || "",
+            observacion: regActual.observacion || "",
+            estadoGestion: regActual.estadoGestion || "",
+            tecnicoAsignado: regActual.tecnicoAsignado || "",
+            acompanamiento: regActual.acompanamiento || "",
+            customCreatedAt: fechaVal
+        };
+
         try {
-          const body = await request.json();
-          const otKey = Object.keys(body).find(k => k.trim().toLowerCase() === 'ot');
-          const ot = otKey ? String(body[otKey]).trim() : "";
+            const resp = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const resultado = await resp.json();
 
-          if (!ot) {
-            return new Response(JSON.stringify({ ok: false, error: "No se encontró la columna OT en esta fila" }), { status: 400, headers });
-          }
-
-          const datosJsonStr = JSON.stringify(body);
-
-          await env.DB.prepare(`
-            INSERT INTO base_backlog (ot, datos_json, actualizado_en)
-            VALUES (?, ?, CURRENT_TIMESTAMP)
-            ON CONFLICT(ot) DO UPDATE SET
-              datos_json = excluded.datos_json,
-              actualizado_en = CURRENT_TIMESTAMP
-          `).bind(ot, datosJsonStr).run();
-
-          return new Response(JSON.stringify({ ok: true, mensaje: "Fila guardada con éxito en base_backlog" }), { headers });
+            if (resultado.ok) {
+                window.registrosD1[otVal] = {
+                    ...regActual,
+                    ot: otVal,
+                    createdAt: resultado.createdAt
+                };
+                
+                alert(`¡Éxito! La OT ${otVal} ahora tiene fecha de creación ${resultado.createdAt}.`);
+                inputOt.value = "";
+                inputFecha.value = "";
+                document.getElementById("modalAdminFecha").style.display = "none";
+                
+                if (typeof aplicarFiltros === "function") {
+                    aplicarFiltros();
+                }
+            } else {
+                alert("Error al actualizar la fecha en el servidor.");
+            }
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers });
+            console.error("Error:", err);
+            alert("Ocurrió un error de red al intentar actualizar la OT.");
+        } finally {
+            procesandoCambioFecha = false;
         }
-      }
+        return;
     }
 
-    // GUARDAR O ACTUALIZAR UNA OT
-    if (request.method === "POST" && url.pathname === "/api/planeacion") {
-      const body = await request.json();
+    // 8. Desde el menú de herramientas, abrir la sección de borrado (Eliminar Data)
+    if (target.closest("#btnAbrirBorrarData")) {
+        document.getElementById("modalAdminTools").style.display = "none";
+        document.getElementById("modalAdminBorrar").style.display = "grid";
+        return;
+    }
 
-      if (!body.ot) {
-        return new Response(JSON.stringify({ ok: false, error: "OT requerida" }), {
-          status: 400,
-          headers
+    // 9. Volver del modal de borrado al menú de herramientas
+    if (target.closest("#btnVolverToolsBorrar, #cerrarModalBorrar")) {
+        document.getElementById("modalAdminBorrar").style.display = "none";
+        document.getElementById("modalAdminTools").style.display = "grid";
+        return;
+    }
+
+    // 10. Ejecutar Borrado Masivo utilizando el modal seguro con puntos ocultos
+    if (target.closest("#btnAdminBorrarMasivo")) {
+        solicitarClaveSegura("⚠️ DOBLE CANDADO: Ingresa la clave para vaciar toda la tabla:", async (claveSeguridad) => {
+            if (!claveSeguridad) return;
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: "DELETE",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-admin-password": claveSeguridad 
+                    }
+                });
+                const resultado = await resp.json();
+
+                if (resultado.ok) {
+                    window.registrosD1 = {};
+                    alert("¡Se han borrado todos los registros exitosamente en el servidor!");
+                    document.getElementById("modalAdminBorrar").style.display = "none";
+                    if (typeof cargarPlaneacion === "function") {
+                        cargarPlaneacion();
+                    } else if (typeof aplicarFiltros === "function") {
+                        aplicarFiltros();
+                    }
+                } else {
+                    alert(resultado.error || "Clave incorrecta o error en el servidor.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Ocurrió un error de red al intentar vaciar la tabla.");
+            }
         });
-      }
-
-      const ahora = new Date().toISOString();
-      const fechaHoy = body.fechaLocal || ahora.split('T')[0];
-
-      const existing = await env.DB.prepare(`
-        SELECT createdAt FROM planeacion WHERE ot = ?
-      `).bind(body.ot).first();
-
-      let createdAt = fechaHoy;
-      if (body.customCreatedAt && /^\d{4}-\d{2}-\d{2}$/.test(body.customCreatedAt)) {
-        createdAt = body.customCreatedAt;
-      } else if (existing && existing.createdAt) {
-        createdAt = existing.createdAt;
-      }
-
-      const registro = {
-        ot: body.ot,
-        estadoProgramacion: body.estadoProgramacion || "",
-        fechaProgramacion: body.fechaProgramacion || "",
-        observacion: body.observacion !== undefined && body.observacion !== null ? body.observacion : "",
-        estadoGestion: body.estadoGestion || "",
-        tecnicoAsignado: body.tecnicoAsignado || "",
-        acompanamiento: body.acompanamiento || "",
-        updatedAt: ahora,
-        createdAt: createdAt
-      };
-
-      await env.DB.prepare(`
-        INSERT OR REPLACE INTO planeacion (
-          ot, estadoProgramacion, fechaProgramacion, observacion, estadoGestion, tecnicoAsignado, acompanamiento, updatedAt, createdAt
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `)
-      .bind(
-        registro.ot,
-        registro.estadoProgramacion,
-        registro.fechaProgramacion,
-        registro.observacion,
-        registro.estadoGestion,
-        registro.tecnicoAsignado,
-        registro.acompanamiento,
-        registro.updatedAt,
-        registro.createdAt
-      )
-      .run();
-
-      return new Response(JSON.stringify({ ok: true, createdAt }), { headers });
+        return;
     }
 
-    // ELIMINAR REGISTROS (PROTEGIDO CON ADMIN_PASSWORD)
-    if (request.method === "DELETE" && url.pathname === "/api/planeacion") {
-      const passwordHeader = request.headers.get("x-admin-password");
+    // 11. Ejecutar Borrado por OT Individual utilizando el modal seguro con puntos ocultos
+    if (target.closest("#btnAdminBorrarOt")) {
+        const inputOtBorrar = document.getElementById("adminInputOtBorrar");
+        const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
 
-      if (!passwordHeader || passwordHeader !== env.ADMIN_PASSWORD) {
-        return new Response(JSON.stringify({ ok: false, error: "No autorizado. Clave incorrecta." }), {
-          status: 403,
-          headers
+        if (!otVal) {
+            alert("Por favor ingresa el número de la OT que deseas eliminar.");
+            return;
+        }
+
+        solicitarClaveSegura(`⚠️ Ingresa la clave para eliminar la OT ${otVal}:`, async (claveSeguridad) => {
+            if (!claveSeguridad) return;
+
+            try {
+                const resp = await fetch(`${API_URL}?ot=${encodeURIComponent(otVal)}`, {
+                    method: "DELETE",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-admin-password": claveSeguridad
+                    }
+                });
+                const resultado = await resp.json();
+
+                if (resultado.ok) {
+                    delete window.registrosD1[otVal];
+                    if (typeof otsModificadasRecientemente !== "undefined") {
+                        otsModificadasRecientemente.delete(otVal);
+                    }
+
+                    alert(`¡Éxito! La OT ${otVal} fue eliminada del servidor.`);
+                    inputOtBorrar.value = "";
+                    document.getElementById("modalAdminBorrar").style.display = "none";
+                    
+                    // Forzar recarga completa para que desaparezca de la tabla
+                    if (typeof cargarPlaneacion === "function") {
+                        cargarPlaneacion();
+                    } else if (typeof aplicarFiltros === "function") {
+                        aplicarFiltros();
+                    }
+                } else {
+                    alert(resultado.error || "Clave incorrecta o error al eliminar la OT.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Ocurrió un error de red al intentar eliminar la OT.");
+            }
         });
-      }
-
-      const otParam = url.searchParams.get("ot");
-
-      if (otParam) {
-        await env.DB.prepare("DELETE FROM planeacion WHERE ot = ?").bind(otParam).run();
-        return new Response(JSON.stringify({ ok: true, message: `OT ${otParam} eliminada` }), { headers });
-      } else {
-        await env.DB.prepare("DELETE FROM planeacion").run();
-        return new Response(JSON.stringify({ ok: true, message: "Tabla vaciada exitosamente" }), { headers });
-      }
+        return;
     }
 
-    return new Response(JSON.stringify({ ok: false, error: "Ruta no encontrada" }), {
-      status: 404,
-      headers
-    });
- }
-};
+    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog
+    if (target.closest("#btnProcesarBacklog")) {
+        const fileInput = document.getElementById("inputExcelBacklog");
+        const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
+
+        if (!archivo) {
+            alert("Por favor selecciona un archivo Excel primero.");
+            return;
+        }
+
+        const confirmar = window.confirm(`¿Estás seguro de procesar el archivo "${archivo.name}" para actualizar la base de backlog?`);
+        if (!confirmar) return;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                const primeraHojaName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[primeraHojaName];
+                const filas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                if (filas.length === 0) {
+                    alert("El archivo Excel está vacío o no tiene un formato válido.");
+                    return;
+                }
+
+                alert(`Leyendo ${filas.length} filas del Excel. Iniciando envío al servidor...`);
+
+                let exitosos = 0;
+                let errores = 0;
+
+                for (const fila of filas) {
+                    try {
+                        const resp = await fetch(`${API_URL.replace('/planeacion', '/base-backlog')}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(fila)
+                        });
+                        const resultado = await resp.json();
+                        if (resultado.ok) {
+                            exitosos++;
+                        } else {
+                            errores++;
+                        }
+                    } catch (err) {
+                        errores++;
+                    }
+                }
+
+                alert(`¡Proceso finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
+                fileInput.value = "";
+                document.getElementById("modalAdminTools").style.display = "none";
+
+            } catch (err) {
+                console.error("Error al leer el Excel:", err);
+                alert("Ocurrió un error al procesar el archivo Excel.");
+            }
+        };
+
+        reader.readAsArrayBuffer(archivo);
+        return;
+    }
+
+    // Botones para cerrar o confirmar el modal de clave segura
+    if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
+        document.getElementById("modalClaveSegura").style.display = "none";
+        callbackClaveSegura = null;
+        return;
+    }
+
+    if (target.closest("#btnConfirmarClave")) {
+        const input = document.getElementById("inputClaveSegura");
+        const pass = input ? input.value.trim() : "";
+        document.getElementById("modalClaveSegura").style.display = "none";
+        
+        if (typeof callbackClaveSegura === "function") {
+            callbackClaveSegura(pass);
+            callbackClaveSegura = null;
+        }
+        return;
+    }
+});
+
+// Permitir presionar "Enter" en los campos de contraseña
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        const modalPass = document.getElementById("modalAdminPassword");
+        if (modalPass && modalPass.style.display === "grid") {
+            const btnVerificar = document.getElementById("btnVerificarPassword");
+            if (btnVerificar) btnVerificar.click();
+        }
+
+        const modalClave = document.getElementById("modalClaveSegura");
+        if (modalClave && modalClave.style.display === "grid") {
+            const btnConfirmar = document.getElementById("btnConfirmarClave");
+            if (btnConfirmar) btnConfirmar.click();
+        }
+    }
+});
