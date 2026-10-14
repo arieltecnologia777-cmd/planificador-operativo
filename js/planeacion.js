@@ -1486,11 +1486,16 @@ async function guardarOT(fila, observacionForzada = null){
 
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
-    // --- CAPTURA DE DATOS FIJOS PARA EVITAR QUE SALGAN EN BLANCO ---
+    // --- EXTRACCIÓN SEGURA DE LAS CELDAS VISIBLES EN LA TABLA ---
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
     const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
+
+    const valId = idxID !== -1 && fila.children[idxID] ? fila.children[idxID].textContent.trim() : "";
+    const valIm = idxIM !== -1 && fila.children[idxIM] ? fila.children[idxIM].textContent.trim() : "";
+    const valDepto = idxDepto !== -1 && fila.children[idxDepto] ? fila.children[idxDepto].textContent.trim() : "";
+    const valMuni = idxMuni !== -1 && fila.children[idxMuni] ? fila.children[idxMuni].textContent.trim() : "";
 
     const payload = {
         ot,
@@ -1501,10 +1506,10 @@ async function guardarOT(fila, observacionForzada = null){
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
         fechaLocal: fechaLocalHoy,
-        idOriginal: idxID !== -1 ? fila.children[idxID]?.textContent || "" : "",
-        imOriginal: idxIM !== -1 ? fila.children[idxIM]?.textContent || "" : "",
-        departamentoOriginal: idxDepto !== -1 ? fila.children[idxDepto]?.textContent || "" : "",
-        municipioOriginal: idxMuni !== -1 ? fila.children[idxMuni]?.textContent || "" : ""
+        idOriginal: valId,
+        imOriginal: valIm,
+        departamentoOriginal: valDepto,
+        municipioOriginal: valMuni
     };
 
     try {
@@ -1533,16 +1538,15 @@ async function guardarOT(fila, observacionForzada = null){
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
 
-            // Actualizamos los KPIs de inmediato
             actualizarKPIs(datosFiltradosGlobal);
-
-            // Refresca los menús desplegables de los filtros en segundo plano 
             actualizarOpcionesFiltros(datosGlobal);
         }
     } catch (err) {
         console.error("Error al guardar OT:", err);
     }
-}const wrapper = document.querySelector('.planeacion-table-wrapper');
+}
+
+const wrapper = document.querySelector('.planeacion-table-wrapper');
 let scrollTimer;
 if(wrapper) {
     wrapper.addEventListener('scroll', () => {
