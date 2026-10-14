@@ -42,7 +42,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 3. Verificar contraseña estrictamente contra Cloudflare Worker
+    // 3. Verificar contraseña estrictamente contra Cloudflare Worker (Corregido para evitar falsos errores visuales)
     if (target.closest("#btnVerificarPassword")) {
         const inputPass = document.getElementById("inputAdminPassword");
         const pass = inputPass ? inputPass.value.trim() : "";
@@ -53,27 +53,31 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            const resp = await fetch(`${API_URL}/verificar`, {
+            const resp = await fetch(`https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion/verificar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: pass })
             });
             const resultado = await resp.json();
 
-            if (resultado.ok) {
+            if (resp.ok && resultado.ok) {
                 document.getElementById("modalAdminPassword").style.display = "none";
                 document.getElementById("modalAdminTools").style.display = "grid";
                 if (inputPass) inputPass.value = "";
             } else {
                 alert("Contraseña incorrecta.");
-                inputPass.value = "";
-                inputPass.focus();
+                if (inputPass) {
+                    inputPass.value = "";
+                    inputPass.focus();
+                }
             }
         } catch (err) {
             console.error("Error:", err);
             alert("Error de red al verificar la contraseña con el servidor.");
-            inputPass.value = "";
-            inputPass.focus();
+            if (inputPass) {
+                inputPass.value = "";
+                inputPass.focus();
+            }
         }
         return;
     }
@@ -247,7 +251,6 @@ document.addEventListener("click", async (e) => {
                     inputOtBorrar.value = "";
                     document.getElementById("modalAdminBorrar").style.display = "none";
                     
-                    // Forzar recarga completa para que desaparezca de la tabla
                     if (typeof cargarPlaneacion === "function") {
                         cargarPlaneacion();
                     } else if (typeof aplicarFiltros === "function") {
@@ -264,7 +267,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog
+    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog (Mantiene el modal abierto al terminar)
     if (target.closest("#btnProcesarBacklog")) {
         const fileInput = document.getElementById("inputExcelBacklog");
         const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
@@ -299,7 +302,7 @@ document.addEventListener("click", async (e) => {
 
                 for (const fila of filas) {
                     try {
-                        const resp = await fetch(`${API_URL.replace('/planeacion', '/base-backlog')}`, {
+                        const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(fila)
@@ -317,7 +320,7 @@ document.addEventListener("click", async (e) => {
 
                 alert(`¡Proceso finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
                 fileInput.value = "";
-                document.getElementById("modalAdminTools").style.display = "none";
+                // Nota: Ya no cierra el modal automáticamente para que puedas verificar el resultado
 
             } catch (err) {
                 console.error("Error al leer el Excel:", err);
