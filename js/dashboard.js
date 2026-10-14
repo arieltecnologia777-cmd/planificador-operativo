@@ -1,5 +1,5 @@
 const API_BASE_URL = "https://planeacion-prueba-worker.modulo-de-exclusiones.workers.dev/api";
-const WORKER_DATA_URL = `${API_BASE_URL}/test/planeacion`;
+const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
 
 // Matriz de sitios totales fijos según la tabla de distribución
 const TOTALES_MAPA = {
