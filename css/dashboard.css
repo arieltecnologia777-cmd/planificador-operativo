@@ -963,3 +963,26 @@ div:has(> .tabla-rangos) {
     white-space: pre-wrap !important;
     box-shadow: none !important;
 }
+.modal-overlay, .swal2-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.modal-content-box {
+    margin: auto !important;
+    position: relative;
+    max-width: 600px;
+    width: 90%;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
