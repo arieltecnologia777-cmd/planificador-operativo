@@ -164,33 +164,17 @@ function renderizarDatosDashboard() {
         lblRegion.textContent = departamentoFiltroActual;
     }
 
-    const idxEstadoReal = encabezadosGlobal.findIndex(h => h.toUpperCase() === "ESTADO REAL" || h.toUpperCase() === "ESTADO_REAL");
-    const idxTotalIds = encabezadosGlobal.findIndex(h => h.toUpperCase() === "TOTAL IDS AFECTADOS" || h.toUpperCase() === "TOTAL_IDS_AFECTADOS" || h.toUpperCase() === "IDS AFECTADOS");
-    const idxDepartamento = encabezadosGlobal.findIndex(h => h.toUpperCase() === "DEPARTAMENTO");
-    const idxProyecto = encabezadosGlobal.findIndex(h => h.toUpperCase() === "PROYECTO");
-    const idxMunicipio = encabezadosGlobal.findIndex(h => h.toUpperCase() === "MUNICIPIO" || h.toUpperCase() === "CIUDAD");
-
-    const colEstado = idxEstadoReal !== -1 ? idxEstadoReal : 19; 
-    const colIds = idxTotalIds !== -1 ? idxTotalIds : 8;         
-    const colDepto = idxDepartamento !== -1 ? idxDepartamento : 2;
-    const colProj = idxProyecto !== -1 ? idxProyecto : 3;
-    const colMun = idxMunicipio !== -1 ? idxMunicipio : 5;
-    const colCarpetaU = 20; 
-    const colStopper = 20;
-    const colStopperRepuestos = 28; 
-    const colStopperFM = 29;        
-    const colRangoK = 10;           
-
     let datosFiltrados = datosGlobal.filter(fila => {
-        const depto = String(fila[colDepto] || "").trim().toUpperCase();
-        const proyecto = String(fila[colProj] || "").trim().toUpperCase();
+        const depto = String(fila["Departamento"] || fila["Depto"] || "").trim().toUpperCase();
+        const proyecto = String(fila["Proyecto"] || fila["proyecto"] || "").trim().toUpperCase();
 
         const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual);
-        const matchProyecto = (proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual));
+        
+        // Si el filtro de proyecto está en TODOS, pasa. Si no, revisa si incluye el texto seleccionado de manera flexible.
+        const matchProyecto = (typeof proyectoFiltroActual === "undefined" || proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual.toUpperCase()));
 
         return matchDepto && matchProyecto;
     });
-
     let sumaOffline = 0, sumaParcial = 0, sumaVelocidad = 0, sumaPqrs = 0, sumaOtrosP3 = 0;
     let fmOff = 0, fmPar = 0, fmVel = 0, fmPqr = 0, fmP3 = 0;
     let repOff = 0, repPar = 0, repVel = 0, repPqr = 0, repP3 = 0;
