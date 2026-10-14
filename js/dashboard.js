@@ -191,28 +191,39 @@ function renderizarDatosDashboard() {
         r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
     };
 
-    datosFiltrados.forEach(fila => {
-        const estado = String(fila["Estado real"] || fila["estadoReal"] || "").trim().toUpperCase();
+   datosFiltrados.forEach(fila => {
+        // Obtenemos el estado de forma robusta
+        const estado = String(fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || "").trim().toUpperCase();
         const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
-        const stopperFmAD = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || "").trim().toUpperCase();
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
+        
         const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
 
-        if (estado.includes("OFFLINE")) {
+        // Conteo directo de estados generales (Total neto)
+        if (estado.includes("OFFLINE") || estado.includes("APAGADO")) {
             sumaOffline += idsAfectados;
             if (!municipiosOfflineMap[municipio]) {
                 municipiosOfflineMap[municipio] = 0;
             }
             municipiosOfflineMap[municipio] += idsAfectados;
         }
-        else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
-        else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
-        else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
-        else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
+        else if (estado.includes("PARCIAL")) {
+            sumaParcial += idsAfectados;
+        }
+        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO")) {
+            sumaVelocidad += idsAfectados;
+        }
+        else if (estado.includes("PQR") || estado.includes("QUEJA")) {
+            sumaPqrs += idsAfectados;
+        }
+        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO")) {
+            sumaOtrosP3 += idsAfectados;
+        }
 
-        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
+        // Clasificación por carpetas (FM, Repuestos, etc.)
+        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
             if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
@@ -220,19 +231,8 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
-                                 stopperRepuestosAC.includes("REPUESTOS") || 
-                                 stopperRepuestosAC.includes("REPUESTOS SATELITALES") || 
-                                 stopperRepuestosAC.includes("REPUESTOS SOLARES");
-
-        const tieneFmEnAD = stopperFmAD.includes("FM") || 
-                            stopperFmAD.includes("TRASLADO") || 
-                            stopperFmAD.includes("REUBICACION") || 
-                            stopperFmAD.includes("FUERZA MAYOR");
-
-        const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
-
-        if (esRepuestoEstricto) {
+        const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
+        if (esValidoRepuesto) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
@@ -240,9 +240,10 @@ function renderizarDatosDashboard() {
             else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
+        // Rangos de afectación por días
         let targetRango = null;
-        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5")) targetRango = rangos.r1;
-        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15")) targetRango = rangos.r2;
+        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5") || rangoK.includes("1. MENOR")) targetRango = rangos.r1;
+        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
         else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
         else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
         else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
