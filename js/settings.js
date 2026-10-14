@@ -267,7 +267,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog (Mantiene el modal abierto al terminar)
+    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog (Lee todas las hojas)
     if (target.closest("#btnProcesarBacklog")) {
         const fileInput = document.getElementById("inputExcelBacklog");
         const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
@@ -286,21 +286,34 @@ document.addEventListener("click", async (e) => {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 
-                const primeraHojaName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[primeraHojaName];
-                const filas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                let todasLasFilas = [];
 
-                if (filas.length === 0) {
+                // Recorremos CADA UNA de las hojas del Excel para no perder ninguna
+                workbook.SheetNames.forEach(nombreHoja => {
+                    const worksheet = workbook.Sheets[nombreHoja];
+                    const filasHoja = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                    if (filasHoja && filasHoja.length > 0) {
+                        todasLasFilas = todasLasFilas.concat(filasHoja);
+                    }
+                });
+
+                if (todasLasFilas.length === 0) {
                     alert("El archivo Excel está vacío o no tiene un formato válido.");
                     return;
                 }
 
-                alert(`Leyendo ${filas.length} filas del Excel. Iniciando envío al servidor...`);
+                alert(`Leyendo un total de ${todasLasFilas.length} filas de todas las hojas del Excel. Iniciando envío al servidor...`);
+
+                // Primero vaciamos la tabla antigua para evitar duplicados masivos
+                await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
+                    method: "DELETE",
+                    headers: { "x-admin-password": "admin" } // O tu clave de seguridad si aplica
+                });
 
                 let exitosos = 0;
                 let errores = 0;
 
-                for (const fila of filas) {
+                for (const fila of todasLasFilas) {
                     try {
                         const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
                             method: "POST",
@@ -320,7 +333,6 @@ document.addEventListener("click", async (e) => {
 
                 alert(`¡Proceso finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
                 fileInput.value = "";
-                // Nota: Ya no cierra el modal automáticamente para que puedas verificar el resultado
 
             } catch (err) {
                 console.error("Error al leer el Excel:", err);
@@ -331,7 +343,6 @@ document.addEventListener("click", async (e) => {
         reader.readAsArrayBuffer(archivo);
         return;
     }
-
     // Botones para cerrar o confirmar el modal de clave segura
     if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
         document.getElementById("modalClaveSegura").style.display = "none";
