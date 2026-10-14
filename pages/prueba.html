@@ -18,11 +18,11 @@
 
 <div class="card">
     <h2>🧪 Laboratorio de Prueba: Subir Excel a Cloudflare</h2>
-    <p>Selecciona tu archivo Excel local. Este script lo procesará en tu navegador y simulará el envío privado al Worker (sin exponer ningún Google Sheet público).</p>
+    <p>Selecciona tu archivo Excel local. Este script lo procesará y guardará de forma real en tu base de datos de pruebas D1.</p>
     
     <input type="file" id="archivoExcel" accept=".xlsx, .xls, .csv">
     <br>
-    <button id="btnProcesar">Procesar y Enviar</button>
+    <button id="btnProcesar">Procesar y Enviar a D1</button>
     
     <div id="resultado"></div>
 </div>
@@ -54,28 +54,42 @@
                 // Convertimos la hoja a un arreglo de objetos JSON limpios
                 const filasJson = XLSX.utils.sheet_to_json(hoja);
 
-                divResultado.textContent = `¡Lectura exitosa! Se encontraron ${filasJson.length} registros. Preparando envío...`;
+                divResultado.textContent = `¡Lectura exitosa! Se encontraron ${filasJson.length} registros. Enviando a Cloudflare...`;
 
-                // --- AQUÍ IRÍA TU PETICIÓN REAL AL WORKER ---
-                /*
-                const resp = await fetch("https://tu-worker.workers.dev/api/subir-dataset", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ registros: filasJson })
-                });
-                const resultadoApi = await resp.json();
-                */
+                let guardadosExitosos = 0;
 
-                // Simulamos una respuesta exitosa para la prueba visual
-                setTimeout(() => {
-                    divResultado.style.color = "#059669";
-                    divResultado.textContent = `✅ ¡Simulación completada con éxito! Los ${filasJson.length} registros estarían guardados de forma privada en Cloudflare D1.`;
-                }, 1000);
+                // Enviamos los registros uno por uno (o en lote según prefieras) al Worker de prueba
+                for (const fila of filasJson) {
+                    // Ajusta las propiedades ("ot", "estadoProgramacion", etc.) según los nombres de las columnas de tu Excel
+                    const payload = {
+                        ot: String(fila.ot || fila.OT || fila.Id || ""),
+                        estadoProgramacion: String(fila.estadoProgramacion || fila.Estado || ""),
+                        fechaProgramacion: String(fila.fechaProgramacion || fila.Fecha || ""),
+                        observacion: String(fila.observacion || fila.Observacion || ""),
+                        estadoGestion: String(fila.estadoGestion || fila.Gestion || "")
+                    };
+
+                    if (!payload.ot) continue; // Si no tiene OT, se salta la fila
+
+                    const resp = await fetch("https://planeacion-prueba-worker.modulo-de-exclusiones.workers.dev/api/test/planeacion", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const resultadoApi = await resp.json();
+                    if (resultadoApi.ok) {
+                        guardadosExitosos++;
+                    }
+                }
+
+                divResultado.style.color = "#059669";
+                divResultado.textContent = `✅ ¡Cargue masivo completado! Se guardaron ${guardadosExitosos} de ${filasJson.length} registros en la base de datos de prueba D1.`;
 
             } catch (error) {
                 console.error(error);
                 divResultado.style.color = "#dc2626";
-                divResultado.textContent = "❌ Error al procesar el archivo Excel.";
+                divResultado.textContent = "❌ Error al procesar o enviar el archivo Excel.";
             }
         };
 
