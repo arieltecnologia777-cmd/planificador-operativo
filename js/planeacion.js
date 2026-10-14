@@ -1482,6 +1482,10 @@ async function guardarOT(fila, observacionForzada = null){
 
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
+    // --- BLINDAJE DE IDENTIFICADORES ORIGINALES ---
+    const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
+    const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+
     const payload = {
         ot,
         estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
@@ -1490,7 +1494,9 @@ async function guardarOT(fila, observacionForzada = null){
         estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
         tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
         acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
-        fechaLocal: fechaLocalHoy
+        fechaLocal: fechaLocalHoy,
+        idOriginal: fila.children[0]?.textContent || "",
+        imOriginal: idxIM !== -1 ? fila.children[idxIM]?.textContent || "" : ""
     };
 
     try {
@@ -1511,6 +1517,8 @@ async function guardarOT(fila, observacionForzada = null){
                 estadoGestion: payload.estadoGestion,
                 tecnicoAsigned: payload.tecnicoAsignado,
                 acompanamiento: payload.acompanamiento,
+                idOriginal: payload.idOriginal,
+                imOriginal: payload.imOriginal,
                 updatedAt: new Date().toISOString(),
                 createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
             };
@@ -1518,7 +1526,6 @@ async function guardarOT(fila, observacionForzada = null){
             // Actualizamos los KPIs de inmediato
             actualizarKPIs(datosFiltradosGlobal);
 
-           
             // Refresca los menús desplegables de los filtros en segundo plano 
             // para que detecten el nuevo estado, departamento, fecha o rango modificado.
             actualizarOpcionesFiltros(datosGlobal);
