@@ -151,7 +151,11 @@ function aplicarColorCumplimiento(elementoId, porcentaje) {
 }
 
 function renderizarDatosDashboard() {
-    if (!datosGlobal.length) return;
+    if (!datosGlobal || typeof datosGlobal !== "object") return;
+
+    // Convertimos datosGlobal de objeto a un arreglo de objetos de forma segura
+    const filasArray = Array.isArray(datosGlobal) ? datosGlobal : Object.values(datosGlobal);
+    if (!filasArray.length) return;
 
     renderizarPinesEstaticos(departamentoFiltroActual);
 
@@ -160,12 +164,13 @@ function renderizarDatosDashboard() {
         lblRegion.textContent = departamentoFiltroActual;
     }
 
-    let datosFiltrados = datosGlobal.filter(fila => {
+    let datosFiltrados = filasArray.filter(fila => {
+        if (!fila) return false;
         const depto = String(fila["Departamento"] || fila["Depto"] || "").trim().toUpperCase();
         const proyecto = String(fila["Proyecto"] || fila["proyecto"] || "").trim().toUpperCase();
 
-        const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual);
-        const matchProyecto = (typeof proyectoFiltroActual === "undefined" || proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual.toUpperCase()));
+        const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual.toUpperCase());
+        const matchProyecto = (proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual.toUpperCase()));
 
         return matchDepto && matchProyecto;
     });
