@@ -513,21 +513,24 @@ async function cargarPlaneacion(){
     const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
     const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
     const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+    const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
     const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
     Object.values(registrosD1).forEach(reg => {
         const otReg = String(reg.ot || "").trim();
         if (otReg && !otsConfiguesSet.has(otReg)) {
             if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                // Buscamos si existe alguna fila previa de referencia en el dataset para conservar su estructura
+                // Buscamos una fila base de referencia en el dataset global o tomamos la primera disponible
                 let filaBase = datosGlobal.find(f => f[idxOT] === otReg);
                 
                 if (!filaBase && datosGlobal.length > 0) {
-                    // En lugar de clonar la primera fila a ciegas (lo que duplica IDs e IMs), 
-                    // creamos una fila limpia basada en la estructura, dejando el ID/IM en blanco o seguros
-                    filaBase = new Array(encabezadosGlobal.length).fill("");
+                    // Clonamos la primera fila como molde para no perder las columnas de texto/estructura
+                    filaBase = [...datosGlobal[0]];
                     filaBase[idxOT] = otReg;
-                    // Opcional: si guardas respaldo del ID en D1 puedes asignarlo, si no, se deja neutro
+                    
+                    // Si tenemos respaldos guardados en D1, los restauramos en su columna correspondiente
+                    if (idxID !== -1 && reg.idOriginal) filaBase[idxID] = reg.idOriginal;
+                    if (idxIM !== -1 && reg.imOriginal) filaBase[idxIM] = reg.imOriginal;
                 }
                 
                 if (filaBase && !datosGlobal.some(f => f[idxOT] === otReg)) {
