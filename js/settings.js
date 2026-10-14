@@ -53,7 +53,7 @@ document.addEventListener("click", async (e) => {
         }
 
         try {
-            const resp = await fetch(`${API_URL}/planeacion/verificar`, {
+            const resp = await fetch(`${API_URL}/verificar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: pass })
@@ -261,71 +261,6 @@ document.addEventListener("click", async (e) => {
                 alert("Ocurrió un error de red al intentar eliminar la OT.");
             }
         });
-        return;
-    }
-
-    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog
-    if (target.closest("#btnProcesarBacklog")) {
-        const fileInput = document.getElementById("inputExcelBacklog");
-        const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
-
-        if (!archivo) {
-            alert("Por favor selecciona un archivo Excel primero.");
-            return;
-        }
-
-        const confirmar = window.confirm(`¿Estás seguro de procesar el archivo "${archivo.name}" para actualizar la base de backlog?`);
-        if (!confirmar) return;
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                
-                const primeraHojaName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[primeraHojaName];
-                const filas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-                if (filas.length === 0) {
-                    alert("El archivo Excel está vacío o no tiene un formato válido.");
-                    return;
-                }
-
-                alert(`Leyendo ${filas.length} filas del Excel. Iniciando envío al servidor...`);
-
-                let exitosos = 0;
-                let errores = 0;
-
-                for (const fila of filas) {
-                    try {
-                        const resp = await fetch(`${API_URL.replace('/planeacion', '/base-backlog')}`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(fila)
-                        });
-                        const resultado = await resp.json();
-                        if (resultado.ok) {
-                            exitosos++;
-                        } else {
-                            errores++;
-                        }
-                    } catch (err) {
-                        errores++;
-                    }
-                }
-
-                alert(`¡Proceso finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
-                fileInput.value = "";
-                document.getElementById("modalAdminTools").style.display = "none";
-
-            } catch (err) {
-                console.error("Error al leer el Excel:", err);
-                alert("Ocurrió un error al procesar el archivo Excel.");
-            }
-        };
-
-        reader.readAsArrayBuffer(archivo);
         return;
     }
 
