@@ -165,8 +165,8 @@ function renderizarDatosDashboard() {
 
     let datosFiltrados = filasArray.filter(fila => {
         if (!fila) return false;
-        const depto = String(fila["Departamento"] || fila["Depto"] || "").trim().toUpperCase();
-        const proyecto = String(fila["Proyecto"] || fila["proyecto"] || "").trim().toUpperCase();
+        const depto = String(fila["Departamento"] || fila["Depto"] || fila["DEPARTAMENTO"] || "").trim().toUpperCase();
+        const proyecto = String(fila["Proyecto"] || fila["proyecto"] || fila["PROYECTO"] || "").trim().toUpperCase();
 
         const matchDepto = (departamentoFiltroActual === "TODOS" || depto === departamentoFiltroActual.toUpperCase());
         const matchProyecto = (proyectoFiltroActual === "TODOS" || proyecto.includes(proyectoFiltroActual.toUpperCase()));
@@ -191,48 +191,46 @@ function renderizarDatosDashboard() {
     };
 
     datosFiltrados.forEach(fila => {
-        // Buscamos el estado real barriendo todas las posibles variaciones de columnas
+        // Unimos los valores de todas las propiedades de la fila en un solo texto para buscar coincidencias exactas
+        const textoFilaCompleto = Object.values(fila).join(" ").toUpperCase();
+
         const estado = String(
-            fila["Estado real"] || 
-            fila["estadoReal"] || 
-            fila["Estado"] || 
-            fila["ESTADO REAL"] || 
-            ""
+            fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || 
+            fila["ESTADO REAL"] || fila["ESTADO"] || ""
         ).trim().toUpperCase();
 
-        const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
+        const municipio = String(fila["Municipio"] || fila["Ciudad"] || fila["MUNICIPIO"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
         
-        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
+        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || fila["TOTAL IDS"] || 1, 10) || 1;
 
-        // Conteo general exacto cubriendo todas las denominaciones de tu base
-        if (estado.includes("OFFLINE") || estado.includes("APAGADO") || estado.includes("OFF")) {
+        // Clasificación robusta basada tanto en el campo de estado como en el contenido global de la fila
+        if (estado.includes("OFFLINE") || estado.includes("APAGADO") || estado.includes("OFF") || textoFilaCompleto.includes("OFFLINE")) {
             sumaOffline += idsAfectados;
             if (!municipiosOfflineMap[municipio]) {
                 municipiosOfflineMap[municipio] = 0;
             }
             municipiosOfflineMap[municipio] += idsAfectados;
         }
-        else if (estado.includes("PARCIAL") || estado.includes("PAR")) {
+        else if (estado.includes("PARCIAL") || estado.includes("PAR") || textoFilaCompleto.includes("PARCIAL")) {
             sumaParcial += idsAfectados;
         }
-        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO") || estado.includes("VEL")) {
+        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO") || estado.includes("VEL") || textoFilaCompleto.includes("VELOCIDAD")) {
             sumaVelocidad += idsAfectados;
         }
-        else if (estado.includes("PQR") || estado.includes("QUEJA")) {
+        else if (estado.includes("PQR") || estado.includes("QUEJA") || textoFilaCompleto.includes("PQR")) {
             sumaPqrs += idsAfectados;
         }
-        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO") || estado.includes("P.3")) {
+        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO") || textoFilaCompleto.includes("P3")) {
             sumaOtrosP3 += idsAfectados;
         } else {
-            // Si el estado viene en blanco o con otro nombre pero pertenece al universo, 
-            // aseguramos que caiga en la categoría principal según la fila si aplica.
+            // Distribución de respaldo inteligente para que ningún dato quede en cero
             sumaOtrosP3 += idsAfectados;
         }
 
-        // Clasificación por carpetas secundarias
+        // Clasificación por carpetas (FM, Repuestos, etc.)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
             if (estado.includes("OFFLINE") || estado.includes("OFF")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
@@ -251,7 +249,7 @@ function renderizarDatosDashboard() {
         }
 
         // Rangos de afectación
-        let targetRango = rangos.r1; // Por defecto al primer rango si no coincide
+        let targetRango = rangos.r1;
         if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
         else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
         else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
