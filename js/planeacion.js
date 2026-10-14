@@ -1998,6 +1998,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
                     const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
+                    const idxID = encabezadosExcel.findIndex(h => normalizar(h) === "ID");
+                    const idxIM = encabezadosExcel.findIndex(h => normalizar(h) === "IM");
+                    const idxDepto = encabezadosExcel.findIndex(h => normalizar(h) === "DEPARTAMENTO");
+                    const idxMuni = encabezadosExcel.findIndex(h => normalizar(h) === "MUNICIPIO");
+                    
                     const idxObs = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
@@ -2106,9 +2111,13 @@ document.addEventListener("DOMContentLoaded", () => {
                                 observacion: obsVal,
                                 estadoGestion: regD1Actual.estadoGestion || "",
                                 tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
-                                acompanamiento: regD1Actual.acompanamiento || ""
+                                acompanamiento: regD1Actual.acompanamiento || "",
+                                idOriginal: idxID !== -1 ? String(filter[idxID] || "").trim() : (regD1Actual.idOriginal || ""),
+                                imOriginal: idxIM !== -1 ? String(filter[idxIM] || "").trim() : (regD1Actual.imOriginal || ""),
+                                departamentoOriginal: idxDepto !== -1 ? String(filter[idxDepto] || "").trim() : (regD1Actual.departamentoOriginal || ""),
+                                municipioOriginal: idxMuni !== -1 ? String(filter[idxMuni] || "").trim() : (regD1Actual.municipioOriginal || "")
                             };
-
+                            
                             try {
                                 const resp = await fetch(API_URL, {
                                     method: "POST",
