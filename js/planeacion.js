@@ -524,21 +524,15 @@ const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
                 // Creamos una fila limpia basada en la estructura general del dataset
                 let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
                 
-                // Limpiamos todas las celdas para que no arrastren valores de la primera fila
+                // Limpiamos todas las celdas para que no arrastren valores cruzados
                 filaRescatada = filaRescatada.map(() => "");
 
-                // Asignamos la OT y los datos propios de este registro específico
+                // Asignamos cada valor en su índice exacto detectado por los nombres de columnas
                 filaRescatada[idxOT] = otReg;
                 if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
                 if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                
-                // Si el departamento guardado en D1 es válido, lo usamos; si no, ponemos un indicador limpio
-                if (idxDepto !== -1) {
-                    filaRescatada[idxDepto] = (reg.departamentoOriginal && reg.departamentoOriginal !== "Guardado en D1") ? reg.departamentoOriginal : "--";
-                }
-                if (idxMuni !== -1) {
-                    filaRescatada[idxMuni] = reg.municipioOriginal || "--";
-                }
+                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
+                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
 
                 if (!datosGlobal.some(f => f[idxOT] === otReg)) {
                     datosGlobal.push(filaRescatada);
