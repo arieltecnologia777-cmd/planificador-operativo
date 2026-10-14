@@ -37,19 +37,19 @@ async function inicializarDashboard() {
         renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
-        // Petición directa al Worker de Cloudflare D1 (/base-backlog)
+        // Petición directa al Worker de Cloudflare D1
         const resp = await fetch(WORKER_DATA_URL);
         const jsonRegistros = await resp.json();
 
-        // Convertimos el objeto JSON devuelto por D1 en un arreglo plano de filas
+        // Convertimos el objeto JSON devuelto por D1 en un arreglo de filas para mantener compatibilidad con el dashboard
         const valoresArray = Object.values(jsonRegistros);
-        if (!valoresArray.length) {
-            console.warn("La tabla base_backlog está vacía.");
-            return;
-        }
+        if (!valoresArray.length) return;
 
-        // Guardamos directamente cada objeto de la fila en datosGlobal
-        datosGlobal = valoresArray;
+        // Extraemos las llaves (columnas) del primer registro para armar los encabezados
+        encabezadosGlobal = Object.keys(valoresArray[0]);
+        
+        // Mapeamos cada objeto a un arreglo ordenado según los encabezados
+        datosGlobal = valoresArray.map(obj => encabezadosGlobal.map(h => obj[h] !== undefined ? obj[h] : ""));
 
         renderizarDatosDashboard();
         cargarYCalcularBacklogUnificado();
@@ -57,6 +57,7 @@ async function inicializarDashboard() {
         console.error("Error al cargar los datos del Worker en el dashboard:", error);
     }
 }
+
 function renderizarPinesEstaticos(deptoSeleccionado) {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor) return;
@@ -207,44 +208,37 @@ function renderizarDatosDashboard() {
     };
 
     datosFiltrados.forEach(fila => {
-        // Limpiamos y normalizamos el estado para evitar problemas de tildes o mayúsculas
-        const estadoBruto = String(fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || "").trim().toUpperCase();
-        const municipio = String(fila["Municipio"] || "SIN MUNICIPIO").trim();
-        const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
-        const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
-        const stopperFmAD = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || "").trim().toUpperCase();
-        const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
-        
-        // Obtenemos los IDs afectados de forma segura (si viene vacío o no es número, cuenta como 1)
-        const idsAfectados = parseInt(fila["Total IDs afectados"] || fila["Total IDs"] || 1, 10) || 1;
+        const estado = String(fila[colEstado] || "").trim().toUpperCase();
+        const municipio = String(fila[colMun] || "SIN MUNICIPIO").trim();
+        const clasificacionU = String(fila[colCarpetaU] || "").trim().toUpperCase();
+        const stopperRep = String(fila[colStopperRepuestos] || "").trim().toUpperCase();
+        const stopperFM = String(fila[colStopperFM] || "").trim().toUpperCase();
+        const rangoK = String(fila[colRangoK] || "").trim().toUpperCase();
+        const idsAfectados = parseInt(fila[colIds], 10) || 0;
 
-        if (estadoBruto.includes("OFFLINE") || estadoBruto.includes("APAGADO")) {
+        if (estado.includes("OFFLINE")) {
             sumaOffline += idsAfectados;
             if (!municipiosOfflineMap[municipio]) {
                 municipiosOfflineMap[municipio] = 0;
             }
             municipiosOfflineMap[municipio] += idsAfectados;
         }
-        else if (estadoBruto.includes("PARCIAL")) {
-            sumaParcial += idsAfectados;
-        }
-        else if (estadoBruto.includes("VELOCIDAD") || estadoBruto.includes("LENTO")) {
-            sumaVelocidad += idsAfectados;
-        }
-        else if (estadoBruto.includes("PQR") || estadoBruto.includes("QUEJA")) {
-            sumaPqrs += idsAfectados;
-        }
-        else if (estadoBruto.includes("P3") || estadoBruto.includes("OTROS") || estadoBruto.includes("OTRO")) {
-            sumaOtrosP3 += idsAfectados;
+        else if (estado.includes("PARCIAL")) sumaParcial += idsAfectados;
+        else if (estado.includes("VELOCIDAD")) sumaVelocidad += idsAfectados;
+        else if (estado.includes("PQR")) sumaPqrs += idsAfectados;
+        else if (estado.includes("P3") || estado.includes("OTROS")) sumaOtrosP3 += idsAfectados;
+
+        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION")) {
+            if (estado.includes("OFFLINE")) fmOff += idsAfectados;
+            else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) fmVel += idsAfectados;
+            else if (estado.includes("PQR")) fmPqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
-            if (estadoBruto.includes("OFFLINE")) fmOff += idsAfectados;
-            else if (estadoBruto.includes("PARCIAL")) fmPar += idsAfectados;
-            else if (estadoBruto.includes("VELOCIDAD")) fmVel += idsAfectados;
-            else if (estadoBruto.includes("PQR")) fmPqr += idsAfectados;
-            else if (estadoBruto.includes("P3") || estadoBruto.includes("OTROS")) fmP3 += idsAfectados;
-        }
+        const estadoReal = String(fila[19] || "").trim().toUpperCase();
+        const stopperRepuestosAC = String(fila[28] || "").trim().toUpperCase();
+        const stopperFmAD = String(fila[29] || "").trim().toUpperCase();
 
         const esValidoRepuesto = stopperRepuestosAC.includes("REPUESTO P3") || 
                                  stopperRepuestosAC.includes("REPUESTOS") || 
@@ -259,29 +253,30 @@ function renderizarDatosDashboard() {
         const esRepuestoEstricto = esValidoRepuesto && !tieneFmEnAD;
 
         if (esRepuestoEstricto) {
-            if (estadoBruto.includes("OFFLINE")) repOff += idsAfectados;
-            else if (estadoBruto.includes("PARCIAL")) repPar += idsAfectados;
-            else if (estadoBruto.includes("VELOCIDAD")) repVel += idsAfectados;
-            else if (estadoBruto.includes("PQR")) repPqr += idsAfectados;
-            else if (estadoBruto.includes("P3") || estadoBruto.includes("OTROS")) repP3 += idsAfectados;
+            if (estadoReal.includes("OFFLINE")) repOff += idsAfectados;
+            else if (estadoReal.includes("PARCIAL")) repPar += idsAfectados;
+            else if (estadoReal.includes("VELOCIDAD")) repVel += idsAfectados;
+            else if (estadoReal.includes("PQR")) repPqr += idsAfectados;
+            else if (estadoReal.includes("P3") || estadoReal.includes("OTROS")) repP3 += idsAfectados;
         }
 
         let targetRango = null;
-        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5") || rangoK.includes("1. MENOR")) targetRango = rangos.r1;
-        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
-        else if (rangoK.includes("15 A 30") || rangoK.includes("15-30") || rangoK.includes("3. DE 15")) targetRango = rangos.r3;
+        if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5")) targetRango = rangos.r1;
+        else if (rangoK.includes("5 A 15") || rangoK.includes("5-15")) targetRango = rangos.r2;
+        else if (rangoK.includes("15 A 30") || rangoK.includes("15-30")) targetRango = rangos.r3;
         else if (rangoK.includes("30 A 45") || rangoK.includes("30-45")) targetRango = rangos.r4;
         else if (rangoK.includes("45 A 60") || rangoK.includes("45-60")) targetRango = rangos.r5;
         else if (rangoK.includes("MAYOR A 60") || rangoK.includes("> 60")) targetRango = rangos.r6;
 
         if (targetRango) {
-            if (estadoBruto.includes("OFFLINE")) targetRango.off += idsAfectados;
-            else if (estadoBruto.includes("PARCIAL")) targetRango.par += idsAfectados;
-            else if (estadoBruto.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
-            else if (estadoBruto.includes("PQR")) targetRango.pqr += idsAfectados;
-            else if (estadoBruto.includes("P3") || estadoBruto.includes("OTROS")) targetRango.p3 += idsAfectados;
+            if (estado.includes("OFFLINE")) targetRango.off += idsAfectados;
+            else if (estado.includes("PARCIAL")) targetRango.par += idsAfectados;
+            else if (estado.includes("VELOCIDAD")) targetRango.vel += idsAfectados;
+            else if (estado.includes("PQR")) targetRango.pqr += idsAfectados;
+            else if (estado.includes("P3") || estado.includes("OTROS")) targetRango.p3 += idsAfectados;
         }
     });
+
     let topMunicipiosArray = Object.entries(municipiosOfflineMap)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 2);
