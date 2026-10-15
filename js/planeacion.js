@@ -358,12 +358,14 @@ function pintarTabla(datos){
     const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
     const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
     const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
-    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
-    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
-    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
-    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM"]);
-    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM"]);
+    
+    // Índices ampliados con múltiples opciones para evitar que devuelvan -1
+    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog", "Indicador_Backlog"]);
+    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3", "Stopper_P3"]);
+    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT", "Estado_OT"]);
+    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio", "Tipo_Facturacion"]);
+    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM", "Fecha_Vencimiento_FM"]);
+    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM", "Alerta_Vencimiento_FM"]);
 
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
@@ -397,8 +399,8 @@ function pintarTabla(datos){
             <td>${fila[idxDepto] !== undefined ? fila[idxDepto] : ""}</td>
             <td>${fila[idxMunicipio] !== undefined ? fila[idxMunicipio] : ""}</td>
             <td>${fila[idxIM] !== undefined ? fila[idxIM] : ""}</td>
-            <td>${fila[idxOT] !== undefined ? fila[idxOT] : ""}</td>
-            <td>${fila[idxAfectacion] !== undefined ? fila[idxAfectacion] : ""}</td>
+            <td><b>${otVal}</b></td>
+            <td>${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}</td>
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
             <td class="${ocultarClase}">${idxIdsAfectados !== -1 ? (fila[idxIdsAfectados] || "") : ""}</td>
             <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
