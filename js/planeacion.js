@@ -99,6 +99,7 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
+    /* --- FIJACIÓN GENERAL Y UNIFICADA PARA TODOS LOS TH --- */
     .planeacion-table tr th {
         position: sticky !important;
         top: 0px !important;
@@ -107,6 +108,7 @@ styleGrupoExcel.innerHTML = `
         user-select: none;
     }
 
+    /* --- PRIORIDAD ABSOLUTA PARA LAS COLUMNAS FIJAS IZQUIERDAS (INCLUYENDO ID) --- */
     .planeacion-table tr th:nth-child(1),
     .planeacion-table tr th:nth-child(2),
     .planeacion-table tr th:nth-child(3) {
@@ -132,40 +134,95 @@ styleGrupoExcel.innerHTML = `
 `;
 document.head.appendChild(styleGrupoExcel);
 
+
 const TECNICOS = [
-    "ABNER ALBERTO ARIAS PEREZ", "ALVARO DE JESUS PEÑALOZA CASTILLEJO", "ALVARO ENRIQUE LAMBRAÑO MUÑOZ",
-    "ALVARO JOSE MEDINA MENDOZA", "ALVARO ROJAS MISAS", "ANDERSON JOSE CANCINO ESPITIA",
-    "ANDRES DAVID MONTES HERRERA", "ANDRES SANTIAGO JARAMILLO MESA", "ARMANDO JOSE DE LUQUE BARROS",
-    "BREINER ANTONIO MAGDANIEL GARIZABAL", "CAMILO ANDRES SALAZAR BARBOSA", "CAMILO ANTONIO ORTEGA DIAZ",
-    "CARLOS ADRIAN OROZCO PINZON", "CARLOS ANDRES ROLDAN CORREA", "CARLOS JULIO MOGOLLON LOBO",
-    "CARLOS MARIO SANCHEZ BRITO", "CRISTIAN JOSE HERNANDEZ GARCIA", "DANIEL ANDRES ARRIETA YEPES",
-    "DANILO JOSE ROMERO RINCON", "DEWIN LEONARDO TAPIA MONTALVO", "DIEGO ALEJANDRO PELAEZ GUTIERREZ",
-    "DIEGO AMETH SALAZAR OVIEDO", "DIEGO ARMANDO CORREA CHITIVA", "DIEGO ARMANDO QUINTERO BADILLO",
-    "EDER ALEXANDER GONZALEZ GONZALEZ", "EDUAR ARMANDO QUINCHIA GOMEZ", "EDUARDO ADOLFO PRETEL MORALES",
-    "EIDER RAFAEL QUINTERO CUELLO", "ELGER LUIS HERNANDEZ RUIZ", "ELIAN DAVID RODRIGUEZ BUELVAS",
-    "ELIAN MAURICIO MIER DURAN", "ELIAN QUINTERO ROZO", "EVER MANUEL MERCADO YANCE",
-    "FABIAN FERNANDEZ CONTRERERAS", "HAILEN JULIO CHARRY DE AVILA", "HARDY WHITAKER HOWARD",
-    "HAROLD ANTONIO RAMOS VELILLA", "HUMBERTO RAFAEL DEECHE OROZCO", "ILDE ALBEIRO SALAZAR OSSA",
-    "ISAAC DAVID BARON CARDENAS", "ISAAC DAVID CAMELO ARRIETA", "JADER ARLEY ROJAS CESPEDES",
-    "JEAN CARLOS GUERRA SAAH", "JHON ANTONY PARADA LOBO", "JHON CARLOS FRAGOZO MORALES",
-    "JORGE GUTIERREZ BERNIER JOSE", "JORGE LUIS MURILLO AGUIRRE", "JOSE DAVID MENDOZA PINTO",
-    "JOSE MIGUEL EPIAYU IPUANA", "JOSEPH DANIEL DURAN COBO", "JUAN ANDRES ANGEL GOMEZ",
-    "JUAN CAMILO RODRIGUEZ LOPERA", "JUAN DAVID SUAREZ LOPERA", "JUAN DAVID TORO GIRALDO",
-    "JUAN JOSE SUAREZ JARAMILLO", "JUAN MANUEL TORRES HERNANDEZ", "KEVIN RENE LONDOÑO QUINTERO",
-    "LEONARDO ANDRES SOLANO POLO", "LUCIANO DAVID HERNANDEZ MORALES", "LUIS ANTONIO SANCHEZ ARIAS",
-    "LUIS DAVID PEDROZO FERNANDEZ", "MAIRON CANTERO JIMENEZ", "MANUEL ALBERTO RODRIGUEZ BUELVAS",
-    "MANUEL ENRIQUE BARROS PEREZ", "MANUEL ENRIQUE OVIEDO TRESPALACIOS", "MARCOS ANTONIO RIASCOS LUNA",
-    "MIGUEL ANGEL AGREDO MONTOYA", "NALDO GABRIEL RINCÓN RINCÓN", "OSMAN DANIEL GRANADILLO ALVAREZ",
-    "RAVER ARANIS GAMEZ RODRIGUEZ", "RICHARD RICARDO GAMEZ MOLINA", "ROBIN ROJAS JIMENEZ",
-    "SAMMY ELIUD VARGAS SIERRA", "SAMUEL PUSHAINA PUSHAINA", "SAYDER FRANCISCO RODRIGUEZ BARLIZA",
-    "SILVIO ALBERTO SIERRA MENESES", "YAIR ANDRES DIAZ POLO", "YESID ADOLFO VALLEJO CABRERA",
-    "YESITH RANGEL PADILLA", "YORMAN DAVID DUQUE GUERRA"
+    "ABNER ALBERTO ARIAS PEREZ",
+    "ALVARO DE JESUS PEÑALOZA CASTILLEJO",
+    "ALVARO ENRIQUE LAMBRAÑO MUÑOZ",
+    "ALVARO JOSE MEDINA MENDOZA",
+    "ALVARO ROJAS MISAS",
+    "ANDERSON JOSE CANCINO ESPITIA",
+    "ANDRES DAVID MONTES HERRERA",
+    "ANDRES SANTIAGO JARAMILLO MESA",
+    "ARMANDO JOSE DE LUQUE BARROS",
+    "BREINER ANTONIO MAGDANIEL GARIZABAL",
+    "CAMILO ANDRES SALAZAR BARBOSA",
+    "CAMILO ANTONIO ORTEGA DIAZ",
+    "CARLOS ADRIAN OROZCO PINZON",
+    "CARLOS ANDRES ROLDAN CORREA",
+    "CARLOS JULIO MOGOLLON LOBO",
+    "CARLOS MARIO SANCHEZ BRITO",
+    "CRISTIAN JOSE HERNANDEZ GARCIA",
+    "DANIEL ANDRES ARRIETA YEPES",
+    "DANILO JOSE ROMERO RINCON",
+    "DEWIN LEONARDO TAPIA MONTALVO",
+    "DIEGO ALEJANDRO PELAEZ GUTIERREZ",
+    "DIEGO AMETH SALAZAR OVIEDO",
+    "DIEGO ARMANDO CORREA CHITIVA",
+    "DIEGO ARMANDO QUINTERO BADILLO",
+    "EDER ALEXANDER GONZALEZ GONZALEZ",
+    "EDUAR ARMANDO QUINCHIA GOMEZ",
+    "EDUARDO ADOLFO PRETEL MORALES",
+    "EIDER RAFAEL QUINTERO CUELLO",
+    "ELGER LUIS HERNANDEZ RUIZ",
+    "ELIAN DAVID RODRIGUEZ BUELVAS",
+    "ELIAN MAURICIO MIER DURAN",
+    "ELIAN QUINTERO ROZO",
+    "EVER MANUEL MERCADO YANCE",
+    "FABIAN FERNANDEZ CONTRERERAS",
+    "HAILEN JULIO CHARRY DE AVILA",
+    "HARDY WHITAKER HOWARD",
+    "HAROLD ANTONIO RAMOS VELILLA",
+    "HUMBERTO RAFAEL DEECHE OROZCO",
+    "ILDE ALBEIRO SALAZAR OSSA",
+    "ISAAC DAVID BARON CARDENAS",
+    "ISAAC DAVID CAMELO ARRIETA",
+    "JADER ARLEY ROJAS CESPEDES",
+    "JEAN CARLOS GUERRA SAAH",
+    "JHON ANTONY PARADA LOBO",
+    "JHON CARLOS FRAGOZO MORALES",
+    "JORGE GUTIERREZ BERNIER JOSE",
+    "JORGE LUIS MURILLO AGUIRRE",
+    "JOSE DAVID MENDOZA PINTO",
+    "JOSE MIGUEL EPIAYU IPUANA",
+    "JOSEPH DANIEL DURAN COBO",
+    "JUAN ANDRES ANGEL GOMEZ",
+    "JUAN CAMILO RODRIGUEZ LOPERA",
+    "JUAN DAVID SUAREZ LOPERA",
+    "JUAN DAVID TORO GIRALDO",
+    "JUAN JOSE SUAREZ JARAMILLO",
+    "JUAN MANUEL TORRES HERNANDEZ",
+    "KEVIN RENE LONDOÑO QUINTERO",
+    "LEONARDO ANDRES SOLANO POLO",
+    "LUCIANO DAVID HERNANDEZ MORALES",
+    "LUIS ANTONIO SANCHEZ ARIAS",
+    "LUIS DAVID PEDROZO FERNANDEZ",
+    "MAIRON CANTERO JIMENEZ",
+    "MANUEL ALBERTO RODRIGUEZ BUELVAS",
+    "MANUEL ENRIQUE BARROS PEREZ",
+    "MANUEL ENRIQUE OVIEDO TRESPALACIOS",
+    "MARCOS ANTONIO RIASCOS LUNA",
+    "MIGUEL ANGEL AGREDO MONTOYA",
+    "NALDO GABRIEL RINCÓN RINCÓN",
+    "OSMAN DANIEL GRANADILLO ALVAREZ",
+    "RAVER ARANIS GAMEZ RODRIGUEZ",
+    "RICHARD RICARDO GAMEZ MOLINA",
+    "ROBIN ROJAS JIMENEZ",
+    "SAMMY ELIUD VARGAS SIERRA",
+    "SAMUEL PUSHAINA PUSHAINA",
+    "SAYDER FRANCISCO RODRIGUEZ BARLIZA",
+    "SILVIO ALBERTO SIERRA MENESES",
+    "YAIR ANDRES DIAZ POLO",
+    "YESID ADOLFO VALLEJO CABRERA",
+    "YESITH RANGEL PADILLA",
+    "YORMAN DAVID DUQUE GUERRA"
 ];
 
 function esCasoNuevo(otVal) {
     const reg = (window.registrosD1 || {})[otVal];
     if (!reg) return true;
     if (!reg.createdAt) return false;
+
     const fechaCreacionD1 = String(reg.createdAt).split('T')[0];
     const hoy = new Date().toLocaleDateString('en-CA');
     return fechaCreacionD1 === hoy;
@@ -208,6 +265,7 @@ function inicializarRedimensionamientoColumnas() {
             function mouseMoveHandler(e) {
                 const dx = e.clientX - x;
                 const nuevoAncho = Math.max(50, w + dx);
+                
                 th.style.width = `${nuevoAncho}px`;
                 th.style.minWidth = `${nuevoAncho}px`;
                 th.style.maxWidth = `${nuevoAncho}px`;
@@ -242,8 +300,11 @@ function aplicarEstadoGrupoColumnas() {
 
     indicesGrupo.forEach(idx => {
         if (ths[idx]) {
-            if (grupoColumnasColapsado) ths[idx].classList.add("col-grupo-oculta");
-            else ths[idx].classList.remove("col-grupo-oculta");
+            if (grupoColumnasColapsado) {
+                ths[idx].classList.add("col-grupo-oculta");
+            } else {
+                ths[idx].classList.remove("col-grupo-oculta");
+            }
         }
     });
 
@@ -251,8 +312,11 @@ function aplicarEstadoGrupoColumnas() {
         const celdas = fila.children;
         indicesGrupo.forEach(idx => {
             if (celdas[idx]) {
-                if (grupoColumnasColapsado) celdas[idx].classList.add("col-grupo-oculta");
-                else celdas[idx].classList.remove("col-grupo-oculta");
+                if (grupoColumnasColapsado) {
+                    celdas[idx].classList.add("col-grupo-oculta");
+                } else {
+                    celdas[idx].classList.remove("col-grupo-oculta");
+                }
             }
         });
     });
@@ -280,11 +344,31 @@ function buscarIndiceColumnaFlexible(encabezados, terminos) {
 }
 
 function pintarTabla(datos){
+    const encabezados = encabezadosGlobal;
+
+    const idxID = buscarIndiceColumnaFlexible(encabezados, ["ID"]);
+    const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
+    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
+    const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
+    const idxIM = buscarIndiceColumnaFlexible(encabezados, ["IM"]);
+    const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
+    const idxIdsAfectados = buscarIndiceColumnaFlexible(encabezados, ["Total IDs afectados", "IDs afectados"]);
+    const idxDias = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
+    const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
+    const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
+    const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
+    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
+    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
+    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
+    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
+    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM"]);
+    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM"]);
+
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
     planeacionBody.innerHTML = datos.map(fila => {
-        const otVal = String(fila[4] || "").trim();
+        const otVal = String(fila[idxOT] || "").trim();
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
         const nuevo = esCasoNuevo(otVal);
@@ -308,18 +392,18 @@ function pintarTabla(datos){
 
         return `
         <tr>
-            <td>${fila[0] !== undefined ? fila[0] : ""}</td>
-            <td>${fila[1] !== undefined ? fila[1] : ""}</td>
-            <td>${fila[2] !== undefined ? fila[2] : ""}</td>
-            <td>${fila[3] !== undefined ? fila[3] : ""}</td>
-            <td>${fila[4] !== undefined ? fila[4] : ""}</td>
-            <td>${fila[5] !== undefined ? fila[5] : ""}</td>
+            <td>${fila[idxID] !== undefined ? fila[idxID] : ""}</td>
+            <td>${fila[idxDepto] !== undefined ? fila[idxDepto] : ""}</td>
+            <td>${fila[idxMunicipio] !== undefined ? fila[idxMunicipio] : ""}</td>
+            <td>${fila[idxIM] !== undefined ? fila[idxIM] : ""}</td>
+            <td>${fila[idxOT] !== undefined ? fila[idxOT] : ""}</td>
+            <td>${fila[idxAfectacion] !== undefined ? fila[idxAfectacion] : ""}</td>
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
-            <td class="${ocultarClase}">${fila[7] !== undefined ? fila[7] : ""}</td>
-            <td class="${ocultarClase}">${fila[8] !== undefined ? fila[8] : ""}</td>
-            <td class="${ocultarClase}">${fila[9] !== undefined ? fila[9] : ""}</td>
-            <td class="${ocultarClase}">${fila[10] !== undefined ? fila[10] : ""}</td>
-            <td class="${ocultarClase}">${fila[11] !== undefined ? fila[11] : ""}</td>
+            <td class="${ocultarClase}">${idxIdsAfectados !== -1 ? (fila[idxIdsAfectados] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxRangoAfectacion !== -1 ? (fila[idxRangoAfectacion] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxStoppersDominion !== -1 ? (fila[idxStoppersDominion] || "") : ""}</td>
             <td>
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
@@ -338,10 +422,15 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <input class="edit-input observacion" value="${(d1.observacion || fila[14] || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
+                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
+                        
                         <button type="button" class="btn-abrir-modal-obs" 
-                            data-ot="${otVal}" data-id="${fila[0] || ""}" data-depto="${fila[1] || ""}" 
-                            data-muni="${fila[2] || ""}" data-afec="${fila[5] || ""}" title="Ampliar y editar observaciones">✏️</button>
+                            data-ot="${otVal}" 
+                            data-id="${idxID !== -1 ? (fila[idxID] || "") : ""}" 
+                            data-depto="${idxDepto !== -1 ? (fila[idxDepto] || "") : ""}" 
+                            data-muni="${idxMunicipio !== -1 ? (fila[idxMunicipio] || "") : ""}" 
+                            data-afec="${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}" 
+                            title="Ampliar y editar observaciones">✏️</button>
                     </div>
                 </div>
             </td>
@@ -369,12 +458,12 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
-            <td>${fila[18] !== undefined ? fila[18] : ""}</td>
-            <td>${fila[19] !== undefined ? fila[19] : ""}</td>
-            <td>${fila[20] !== undefined ? fila[20] : ""}</td>
-            <td>${fila[21] !== undefined ? fila[21] : ""}</td>
-            <td>${fila[22] !== undefined ? fila[22] : ""}</td>
-            <td>${fila[23] !== undefined ? fila[23] : ""}</td>
+            <td>${idxBacklog !== -1 ? (fila[idxBacklog] || "") : ""}</td>
+            <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
+            <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
+            <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
+            <td>${idxFechaFM !== -1 ? (fila[idxFechaFM] || "") : ""}</td>
+            <td>${idxAlertaFM !== -1 ? (fila[idxAlertaFM] || "") : ""}</td>
         </tr>`;
     }).join("");
 
@@ -385,18 +474,18 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
+        // 1. Cargamos directamente los datos desde la tabla unificada base_backlog en Cloudflare D1
         const respBacklog = await fetch(WORKER_DATA_URL);
         const dataBacklog = await respBacklog.json();
 
-        let registrosD1 = {};
-        try {
-            const respD1 = await fetch(API_URL);
-            registrosD1 = await respD1.json();
-        } catch (error) {
-            console.error("Error al cargar registros D1:", error);
+        let listaRegistros = [];
+        if (Array.isArray(dataBacklog)) {
+            listaRegistros = dataBacklog;
+        } else if (dataBacklog && typeof dataBacklog === 'object') {
+            listaRegistros = Object.values(dataBacklog);
         }
-        window.registrosD1 = registrosD1;
 
+        // Definimos los encabezados estándar que espera tu lógica original de filtros y búsqueda flexible
         encabezadosGlobal = [
             "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
             "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
@@ -406,63 +495,71 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
-        let listaRegistros = [];
-        if (Array.isArray(dataBacklog)) {
-            listaRegistros = dataBacklog;
-        } else if (dataBacklog && typeof dataBacklog === 'object') {
-            listaRegistros = Object.values(dataBacklog);
-        }
-
+        // Mapeamos los objetos JSON de D1 a filas (arrays) exactamente como los procesaba tu función vieja del CSV
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
             return [
-                reg.id || reg.ID || "",
-                reg.departamento || reg.Departamento || "",
-                reg.municipio || reg.Municipio || "",
-                reg.im || reg.IM || "",
-                reg.ot || reg.OT || "",
-                reg.afectacion || reg.tipo_afectacion || reg.Afectacion || "",
-                "",
-                reg.total_ids_afectados || reg.ids_afectados || reg.totalIdsAfectados || "",
-                reg.dias_vigencia_ot || reg.dias_ot || reg.diasOt || "",
-                reg.rango_afectacion || reg.rangoAfectacion || "",
-                reg.tipo_prioridad || reg.prioridad || "",
-                reg.stoppers_dominion || reg.stoppers || "",
-                reg.estado_programacion || reg.estadoProgramacion || "",
-                reg.fecha_programacion || reg.fechaProgramacion || "",
-                reg.observaciones || reg.observacion || "",
-                reg.estado_gestion || reg.estadoGestion || "",
-                reg.tecnico_asignado || reg.tecnicoAsignado || "",
-                reg.acompanamiento || "",
-                reg.indicador_backlog || reg.backlog || "",
-                reg.stopper_p3 || reg.stopperP3 || "",
-                reg.estado_ot || reg.estadoOt || "",
-                reg.tipo_facturacion || reg.tipoFacturacion || "",
-                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "",
-                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || ""
+                reg.id || reg.ID || "",                                                 // 0: ID
+                reg.departamento || reg.Departamento || "",                             // 1: Departamento
+                reg.municipio || reg.Municipio || "",                                   // 2: Municipio
+                reg.im || reg.IM || "",                                                 // 3: IM
+                reg.ot || reg.OT || "",                                                 // 4: OT
+                reg.afectacion || reg.tipo_afectacion || reg.Afectacion || "",          // 5: Tipo de afectación
+                "",                                                                     // 6: Nuevo
+                reg.total_ids_afectados || reg.ids_afectados || reg.totalIdsAfectados || "", // 7: Total IDs afectados
+                reg.dias_vigencia_ot || reg.dias_ot || reg.diasOt || "",                // 8: Días vigencia OT
+                reg.rango_afectacion || reg.rangoAfectacion || "",                      // 9: Rango de afectación
+                reg.tipo_prioridad || reg.prioridad || "",                              // 10: Tipo de prioridad
+                reg.stoppers_dominion || reg.stoppers || "",                            // 11: Stoppers Dominion
+                reg.estado_programacion || reg.estadoProgramacion || "",                // 12: Estado Programación
+                reg.fecha_programacion || reg.fechaProgramacion || "",                  // 13: Fecha Programación
+                reg.observaciones || reg.observacion || "",                             // 14: Observaciones
+                reg.estado_gestion || reg.estadoGestion || "",                          // 15: Estado Gestión
+                reg.tecnico_asignado || reg.tecnicoAsignado || "",                      // 16: Técnico Asignado
+                reg.acompanamiento || "",                                               // 17: Acompañamiento
+                reg.indicador_backlog || reg.backlog || "",                             // 18: Indicador backlog
+                reg.stopper_p3 || reg.stopperP3 || "",                                  // 19: Stopper P3
+                reg.estado_ot || reg.estadoOt || "",                                    // 20: Estado OT
+                reg.tipo_facturacion || reg.tipoFacturacion || "",                      // 21: Tipo facturación
+                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "",               // 22: Fecha vencimiento FM
+                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || ""              // 23: Alerta vencimiento FM
             ];
         });
 
-        const idxOT = 4;
-        const idxID = 0;
-        const idxIM = 3;
-        const idxDepto = 1;
-        const idxMuni = 2;
-        
+        // 2. Cargamos los estados, fechas y notas guardadas en D1 (registrosD1)
+        let registrosD1 = {};
+        try {
+            const respD1 = await fetch(API_URL);
+            registrosD1 = await respD1.json();
+        } catch (error) {
+            console.error("Error al cargar registros D1:", error);
+        }
+        window.registrosD1 = registrosD1;
+
+        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
+        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
             if (otReg && !otsConfiguesSet.has(otReg)) {
                 if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                    let filaRescatada = new Array(encabezadosGlobal.length).fill("");
+                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                    filaRescatada = filaRescatada.map(() => "");
+
                     filaRescatada[idxOT] = otReg;
-                    filaRescatada[idxID] = reg.idOriginal || reg.id || "--";
-                    filaRescatada[idxIM] = reg.imOriginal || reg.im || "--";
-                    filaRescatada[idxDepto] = reg.departamentoOriginal || reg.departamento || "--";
-                    filaRescatada[idxMuni] = reg.municipioOriginal || reg.municipio || "--";
-                    datosGlobal.push(filaRescatada);
+                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
+                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
+                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
+                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+
+                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                        datosGlobal.push(filaRescatada);
+                    }
                 }
             }
         });
@@ -474,7 +571,7 @@ async function cargarPlaneacion(){
         actualizarKPIs(datosGlobal);
 
     } catch (error) {
-        console.error("❌ Error al cargar planeación desde D1 (base-backlog):", error);
+        console.error("❌ Error al cargar planeación desde D1:", error);
     }
 }
 
@@ -501,7 +598,9 @@ function actualizarKPIs(datos){
         if (ot && !otsProcesadasIds.has(ot)) {
             otsProcesadasIds.add(ot);
             const valIds = parseInt(idxIdsAfectados !== -1 ? fila[idxIdsAfectados] : 0, 10);
-            if (!isNaN(valIds)) sumaIdsAfectados += valIds;
+            if (!isNaN(valIds)) {
+                sumaIdsAfectados += valIds;
+            }
         }
 
         const regD1 = (window.registrosD1 || {})[ot] || {};
@@ -514,7 +613,9 @@ function actualizarKPIs(datos){
         if (backlog === "CUMPLE") otsCumple.add(ot);
         if (backlog === "NO CUMPLE") otsNoCumple.add(ot);
 
-        if (regD1.estadoProgramacion === "Programada") otsProgramadas.add(ot);
+        if (regD1.estadoProgramacion === "Programada") {
+            otsProgramadas.add(ot);
+        }
     });
 
     const elAlta = document.getElementById("kpiAltaPlaneacion");
@@ -585,6 +686,42 @@ function actualizarOpcionesFiltros(datos) {
     const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
 
+    const txtNuevo = document.getElementById("textoNuevo");
+    if (txtNuevo) {
+        if (nuevosSeleccionados.length === 1) {
+            txtNuevo.textContent = `¿Caso nuevo?: ${nuevosSeleccionados[0]}`;
+        } else {
+            txtNuevo.textContent = "¿Caso nuevo?";
+        }
+    }
+    const txtDepto = document.getElementById("textoDepartamento");
+    if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
+
+    const txtEstado = document.getElementById("textoEstado");
+    if (txtEstado) txtEstado.textContent = estadosGestionSeleccionados.length ? `Estado (${estadosGestionSeleccionados.length})` : "Estado";
+
+    const txtAfec = document.getElementById("textoAfectacion");
+    if (txtAfec) txtAfec.textContent = afectacionesSeleccionadas.length === 0 ? "Tipo de afectación" : `Afectación (${afectacionesSeleccionadas.length})`;
+
+    const txtStop = document.getElementById("textoStoppers");
+    if (txtStop) txtStop.textContent = stoppersSeleccionados.length === 0 ? "Stoppers" : `Stoppers (${stoppersSeleccionados.length})`;
+
+    const txtDiasOT = document.getElementById("textoDiasOT");
+    if (txtDiasOT) txtDiasOT.textContent = diasOtSeleccionados.length === 0 ? "Días OT" : `Días OT (${diasOtSeleccionados.length})`;
+
+    const txtRang = document.getElementById("textoRango");
+    if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
+
+    const txtBacklog = document.getElementById("textoBacklog");
+    if (txtBacklog) txtBacklog.textContent = backlogSeleccionados.length === 0 ? "Incumple Backlog" : `Backlog (${backlogSeleccionados.length})`;
+
+    const txtEstadoOT = document.getElementById("textoEstadoOT");
+    if (txtEstadoOT) txtEstadoOT.textContent = estadoOTSeleccionados.length === 0 ? "Estado OT" : `Estado OT (${estadoOTSeleccionados.length})`;
+
+    const txtFP = document.getElementById("textoFechaProg");
+    if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
+
+    // --- FILTRADO EN CASCADA COMPLETO ---
     const datosBaseKpi = obtenerDatosBaseParaFiltros();
 
     const filtrarParaLista = (excluirFiltro) => {
@@ -643,7 +780,217 @@ function actualizarOpcionesFiltros(datos) {
             <input type="text" id="buscarNuevo" class="buscar-multifiltro" placeholder="Buscar...">
             <div class="multi-filtro-reset" id="btnLimpiarNuevo">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosNuevos"> (Seleccionar todo)</label>
-        ` + nuevosDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkNuevo" ${nuevosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+        ` + nuevosDisp.map(v => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkNuevo" ${nuevosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
+        `).join("");
+    }
+
+    const deptosDisp = [...new Set(datosParaDepto.map(f => idxDepto !== -1 ? f[idxDepto] : ""))].filter(Boolean).sort();
+    const dEl = document.getElementById("listaDepartamento");
+    if(dEl) {
+        dEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Departamento', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Departamento', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarDepartamento" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarDepartamento">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDeptos"> (Seleccionar todo)</label>
+        ` + deptosDisp.map(dep => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${dep}" class="chkDepartamento" ${departamentosSeleccionados.includes(dep) ? "checked" : ""}> ${dep}</label>
+        `).join("");
+    }
+
+    const estadosDisp = [...new Set(datosParaEstado.map(f => {
+        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+        return reg.estadoGestion || "";
+    }))].filter(Boolean).sort();
+    const eEl = document.getElementById("listaEstado");
+    if(eEl) {
+        eEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('estadoGestion', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('estadoGestion', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarEstado" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarEstado">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosEstados"> (Seleccionar todo)</label>
+        ` + estadosDisp.map(v => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkEstadoGestion" ${estadosGestionSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
+        `).join("");
+    }
+
+    const afecDisp = [...new Set(datosParaAfec.map(f => idxAfectacion !== -1 ? f[idxAfectacion] : ""))].filter(Boolean).sort();
+    const aEl = document.getElementById("listaAfectacion");
+    if(aEl) {
+        aEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Tipo de afectación', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Tipo de afectación', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarAfectacion" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarAfectacion">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasAfectaciones"> (Seleccionar todo)</label>
+        ` + afecDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkAfectacion" ${afectacionesSeleccionadas.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const stopDisp = [...new Set(datosParaStoppers.map(f => idxStoppers !== -1 ? f[idxStoppers] : ""))].filter(Boolean).sort();
+    const sEl = document.getElementById("listaStoppers");
+    if(sEl) {
+        sEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Stoppers Dominion', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Stoppers Dominion', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarStoppers" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarStoppers">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosStoppers"> (Seleccionar todo)</label>
+        ` + stopDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkStoppers" ${stoppersSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const diasOtDisp = [...new Set(datosParaDias.map(f => idxDiasOT !== -1 ? f[idxDiasOT] : ""))].filter(Boolean).sort((a,b) => Number(a)-Number(b));
+    const diasEl = document.getElementById("listaDiasOT");
+    if(diasEl) {
+        diasEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Días vigencia OT', true)">Menor a Mayor</span>
+                    <span onclick="ordenarDesdeFiltro('Días vigencia OT', false)">Mayor a Menor</span>
+                </div>
+            </div>
+            <input type="text" id="buscarDiasOT" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarDiasOT">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosDiasOT"> (Seleccionar todo)</label>
+        ` + diasOtDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkDiasOT" ${diasOtSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const rangDisp = [...new Set(datosParaRango.map(f => idxRango !== -1 ? f[idxRango] : ""))].filter(Boolean).sort();
+    const rEl = document.getElementById("listaRango");
+    if(rEl) {
+        rEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Rango de afectación', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarRango" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
+        ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const bEl = document.getElementById("listaBacklog");
+    if(bEl) {
+        const backlogDisp = [...new Set(datosParaBacklog.map(f => (idxBacklog !== -1 ? f[idxBacklog] : "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No"))].filter(Boolean).sort();
+        bEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Indicador backlog', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
+        ` + backlogDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const estadoOTEl = document.getElementById("listaEstadoOT");
+    if(estadoOTEl) {
+        const estadoOTDisp = [...new Set(datosParaEstadoOT.map(f => idxEstadoOT !== -1 ? (f[idxEstadoOT] || "") : ""))].filter(Boolean).sort();
+        estadoOTEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Estado OT', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Estado OT', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarEstadoOT" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarEstadoOT">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosEstadoOT"> (Seleccionar todo)</label>
+        ` + estadoOTDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkEstadoOT" ${estadoOTSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
+    }
+
+    const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const arbolFechas = {};
+    
+    datosParaFecha.forEach(f => {
+        const reg = (window.registrosD1 || {})[f[idxOT]] || {};
+        const fechaVal = reg.fechaProgramacion;
+        if (fechaVal && /^\d{4}-\d{2}-\d{2}$/.test(fechaVal)) {
+            const [anio, mes, dia] = fechaVal.split("-");
+            if (!arbolFechas[anio]) arbolFechas[anio] = {};
+            if (!arbolFechas[anio][mes]) arbolFechas[anio][mes] = [];
+            if (!arbolFechas[anio][mes].includes(fechaVal)) {
+                arbolFechas[anio][mes].push(fechaVal);
+            }
+        }
+    });
+
+    const fpEl = document.getElementById("listaFechaProg");
+    if(fpEl) {
+        let htmlJerarquico = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('fechaProgramacion', true)">Antiguas</span>
+                    <span onclick="ordenarDesdeFiltro('fechaProgramacion', false)">Recientes</span>
+                </div>
+            </div>
+            <input type="text" id="buscarFechaProg" class="buscar-multifiltro" placeholder="Buscar fecha...">
+            <div class="multi-filtro-reset" id="btnLimpiarFechaProg">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodasFechasProg"> (Seleccionar todo)</label>
+        `;
+
+        const aniosOrdenados = Object.keys(arbolFechas).sort();
+        aniosOrdenados.forEach(anio => {
+            htmlJerarquico += `
+                <div class="filtro-grupo-anio-container">
+                    <div class="filtro-grupo-anio" style="padding: 4px 5px; font-weight: bold; cursor: pointer; user-select: none;">📂 ${anio} ▾</div>
+                    <div class="filtro-contenido-anio" style="display: block;">`;
+            
+            const mesesOrdenados = Object.keys(arbolFechas[anio]).sort();
+            mesesOrdenados.forEach(mesIdx => {
+                const nombreMes = mesesNombres[parseInt(mesIdx, 10) - 1] || mesIdx;
+                htmlJerarquico += `
+                        <div class="filtro-grupo-mes-container">
+                            <div class="filtro-grupo-mes" style="padding: 3px 5px 3px 15px; font-weight: 600; color: #555; cursor: pointer; user-select: none;">📁 ${nombreMes} ▾</div>
+                            <div class="filtro-contenido-mes" style="display: block;">`;
+                
+                const diasOrdenados = arbolFechas[anio][mesIdx].sort();
+                diasOrdenados.forEach(fechaStr => {
+                    const [, , dia] = fechaStr.split("-");
+                    const estaChequeado = fechasProgSeleccionadas.includes(fechaStr) ? "checked" : "";
+                    htmlJerarquico += `
+                                <label class="multi-filtro-item" style="padding-left: 30px; display: block;">
+                                    <input type="checkbox" value="${fechaStr}" class="chkFechaProg" ${estaChequeado}> ${dia}
+                                </label>`;
+                });
+
+                htmlJerarquico += `</div></div>`;
+            });
+
+            htmlJerarquico += `</div></div>`;
+        });
+
+        fpEl.innerHTML = htmlJerarquico;
     }
 }
 
@@ -691,6 +1038,7 @@ function aplicarFiltros(){
         const afecVal = idxAfectacion !== -1 ? fila[idxAfectacion] : "";
         const stopVal = idxStoppers !== -1 ? fila[idxStoppers] : "";
 
+
         const cumpleTexto = !texto || 
             String(idxID !== -1 ? fila[idxID] : "").toLowerCase().includes(texto) ||
             String(idxOT !== -1 ? fila[idxOT] : "").toLowerCase().includes(texto) ||
@@ -718,62 +1066,142 @@ function aplicarFiltros(){
         return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleBacklog && cumpleEstadoOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
     });
 
+    if (ordenActualColumna !== null) {
+        resultado.sort((a, b) => {
+            let valA = "";
+            let valB = "";
+
+            if (ordenActualColumna === "Nuevo") {
+                valA = esCasoNuevo(a[idxOT]) ? "Sí" : "No";
+                valB = esCasoNuevo(b[idxOT]) ? "Sí" : "No";
+            } else if (ordenActualColumna === "Indicador backlog") {
+                valA = idxBacklog !== -1 ? (a[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No" : "";
+                valB = idxBacklog !== -1 ? (b[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No" : "";
+            } else if (ordenActualColumna === "Estado OT") {
+                valA = idxEstadoOT !== -1 ? String(a[idxEstadoOT] || "").trim() : "";
+                valB = idxEstadoOT !== -1 ? String(b[idxEstadoOT] || "").trim() : "";
+            } else if (ordenActualColumna === "Días vigencia OT" || ordenActualColumna === "Días OT") {
+                valA = idxDiasOT !== -1 ? String(a[idxDiasOT] || "").trim() : "";
+                valB = idxDiasOT !== -1 ? String(b[idxDiasOT] || "").trim() : "";
+            } else if (ordenActualColumna === "Rango de afectación") {
+                valA = idxRango !== -1 ? String(a[idxRango] || "").trim() : "";
+                valB = idxRango !== -1 ? String(b[idxRango] || "").trim() : "";
+            } else if (ordenActualColumna === "estadoProgramacion" || ordenActualColumna === "fechaProgramacion" || ordenActualColumna === "estadoGestion") {
+                const regA = (window.registrosD1 || {})[a[idxOT]] || {};
+                const regB = (window.registrosD1 || {})[b[idxOT]] || {};
+                valA = String(regA[ordenActualColumna] || "").trim();
+                valB = String(regB[ordenActualColumna] || "").trim();
+            } else {
+                const colIdx = buscarIndiceColumnaFlexible(encabezadosGlobal, [ordenActualColumna]);
+                valA = colIdx !== -1 ? String(a[colIdx] || "").trim() : "";
+                valB = colIdx !== -1 ? String(b[colIdx] || "").trim() : "";
+            }
+
+            const numA = parseFloat(valA);
+            const numB = parseFloat(valB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return ordenDireccionAsc ? numA - numB : numB - numA;
+            }
+
+            return ordenDireccionAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+    }
+
     datosFiltradosGlobal = resultado;
     pintarTabla(resultado);
     actualizarKPIs(resultado);
     actualizarOpcionesFiltros(datosGlobal);
 }
 
-document.addEventListener("change", (e) => {
-    const target = e.target;
-    if(target.classList.contains("estado-programacion")){
-        const fila = target.closest("tr");
-        const fecha = fila.querySelector(".fecha-input");
-        const valor = target.value;
+function resetearTodosLosFiltros() {
+    nuevosSeleccionados = [];
+    departamentosSeleccionados = [];
+    afectacionesSeleccionadas = [];
+    stoppersSeleccionados = [];
+    rangosSeleccionados = [];
+    diasOtSeleccionados = [];
+    backlogSeleccionados = [];
+    estadoOTSeleccionados = [];
+    fechasProgSeleccionadas = [];
+    estadosGestionSeleccionados = [];
+    kpiFiltroActivo = null;
+    ordenActualColumna = null;
+    ordenDireccionAsc = true;
+    otsModificadasRecientemente.clear();
 
-        if(valor === "Programada" || valor === "Cancelada" || valor === "Operativa"){
-            fecha.type = "date";
-            fecha.disabled = false;
-        } else {
-            fecha.type = "text";
-            fecha.disabled = true;
-            fecha.value = "En validación";
-        }
+    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+        c.classList.remove("kpi-seleccionado");
+        c.style.borderColor = "";
+        c.style.boxShadow = "";
+    });
+
+    const contenedorKpis = document.getElementById("kpis");
+    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
+
+    const filtroBusquedaEl = document.getElementById("filtroBusqueda");
+    if(filtroBusquedaEl) filtroBusquedaEl.value = "";
+
+    document.querySelectorAll(".multi-filtro-lista input[type='checkbox']").forEach(chk => {
+        chk.checked = false;
+    });
+
+    aplicarFiltros();
+}
+
+document.addEventListener("input", (e) => {
+    if(e.target.id === "filtroBusqueda") {
+        aplicarFiltros();
     }
-    const filaTabla = target.closest("tr");
-    if(filaTabla && !target.closest(".multi-filtro-item")) {
-        guardarOT(filaTabla);
+    if(e.target.classList && e.target.classList.contains("buscar-multifiltro")) {
+        const textoBusq = e.target.value.toLowerCase();
+        const contenedor = e.target.closest("div");
+        if(contenedor) {
+            contenedor.querySelectorAll(".multi-filtro-item").forEach(item => {
+                const contenido = item.textContent.toLowerCase();
+                item.style.display = contenido.includes(textoBusq) ? "" : "none";
+            });
+        }
     }
 });
 
-async function guardarOT(fila, observacionForzada = null){
-    const ot = fila.children[4]?.textContent.trim() || "";
-    const inputFecha = fila.querySelector(".fecha-input");
-    let fechaVal = inputFecha?.value || "";
-    const inputObs = fila.querySelector(".observacion");
-    const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
+document.addEventListener("change", (e) => {
+    const target = e.target;
 
-    const payload = {
-        ot,
-        estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
-        fechaProgramacion: fechaVal,
-        observacion: obsFinal,
-        estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
-        tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
-        acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
-        idOriginal: fila.children[0]?.textContent.trim() || "",
-        imOriginal: fila.children[3]?.textContent.trim() || "",
-        departamentoOriginal: fila.children[1]?.textContent.trim() || "",
-        municipioOriginal: fila.children[2]?.textContent.trim() || ""
-    };
-
-    try {
-        await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-    } catch (err) {
-        console.error("Error al guardar OT:", err);
+    if (target.classList.contains("chkNuevo")) {
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
     }
-}
+    if (target.id === "chkTodosNuevos") {
+        document.querySelectorAll(".chkNuevo").forEach(chk => chk.checked = target.checked);
+        nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkDepartamento")) {
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosDeptos") {
+        document.querySelectorAll(".chkDepartamento").forEach(chk => chk.checked = target.checked);
+        departamentosSeleccionados = Array.from(document.querySelectorAll(".chkDepartamento:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkEstadoGestion")) {
+        estadosGestionSeleccionados = Array.from(document.querySelectorAll(".chkEstadoGestion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosEstados") {
+        document.querySelectorAll(".chkEstadoGestion").forEach(chk => chk.checked = target.checked);
+        estadosGestionSeleccionados = Array.from(document.querySelectorAll(".chkEstadoGestion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkAfectacion")) {
+        afectacionesSeleccionadas
