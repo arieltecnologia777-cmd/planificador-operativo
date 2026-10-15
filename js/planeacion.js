@@ -475,11 +475,11 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
-        // 1. Cargamos la data unificada desde la tabla base_backlog en Cloudflare D1
-        const respBacklog = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog");
+        // 1. Cargamos la data unificada desde D1 (base-backlog)
+        const respBacklog = await fetch(WORKER_DATA_URL);
         const dataBacklog = await respBacklog.json();
 
-        // 2. Cargamos los estados y notas guardados en D1 (registrosD1)
+        // 2. Cargamos los estados, fechas y notas guardadas en D1 (registrosD1)
         let registrosD1 = {};
         try {
             const respD1 = await fetch(API_URL);
@@ -489,78 +489,80 @@ async function cargarPlaneacion(){
         }
         window.registrosD1 = registrosD1;
 
-        // Si dataBacklog viene como array de objetos o filas estructuradas desde D1:
-        let filasBase = [];
-        if (Array.isArray(dataBacklog)) {
-            // Si la API devuelve un array de objetos con las columnas de base_backlog
-            if (dataBacklog.length > 0 && typeof dataBacklog[0] === 'object' && !Array.isArray(dataBacklog[0])) {
-                // Definimos los encabezados estándar basados en base_backlog
-                encabezadosGlobal = [
-                    "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
-                    "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
-                    "Tipo de prioridad", "Stoppers Dominion", "Estado Programación", 
-                    "Fecha Programación", "Observaciones", "Estado Gestión", "Técnico Asignado", 
-                    "Acompañamiento", "Indicador backlog", "Stopper P3", "Estado OT", 
-                    "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
-                ];
+        // Definimos de forma fija y estricta los encabezados globales correctos de la tabla
+        encabezadosGlobal = [
+            "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
+            "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
+            "Tipo de prioridad", "Stoppers Dominion", "Estado Programación", 
+            "Fecha Programación", "Observaciones", "Estado Gestión", "Técnico Asignado", 
+            "Acompañamiento", "Indicador backlog", "Stopper P3", "Estado OT", 
+            "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
+        ];
 
-                datosGlobal = dataBacklog.map(reg => [
-                    reg.id || reg.idOriginal || "",
-                    reg.departamento || reg.departamentoOriginal || "",
-                    reg.municipio || reg.municipioOriginal || "",
-                    reg.im || reg.imOriginal || "",
-                    reg.ot || "",
-                    reg.afectacion || "",
-                    "", 
-                    reg.totalIdsAfectados || reg.idsAfectados || "",
-                    reg.diasOt || "",
-                    reg.rangoAfectacion || "",
-                    reg.prioridad || "",
-                    reg.stoppers || "",
-                    reg.estadoProgramacion || "",
-                    reg.fechaProgramacion || "",
-                    reg.observacion || "",
-                    reg.estadoGestion || "",
-                    reg.tecnicoAsignado || "",
-                    reg.acompanamiento || "",
-                    reg.indicadorBacklog || reg.backlog || "",
-                    reg.stopperP3 || "",
-                    reg.estadoOt || "",
-                    reg.tipoFacturacion || "",
-                    reg.fechaVencimientoFm || "",
-                    reg.alertaVencimientoFm || ""
-                ]);
-            } else {
-                // Si ya viene en formato de matriz (AOA)
-                encabezadosGlobal = dataBacklog[0] || [];
-                datosGlobal = dataBacklog.slice(1);
-            }
+        let listaRegistros = [];
+        if (Array.isArray(dataBacklog)) {
+            listaRegistros = dataBacklog;
+        } else if (dataBacklog && typeof dataBacklog === 'object') {
+            listaRegistros = Object.values(dataBacklog);
         }
 
-        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
-        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
-        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
-        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
-        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
+        // Mapeamos cada registro asegurando que cada columna caiga exactamente en su lugar correcto
+        datosGlobal = listaRegistros.map(reg => {
+            // Si el registro viene como un arreglo plano o como un objeto de D1
+            if (Array.isArray(reg)) {
+                return reg; // Si ya es matriz, lo respetamos
+            }
+            
+            return [
+                reg.id || reg.idOriginal || "",                        // 0: ID
+                reg.departamento || reg.departamentoOriginal || "",     // 1: Departamento
+                reg.municipio || reg.municipioOriginal || "",           // 2: Municipio
+                reg.im || reg.imOriginal || "",                         // 3: IM
+                reg.ot || "",                                           // 4: OT (¡CRUCIAL QUE VAYA AQUÍ!)
+                reg.afectacion || reg.tipoAfectacion || "",             // 5: Tipo de afectación
+                "",                                                     // 6: Nuevo (se calcula dinámicamente)
+                reg.totalIdsAfectados || reg.idsAfectados || "",        // 7: Total IDs afectados
+                reg.diasOt || reg.diasVigenciaOt || "",                 // 8: Días vigencia OT
+                reg.rangoAfectacion || "",                              // 9: Rango de afectación
+                reg.prioridad || reg.tipoPrioridad || "",               // 10: Tipo de prioridad
+                reg.stoppers || reg.stoppersDominion || "",             // 11: Stoppers Dominion
+                reg.estadoProgramacion || "",                           // 12: Estado Programación
+                reg.fechaProgramacion || "",                            // 13: Fecha Programación
+                reg.observacion || "",                                  // 14: Observaciones
+                reg.estadoGestion || "",                                // 15: Estado Gestión
+                reg.tecnicoAsignado || "",                              // 16: Técnico Asignado
+                reg.acompanamiento || "",                               // 17: Acompañamiento
+                reg.indicadorBacklog || reg.backlog || "",              // 18: Indicador backlog
+                reg.stopperP3 || "",                                    // 19: Stopper P3
+                reg.estadoOt || "",                                     // 20: Estado OT
+                reg.tipoFacturacion || "",                              // 21: Tipo facturación
+                reg.fechaVencimientoFm || "",                           // 22: Fecha vencimiento FM
+                reg.alertaVencimientoFm || ""                           // 23: Alerta vencimiento FM
+            ];
+        });
+
+        const idxOT = 4; // Posición fija y segura de la OT
+        const idxID = 0;
+        const idxIM = 3;
+        const idxDepto = 1;
+        const idxMuni = 2;
+        
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
-        // Rescate de registros adicionales desde D1 si no están en el base_backlog
+        // Rescate de registros adicionales guardados en D1 que no estén en el base-backlog
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
             if (otReg && !otsConfiguesSet.has(otReg)) {
                 if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                    filaRescatada = filaRescatada.map(() => "");
-
+                    let filaRescatada = new Array(encabezadosGlobal.length).fill("");
+                    
                     filaRescatada[idxOT] = otReg;
-                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
-                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
-                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+                    filaRescatada[idxID] = reg.idOriginal || reg.id || "--";
+                    filaRescatada[idxIM] = reg.imOriginal || reg.im || "--";
+                    filaRescatada[idxDepto] = reg.departamentoOriginal || reg.departamento || "--";
+                    filaRescatada[idxMuni] = reg.municipioOriginal || reg.municipio || "--";
 
-                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                        datosGlobal.push(filaRescatada);
-                    }
+                    datosGlobal.push(filaRescatada);
                 }
             }
         });
