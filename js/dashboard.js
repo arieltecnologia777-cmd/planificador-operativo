@@ -617,3 +617,25 @@ async function cargarYCalcularBacklogUnificado() {
         console.error("Error al calcular el Backlog desde la pestaña unificada:", error);
     }
 }
+async function inicializarDashboard() {
+    try {
+        renderizarPinesEstaticos("TODOS");
+        cargarNotaDelDia();
+
+        // 1. Lógica actual para base-backlog
+        const resp = await fetch(WORKER_DATA_URL);
+        const jsonRegistros = await resp.json();
+        const valoresArray = Object.values(jsonRegistros);
+        if (valoresArray.length > 0) {
+            datosGlobal = valoresArray;
+            renderizarDatosDashboard();
+        }
+
+        // 2. Llamada para calcular y pintar el nuevo Indicador Backlog
+        await cargarYCalcularIndicadorBacklog();
+
+        cargarYCalcularBacklogUnificado();
+    } catch (error) {
+        console.error("Error al cargar los datos del Worker en el dashboard:", error);
+    }
+}
