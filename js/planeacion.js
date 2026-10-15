@@ -471,9 +471,6 @@ function pintarTabla(datos){
     inicializarRedimensionamientoColumnas();
 }
 
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
-const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
-
 async function cargarPlaneacion(){
     try {
         // 1. Cargamos la data unificada desde D1 (base-backlog)
