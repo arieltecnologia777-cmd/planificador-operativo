@@ -142,13 +142,13 @@ button{
 }
 
 /* =========================
-   HERO (COLORES ORIGINALES SIN FILTROS)
+   HERO (PUNTO MEDIO: COMPACTO PERO PROPORCIONADO)
    ========================= */
 
 .hero{
     position:relative;
-    min-height: 110px !important;
-    margin-bottom:12px;
+    min-height: 145px !important;
+    margin-bottom: 16px !important;
     overflow:hidden;
     isolation:isolate;
 
@@ -159,8 +159,8 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding: 14px 22px !important;
-    box-shadow:0 5px 20px rgba(30,64,175,.13);
+    padding: 18px 25px !important;
+    box-shadow:0 6px 22px rgba(30,64,175,.12);
     color:#fff;
     /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
@@ -186,7 +186,7 @@ button{
     display:flex;
     flex-direction:column;
 
-    height: 82px !important;
+    height: 105px !important;
 }
 
 .hero-badge{
@@ -198,7 +198,7 @@ button{
     max-width:max-content;
 
     gap:6px;
-    padding: 3px 10px !important;
+    padding: 4px 10px !important;
 
     border-radius:20px;
 
@@ -206,13 +206,13 @@ button{
 
     color:#fff;
 
-    font-size:.60rem !important;
+    font-size:.63rem !important;
     font-weight:800;
 
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top: -4px !important;
+    margin-top: -8px !important;
 }
 
 .hero-badge span{
@@ -223,18 +223,18 @@ button{
 }
 
 .hero h1{
-    font-size: 1.45rem !important;
+    font-size: 1.7rem !important;
     font-weight:850;
     color:#fff;
     line-height:1.05;
     margin-bottom:2px;
-    margin-top:0px;
+    margin-top: -2px !important;
     letter-spacing:-.035em;
 }
 
 .hero p{
     color:rgba(255,255,255,.92);
-    font-size: .78rem !important;
+    font-size: .82rem !important;
     margin:0;
 }
 
@@ -245,7 +245,7 @@ button{
     align-items:center;
     gap:6px;
 
-    font-size:.62rem !important;
+    font-size:.65rem !important;
     color:rgba(255,255,255,.9);
 }
 .clock-icon{
