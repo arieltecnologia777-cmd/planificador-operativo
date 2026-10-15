@@ -493,9 +493,25 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
+        // Función auxiliar para convertir números seriales de Excel a fecha formato YYYY-MM-DD
+        const convertirSerialExcelFecha = (serial) => {
+            if (!serial || isNaN(serial)) return serial;
+            const diasEpoch = new Date(1899, 11, 30);
+            const fechaMs = diasEpoch.getTime() + (serial * 86400000);
+            const fecha = new Date(fechaMs);
+            if (isNaN(fecha.getTime())) return serial;
+            const y = fecha.getFullYear();
+            const m = String(fecha.getMonth() + 1).padStart(2, '0');
+            const d = String(fecha.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+        
        datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
+            const fechaVencFmCruda = reg["Vigencia FM (Fecha vencimiento)"] || reg.fecha_vencimiento_fm || reg.Vigencia_FM || "";
+            const fechaVencFmFormateada = /^\d+$/.test(fechaVencFmCruda) ? convertirSerialExcelFecha(Number(fechaVencFmCruda)) : fechaVencFmCruda;
+
             return [
                 reg.ID || reg.id || "",                                                             // 0: ID
                 reg.Departamento || reg.departamento || "",                                         // 1: Departamento
@@ -505,7 +521,7 @@ async function cargarPlaneacion(){
                 reg["Tipo de afectación"] || reg.afectacion || "",                                  // 5: Tipo de afectación
                 "",                                                                                 // 6: Nuevo
                 reg["Total IDs afectados"] || reg.total_ids_afectados || "",                        // 7: Total IDs afectados
-                reg["Días OT"] || reg.dias_vigencia_ot || reg["Días vigencia OT"] || "",            // 8: Días vigencia OT
+                reg["Días OT"] || reg.dias_ot || reg.dias_vigencia_ot || reg["Días vigencia OT"] || "-", // 8: Días OT
                 reg["Rango de afectación"] || reg.rango_afectacion || "",                           // 9: Rango de afectación
                 reg["Tipo de prioridad"] || reg.prioridad || "",                                    // 10: Tipo de prioridad
                 reg["Stoppers Dominion"] || reg.stoppers_dominion || "",                            // 11: Stoppers Dominion
@@ -519,11 +535,11 @@ async function cargarPlaneacion(){
                 reg["Stopper P3"] || reg.stopper_p3 || "",                                          // 19: Stopper P3
                 reg["Estado OT"] || reg.estado_ot || "",                                            // 20: Estado OT
                 reg["Tipo facturación"] || reg.tipo_facturacion || "",                              // 21: Tipo facturación
-                reg["Vigencia FM (Fecha vencimiento)"] || reg.fecha_vencimiento_fm || "",           // 22: Fecha vencimiento FM
+                fechaVencFmFormateada,                                                              // 22: Fecha vencimiento FM
                 reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""                     // 23: Alerta vencimiento FM
             ];
         });
-
+        
         let registrosD1 = {};
         try {
             const respD1 = await fetch(API_URL);
