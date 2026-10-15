@@ -487,45 +487,5 @@
             </div>
         </div>
 
-<script>
-    // Script para alternar las vistas internas dentro del modal de Herramientas Avanzadas
-    document.addEventListener("click", function(e) {
-        const menu = document.getElementById("vistaMenuHerramientas");
-        const formNota = document.getElementById("vistaFormNota");
-        const formBacklog = document.getElementById("vistaFormBacklog");
-        const formIndBacklog = document.getElementById("vistaFormIndBacklog");
-
-        if (!menu || !formNota || !formBacklog || !formIndBacklog) return;
-
-        if (e.target.closest("#btnIrANota")) {
-            menu.style.display = "none";
-            formNota.style.display = "block";
-            formBacklog.style.display = "none";
-            formIndBacklog.style.display = "none";
-        }
-        if (e.target.closest("#btnIrABacklog")) {
-            menu.style.display = "none";
-            formNota.style.display = "none";
-            formBacklog.style.display = "block";
-            formIndBacklog.style.display = "none";
-        }
-        if (e.target.closest("#btnIrAIndBacklog")) {
-            menu.style.display = "none";
-            formNota.style.display = "none";
-            formBacklog.style.display = "none";
-            formIndBacklog.style.display = "block";
-        }
-        if (e.target.closest("#btnVolverMenuDesdeNota") || e.target.closest("#btnVolverMenuDesdeNotaX") ||
-            e.target.closest("#btnVolverMenuDesdeBacklog") || e.target.closest("#btnVolverMenuDesdeBacklogX") ||
-            e.target.closest("#btnVolverMenuDesdeIndBacklog") || e.target.closest("#btnVolverMenuDesdeIndBacklogX") ||
-            e.target.closest("#btnCerrarPie")) {
-            menu.style.display = "block";
-            formNota.style.display = "none";
-            formBacklog.style.display = "none";
-            formIndBacklog.style.display = "none";
-        }
-    });
-</script>
-
 </body>
 </html>
