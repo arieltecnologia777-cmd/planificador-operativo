@@ -502,3 +502,116 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// Cargue masivo del Excel de Indicador Backlog hacia la tabla indicador_backlog
+    const btnProcesarInd = target.closest("#btnProcesarIndBacklog");
+    if (btnProcesarInd) {
+        const fileInput = document.getElementById("inputExcelIndBacklog");
+        const archivo = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
+
+        if (!archivo) {
+            alert("Por favor selecciona un archivo Excel primero.");
+            return;
+        }
+
+        const confirmar = window.confirm(`¿Estás seguro de procesar el archivo "${archivo.name}" para actualizar la tabla indicador_backlog?`);
+        if (!confirmar) return;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                const primeraHojaName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[primeraHojaName];
+                
+                let todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                // Filtro estricto para ignorar filas vacías
+                todasLasFilas = todasLasFilas.filter(fila => {
+                    const llave = String(fila["Llave"] || fila["ID"] || fila["OT"] || "").trim();
+                    return llave !== "";
+                });
+
+                if (todasLasFilas.length === 0) {
+                    alert("El archivo Excel está vacío o no tiene un formato válido.");
+                    return;
+                }
+
+                // Modal con barra de progreso en vivo
+                const modalBloqueo = document.createElement('div');
+                modalBloqueo.id = "modalProgresoCargueInd";
+                modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
+                modalBloqueo.innerHTML = `
+                    <div style="background:white;color:#333;padding:35px;border-radius:14px;width:420px;text-align:center;box-shadow:0 15px 30px rgba(0,0,0,0.4);">
+                        <h3 style="margin-bottom:10px;font-weight:bold;font-size:20px;color:#475569;">Sincronizando Ind Backlog</h3>
+                        <p id="textoProgresoInd" style="margin-bottom:15px;font-size:14px;color:#555;">Procesando registros...</p>
+                        <div style="width:100%;background:#e5e7eb;border-radius:999px;height:18px;overflow:hidden;margin-bottom:15px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1);">
+                            <div id="barraProgresoRealInd" style="width:0%;height:100%;background:#475569;transition:width 0.2s ease;"></div>
+                        </div>
+                        <p id="porcentajeTextoInd" style="font-weight:bold;color:#475569;font-size:18px;">0%</p>
+                        <p style="margin-top:20px;font-size:12px;color:#dc2626;font-weight:600;line-height:1.4;">⚠️ Proceso en curso.<br>No cierres ni recargues la página hasta finalizar.</p>
+                    </div>
+                `;
+                document.body.appendChild(modalBloqueo);
+
+                window.onbeforeunload = function() {
+                    return "Hay una sincronización activa. Si sales ahora, se interrumpirá el proceso.";
+                };
+
+                let exitosos = 0;
+                let errores = 0;
+                const total = todasLasFilas.length;
+                const tamanoLote = 10;
+
+                for (let i = 0; i < total; i += tamanoLote) {
+                    const lote = todasLasFilas.slice(i, i + tamanoLote);
+                    
+                    const promesas = lote.map(async (fila) => {
+                        try {
+                            const resp = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/indicador-backlog", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(fila)
+                            });
+                            const resultado = await resp.json();
+                            if (resultado.ok) exitosos++;
+                            else errores++;
+                        } catch (err) {
+                            errores++;
+                        }
+                    });
+
+                    await Promise.all(promesas);
+
+                    const procesados = Math.min(i + tamanoLote, total);
+                    const porcentaje = Math.round((procesados / total) * 100);
+                    
+                    const barra = document.getElementById("barraProgresoRealInd");
+                    const textoProg = document.getElementById("textoProgresoInd");
+                    const textoPct = document.getElementById("porcentajeTextoInd");
+
+                    if (barra) barra.style.width = porcentaje + "%";
+                    if (textoProg) textoProg.innerText = `Procesando ${procesados} de ${total} registros...`;
+                    if (textoPct) textoPct.innerText = porcentaje + "%";
+                }
+
+                window.onbeforeunload = null;
+                if (modalBloqueo) document.body.removeChild(modalBloqueo);
+
+                alert(`¡Cargue masivo de Indicador Backlog finalizado!\n✅ Exitosos: ${exitosos}\n❌ Errores: ${errores}`);
+                window.location.reload();
+
+            } catch (err) {
+                window.onbeforeunload = null;
+                const modalActual = document.getElementById("modalProgresoCargueInd");
+                if (modalActual) document.body.removeChild(modalActual);
+                console.error("Error en cargue:", err);
+                alert("Ocurrió un error crítico durante el cargue de indicador.");
+                window.location.reload();
+            }
+        };
+
+        reader.readAsArrayBuffer(archivo);
+        return;
+    }
