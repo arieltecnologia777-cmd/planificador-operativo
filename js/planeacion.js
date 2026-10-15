@@ -475,7 +475,6 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
-        // 1. Cargamos el backlog base y las completadas en paralelo para filtrar de entrada
         const [respBacklog, respD1, respCompletadas] = await Promise.all([
             fetch(WORKER_DATA_URL),
             fetch(API_URL),
@@ -490,7 +489,6 @@ async function cargarPlaneacion(){
             console.error(e);
         }
 
-        // Poblar el Set de OTs completadas para excluirlas de la vista principal
         otsCompletadasSet.clear();
         try {
             const dataCompletadas = await respCompletadas.json();
@@ -500,7 +498,7 @@ async function cargarPlaneacion(){
                 });
             }
         } catch (e) {
-            console.error("No hay completadas aún o error al leerlas:", e);
+            console.error(e);
         }
 
         let listaRegistros = [];
@@ -510,6 +508,7 @@ async function cargarPlaneacion(){
             listaRegistros = Object.values(dataBacklog);
         }
 
+        // 1. DEFINIMOS LOS ENCABEZADOS PRIMERO PARA TENER LOS ÍNDICES SEGUROS
         encabezadosGlobal = [
             "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
             "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
@@ -518,6 +517,12 @@ async function cargarPlaneacion(){
             "Acompañamiento", "Indicador backlog", "Stopper P3", "Estado OT", 
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
+
+        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
+        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
 
         const convertirSerialExcelFecha = (serial) => {
             if (!serial || isNaN(serial)) return serial;
@@ -531,7 +536,7 @@ async function cargarPlaneacion(){
             return `${d}/${m}/${y}`;
         };
 
-        // 1. Mapeamos las filas que vienen directamente del Excel de base_backlog
+        // 2. MAPEAMOS LAS FILAS DEL BACKLOG
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
@@ -565,25 +570,18 @@ async function cargarPlaneacion(){
                 reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""
             ];
         }).filter(fila => {
-            const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
             const otVal = String(fila[idxOT] || "").trim();
             return otVal && !otsCompletadasSet.has(otVal);
         });
         
         window.registrosD1 = registrosD1;
-        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
-        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
-        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
-        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
-        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
-        // 2. Rescatamos de forma segura las OTs que están en D1 pero no en el Excel actual
+        // 3. RESCATAMOS LAS OTS HUÉRFANAS DESDE D1 CON SU ESTRUCTURA COMPLETA
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
                 
-                // Creamos una fila vacía con la estructura completa de encabezados
                 let filaRescatada = new Array(encabezadosGlobal.length).fill("");
 
                 filaRescatada[idxOT] = otReg;
