@@ -505,8 +505,8 @@ async function cargarPlaneacion(){
             const d = String(fecha.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
         };
-        
-       datosGlobal = listaRegistros.map(reg => {
+
+        datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
             const fechaVencFmCruda = reg["Vigencia FM (Fecha vencimiento)"] || reg.fecha_vencimiento_fm || reg.Vigencia_FM || "";
