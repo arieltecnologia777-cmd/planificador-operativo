@@ -142,13 +142,13 @@ button{
 }
 
 /* =========================
-   HERO (ALTURA EQUILIBRADA PARA QUE EL LOGO SE VEA PERFECTO)
+   HERO (LIGERAMENTE MÁS ANGOSTO Y EQUILIBRADO)
    ========================= */
 
 .hero{
     position:relative;
-    min-height: 145px !important;
-    margin-bottom: 16px !important;
+    min-height: 132px !important;
+    margin-bottom: 14px !important;
     overflow:hidden;
     isolation:isolate;
 
@@ -159,9 +159,10 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding: 18px 25px !important;
-    box-shadow:0 6px 22px rgba(30,64,175,.12);
+    padding: 16px 24px !important;
+    box-shadow:0 5px 20px rgba(30,64,175,.12);
     color:#fff;
+    /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
 
 .hero::before{
@@ -185,7 +186,7 @@ button{
     display:flex;
     flex-direction:column;
 
-    height: 105px !important;
+    height: 96px !important;
 }
 
 .hero-badge{
@@ -205,13 +206,13 @@ button{
 
     color:#fff;
 
-    font-size:.63rem !important;
+    font-size:.62rem !important;
     font-weight:800;
 
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top: -8px !important;
+    margin-top: -6px !important;
 }
 
 .hero-badge span{
@@ -222,18 +223,18 @@ button{
 }
 
 .hero h1{
-    font-size: 1.7rem !important;
+    font-size: 1.8rem !important;
     font-weight:850;
     color:#fff;
     line-height:1.05;
     margin-bottom:2px;
-    margin-top: -2px !important;
+    margin-top: -3px !important;
     letter-spacing:-.035em;
 }
 
 .hero p{
     color:rgba(255,255,255,.92);
-    font-size: .82rem !important;
+    font-size: .83rem !important;
     margin:0;
 }
 
