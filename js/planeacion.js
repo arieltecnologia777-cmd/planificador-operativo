@@ -345,33 +345,36 @@ function buscarIndiceColumnaFlexible(encabezados, terminos) {
 }
 
 function pintarTabla(datos){
-    const encabezados = encabezadosGlobal;
-
-    const idxID = buscarIndiceColumnaFlexible(encabezados, ["ID"]);
-    const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
-    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
-    const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
-    const idxIM = buscarIndiceColumnaFlexible(encabezados, ["IM"]);
-    const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
-    const idxIdsAfectados = buscarIndiceColumnaFlexible(encabezados, ["Total IDs afectados", "IDs afectados"]);
-    const idxDias = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
-    const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
-    const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
-    const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
-    
-    // Índices ampliados con múltiples opciones para evitar que devuelvan -1
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog", "Indicador_Backlog"]);
-    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3", "Stopper_P3"]);
-    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT", "Estado_OT"]);
-    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio", "Tipo_Facturacion"]);
-    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM", "Fecha_Vencimiento_FM"]);
-    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM", "Alerta_Vencimiento_FM"]);
-
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
+    if (!datos || datos.length === 0) {
+        planeacionBody.innerHTML = `<tr><td colspan="24" style="text-align: center; padding: 20px; color: #718096;">No hay registros para mostrar.</td></tr>`;
+        return;
+    }
+
     planeacionBody.innerHTML = datos.map(fila => {
-        const otVal = String(fila[idxOT] || "").trim();
+        // Posiciones fijas garantizadas del 0 al 23 según el orden oficial de encabezados
+        const valID = fila[0] !== undefined ? fila[0] : "";
+        const valDepto = fila[1] !== undefined ? fila[1] : "";
+        const valMuni = fila[2] !== undefined ? fila[2] : "";
+        const valIM = fila[3] !== undefined ? fila[3] : "";
+        const otVal = String(fila[4] || "").trim();
+        const valAfec = fila[5] !== undefined ? fila[5] : "";
+        
+        const valIdsAfectados = fila[7] !== undefined ? fila[7] : "";
+        const valDias = fila[8] !== undefined ? fila[8] : "";
+        const valRango = fila[9] !== undefined ? fila[9] : "";
+        const valPrioridad = fila[10] !== undefined ? fila[10] : "";
+        const valStoppers = fila[11] !== undefined ? fila[11] : "";
+        
+        const valBacklog = fila[18] !== undefined ? fila[18] : "";
+        const valStopperP3 = fila[19] !== undefined ? fila[19] : "";
+        const valEstadoOT = fila[20] !== undefined ? fila[20] : "";
+        const valTipoFact = fila[21] !== undefined ? fila[21] : "";
+        const valFechaFM = fila[22] !== undefined ? fila[22] : "";
+        const valAlertaFM = fila[23] !== undefined ? fila[23] : "";
+
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
         const nuevo = esCasoNuevo(otVal);
@@ -395,18 +398,18 @@ function pintarTabla(datos){
 
         return `
         <tr>
-            <td>${fila[idxID] !== undefined ? fila[idxID] : ""}</td>
-            <td>${fila[idxDepto] !== undefined ? fila[idxDepto] : ""}</td>
-            <td>${fila[idxMunicipio] !== undefined ? fila[idxMunicipio] : ""}</td>
-            <td>${fila[idxIM] !== undefined ? fila[idxIM] : ""}</td>
+            <td>${valID}</td>
+            <td>${valDepto}</td>
+            <td>${valMuni}</td>
+            <td>${valIM}</td>
             <td><b>${otVal}</b></td>
-            <td>${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}</td>
+            <td>${valAfec}</td>
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
-            <td class="${ocultarClase}">${idxIdsAfectados !== -1 ? (fila[idxIdsAfectados] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxRangoAfectacion !== -1 ? (fila[idxRangoAfectacion] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxStoppersDominion !== -1 ? (fila[idxStoppersDominion] || "") : ""}</td>
+            <td class="${ocultarClase}">${valIdsAfectados}</td>
+            <td class="${ocultarClase}">${valDias}</td>
+            <td class="${ocultarClase}">${valRango}</td>
+            <td class="${ocultarClase}">${valPrioridad}</td>
+            <td class="${ocultarClase}">${valStoppers}</td>
             <td>
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
@@ -429,10 +432,10 @@ function pintarTabla(datos){
                         
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${otVal}" 
-                            data-id="${idxID !== -1 ? (fila[idxID] || "") : ""}" 
-                            data-depto="${idxDepto !== -1 ? (fila[idxDepto] || "") : ""}" 
-                            data-muni="${idxMunicipio !== -1 ? (fila[idxMunicipio] || "") : ""}" 
-                            data-afec="${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}" 
+                            data-id="${valID}" 
+                            data-depto="${valDepto}" 
+                            data-muni="${valMuni}" 
+                            data-afec="${valAfec}" 
                             title="Ampliar y editar observaciones">✏️</button>
                     </div>
                 </div>
@@ -461,12 +464,12 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
-            <td>${idxBacklog !== -1 ? (fila[idxBacklog] || "") : ""}</td>
-            <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
-            <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
-            <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
-            <td>${idxFechaFM !== -1 ? (fila[idxFechaFM] || "") : ""}</td>
-            <td>${idxAlertaFM !== -1 ? (fila[idxAlertaFM] || "") : ""}</td>
+            <td>${valBacklog}</td>
+            <td>${valStopperP3}</td>
+            <td>${valEstadoOT}</td>
+            <td>${valTipoFact}</td>
+            <td>${valFechaFM}</td>
+            <td>${valAlertaFM}</td>
         </tr>`;
     }).join("");
 
