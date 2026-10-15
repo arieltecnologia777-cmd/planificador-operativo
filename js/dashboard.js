@@ -522,7 +522,6 @@ document.addEventListener("click", async (e) => {
 
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
-// Nueva función que calcula R1 y R2 desde la tabla indicador_backlog en D1
 async function cargarYCalcularIndicadorBacklog() {
     try {
         const resp = await fetch(WORKER_INDICADOR_URL);
@@ -543,40 +542,46 @@ async function cargarYCalcularIndicadorBacklog() {
 
             if (regional === "R1") {
                 r1Total++;
-                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK") {
+                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK" || cumpleSla === "TRUE") {
                     r1Exitosos++;
                 }
             } else if (regional === "R2") {
                 r2Total++;
-                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK") {
+                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK" || cumpleSla === "TRUE") {
                     r2Exitosos++;
                 }
             }
         });
 
+        // Cálculo de ejecuciones exactas
         const porcR1 = r1Total > 0 ? (r1Exitosos / r1Total) * 100 : 0;
         const porcR2 = r2Total > 0 ? (r2Exitosos / r2Total) * 100 : 0;
+
+        // Meta fija del indicador
         const meta = 93.00;
 
-        const cumplimientoR1 = meta > 0 ? (porcR1 / meta) * 100 : 0;
-        const cumplimientoR2 = meta > 0 ? (porcR2 / meta) * 100 : 0;
+        // Cumplimiento respecto a la meta (puedes ajustar esta proporción si tu Excel usa otra fórmula de ponderación)
+        const cumplimientoR1 = porcR1; 
+        const cumplimientoR2 = porcR2; 
 
+        // Pintar valores principales
         const elR1 = document.getElementById("valBacklogR1");
         const elR2 = document.getElementById("valBacklogR2");
         if (elR1) elR1.textContent = porcR1.toFixed(2).replace('.', ',') + " %";
         if (elR2) elR2.textContent = porcR2.toFixed(2).replace('.', ',') + " %";
 
+        // Pintar badges dinámicos con el porcentaje y color de cumplimiento
         const badgeR1 = document.getElementById("badgeR1");
         const badgeR2 = document.getElementById("badgeR2");
 
         if (badgeR1) {
             badgeR1.textContent = cumplimientoR1.toFixed(2).replace('.', ',') + "%";
-            badgeR1.className = "badge-cumplimiento " + (cumplimientoR1 >= 100 ? "green" : "red");
+            badgeR1.className = "badge-cumplimiento " + (cumplimientoR1 >= meta ? "green" : "red");
         }
 
         if (badgeR2) {
             badgeR2.textContent = cumplimientoR2.toFixed(2).replace('.', ',') + "%";
-            badgeR2.className = "badge-cumplimiento " + (cumplimientoR2 >= 100 ? "green" : "red");
+            badgeR2.className = "badge-cumplimiento " + (cumplimientoR2 >= meta ? "green" : "red");
         }
 
     } catch (error) {
