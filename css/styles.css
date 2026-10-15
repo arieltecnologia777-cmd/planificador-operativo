@@ -2236,3 +2236,59 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
         visibility: hidden;
     }
 }
+/* --- ESTILOS PARA TOAST DE OPERATIVA (CUENTA REGRESIVA) --- */
+.toast-operativa-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #2d3748;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
+    font-family: inherit;
+    animation: slideInUp 0.3s ease-out forwards;
+    min-width: 300px;
+}
+.toast-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.9rem;
+}
+.toast-btn-deshacer {
+    background: #48bb78;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.toast-btn-deshacer:hover {
+    background: #38a169;
+}
+.toast-progress-bar {
+    height: 4px;
+    width: 100%;
+    background: #4a5568;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.toast-progress-fill {
+    height: 100%;
+    background: #48bb78;
+    width: 100%;
+    transform-origin: left;
+    transition: transform linear;
+}
+@keyframes slideInUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
