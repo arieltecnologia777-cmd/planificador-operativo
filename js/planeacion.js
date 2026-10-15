@@ -1330,7 +1330,7 @@ document.addEventListener("change", (e) => {
         }
     }
 
-    const filaTabla = target.closest("tr");
+    
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         const otMod = filaTabla.children[4].textContent.trim();
         if (otMod) otsModificadasRecientemente.add(otMod);
