@@ -344,31 +344,11 @@ function buscarIndiceColumnaFlexible(encabezados, terminos) {
 }
 
 function pintarTabla(datos){
-    const encabezados = encabezadosGlobal;
-
-    const idxID = buscarIndiceColumnaFlexible(encabezados, ["ID"]);
-    const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
-    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
-    const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
-    const idxIM = buscarIndiceColumnaFlexible(encabezados, ["IM"]);
-    const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
-    const idxIdsAfectados = buscarIndiceColumnaFlexible(encabezados, ["Total IDs afectados", "IDs afectados"]);
-    const idxDias = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
-    const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
-    const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
-    const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
-    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
-    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
-    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
-    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM"]);
-    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM"]);
-
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
     planeacionBody.innerHTML = datos.map(fila => {
-        const otVal = String(fila[idxOT] || "").trim();
+        const otVal = String(fila[4] || "").trim(); // Columna 4: OT
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
         const nuevo = esCasoNuevo(otVal);
@@ -392,18 +372,18 @@ function pintarTabla(datos){
 
         return `
         <tr>
-            <td>${fila[idxID] !== undefined ? fila[idxID] : ""}</td>
-            <td>${fila[idxDepto] !== undefined ? fila[idxDepto] : ""}</td>
-            <td>${fila[idxMunicipio] !== undefined ? fila[idxMunicipio] : ""}</td>
-            <td>${fila[idxIM] !== undefined ? fila[idxIM] : ""}</td>
-            <td>${fila[idxOT] !== undefined ? fila[idxOT] : ""}</td>
-            <td>${fila[idxAfectacion] !== undefined ? fila[idxAfectacion] : ""}</td>
+            <td>${fila[0] !== undefined ? fila[0] : ""}</td> <!-- ID -->
+            <td>${fila[1] !== undefined ? fila[1] : ""}</td> <!-- Departamento -->
+            <td>${fila[2] !== undefined ? fila[2] : ""}</td> <!-- Municipio -->
+            <td>${fila[3] !== undefined ? fila[3] : ""}</td> <!-- IM -->
+            <td>${fila[4] !== undefined ? fila[4] : ""}</td> <!-- OT -->
+            <td>${fila[5] !== undefined ? fila[5] : ""}</td> <!-- Afectación -->
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
-            <td class="${ocultarClase}">${idxIdsAfectados !== -1 ? (fila[idxIdsAfectados] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxRangoAfectacion !== -1 ? (fila[idxRangoAfectacion] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : ""}</td>
-            <td class="${ocultarClase}">${idxStoppersDominion !== -1 ? (fila[idxStoppersDominion] || "") : ""}</td>
+            <td class="${ocultarClase}">${fila[7] !== undefined ? fila[7] : ""}</td>  <!-- IDs afectados -->
+            <td class="${ocultarClase}">${fila[8] !== undefined ? fila[8] : ""}</td>  <!-- Días OT -->
+            <td class="${ocultarClase}">${fila[9] !== undefined ? fila[9] : ""}</td>  <!-- Rango afectación -->
+            <td class="${ocultarClase}">${fila[10] !== undefined ? fila[10] : ""}</td><!-- Prioridad -->
+            <td class="${ocultarClase}">${fila[11] !== undefined ? fila[11] : ""}</td><!-- Stoppers -->
             <td>
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
@@ -422,14 +402,13 @@ function pintarTabla(datos){
             <td>
                 <div class="observacion-container">
                     <div class="obs-edit-wrapper">
-                        <input class="edit-input observacion" value="${(d1.observacion || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
-                        
+                        <input class="edit-input observacion" value="${(d1.observacion || fila[14] || "").replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim()}" placeholder="Observación" readonly>
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${otVal}" 
-                            data-id="${idxID !== -1 ? (fila[idxID] || "") : ""}" 
-                            data-depto="${idxDepto !== -1 ? (fila[idxDepto] || "") : ""}" 
-                            data-muni="${idxMunicipio !== -1 ? (fila[idxMunicipio] || "") : ""}" 
-                            data-afec="${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}" 
+                            data-id="${fila[0] || ""}" 
+                            data-depto="${fila[1] || ""}" 
+                            data-muni="${fila[2] || ""}" 
+                            data-afec="${fila[5] || ""}" 
                             title="Ampliar y editar observaciones">✏️</button>
                     </div>
                 </div>
@@ -458,12 +437,12 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
-            <td>${idxBacklog !== -1 ? (fila[idxBacklog] || "") : ""}</td>
-            <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
-            <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
-            <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
-            <td>${idxFechaFM !== -1 ? (fila[idxFechaFM] || "") : ""}</td>
-            <td>${idxAlertaFM !== -1 ? (fila[idxAlertaFM] || "") : ""}</td>
+            <td>${fila[18] !== undefined ? fila[18] : ""}</td> <!-- Indicador backlog -->
+            <td>${fila[19] !== undefined ? fila[19] : ""}</td> <!-- Stopper P3 -->
+            <td>${fila[20] !== undefined ? fila[20] : ""}</td> <!-- Estado OT -->
+            <td>${fila[21] !== undefined ? fila[21] : ""}</td> <!-- Tipo facturación -->
+            <td>${fila[22] !== undefined ? fila[22] : ""}</td> <!-- Vencimiento FM -->
+            <td>${fila[23] !== undefined ? fila[23] : ""}</td> <!-- Alerta FM -->
         </tr>`;
     }).join("");
 
