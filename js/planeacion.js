@@ -2190,3 +2190,133 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// Variable global para almacenar los temporizadores activos de las OTs en cuenta regresiva
+window.temporizadoresOperativa = window.temporizadoresOperativa || {};
+
+function manejarCambioEstadoOperativa(fila, selectEstado) {
+    const ot = fila.children[4]?.textContent.trim() || "";
+    const estadoAnterior = selectEstado.dataset.valorAnterior || "";
+    const nuevoEstado = selectEstado.value;
+
+    // Si selecciona "Operativa" y antes no lo estaba
+    if (nuevoEstado === "Operativa" && estadoAnterior !== "Operativa") {
+        
+        // 1. Creamos y mostramos el Toast flotante con cuenta regresiva de 5 segundos
+        const toastId = `toast_${ot}_${Date.now()}`;
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast-operativa-container';
+        toastEl.id = toastId;
+        toastEl.innerHTML = `
+            <div class="toast-content">
+                <span>OT <b>${ot}</b> marcada como Operativa.</span>
+                <button type="button" class="toast-btn-deshacer" data-ot="${ot}" data-toast="${toastId}">Deshacer</button>
+            </div>
+            <div class="toast-progress-bar">
+                <div class="toast-progress-fill" id="fill_${toastId}" style="transition-duration: 5s; transform: scaleX(0);"></div>
+            </div>
+        `;
+        document.body.appendChild(toastEl);
+
+        // Activamos la animación de la barra de progreso de derecha a izquierda (de 1 a 0)
+        setTimeout(() => {
+            const fill = document.getElementById(`fill_${toastId}`);
+            if (fill) fill.style.transform = 'scaleX(1)';
+        }, 50);
+
+        // 2. Definimos la acción que se ejecuta al expirar los 5 segundos (Mover a completadas)
+        const timerId = setTimeout(async () => {
+            // Eliminamos el Toast de la pantalla
+            const tEl = document.getElementById(toastId);
+            if (tEl) tEl.remove();
+
+            // Ocultamos visualmente la fila del backlog activo
+            fila.style.transition = "opacity 0.4s ease";
+            fila.style.opacity = "0";
+            setTimeout(() => fila.remove(), 400);
+
+            // Enviamos la petición al Worker para moverla a la tabla ots_completadas
+            await enviarOTCompletadaD1(fila, ot);
+
+            delete window.temporizadoresOperativa[ot];
+        }, 5000);
+
+        // Guardamos el timer para poder cancelarlo si hacen clic en "Deshacer"
+        window.temporizadoresOperativa[ot] = {
+            timerId: timerId,
+            toastId: toastId,
+            fila: fila,
+            selectEstado: selectEstado,
+            estadoAnterior: estadoAnterior
+        };
+
+    } else if (estadoAnterior === "Operativa" && nuevoEstado !== "Operativa") {
+        // Si el usuario cambia de Operativa a otro estado antes de que se procese, actualizamos el valor anterior
+        selectEstado.dataset.valorAnterior = nuevoEstado;
+    }
+}
+
+// Función para enviar la OT a la tabla de completadas en el backend
+async function enviarOTCompletadaD1(fila, ot) {
+    const valId = fila.children[0]?.textContent.trim() || "";
+    const valDepto = fila.children[1]?.textContent.trim() || "";
+    const valMuni = fila.children[2]?.textContent.trim() || "";
+    const valIm = fila.children[3]?.textContent.trim() || "";
+    const valAfec = fila.children[5]?.textContent.trim() || "";
+    const tecnico = fila.querySelector(".tecnico-asignado")?.value || "";
+    const observacion = fila.querySelector(".observacion")?.value || "";
+
+    const payload = {
+        ot: ot,
+        idOriginal: valId,
+        departamento: valDepto,
+        municipio: valMuni,
+        im: valIm,
+        afectacion: valAfec,
+        estadoGestion: "Operativa",
+        tecnicoAsigned: tecnico,
+        observacion: observacion
+    };
+
+    try {
+        const urlCompletadas = `${API_BASE_URL}/ots-completadas`;
+        await fetch(urlCompletadas, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    } catch (err) {
+        console.error("Error al mover OT a completadas:", err);
+    }
+}
+
+// Listener global para capturar el clic en el botón "Deshacer" del Toast
+document.addEventListener("click", (e) => {
+    const btnDeshacer = e.target.closest(".toast-btn-deshacer");
+    if (btnDeshacer) {
+        const ot = btnDeshacer.getAttribute("data-ot");
+        const toastId = btnDeshacer.getAttribute("data-toast");
+
+        if (window.temporizadoresOperativa[ot]) {
+            const info = window.temporizadoresOperativa[ot];
+            
+            // Cancelamos el temporizador de los 5 segundos
+            clearTimeout(info.timerId);
+
+            // Revertimos el select de Estado de Gestión a su valor anterior
+            info.selectEstado.value = info.estadoAnterior;
+            info.selectEstado.dataset.valorAnterior = info.estadoAnterior;
+
+            // Eliminamos el Toast flotante
+            const tEl = document.getElementById(toastId);
+            if (tEl) tEl.remove();
+
+            // Limpiamos del registro de temporizadores
+            delete window.temporizadoresOperativa[ot];
+
+            // Guardamos el estado original devuelto mediante la función existente
+            if (typeof guardarOT === "function") {
+                guardarOT(info.fila);
+            }
+        }
+    }
+});
