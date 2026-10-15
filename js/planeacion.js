@@ -450,7 +450,7 @@ function pintarTabla(datos){
             <td>
                 <select class="edit-select tecnico-asignado">
                     <option value=""></option>
-                    ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.tecnicoAsignado === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
+                    ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.tecnicoAsigned === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
             <td>
@@ -581,26 +581,22 @@ async function cargarPlaneacion(){
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            // Si ya pertenece a completadas o ya está en el backlog actual, la ignoramos
+            // Tampoco rescatamos registros que ya pertenezcan a completadas
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
-                
-                // Rescatamos la OT si existe en D1 para asegurar que NUNCA se omita,
-                // usando como base una copia de la primera fila existente (para mantener 
-                // exactamente todas las 24 columnas intactas) o un array limpio.
-                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                
-                // Limpiamos los textos para que no arrastren datos de otra OT
-                filaRescatada = filaRescatada.map(() => "");
+                if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
+                    
+                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                    filaRescatada = filaRescatada.map(() => "");
 
-                // Asignamos con total seguridad en sus índices correspondientes
-                if (idxOT !== -1) filaRescatada[idxOT] = otReg;
-                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
-                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
-                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
-                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
+                    filaRescatada[idxOT] = otReg;
+                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
+                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
+                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
+                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
 
-                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                    datosGlobal.push(filaRescatada);
+                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                        datosGlobal.push(filaRescatada);
+                    }
                 }
             }
         });
@@ -1828,7 +1824,7 @@ window.exportarPlaneacion = function() {
                 item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion), 
                 limpiarTexto(item.regD1.estadoGestion),
-                limpiarTexto(item.regD1.tecnicoAsignado),
+                limpiarTexto(item.regD1.tecnicoAsigned),
                 limpiarTexto(item.regD1.acompanamiento),
                 getValorFlexible(["Indicador backlog", "Backlog"]), 
                 getValorFlexible(["Stopper P3"]),
@@ -2230,7 +2226,7 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
     const estadoAnterior = selectEstado.dataset.valorAnterior || "";
     const nuevoEstado = selectEstado.value;
 
-    // Si selecciona "Operativa" y antes no lo estaba
+    // Si selecciona "Operativa" y antes no lo estava
     if (nuevoEstado === "Operativa" && estadoAnterior !== "Operativa") {
         
         // 1. Creamos y mostramos el Toast flotante con cuenta regresiva de 5 segundos
