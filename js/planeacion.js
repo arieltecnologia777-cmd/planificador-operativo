@@ -512,30 +512,30 @@ async function cargarPlaneacion(){
             }
             
             return [
-                reg.id || reg.idOriginal || "",                        // 0: ID
-                reg.departamento || reg.departamentoOriginal || "",     // 1: Departamento
-                reg.municipio || reg.municipioOriginal || "",           // 2: Municipio
-                reg.im || reg.imOriginal || "",                         // 3: IM
-                reg.ot || "",                                           // 4: OT
-                reg.afectacion || reg.tipoAfectacion || "",             // 5: Tipo de afectación
+                reg.id || reg.ID || "",                                 // 0: ID
+                reg.departamento || reg.Departamento || "",             // 1: Departamento
+                reg.municipio || reg.Municipio || "",                   // 2: Municipio
+                reg.im || reg.IM || "",                                 // 3: IM
+                reg.ot || reg.OT || "",                                 // 4: OT
+                reg.afectacion || reg.Afectacion || "",                 // 5: Tipo de afectación
                 "",                                                     // 6: Nuevo
-                reg.totalIdsAfectados || reg.idsAfectados || "",        // 7: Total IDs afectados
-                reg.diasOt || reg.diasVigenciaOt || "",                 // 8: Días vigencia OT
-                reg.rangoAfectacion || "",                              // 9: Rango de afectación
-                reg.prioridad || reg.tipoPrioridad || "",               // 10: Tipo de prioridad
-                reg.stoppers || reg.stoppersDominion || "",             // 11: Stoppers Dominion
-                reg.estadoProgramacion || "",                           // 12: Estado Programación
-                reg.fechaProgramacion || "",                            // 13: Fecha Programación
-                reg.observacion || "",                                  // 14: Observaciones
-                reg.estadoGestion || "",                                // 15: Estado Gestión
-                reg.tecnicoAsignado || "",                              // 16: Técnico Asignado
+                reg.total_ids_afectados || reg.totalIdsAfectados || reg.ids_afectados || "", // 7: Total IDs afectados
+                reg.dias_vigencia_ot || reg.diasOt || "",               // 8: Días vigencia OT
+                reg.rango_afectacion || reg.rangoAfectacion || "",      // 9: Rango de afectación
+                reg.tipo_prioridad || reg.prioridad || "",              // 10: Tipo de prioridad
+                reg.stoppers_dominion || reg.stoppers || "",            // 11: Stoppers Dominion
+                reg.estado_programacion || reg.estadoProgramacion || "",// 12: Estado Programación
+                reg.fecha_programacion || reg.fechaProgramacion || "",  // 13: Fecha Programación
+                reg.observaciones || reg.observacion || "",             // 14: Observaciones
+                reg.estado_gestion || reg.estadoGestion || "",          // 15: Estado Gestión
+                reg.tecnico_asignado || reg.tecnicoAsignado || "",      // 16: Técnico Asignado
                 reg.acompanamiento || "",                               // 17: Acompañamiento
-                reg.indicadorBacklog || reg.backlog || "",              // 18: Indicador backlog
-                reg.stopperP3 || "",                                    // 19: Stopper P3
-                reg.estadoOt || "",                                     // 20: Estado OT
-                reg.tipoFacturacion || "",                              // 21: Tipo facturación
-                reg.fechaVencimientoFm || "",                           // 22: Fecha vencimiento FM
-                reg.alertaVencimientoFm || ""                           // 23: Alerta vencimiento FM
+                reg.indicador_backlog || reg.indicadorBacklog || reg.backlog || "", // 18: Indicador backlog
+                reg.stopper_p3 || reg.stopperP3 || "",                  // 19: Stopper P3
+                reg.estado_ot || reg.estadoOt || "",                    // 20: Estado OT
+                reg.tipo_facturacion || reg.tipoFacturacion || "",      // 21: Tipo facturación
+                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "", // 22: Fecha vencimiento FM
+                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || "" // 23: Alerta vencimiento FM
             ];
         });
 
