@@ -1,5 +1,4 @@
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
-const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
+const WORKER_DATA_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog";
 const API_URL = `${API_BASE_URL}/planeacion`;
 
 let datosGlobal = [];
