@@ -1,9 +1,9 @@
 /* ==========================================================
-   ZOOM INICIAL AL 97% Y ESTILOS GENERALES
+   ZOOM INICIAL AL 96% Y ESTILOS GENERALES
    ========================================================== */
 
 html {
-    zoom: 0.97 !important;
+    zoom: 0.96 !important;
     height: 100% !important;
 }
 :root{
@@ -2079,7 +2079,7 @@ width:160px;
     position: fixed !important;
     top: 16px;
     left: 0px; 
-    height: calc((100vh - 32px) / 0.9) !important;
+    height: calc(100vh - 32px) !important;
     width: 280px;
     background: rgba(255, 255, 255, 0.96) !important;
     backdrop-filter: blur(20px);
