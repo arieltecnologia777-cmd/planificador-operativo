@@ -581,22 +581,23 @@ async function cargarPlaneacion(){
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            // Tampoco rescatamos registros que ya pertenezcan a completadas
+            // Si ya pertenece a completadas, la ignoramos
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
-                if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                    
-                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                    filaRescatada = filaRescatada.map(() => "");
+                
+                // Rescatamos la OT si existe en D1 para asegurarnos de que NUNCA se omita.
+                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                filaRescatada = filaRescatada.map(() => "");
 
-                    filaRescatada[idxOT] = otReg;
-                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
-                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
-                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+                filaRescatada[idxOT] = otReg;
+                
+                // Usamos los datos originales guardados en D1 (evitando que salgan los guiones "--")
+                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
+                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
+                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
+                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
 
-                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                        datosGlobal.push(filaRescatada);
-                    }
+                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                    datosGlobal.push(filaRescatada);
                 }
             }
         });
