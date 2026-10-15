@@ -38,33 +38,24 @@ async function inicializarDashboard() {
         renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
-        // 1. Lógica actual intacta para base-backlog (WORKER_DATA_URL)
+        // 1. Lógica actual para base-backlog
         const resp = await fetch(WORKER_DATA_URL);
         const jsonRegistros = await resp.json();
-
         const valoresArray = Object.values(jsonRegistros);
         if (valoresArray.length > 0) {
             datosGlobal = valoresArray;
             renderizarDatosDashboard();
         }
 
-        // 2. Lectura aislada de la nueva tabla indicador_backlog (WORKER_INDICADOR_URL)
-        try {
-            const respIndicador = await fetch(WORKER_INDICADOR_URL);
-            const jsonIndicador = await respIndicador.json();
-            const valoresIndicador = Object.values(jsonIndicador);
-            if (valoresIndicador.length > 0) {
-                window.datosIndicadorBacklog = valoresIndicador; // Aislado en su propia variable
-            }
-        } catch (errIndicador) {
-            console.error("Error al cargar indicador_backlog:", errIndicador);
-        }
+        // 2. Llamada para calcular y pintar el nuevo Indicador Backlog desde D1
+        await cargarYCalcularIndicadorBacklog();
 
         cargarYCalcularBacklogUnificado();
     } catch (error) {
         console.error("Error al cargar los datos del Worker en el dashboard:", error);
     }
 }
+
 function renderizarPinesEstaticos(deptoSeleccionado) {
     const contenedor = document.getElementById("mapaLeaflet");
     if (!contenedor) return;
@@ -200,51 +191,30 @@ function renderizarDatosDashboard() {
         r5: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 },
         r6: { off: 0, par: 0, vel: 0, pqr: 0, p3: 0 }
     };
-datosFiltrados.forEach(fila => {
-        // Extraemos el estado real de forma robusta
-        const estado = String(
-            fila["Estado real"] || 
-            fila["estadoReal"] || 
-            fila["Estado"] || 
-            ""
-        ).trim().toUpperCase();
 
+    datosFiltrados.forEach(fila => {
+        const estado = String(fila["Estado real"] || fila["estadoReal"] || fila["Estado"] || "").trim().toUpperCase();
         const municipio = String(fila["Municipio"] || fila["Ciudad"] || "SIN MUNICIPIO").trim();
         const clasificacionU = String(fila["Stopper P3 (FM/traslado/reubicaciones)"] || fila["Stoppers Dominion"] || "").trim().toUpperCase();
-        
-        // Stopper de repuestos específico para P3 y PQR
         const stopperRepuestosAC = String(fila["Stopper P3 (repuestos)"] || fila["Stopper Claro"] || "").trim().toUpperCase();
-        
-        // Columna U (Tipo de stopper) exclusiva para el análisis de repuestos en Offline, Parcial y Velocidad
         const tipoStopperColU = String(fila["Tipo de stopper"] || "").trim().toUpperCase();
-
         const rangoK = String(fila["Rango de afectación Claro"] || fila["Rango de afectación"] || "").trim().toUpperCase();
-        
-        // Extracción estricta y segura de la columna de IDs afectados
         const idsAfectados = parseInt(fila["Total IDs afectados"], 10) || 1;
 
-        // Conteo general exacto basado en el Estado real
         if (estado.includes("OFFLINE") || estado.includes("APAGADO")) {
             sumaOffline += idsAfectados;
-            if (!municipiosOfflineMap[municipio]) {
-                municipiosOfflineMap[municipio] = 0;
-            }
+            if (!municipiosOfflineMap[municipio]) municipiosOfflineMap[municipio] = 0;
             municipiosOfflineMap[municipio] += idsAfectados;
-        }
-        else if (estado.includes("PARCIAL")) {
+        } else if (estado.includes("PARCIAL")) {
             sumaParcial += idsAfectados;
-        }
-        else if (estado.includes("VELOCIDAD") || estado.includes("LENTO")) {
+        } else if (estado.includes("VELOCIDAD") || estado.includes("LENTO")) {
             sumaVelocidad += idsAfectados;
-        }
-        else if (estado.includes("PQR") || estado.includes("QUEJA")) {
+        } else if (estado.includes("PQR") || estado.includes("QUEJA")) {
             sumaPqrs += idsAfectados;
-        }
-        else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO")) {
+        } else if (estado.includes("P3") || estado.includes("OTROS") || estado.includes("OTRO")) {
             sumaOtrosP3 += idsAfectados;
         }
 
-        // Clasificación por carpetas (FM, etc.)
         if (clasificacionU.includes("FM") || clasificacionU.includes("TRASLADO") || clasificacionU.includes("REUBICACION") || clasificacionU.includes("FUERZA MAYOR")) {
             if (estado.includes("OFFLINE")) fmOff += idsAfectados;
             else if (estado.includes("PARCIAL")) fmPar += idsAfectados;
@@ -253,23 +223,19 @@ datosFiltrados.forEach(fila => {
             else if (estado.includes("P3") || estado.includes("OTROS")) fmP3 += idsAfectados;
         }
 
-        // Código de Rollback (versión anterior con validación amplia)
         const esRepuestosEstadoPrincipal = tipoStopperColU.includes("REPUESTO") || tipoStopperColU.includes("P3") || tipoStopperColU.includes("REP");
-        
         if (esRepuestosEstadoPrincipal) {
             if (estado.includes("OFFLINE")) repOff += idsAfectados;
             else if (estado.includes("PARCIAL")) repPar += idsAfectados;
             else if (estado.includes("VELOCIDAD")) repVel += idsAfectados;
         }
 
-        // - Para P3 y PQR: mantiene la lógica de repuestos original
         const esValidoRepuestoP3 = stopperRepuestosAC.includes("REPUESTO") || stopperRepuestosAC.includes("P3");
         if (esValidoRepuestoP3) {
             if (estado.includes("PQR")) repPqr += idsAfectados;
             else if (estado.includes("P3") || estado.includes("OTROS")) repP3 += idsAfectados;
         }
 
-        // Rangos de afectación por días
         let targetRango = null;
         if (rangoK.includes("MENOR A 5") || rangoK.includes("< 5") || rangoK.includes("1. MENOR")) targetRango = rangos.r1;
         else if (rangoK.includes("5 A 15") || rangoK.includes("5-15") || rangoK.includes("2. DE 5")) targetRango = rangos.r2;
@@ -429,6 +395,7 @@ datosFiltrados.forEach(fila => {
         barOn.style.boxShadow = "0 2px 4px rgba(5,150,105,0.2)";
     }
 }
+
 document.addEventListener("click", async (e) => {
     const btnDepto = e.target.closest(".btn-depto, .marcador-mapa");
     if (btnDepto) {
@@ -524,6 +491,7 @@ document.addEventListener("click", async (e) => {
             alert("Error de red al verificar la contraseña con el servidor.");
         }
     }
+
     const btnGuardarNota = e.target.closest("#btnGuardarNotaServidor");
     if (btnGuardarNota) {
         const txtModalNotaDia = document.getElementById("txtModalNotaDia");
@@ -554,42 +522,40 @@ document.addEventListener("click", async (e) => {
 
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
-async function cargarYCalcularBacklogUnificado() {
-    const BACKLOG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv&gid=290150389";
-
+// Nueva función que calcula R1 y R2 desde la tabla indicador_backlog en D1
+async function cargarYCalcularIndicadorBacklog() {
     try {
-        const response = await fetch(BACKLOG_CSV_URL);
-        const dataText = await response.text();
-        
-        const workbook = XLSX.read(dataText, { type: 'string' });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        const filasBacklog = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const resp = await fetch(WORKER_INDICADOR_URL);
+        const jsonIndicador = await resp.json();
+        const filasDatos = Object.values(jsonIndicador);
 
-        if (!filasBacklog || filasBacklog.length < 2) return;
+        if (!filasDatos || filasDatos.length === 0) return;
 
-        let r1Total = 0, r1Unos = 0;
-        let r2Total = 0, r2Unos = 0;
-
-        const filasDatos = filasBacklog.slice(1);
+        let r1Total = 0, r1Exitosos = 0;
+        let r2Total = 0, r2Exitosos = 0;
 
         filasDatos.forEach(fila => {
-            const regional = String(fila[8] || "").trim().toUpperCase(); 
-            const valorBacklog = parseInt(fila[19], 10); 
+            const regionalKey = Object.keys(fila).find(k => k.trim().toLowerCase() === 'regional');
+            const cumpleKey = Object.keys(fila).find(k => k.trim().toLowerCase() === 'cumple sla' || k.trim().toLowerCase() === 'cumple');
 
-            if (!isNaN(valorBacklog)) {
-                if (regional === "R1") {
-                    r1Total++;
-                    if (valorBacklog === 1) r1Unos++; 
-                } else if (regional === "R2") {
-                    r2Total++;
-                    if (valorBacklog === 1) r2Unos++; 
+            const regional = regionalKey ? String(fila[regionalKey]).trim().toUpperCase() : "";
+            const cumpleSla = cumpleKey ? String(fila[cumpleKey]).trim().toUpperCase() : "";
+
+            if (regional === "R1") {
+                r1Total++;
+                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK") {
+                    r1Exitosos++;
+                }
+            } else if (regional === "R2") {
+                r2Total++;
+                if (cumpleSla === "1" || cumpleSla === "SI" || cumpleSla === "CUMPLE" || cumpleSla === "OK") {
+                    r2Exitosos++;
                 }
             }
         });
 
-        const porcR1 = r1Total > 0 ? (r1Unos / r1Total) * 100 : 0;
-        const porcR2 = r2Total > 0 ? (r2Unos / r2Total) * 100 : 0;
+        const porcR1 = r1Total > 0 ? (r1Exitosos / r1Total) * 100 : 0;
+        const porcR2 = r2Total > 0 ? (r2Exitosos / r2Total) * 100 : 0;
         const meta = 93.00;
 
         const cumplimientoR1 = meta > 0 ? (porcR1 / meta) * 100 : 0;
@@ -614,28 +580,6 @@ async function cargarYCalcularBacklogUnificado() {
         }
 
     } catch (error) {
-        console.error("Error al calcular el Backlog desde la pestaña unificada:", error);
-    }
-}
-async function inicializarDashboard() {
-    try {
-        renderizarPinesEstaticos("TODOS");
-        cargarNotaDelDia();
-
-        // 1. Lógica actual para base-backlog
-        const resp = await fetch(WORKER_DATA_URL);
-        const jsonRegistros = await resp.json();
-        const valoresArray = Object.values(jsonRegistros);
-        if (valoresArray.length > 0) {
-            datosGlobal = valoresArray;
-            renderizarDatosDashboard();
-        }
-
-        // 2. Llamada para calcular y pintar el nuevo Indicador Backlog
-        await cargarYCalcularIndicadorBacklog();
-
-        cargarYCalcularBacklogUnificado();
-    } catch (error) {
-        console.error("Error al cargar los datos del Worker en el dashboard:", error);
+        console.error("Error al calcular el Indicador Backlog:", error);
     }
 }
