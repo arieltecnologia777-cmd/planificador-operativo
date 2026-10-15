@@ -617,3 +617,74 @@ async function cargarYCalcularBacklogUnificado() {
         console.error("Error al calcular el Backlog desde la pestaña unificada:", error);
     }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Elementos de navegación del modal para Ind Backlog
+    const btnAbrirMenuInd = document.getElementById("btnAbrirFormIndBacklog"); // Asegúrate de asignar este ID en tu botón del menú principal si aún no lo tiene
+    const vistaFormInd = document.getElementById("vistaFormIndBacklog");
+    const vistaMenuPrincipal = document.getElementById("vistaMenuPrincipalModal"); // Asumiendo que usas un contenedor principal en el modal
+    const btnVolver1 = document.getElementById("btnVolverMenuDesdeIndBacklog");
+    const btnVolver2 = document.getElementById("btnVolverMenuDesdeIndBacklogX");
+
+    // 2. Elementos del cargue masivo
+    const inputExcelInd = document.getElementById("inputExcelIndBacklog");
+    const btnProcesarInd = document.getElementById("btnProcesarIndBacklog");
+
+    if (btnProcesarInd && inputExcelInd) {
+        btnProcesarInd.addEventListener("click", async () => {
+            const archivo = inputExcelInd.files[0];
+            if (!archivo) {
+                alert("Por favor, selecciona un archivo Excel primero.");
+                return;
+            }
+
+            const confirmar = window.confirm(`¿Deseas cargar el archivo "${archivo.name}" a la tabla indicador_backlog?`);
+            if (!confirmar) return;
+
+            btnProcesarInd.disabled = true;
+            btnProcesarInd.textContent = "⏳ Cargando al servidor...";
+
+            const lector = new FileReader();
+            lector.onload = async function (evt) {
+                try {
+                    const datosBinarios = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(datosBinarios, { type: "array" });
+                    const primeraHoja = workbook.SheetNames[0];
+                    const hoja = workbook.Sheets[primeraHoja];
+                    const filasExcel = XLSX.utils.sheet_to_json(hoja);
+
+                    if (!filasExcel.length) {
+                        alert("El archivo Excel está vacío.");
+                        btnProcesarInd.disabled = false;
+                        btnProcesarInd.textContent = "🚀 Cargar Ind Backlog al Servidor";
+                        return;
+                    }
+
+                    let contador = 0;
+                    for (const filaObj of filasExcel) {
+                        try {
+                            const resp = await fetch(`${API_BASE_URL}/indicador-backlog`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(filaObj)
+                            });
+                            const resJson = await resp.json();
+                            if (resJson.ok) contador++;
+                        } catch (errPost) {
+                            console.error("Error al subir fila de indicador:", errPost);
+                        }
+                    }
+
+                    inputExcelInd.value = "";
+                    alert(`¡Cargue masivo completado con éxito! Se guardaron ${contador} registros en indicador_backlog.`);
+                    location.reload();
+                } catch (error) {
+                    console.error("Error leyendo el Excel:", error);
+                    alert("Ocurrió un error al procesar el archivo Excel.");
+                    btnProcesarInd.disabled = false;
+                    btnProcesarInd.textContent = "🚀 Cargar Ind Backlog al Servidor";
+                }
+            };
+            lector.readAsArrayBuffer(archivo);
+        });
+    }
+});
