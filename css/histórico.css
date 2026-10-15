@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #2d3748;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 5px;
+}
+
+p.subtitle {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 300px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.table-wrapper {
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background-color: #f1f5f9;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-weight: 600;
+    color: #4a5568;
+    user-select: none;
+}
+
+tr:hover {
+    background-color: #f8fafc;
+}
+
+.badge-existente {
+    background-color: #c6f6d5;
+    color: #22543d;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.btn-reabrir-ot {
+    background: #3182ce;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-reabrir-ot:hover {
+    background: #2b6cb0;
+}
+
+.btn-volver {
+    background: #4a5568;
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-volver:hover {
+    background: #2d3748;
+}
