@@ -474,7 +474,6 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
-        // 1. Cargamos directamente los datos desde la tabla unificada base_backlog en Cloudflare D1
         const respBacklog = await fetch(WORKER_DATA_URL);
         const dataBacklog = await respBacklog.json();
 
@@ -485,7 +484,6 @@ async function cargarPlaneacion(){
             listaRegistros = Object.values(dataBacklog);
         }
 
-        // Definimos los encabezados estándar que espera tu lógica original de filtros y búsqueda flexible
         encabezadosGlobal = [
             "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
             "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
@@ -495,48 +493,46 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
-        // Mapeamos los objetos JSON de D1 a filas (arrays) exactamente como los procesaba tu función vieja del CSV
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
             return [
-                reg.id || reg.ID || "",                                                 // 0: ID
-                reg.departamento || reg.Departamento || "",                             // 1: Departamento
-                reg.municipio || reg.Municipio || "",                                   // 2: Municipio
-                reg.im || reg.IM || "",                                                 // 3: IM
-                reg.ot || reg.OT || "",                                                 // 4: OT
-                reg.afectacion || reg.tipo_afectacion || reg.Afectacion || "",          // 5: Tipo de afectación
-                "",                                                                     // 6: Nuevo
-                reg.total_ids_afectados || reg.ids_afectados || reg.totalIdsAfectados || "", // 7: Total IDs afectados
-                reg.dias_vigencia_ot || reg.dias_ot || reg.diasOt || "",                // 8: Días vigencia OT
-                reg.rango_afectacion || reg.rangoAfectacion || "",                      // 9: Rango de afectación
-                reg.tipo_prioridad || reg.prioridad || "",                              // 10: Tipo de prioridad
-                reg.stoppers_dominion || reg.stoppers || "",                            // 11: Stoppers Dominion
-                reg.estado_programacion || reg.estadoProgramacion || "",                // 12: Estado Programación
-                reg.fecha_programacion || reg.fechaProgramacion || "",                  // 13: Fecha Programación
-                reg.observaciones || reg.observacion || "",                             // 14: Observaciones
-                reg.estado_gestion || reg.estadoGestion || "",                          // 15: Estado Gestión
-                reg.tecnico_asignado || reg.tecnicoAsignado || "",                      // 16: Técnico Asignado
-                reg.acompanamiento || "",                                               // 17: Acompañamiento
-                reg.indicador_backlog || reg.backlog || "",                             // 18: Indicador backlog
-                reg.stopper_p3 || reg.stopperP3 || "",                                  // 19: Stopper P3
-                reg.estado_ot || reg.estadoOt || "",                                    // 20: Estado OT
-                reg.tipo_facturacion || reg.tipoFacturacion || "",                      // 21: Tipo facturación
-                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "",               // 22: Fecha vencimiento FM
-                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || ""              // 23: Alerta vencimiento FM
+                reg.id || reg.ID || "",
+                reg.departamento || reg.Departamento || "",
+                reg.municipio || reg.Municipio || "",
+                reg.im || reg.IM || "",
+                reg.ot || reg.OT || "",
+                reg.afectacion || reg.tipo_afectacion || reg.Afectacion || "",
+                "",
+                reg.total_ids_afectados || reg.ids_afectados || reg.totalIdsAfectados || "",
+                reg.dias_vigencia_ot || reg.dias_ot || reg.diasOt || "",
+                reg.rango_afectacion || reg.rangoAfectacion || "",
+                reg.tipo_prioridad || reg.prioridad || "",
+                reg.stoppers_dominion || reg.stoppers || "",
+                reg.estado_programacion || reg.estadoProgramacion || "",
+                reg.fecha_programacion || reg.fechaProgramacion || "",
+                reg.observaciones || reg.observacion || "",
+                reg.estado_gestion || reg.estadoGestion || "",
+                reg.tecnico_asignado || reg.tecnicoAsignado || "",
+                reg.acompanamiento || "",
+                reg.indicador_backlog || reg.backlog || "",
+                reg.stopper_p3 || reg.stopperP3 || "",
+                reg.estado_ot || reg.estadoOt || "",
+                reg.tipo_facturacion || reg.tipoFacturacion || "",
+                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "",
+                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || ""
             ];
         });
 
-        // 2. Cargamos los estados, fechas y notas guardadas en D1 (registrosD1)
         let registrosD1 = {};
         try {
             const respD1 = await fetch(API_URL);
             registrosD1 = await respD1.json();
         } catch (error) {
-            console.error("Error al cargar registros D1:", error);
+            console.error(error);
         }
-        window.registrosD1 = registrosD1;
 
+        window.registrosD1 = registrosD1;
         const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
         const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
         const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
@@ -548,6 +544,7 @@ async function cargarPlaneacion(){
             const otReg = String(reg.ot || "").trim();
             if (otReg && !otsConfiguesSet.has(otReg)) {
                 if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
+                    
                     let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
                     filaRescatada = filaRescatada.map(() => "");
 
@@ -1204,4 +1201,976 @@ document.addEventListener("change", (e) => {
     }
 
     if (target.classList.contains("chkAfectacion")) {
-        afectacionesSeleccionadas
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasAfectaciones") {
+        document.querySelectorAll(".chkAfectacion").forEach(chk => chk.checked = target.checked);
+        afectacionesSeleccionadas = Array.from(document.querySelectorAll(".chkAfectacion:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkStoppers")) {
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(chk => chk.checked = target.checked);
+        stoppersSeleccionados = Array.from(document.querySelectorAll(".chkStoppers:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkRango")) {
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosRangos") {
+        document.querySelectorAll(".chkRango").forEach(chk => chk.checked = target.checked);
+        rangosSeleccionados = Array.from(document.querySelectorAll(".chkRango:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkDiasOT")) {
+        diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosDiasOT") {
+        document.querySelectorAll(".chkDiasOT").forEach(chk => chk.checked = target.checked);
+        diasOtSeleccionados = Array.from(document.querySelectorAll(".chkDiasOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkBacklog")) {
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(chk => chk.checked = target.checked);
+        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkEstadoOT")) {
+        estadoOTSeleccionados = Array.from(document.querySelectorAll(".chkEstadoOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosEstadoOT") {
+        document.querySelectorAll(".chkEstadoOT").forEach(chk => chk.checked = target.checked);
+        estadoOTSeleccionados = Array.from(document.querySelectorAll(".chkEstadoOT:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if (target.classList.contains("chkFechaProg")) {
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodasFechasProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(chk => chk.checked = target.checked);
+        fechasProgSeleccionadas = Array.from(document.querySelectorAll(".chkFechaProg:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
+    if(target.classList.contains("estado-programacion")){
+        const fila = target.closest("tr");
+        const fecha = fila.querySelector(".fecha-input");
+        const valor = target.value;
+
+        if(valor === "Programada" || valor === "Cancelada" || valor === "Operativa"){
+            fecha.type = "date";
+            fecha.disabled = false;
+            if(!fecha.value || fecha.value.includes("Definir") || fecha.value.includes("validación") || fecha.value.includes("aplica")) {
+                fecha.value = "";
+            }
+        } else if(valor === "Pendiente"){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "En validación";
+        } else if(valor === "N/A" || valor === "Postular FM" || valor === "Postular abast."){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "No aplica";
+        } else if(valor === ""){
+            fecha.type = "text";
+            fecha.disabled = true;
+            fecha.value = "⟵ Definir estado";
+        }
+    }
+
+    const filaTabla = target.closest("tr");
+    if(filaTabla && !target.closest(".multi-filtro-item")) {
+        const otMod = filaTabla.children[4].textContent.trim();
+        if (otMod) otsModificadasRecientemente.add(otMod);
+        guardarOT(filaTabla);
+    }
+});
+
+document.addEventListener("click", (e) => {
+    const target = e.target;
+
+    const btnGrupo = target.closest("#btnToggleGrupoCols");
+    if (btnGrupo) {
+        grupoColumnasColapsado = !grupoColumnasColapsado;
+        aplicarEstadoGrupoColumnas();
+        return;
+    }
+
+    const headerAnio = target.closest(".filtro-grupo-anio");
+    if (headerAnio) {
+        const contenido = headerAnio.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerAnio.textContent = headerAnio.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
+
+    const headerMes = target.closest(".filtro-grupo-mes");
+    if (headerMes) {
+        const contenido = headerMes.nextElementSibling;
+        if (contenido) {
+            const oculto = contenido.style.display === "none";
+            contenido.style.display = oculto ? "block" : "none";
+            headerMes.textContent = headerMes.textContent.replace(/[▾▴]/, oculto ? "▾" : "▴");
+        }
+        return;
+    }
+
+    const kpiCard = target.closest(".kpi-card, .card");
+    if (kpiCard && !target.closest("input, select, button")) {
+        const valorEl = kpiCard.querySelector("[id^='kpi']");
+        if (valorEl) {
+            const idKpi = valorEl.id;
+            let tipoFiltro = null;
+
+            if (idKpi === "kpiAltaPlaneacion") tipoFiltro = "alta";
+            else if (idKpi === "kpiMediaPlaneacion") tipoFiltro = "media";
+            else if (idKpi === "kpiBajaPlaneacion") tipoFiltro = "baja";
+            else if (idKpi === "kpiCumpleBacklog") tipoFiltro = "cumple";
+            else if (idKpi === "kpiNoCumpleBacklog") tipoFiltro = "nocumple";
+            else if (idKpi === "kpiProgramadosD1") tipoFiltro = "programados";
+
+            if (tipoFiltro) {
+                const contenedorKpis = kpiCard.closest("#kpis") || kpiCard.parentElement;
+
+                if (kpiFiltroActivo === tipoFiltro) {
+                    kpiFiltroActivo = null;
+                    kpiCard.classList.remove("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.remove("kpi-container-activo");
+                } else {
+                    kpiFiltroActivo = tipoFiltro;
+                    document.querySelectorAll(".kpi-card, .card").forEach(c => {
+                        c.classList.remove("kpi-seleccionado");
+                    });
+                    kpiCard.classList.add("kpi-seleccionado");
+                    if (contenedorKpis) contenedorKpis.classList.add("kpi-container-activo");
+                }
+                aplicarFiltros();
+                return;
+            }
+        }
+    }
+
+    if (target.closest("#btnLimpiarHeader, .btn-limpiar-header")) {
+        resetearTodosLosFiltros();
+        return;
+    }
+
+    if(target.id === "btnLimpiarNuevo") {
+        document.querySelectorAll(".chkNuevo").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosNuevos");
+        if(chkAll) chkAll.checked = false;
+        nuevosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarDepartamento") {
+        document.querySelectorAll(".chkDepartamento").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosDeptos");
+        if(chkAll) chkAll.checked = false;
+        departamentosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarEstado") {
+        document.querySelectorAll(".chkEstadoGestion").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosEstados");
+        if(chkAll) chkAll.checked = false;
+        estadosGestionSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarAfectacion") {
+        document.querySelectorAll(".chkAfectacion").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasAfectaciones");
+        if(chkAll) chkAll.checked = false;
+        afectacionesSeleccionadas = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarStoppers") {
+        document.querySelectorAll(".chkStoppers").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosStoppers");
+        if(chkAll) chkAll.checked = false;
+        stoppersSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarRango") {
+        document.querySelectorAll(".chkRango").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosRangos");
+        if(chkAll) chkAll.checked = false;
+        rangosSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarDiasOT") {
+        document.querySelectorAll(".chkDiasOT").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosDiasOT");
+        if(chkAll) chkAll.checked = false;
+        diasOtSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarBacklog") {
+        document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosBacklog");
+        if(chkAll) chkAll.checked = false;
+        backlogSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarEstadoOT") {
+        document.querySelectorAll(".chkEstadoOT").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosEstadoOT");
+        if(chkAll) chkAll.checked = false;
+        estadoOTSeleccionados = [];
+        aplicarFiltros();
+    }
+    if(target.id === "btnLimpiarFechaProg") {
+        document.querySelectorAll(".chkFechaProg").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodasFechasProg");
+        if(chkAll) chkAll.checked = false;
+        fechasProgSeleccionadas = [];
+        aplicarFiltros();
+    }
+
+    const dropdowns = [
+        { btn: "btnNuevo", lista: "listaNuevo" },
+        { btn: "btnDepartamento", lista: "listaDepartamento" },
+        { btn: "btnAfectacion", lista: "listaAfectacion" },
+        { btn: "btnStoppers", lista: "listaStoppers" },
+        { btn: "btnRango", lista: "listaRango" },
+        { btn: "btnDiasOT", lista: "listaDiasOT" },
+        { btn: "btnBacklog", lista: "listaBacklog" },
+        { btn: "btnEstadoOT", lista: "listaEstadoOT" },
+        { btn: "btnFechaProg", lista: "listaFechaProg" },
+        { btn: "btnEstado", lista: "listaEstado" }
+    ];
+
+    dropdowns.forEach(item => {
+        const botonEl = document.getElementById(item.btn);
+        const listaEl = document.getElementById(item.lista);
+        if(botonEl && listaEl) {
+            if(botonEl.contains(target)) {
+                listaEl.classList.toggle("show");
+            } else if(!listaEl.contains(target)) {
+                listaEl.classList.remove("show");
+            }
+        }
+    });
+});
+
+document.addEventListener("blur", async e => {
+    if(!e.target.classList.contains("fecha-input")) return;
+    const fila = e.target.closest("tr");
+    if(!fila) return;
+    const otMod = fila.children[4].textContent.trim();
+    if (otMod) otsModificadasRecientemente.add(otMod);
+    await guardarOT(fila);
+}, true);
+
+async function guardarOT(fila, observacionForzada = null){
+    const ot = fila.children[4]?.textContent.trim() || "";
+    
+    const inputFecha = fila.querySelector(".fecha-input");
+    let fechaVal = inputFecha?.value || "";
+    if(inputFecha && (fechaVal.includes("Definir") || fechaVal.includes("validación") || fechaVal.includes("aplica"))) {
+        fechaVal = "";
+    }
+
+    const inputObs = fila.querySelector(".observacion");
+    const obsFinal = observacionForzada !== null ? observacionForzada : (window.registrosD1[ot]?.observacion || inputObs?.value || "");
+
+    const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
+
+    const valId = fila.children[0]?.textContent.trim() || "";
+    const valDepto = fila.children[1]?.textContent.trim() || "";
+    const valMuni = fila.children[2]?.textContent.trim() || "";
+    const valIm = fila.children[3]?.textContent.trim() || "";
+
+    const payload = {
+        ot,
+        estadoProgramacion: fila.querySelector(".estado-programacion")?.value || "",
+        fechaProgramacion: fechaVal,
+        observacion: obsFinal,
+        estadoGestion: fila.querySelector(".estado-gestion")?.value || "",
+        tecnicoAsignado: fila.querySelector(".tecnico-asignado")?.value || "",
+        acompanamiento: fila.querySelector(".acompanamiento")?.value || "",
+        fechaLocal: fechaLocalHoy,
+        idOriginal: valId,
+        imOriginal: valIm,
+        departamentoOriginal: valDepto,
+        municipioOriginal: valMuni
+    };
+
+    try {
+        const resp = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const resultado = await resp.json();
+
+        if (resultado.ok) {
+            window.registrosD1 = window.registrosD1 || {};
+            window.registrosD1[payload.ot] = {
+                ot: payload.ot,
+                estadoProgramacion: payload.estadoProgramacion,
+                fechaProgramacion: payload.fechaProgramacion,
+                observacion: payload.observacion,
+                estadoGestion: payload.estadoGestion,
+                tecnicoAsignado: payload.tecnicoAsignado,
+                acompanamiento: payload.acompanamiento,
+                idOriginal: payload.idOriginal,
+                imOriginal: payload.imOriginal,
+                departamentoOriginal: payload.departamentoOriginal,
+                municipioOriginal: payload.municipioOriginal,
+                updatedAt: new Date().toISOString(),
+                createdAt: resultado.createdAt || window.registrosD1[payload.ot]?.createdAt
+            };
+
+            actualizarKPIs(datosFiltradosGlobal);
+            actualizarOpcionesFiltros(datosGlobal);
+        }
+    } catch (err) {
+        console.error("Error al guardar OT:", err);
+    }
+}
+
+const wrapper = document.querySelector('.planeacion-table-wrapper');
+let scrollTimer;
+if(wrapper) {
+    wrapper.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const firstRow = wrapper.querySelector('tbody tr');
+            if (!firstRow) return;
+            const rowHeight = firstRow.offsetHeight;
+            const target = Math.round(wrapper.scrollTop / rowHeight) * rowHeight;
+            wrapper.scrollTo({ top: target, behavior: 'smooth' });
+        }, 80);
+    });
+}
+
+window.addEventListener("load", () => {
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+
+    if (!topScroll || !tableWrapper || !topScrollInner) return;
+
+    function ajustarAnchoBarra() {
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        if (maxScrollTabla > 0) {
+            topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
+        }
+    }
+
+    ajustarAnchoBarra();
+    window.addEventListener("resize", ajustarAnchoBarra);
+    setTimeout(ajustarAnchoBarra, 400);
+
+    let syncing = false;
+
+    topScroll.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollBarra > 0) {
+            const porcentaje = topScroll.scrollLeft / maxScrollBarra;
+            tableWrapper.scrollLeft = porcentaje * maxScrollTabla;
+        }
+        syncing = false;
+    });
+
+    tableWrapper.addEventListener("scroll", () => {
+        if (syncing) return;
+        syncing = true;
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
+        
+        if (maxScrollTabla > 0 && maxScrollBarra > 0) {
+            const porcentaje = tableWrapper.scrollLeft / maxScrollTabla;
+            topScroll.scrollLeft = porcentaje * maxScrollBarra;
+        }
+        syncing = false;
+    });
+});
+
+function actualizarStickyTabla() {
+    const header = document.querySelector('.planeacion-header');
+    const filtros = document.querySelector('.planeacion-filtros-sticky');
+    if (!header || !filtros) return;
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFiltros = filtros.offsetHeight;
+
+    document.documentElement.style.setProperty(
+        '--sticky-table-top',
+        `${alturaHeader + alturaFiltros}px`
+    );
+}
+
+window.addEventListener('load', actualizarStickyTabla);
+window.addEventListener('resize', actualizarStickyTabla);
+
+function detectarZoom() {
+    const zoom = Math.round(window.devicePixelRatio * 100);
+    document.body.classList.toggle('zoom-alto', zoom > 105);
+}
+window.addEventListener('resize', detectarZoom);
+detectarZoom();
+
+document.addEventListener("click", (e) => {
+    const botonZoom = e.target.closest("#btnExpandirTabla, #btnZoom");
+
+    if (botonZoom) {
+        e.preventDefault();
+        document.body.classList.toggle("modo-ampliado");
+        document.body.classList.toggle("modo-zoom");
+        document.querySelector(".panel")?.classList.toggle("panel-zoom");
+    }
+});
+
+window.exportarPlaneacion = function() {
+    try {
+        if (typeof datosGlobal === "undefined" || !datosGlobal.length) {
+            alert("No hay datos cargados para exportar todavía.");
+            return;
+        }
+
+        const exportRegionEl = document.getElementById("exportRegion");
+        const region = exportRegionEl ? exportRegionEl.value : "TODOS";
+
+        let filas = [...datosGlobal];
+
+        const buscarIndice = (nombre) =>
+            encabezadosGlobal.findIndex(h => String(h).trim() === nombre);
+
+        const idxDepto = buscarIndice("Departamento");
+
+        if (region === "R1" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                ["CESAR", "LA GUAJIRA", "SAI"].includes(
+                    String(fila[idxDepto] || "").trim().toUpperCase()
+                )
+            );
+        }
+
+        if (region === "R2" && idxDepto !== -1) {
+            filas = filas.filter(fila =>
+                String(fila[idxDepto] || "").trim().toUpperCase() === "ANTIOQUIA"
+            );
+        }
+
+        const headers = [
+            "ID", "Departamento", "Municipio", "IM", "OT", "Afectacion", "Nuevo",
+            "Total_IDs", "Dias_OT", "Rango_Afectacion", "Prioridad", "Stoppers_Dominion",
+            "Estado_Programacion", "Fecha_Programacion", "Observaciones",
+            "Estado_Gestion", "Tecnico_Asignado", "Acompanamiento",
+            "Indicador_Backlog", "Stopper_P3", "Tipo_Facturacion",
+            "Fecha_Vencimiento_FM", "Alerta_Vencimiento_FM"
+        ];
+
+        let registrosProcesados = filas.map(fila => {
+            const getValor = (nombre) => {
+                const index = buscarIndice(nombre);
+                return index !== -1 ? (fila[index] ?? "") : "";
+            };
+
+            const otValor = getValor("OT");
+            const regD1 = window.registrosD1 && window.registrosD1[otValor] ? window.registrosD1[otValor] : {};
+
+            let valorFechaExportar = "";
+            let esFechaReal = false;
+            const estadoProg = regD1.estadoProgramacion || "";
+            const fechaStr = regD1.fechaProgramacion ? String(regD1.fechaProgramacion).trim() : "";
+            const regexFecha = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+            if ((estadoProg === "Programada" || estadoProg === "Cancelada" || estadoProg === "Operativa") && regexFecha.test(fechaStr)) {
+                const [, year, month, day] = fechaStr.match(regexFecha);
+                valorFechaExportar = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                esFechaReal = true;
+            } else {
+                if (estadoProg === "Pendiente") {
+                    valorFechaExportar = "En validación";
+                } else if (estadoProg === "N/A" || estadoProg === "Postular FM" || estadoProg === "Postular abast.") {
+                    valorFechaExportar = "No aplica";
+                } else {
+                    valorFechaExportar = "⟵ Definir estado";
+                }
+            }
+
+            return {
+                filaOriginal: fila,
+                esFechaReal: esFechaReal,
+                valorFechaExportar: valorFechaExportar,
+                regD1: regD1,
+                otValor: otValor
+            };
+        });
+
+        registrosProcesados.sort((a, b) => {
+            if (a.esFechaReal && !b.esFechaReal) return -1;
+            if (!a.esFechaReal && b.esFechaReal) return 1;
+            return 0;
+        });
+
+        const dataAOA = [];
+        dataAOA.push([...headers]);
+
+        registrosProcesados.forEach(item => {
+            const getValorFlexible = (terminos, esNumerico = false) => {
+                const index = buscarIndiceColumnaFlexible(encabezadosGlobal, terminos);
+                if (index === -1) return esNumerico ? 0 : "";
+                const val = item.filaOriginal[index] ?? "";
+                if (esNumerico && val !== "") {
+                    const num = Number(val);
+                    return isNaN(num) ? val : num;
+                }
+                return val;
+            };
+
+            const limpiarTexto = (t) => t ? String(t).replace(/[\r\n]+/g, " | ").replace(/\s+/g, " ").trim() : "";
+            const esN = esCasoNuevo(item.otValor) ? "Sí" : "No";
+
+            dataAOA.push([
+                getValorFlexible(["ID"], true), 
+                getValorFlexible(["Departamento"]), 
+                getValorFlexible(["Municipio"]),
+                getValorFlexible(["IM"]), 
+                item.otValor, 
+                getValorFlexible(["Tipo de afectación", "Afectación"]),
+                esN,
+                getValorFlexible(["IDs afectados", "Total IDs afectados"], true), 
+                getValorFlexible(["Días vigencia OT", "Días OT", "Dias OT"], true), 
+                getValorFlexible(["Rango de afectación", "Rango de afect"]),
+                getValorFlexible(["Tipo de prioridad", "Prioridad"]), 
+                getValorFlexible(["Stoppers Dominion", "Stoppers"]),
+                limpiarTexto(item.regD1.estadoProgramacion), 
+                item.valorFechaExportar,
+                limpiarTexto(item.regD1.observacion), 
+                limpiarTexto(item.regD1.estadoGestion),
+                limpiarTexto(item.regD1.tecnicoAsignado),
+                limpiarTexto(item.regD1.acompanamiento),
+                getValorFlexible(["Indicador backlog", "Backlog"]), 
+                getValorFlexible(["Stopper P3"]),
+                getValorFlexible(["Tipo facturación", "Tipo facturacio"]),
+                getValorFlexible(["Fecha vencimiento FM", "Vencimiento FM"]),
+                getValorFlexible(["Alerta vencimiento FM", "Alerta FM"])
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        if (ws && ws['!ref']) {
+            const rango = XLSX.utils.decode_range(ws['!ref']);
+            const colFechaIdx = 13;
+
+            for (let R = rango.s.r + 1; R <= rango.e.r; ++R) {
+                const celdaRef = XLSX.utils.encode_cell({ r: R, c: colFechaIdx });
+                const celda = ws[celdaRef];
+                if (celda && celda.v instanceof Date) {
+                    celda.t = 'd';
+                    celda.z = 'dd/mm/yyyy';
+                }
+            }
+
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
+
+    } catch (error) {
+        console.error("❌ Error detallado al exportar:", error);
+        alert("Ocurrió un error al exportar el archivo.");
+    }
+};
+
+let filaActualModal = null;
+
+document.addEventListener("click", (e) => {
+    const btnEditar = e.target.closest(".btn-abrir-modal-obs");
+
+    if (btnEditar) {
+        const fila = btnEditar.closest("tr");
+        filaActualModal = fila;
+        
+        const ot = btnEditar.getAttribute("data-ot");
+        const id = btnEditar.getAttribute("data-id");
+        const depto = btnEditar.getAttribute("data-depto");
+        const muni = btnEditar.getAttribute("data-muni");
+        const afec = btnEditar.getAttribute("data-afec");
+        
+        const inputObs = fila.querySelector(".observacion");
+        const modal = document.getElementById("modalObservacion");
+        const txtArea = document.getElementById("textareaModalObs");
+        
+        const spanOt = document.getElementById("modalValOt");
+        const spanId = document.getElementById("modalValId");
+        const spanDepto = document.getElementById("modalValDepto");
+        const spanMuni = document.getElementById("modalValMuni");
+        const spanAfec = document.getElementById("modalValAfec");
+
+       if (modal && txtArea) {
+            if (spanOt) spanOt.textContent = ot || "--";
+            if (spanId) spanId.textContent = id || "--";
+            if (spanDepto) spanDepto.textContent = depto || "--";
+            if (spanMuni) spanMuni.textContent = muni || "--";
+            if (spanAfec) spanAfec.textContent = afec || "--";
+
+            const registroActual = window.registrosD1[ot] || {};
+            let textoGuardado = registroActual.observacion || inputObs?.value || "";
+
+            if (textoGuardado.includes(" • ")) {
+                textoGuardado = textoGuardado.replace(/\s*•\s*/g, "\n");
+            } else if (textoGuardado.includes(" | ")) {
+                textoGuardado = textoGuardado.replace(/\s*\|\s*/g, "\n");
+            }
+
+            txtArea.value = textoGuardado;
+            modal.style.display = "grid";
+            txtArea.focus();
+        }
+    }
+
+    if (e.target.id === "cerrarModalObs" || e.target.id === "btnCancelarObs") {
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
+    }
+
+    if (e.target.id === "btnGuardarObs") {
+        const txtArea = document.getElementById("textareaModalObs");
+        if (filaActualModal && txtArea) {
+            const ot = filaActualModal.children[4].textContent.trim();
+            const textoConSaltos = txtArea.value;
+
+            window.registrosD1[ot] = window.registrosD1[ot] || {};
+            window.registrosD1[ot].observacion = textoConSaltos;
+
+            const inputObs = filaActualModal.querySelector(".observacion");
+            if (inputObs) {
+                inputObs.value = textoConSaltos.replace(/(\r\n|\n|\r)/g, " | ");
+            }
+
+            if (typeof guardarOT === "function") {
+                guardarOT(filaActualModal, textoConSaltos);
+            }
+        }
+        const modal = document.getElementById("modalObservacion");
+        if (modal) modal.style.display = "none";
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        const modal = document.getElementById("modalObservacion");
+        if (modal && modal.style.display === "grid") {
+            modal.style.display = "none";
+        }
+    }
+});
+
+let scrollInterval = null;
+
+function iniciarScroll(direccion) {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    
+    if (!tableWrapper) return;
+
+    const step = 20;
+    tableWrapper.scrollLeft += direccion * step;
+    if (topScroll) {
+        topScroll.scrollLeft += direccion * step;
+    }
+}
+
+document.addEventListener("mousedown", (e) => {
+    const btnLeft = e.target.closest("#scrollLeftTopBtn");
+    const btnRight = e.target.closest("#scrollRightTopBtn");
+
+    if (btnLeft || btnRight) {
+        const direccion = btnLeft ? -1 : 1;
+        iniciarScroll(direccion);
+        scrollInterval = setInterval(() => {
+            iniciarScroll(direccion);
+        }, 30);
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+    }
+});
+
+function ajustarAnchoScrollSuperior() {
+    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
+    const topScroll = document.querySelector(".planeacion-scroll-top");
+    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
+
+    if (tableWrapper && topScroll && topScrollInner) {
+        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        const anchoPerfecto = topScroll.clientWidth + maxScrollTabla;
+        topScrollInner.style.width = anchoPerfecto + "px";
+    }
+}
+
+window.addEventListener("load", ajustarAnchoScrollSuperior);
+window.addEventListener("resize", ajustarAnchoScrollSuperior);
+setTimeout(ajustarAnchoScrollSuperior, 300);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const inputExcel = document.getElementById("inputExcelMasivo");
+    const containerProgreso = document.getElementById("containerProgresoMasivo");
+    const textoProgreso = document.getElementById("textoProgreso");
+    const barraProgresoAnimada = document.getElementById("barraProgresoAnimada");
+    const porcentajeProgreso = document.getElementById("porcentajeProgreso");
+
+    if (inputExcel) {
+        inputExcel.addEventListener("change", async (e) => {
+            const archivo = e.target.files[0];
+            if (!archivo) return;
+
+            const confirmar = window.confirm(`Se procesará el archivo. ¿Deseas actualizar masivamente las observaciones y fechas con "${archivo.name}"?`);
+            
+            if (!confirmar) {
+                inputExcel.value = "";
+                return;
+            }
+
+            if (containerProgreso) containerProgreso.style.display = "block";
+            if (textoProgreso) textoProgreso.textContent = `Procesando "${archivo.name}"...`;
+            
+            let porcentajeActual = 0;
+            if (barraProgresoAnimada) barraProgresoAnimada.style.width = "0%";
+            if (porcentajeProgreso) porcentajeProgreso.textContent = "0%";
+
+            const intervaloProgreso = setInterval(() => {
+                if (porcentajeActual < 90) {
+                    porcentajeActual += Math.floor(Math.random() * 12) + 4;
+                    if (porcentajeActual > 90) porcentajeActual = 90;
+                    
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = porcentajeActual + "%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = porcentajeActual + "%";
+                }
+            }, 120);
+
+            const lector = new FileReader();
+            lector.onload = async function (evt) {
+                try {
+                    const datosBinarios = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(datosBinarios, { type: "array" });
+                    
+                    const nombreHoja = workbook.SheetNames[0];
+                    const hoja = workbook.Sheets[nombreHoja];
+                    const filasExcel = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+                    
+                    if (filasExcel.length === 0) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        alert("El archivo Excel está vacío.");
+                        inputExcel.value = "";
+                        return;
+                    }
+
+                    const encabezadosExcel = filasExcel[0].map(h => String(h).trim());
+                    const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+
+                    const idxOT = encabezadosExcel.findIndex(h => normalizar(h) === "OT");
+                    const idxID = encabezadosExcel.findIndex(h => normalizar(h) === "ID");
+                    const idxIM = encabezadosExcel.findIndex(h => normalizar(h) === "IM");
+                    const idxDepto = encabezadosExcel.findIndex(h => normalizar(h) === "DEPARTAMENTO");
+                    const idxMuni = encabezadosExcel.findIndex(h => normalizar(h) === "MUNICIPIO");
+                    
+                    const idxObs = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n === "OBSERVACION" || n === "OBSERVACIONES";
+                    });
+
+                    const idxFechaProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
+                    });
+
+                    const idxEstadoProg = encabezadosExcel.findIndex(h => {
+                        const n = normalizar(h);
+                        return n.includes("ESTADO") && n.includes("PROGRAMACION");
+                    });
+
+                    if (idxOT === -1) {
+                        clearInterval(intervaloProgreso);
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        alert("El Excel debe contener obligatoriamente la columna 'OT'.");
+                        inputExcel.value = "";
+                        return;
+                    }
+
+                    const formatearFechaExcelAInput = (valorCrudo) => {
+                        if (valorCrudo === undefined || valorCrudo === null || valorCrudo === "") return "";
+
+                        if (valorCrudo instanceof Date) {
+                            const y = valorCrudo.getFullYear();
+                            const m = String(valorCrudo.getMonth() + 1).padStart(2, "0");
+                            const d = String(valorCrudo.getDate()).padStart(2, "0");
+                            return `${y}-${m}-${d}`;
+                        }
+
+                        if (typeof valorCrudo === "number") {
+                            const fechaObj = XLSX.SSF.parse_date_code(valorCrudo);
+                            if (fechaObj) {
+                                const y = fechaObj.y;
+                                const m = String(fechaObj.m).padStart(2, "0");
+                                const d = String(fechaObj.d).padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        const texto = String(valorCrudo).trim();
+                        if (!texto || texto === "-" || texto === "undefined" || texto === "null" || texto === "NaN") return "";
+
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+
+                        const partes = texto.split(/[\/\-]/);
+                        if (partes.length === 3) {
+                            if (partes[2].length === 4) {
+                                const d = partes[0].padStart(2, "0");
+                                const m = partes[1].padStart(2, "0");
+                                const y = partes[2];
+                                return `${y}-${m}-${d}`;
+                            }
+                            if (partes[0].length === 4) {
+                                const y = partes[0];
+                                const m = partes[1].padStart(2, "0");
+                                const d = partes[2].padStart(2, "0");
+                                return `${y}-${m}-${d}`;
+                            }
+                        }
+
+                        return "";
+                    };
+
+                    let actualizados = 0;
+
+                    for (let i = 1; i < filasExcel.length; i++) {
+                        const filter = filasExcel[i];
+                        const otVal = String(filter[idxOT] || "").trim();
+
+                        if (otVal) {
+                            const regD1Actual = window.registrosD1[otVal] || {};
+                            const obsVal = idxObs !== -1 && filter[idxObs] !== undefined ? String(filter[idxObs]).trim() : (regD1Actual.observacion || "");
+                            
+                            let fechaVal = "";
+                            if (idxFechaProg !== -1 && filter[idxFechaProg] !== undefined && filter[idxFechaProg] !== null) {
+                                fechaVal = formatearFechaExcelAInput(filter[idxFechaProg]);
+                            }
+
+                            const esFechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fechaVal);
+                            if (!esFechaValida) {
+                                fechaVal = "";
+                            }
+
+                            let estadoProgVal = regD1Actual.estadoProgramacion || "";
+
+                            if (idxEstadoProg !== -1 && filter[idxEstadoProg]) {
+                                estadoProgVal = String(filter[idxEstadoProg]).trim();
+                            } else {
+                                if (esFechaValida) {
+                                    estadoProgVal = "Programada";
+                                } else {
+                                    if (estadoProgVal === "Programada") {
+                                        estadoProgVal = "";
+                                    }
+                                }
+                            }
+
+                            const payload = {
+                                ot: otVal,
+                                estadoProgramacion: estadoProgVal,
+                                fechaProgramacion: fechaVal,
+                                observacion: obsVal,
+                                estadoGestion: regD1Actual.estadoGestion || "",
+                                tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
+                                acompanamiento: regD1Actual.acompanamiento || "",
+                                idOriginal: idxID !== -1 ? String(filter[idxID] || "").trim() : (regD1Actual.idOriginal || ""),
+                                imOriginal: idxIM !== -1 ? String(filter[idxIM] || "").trim() : (regD1Actual.imOriginal || ""),
+                                departamentoOriginal: idxDepto !== -1 ? String(filter[idxDepto] || "").trim() : (regD1Actual.departamentoOriginal || ""),
+                                municipioOriginal: idxMuni !== -1 ? String(filter[idxMuni] || "").trim() : (regD1Actual.municipioOriginal || "")
+                            };
+                            
+                            try {
+                                const resp = await fetch(API_URL, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify(payload)
+                                });
+                                const resJson = await resp.json();
+                                if (resJson.ok) {
+                                    window.registrosD1[otVal] = { ...regD1Actual, ...payload };
+                                    actualizados++;
+                                }
+                            } catch (err) {
+                                console.error(`Error al actualizar OT ${otVal}:`, err);
+                            }
+                        }
+                    }
+
+                    clearInterval(intervaloProgreso);
+                    if (barraProgresoAnimada) barraProgresoAnimada.style.width = "100%";
+                    if (porcentajeProgreso) porcentajeProgreso.textContent = "100%";
+
+                    setTimeout(() => {
+                        if (containerProgreso) containerProgreso.style.display = "none";
+                        inputExcel.value = "";
+                        alert(`¡Carga masiva completada! Se actualizaron ${actualizados} registros.`);
+                        aplicarFiltros();
+                    }, 300);
+
+                } catch (error) {
+                    console.error("Error leyendo el Excel:", error);
+                    clearInterval(intervaloProgreso);
+                    if (containerProgreso) containerProgreso.style.display = "none";
+                    alert("Ocurrió un error al procesar el archivo Excel.");
+                    inputExcel.value = "";
+                }
+            };
+            lector.readAsArrayBuffer(archivo);
+        });
+    }
+});
