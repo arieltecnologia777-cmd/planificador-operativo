@@ -581,22 +581,26 @@ async function cargarPlaneacion(){
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            // Tampoco rescatamos registros que ya pertenezcan a completadas
+            // Si ya pertenece a completadas o ya está en el backlog actual, la ignoramos
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
-                if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                    
-                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                    filaRescatada = filaRescatada.map(() => "");
+                
+                // Rescatamos la OT si existe en D1 para asegurar que NUNCA se omita,
+                // usando como base una copia de la primera fila existente (para mantener 
+                // exactamente todas las 24 columnas intactas) o un array limpio.
+                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                
+                // Limpiamos los textos para que no arrastren datos de otra OT
+                filaRescatada = filaRescatada.map(() => "");
 
-                    filaRescatada[idxOT] = otReg;
-                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
-                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
-                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
+                // Asignamos con total seguridad en sus índices correspondientes
+                if (idxOT !== -1) filaRescatada[idxOT] = otReg;
+                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
+                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
+                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
+                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
 
-                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                        datosGlobal.push(filaRescatada);
-                    }
+                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                    datosGlobal.push(filaRescatada);
                 }
             }
         });
