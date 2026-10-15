@@ -531,7 +531,7 @@ async function cargarPlaneacion(){
             return `${d}/${m}/${y}`;
         };
 
-        // Mapeamos y EXCLUIMOS automáticamente las que ya estén en la tabla de completadas
+        // 1. Mapeamos las filas que vienen directamente del Excel de base_backlog
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
@@ -567,7 +567,6 @@ async function cargarPlaneacion(){
         }).filter(fila => {
             const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
             const otVal = String(fila[idxOT] || "").trim();
-            // FILTRO CLAVE: Si la OT ya está en completadas, la eliminamos de la vista activa
             return otVal && !otsCompletadasSet.has(otVal);
         });
         
@@ -579,26 +578,21 @@ async function cargarPlaneacion(){
         const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
+        // 2. Rescatamos de forma segura las OTs que están en D1 pero no en el Excel actual
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            // Si ya pertenece a completadas, la ignoramos
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
                 
-                // Rescatamos la OT si existe en D1 para asegurarnos de que NUNCA se omita.
-                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                filaRescatada = filaRescatada.map(() => "");
+                // Creamos una fila vacía con la estructura completa de encabezados
+                let filaRescatada = new Array(encabezadosGlobal.length).fill("");
 
                 filaRescatada[idxOT] = otReg;
-                
-                // Usamos los datos originales guardados en D1 (evitando que salgan los guiones "--")
                 if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
                 if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
                 if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
                 if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
 
-                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                    datosGlobal.push(filaRescatada);
-                }
+                datosGlobal.push(filaRescatada);
             }
         });
         
