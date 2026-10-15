@@ -1180,6 +1180,10 @@ document.addEventListener("input", (e) => {
 document.addEventListener("change", (e) => {
     const target = e.target;
 
+    const filaTabla = target.closest("tr");
+    if (target.classList.contains("estado-gestion")) {
+        manejarCambioEstadoOperativa(filaTabla, target);
+    }
     if (target.classList.contains("chkNuevo")) {
         nuevosSeleccionados = Array.from(document.querySelectorAll(".chkNuevo:checked")).map(i => i.value);
         aplicarFiltros();
