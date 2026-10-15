@@ -1,58 +1,124 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de OTs Completadas</title>
-    <!-- Ajusta esta ruta si tu CSS también está en una carpeta específica, por ejemplo css/historico.css -->
-    <link rel="stylesheet" href="historico.css">
+
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
 
-    <div class="container">
-        <!-- Cabecera de la sección -->
-        <div class="hero-header">
-            <div>
-                <h1>📋 Histórico de OTs Completadas</h1>
-                <p class="subtitle">Consulta todas las órdenes que han finalizado su gestión operativa y revierte las que necesites.</p>
+<body class="sidebar-colapsado">
+
+<!-- Botón hamburguesa flotante fijo en la pantalla -->
+<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
+    ☰
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+        <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
+            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="https://planificador-operativo.pages.dev/pages/dashboard">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="planeacion.html">
+                <span class="nav-icon">📅</span>
+                Planeación
+            </a>
+            <a href="#" class="active">
+                <span class="nav-icon">📋</span>
+                Histórico OTs
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">📡</span>
+                Centros Digitales
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">🗺️</span>
+                Mapa
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">📈</span>
+                Reportes
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span></span>
+                    HISTÓRICO
+                </div>
+                <h1>Histórico de OTs Completadas</h1>
+                <p>Consulta todas las órdenes que han finalizado su gestión operativa y reabre las que necesites.</p>
             </div>
-            <div>
-                <a href="index.html" class="btn-volver">⬅ Volver a Planeación</a>
+        </header>
+
+        <section class="panel">
+            <div class="planeacion-header">
+                <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; width: 100%;">
+                        <h2>Órdenes Completadas</h2>
+                        
+                        <input
+                            id="filtroBusquedaHistorico"
+                            type="text"
+                            placeholder="🔍 Buscar en todo el histórico..."
+                            style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Barra de herramientas con buscador -->
-        <div class="toolbar">
-            <input type="text" id="filtroBusquedaHistorico" class="search-input" placeholder="🔍 Buscar en todo el histórico...">
-            <span id="contadorRegistros" style="font-size: 0.85rem; color: #4a5568; font-weight: 650;"></span>
-        </div>
+            <div class="planeacion-table-wrapper" style="margin-top: 15px;">
+                <table class="planeacion-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Departamento</th>
+                            <th>Municipio</th>
+                            <th>IM</th>
+                            <th>OT</th>
+                            <th>Afectación</th>
+                            <th>Estado Gestión</th>
+                            <th>Técnico Asignado</th>
+                            <th>Observación</th>
+                            <th>Fecha Completada</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historicoBody">
+                        <!-- Los registros se inyectarán dinámicamente mediante historico.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-        <!-- Contenedor y tabla -->
-        <div class="table-wrapper">
-            <table class="historico-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Departamento</th>
-                        <th>Municipio</th>
-                        <th>IM</th>
-                        <th>OT</th>
-                        <th>Afectación</th>
-                        <th>Estado Gestión</th>
-                        <th>Técnico Asignado</th>
-                        <th>Observación</th>
-                        <th>Fecha Completada</th>
-                        <th style="text-align: center;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="historicoBody">
-                    <!-- Los registros se inyectarán dinámicamente mediante historico.js -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </main>
 
-    <!-- Script apuntando correctamente a la carpeta js/ -->
-    <script src="..js/historico.js"></script>
+</div>
+
+<!-- Scripts esenciales con la ruta correcta hacia js/ -->
+<script src="../js/historico.js"></script>
+
+<!-- Script para controlar el botón de hamburguesa -->
+<script>
+    document.addEventListener("click", (e) => {
+        const btnToggle = e.target.closest("#btnToggleSidebar");
+        if (btnToggle) {
+            document.body.classList.toggle("sidebar-colapsado");
+        }
+    });
+</script>
+
 </body>
 </html>
