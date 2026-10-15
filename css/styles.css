@@ -147,8 +147,8 @@ button{
 
 .hero{
     position:relative;
-    min-height:190px;
-    margin-bottom:16px;
+    min-height: 110px !important;
+    margin-bottom:12px;
     overflow:hidden;
     isolation:isolate;
 
@@ -159,8 +159,8 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding:25px 28px;
-    box-shadow:0 7px 25px rgba(30,64,175,.13);
+    padding: 14px 22px !important;
+    box-shadow:0 5px 20px rgba(30,64,175,.13);
     color:#fff;
     /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
@@ -186,7 +186,7 @@ button{
     display:flex;
     flex-direction:column;
 
-    height:150px;
+    height: 82px !important;
 }
 
 .hero-badge{
@@ -197,8 +197,8 @@ button{
     width:auto;
     max-width:max-content;
 
-    gap:7px;
-    padding:5px 12px;
+    gap:6px;
+    padding: 3px 10px !important;
 
     border-radius:20px;
 
@@ -206,35 +206,35 @@ button{
 
     color:#fff;
 
-    font-size:.67rem;
+    font-size:.60rem !important;
     font-weight:800;
 
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top:-12px;
+    margin-top: -4px !important;
 }
 
 .hero-badge span{
-    width:6px;
-    height:6px;
+    width:5px;
+    height:5px;
     border-radius:50%;
     background:#fff;
 }
 
 .hero h1{
-    font-size:2rem;
+    font-size: 1.45rem !important;
     font-weight:850;
     color:#fff;
     line-height:1.05;
-    margin-bottom:3px;
-    margin-top:-4px;
+    margin-bottom:2px;
+    margin-top:0px;
     letter-spacing:-.035em;
 }
 
 .hero p{
     color:rgba(255,255,255,.92);
-    font-size:.86rem;
+    font-size: .78rem !important;
     margin:0;
 }
 
@@ -243,9 +243,9 @@ button{
 
     display:flex;
     align-items:center;
-    gap:7px;
+    gap:6px;
 
-    font-size:.69rem;
+    font-size:.62rem !important;
     color:rgba(255,255,255,.9);
 }
 .clock-icon{
