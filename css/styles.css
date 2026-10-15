@@ -162,23 +162,10 @@ button{
     padding:25px 28px;
     box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
-    /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
 
 .hero::before{
-    content:"";
-    position:absolute;
-    inset:0;
-
-    background:
-    linear-gradient(
-        90deg,
-        rgba(4,37,95,.45),
-        rgba(4,37,95,.20),
-        rgba(4,37,95,.05)
-    );
-
-    z-index:1;
+    display: none !important;
 }
 .hero-content{
     position:relative;
