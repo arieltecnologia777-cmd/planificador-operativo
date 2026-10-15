@@ -583,26 +583,24 @@ async function cargarPlaneacion(){
             const otReg = String(reg.ot || "").trim();
             // Tampoco rescatamos registros que ya pertenezcan a completadas
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
-                
-                // Rescatamos la OT si existe en D1 para asegurar que NUNCA se omita,
-                // usando una fila vacía con la estructura completa de encabezados
-                let filaRescatada = new Array(encabezadosGlobal.length).fill("");
+                if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
+                    
+                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                    filaRescatada = filaRescatada.map(() => "");
 
-                // Asignamos la OT en su columna correspondiente
-                const idxOTFija = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
-                if (idxOTFija !== -1) filaRescatada[idxOTFija] = otReg;
+                    filaRescatada[idxOT] = otReg;
+                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
+                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
+                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
+                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
 
-                // Recuperamos los datos guardados en D1 para que NUNCA salgan los guiones "--"
-                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
-                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
-                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
-                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
-
-                if (!datosGlobal.some(f => f[idxOTFija] === otReg)) {
-                    datosGlobal.push(filaRescatada);
+                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                        datosGlobal.push(filaRescatada);
+                    }
                 }
             }
-        });        
+        });
+        
         renderizarFiltrosDinamicos(datosGlobal);
         datosFiltradosGlobal = datosGlobal;
         actualizarOpcionesFiltros(datosGlobal);
