@@ -38,18 +38,28 @@ async function inicializarDashboard() {
         renderizarPinesEstaticos("TODOS");
         cargarNotaDelDia();
 
-        // Petición directa al Worker de Cloudflare D1 (/base-backlog)
+        // 1. Lógica actual intacta para base-backlog (WORKER_DATA_URL)
         const resp = await fetch(WORKER_DATA_URL);
         const jsonRegistros = await resp.json();
 
-        // Convertimos el objeto JSON devuelto por D1 en un arreglo de objetos directos
         const valoresArray = Object.values(jsonRegistros);
-        if (!valoresArray.length) return;
+        if (valoresArray.length > 0) {
+            datosGlobal = valoresArray;
+            renderizarDatosDashboard();
+        }
 
-        // Guardamos directamente los objetos en datosGlobal para mantener las llaves por nombre
-        datosGlobal = valoresArray;
+        // 2. Lectura aislada de la nueva tabla indicador_backlog (WORKER_INDICADOR_URL)
+        try {
+            const respIndicador = await fetch(WORKER_INDICADOR_URL);
+            const jsonIndicador = await respIndicador.json();
+            const valoresIndicador = Object.values(jsonIndicador);
+            if (valoresIndicador.length > 0) {
+                window.datosIndicadorBacklog = valoresIndicador; // Aislado en su propia variable
+            }
+        } catch (errIndicador) {
+            console.error("Error al cargar indicador_backlog:", errIndicador);
+        }
 
-        renderizarDatosDashboard();
         cargarYCalcularBacklogUnificado();
     } catch (error) {
         console.error("Error al cargar los datos del Worker en el dashboard:", error);
