@@ -4,6 +4,7 @@ const API_URL = `${API_BASE_URL}/planeacion`;
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
+let otsCompletadasSet = new Set();
 window.registrosD1 = {};
 
 let datosFiltradosGlobal = [];
@@ -474,8 +475,33 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
-        const respBacklog = await fetch(WORKER_DATA_URL);
+        // 1. Cargamos el backlog base y las completadas en paralelo para filtrar de entrada
+        const [respBacklog, respD1, respCompletadas] = await Promise.all([
+            fetch(WORKER_DATA_URL),
+            fetch(API_URL),
+            fetch(`${API_BASE_URL}/ots-completadas`)
+        ]);
+
         const dataBacklog = await respBacklog.json();
+        let registrosD1 = {};
+        try {
+            registrosD1 = await respD1.json();
+        } catch (e) {
+            console.error(e);
+        }
+
+        // Poblar el Set de OTs completadas para excluirlas de la vista principal
+        otsCompletadasSet.clear();
+        try {
+            const dataCompletadas = await respCompletadas.json();
+            if (dataCompletadas && typeof dataCompletadas === 'object') {
+                Object.values(dataCompletadas).forEach(reg => {
+                    if (reg.OT) otsCompletadasSet.add(String(reg.OT).trim());
+                });
+            }
+        } catch (e) {
+            console.error("No hay completadas aún o error al leerlas:", e);
+        }
 
         let listaRegistros = [];
         if (Array.isArray(dataBacklog)) {
@@ -493,7 +519,6 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
-        // Función auxiliar para convertir números seriales de Excel a formato DD/MM/YYYY
         const convertirSerialExcelFecha = (serial) => {
             if (!serial || isNaN(serial)) return serial;
             const diasEpoch = new Date(1899, 11, 30);
@@ -503,9 +528,10 @@ async function cargarPlaneacion(){
             const y = fecha.getFullYear();
             const m = String(fecha.getMonth() + 1).padStart(2, '0');
             const d = String(fecha.getDate()).padStart(2, '0');
-            return `${d}/${m}/${y}`; // Formato DD/MM/YYYY solicitado
+            return `${d}/${m}/${y}`;
         };
 
+        // Mapeamos y EXCLUIMOS automáticamente las que ya estén en la tabla de completadas
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
@@ -513,41 +539,38 @@ async function cargarPlaneacion(){
             const fechaVencFmFormateada = /^\d+$/.test(fechaVencFmCruda) ? convertirSerialExcelFecha(Number(fechaVencFmCruda)) : fechaVencFmCruda;
 
             return [
-                reg.ID || reg.id || "",                                                             // 0: ID
-                reg.Departamento || reg.departamento || "",                                         // 1: Departamento
-                reg.Municipio || reg.municipio || "",                                               // 2: Municipio
-                reg.IM || reg.im || "",                                                             // 3: IM
-                reg.OT || reg.ot || "",                                                             // 4: OT
-                reg["Tipo de afectación"] || reg.afectacion || "",                                  // 5: Tipo de afectación
-                "",                                                                                 // 6: Nuevo
-                reg["Total IDs afectados"] || reg.total_ids_afectados || "",                        // 7: Total IDs afectados
-                reg["Días vigencia OT"] || reg["Días OT"] || reg.dias_ot || reg.dias_vigencia_ot || "-", // 8: Días vigencia OT
-                reg["Rango de afectación"] || reg.rango_afectacion || "",                           // 9: Rango de afectación
-                reg["Tipo de prioridad"] || reg.prioridad || "",                                    // 10: Tipo de prioridad
-                reg["Stoppers Dominion"] || reg.stoppers_dominion || "",                            // 11: Stoppers Dominion
-                reg["Estado Programación"] || reg.estado_programacion || "",                        // 12: Estado Programación
-                reg["Fecha Programación"] || reg.fecha_programacion || "",                          // 13: Fecha Programación
-                reg.Observaciones || reg.observaciones || "",                                       // 14: Observaciones
-                reg["Estado Gestión"] || reg.estado_gestion || "",                                  // 15: Estado Gestión
-                reg["Técnico Asignado"] || reg.tecnico_asignado || "",                              // 16: Técnico Asignado
-                reg.Acompañamiento || reg.acompanamiento || "",                                     // 17: Acompañamiento
-                reg["Indicador backlog"] || reg.indicador_backlog || "",                            // 18: Indicador backlog
-                reg["Stopper P3"] || reg.stopper_p3 || "",                                          // 19: Stopper P3
-                reg["Estado OT"] || reg.estado_ot || "",                                            // 20: Estado OT
-                reg["Tipo facturación"] || reg.tipo_facturacion || "",                              // 21: Tipo facturación
-                fechaVencFmFormateada,                                                              // 22: Fecha vencimiento FM (DD/MM/YYYY)
-                reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""                     // 23: Alerta vencimiento FM
+                reg.ID || reg.id || "",
+                reg.Departamento || reg.departamento || "",
+                reg.Municipio || reg.municipio || "",
+                reg.IM || reg.im || "",
+                reg.OT || reg.ot || "",
+                reg["Tipo de afectación"] || reg.afectacion || "",
+                "",
+                reg["Total IDs afectados"] || reg.total_ids_afectados || "",
+                reg["Días vigencia OT"] || reg["Días OT"] || reg.dias_ot || reg.dias_vigencia_ot || "-",
+                reg["Rango de afectación"] || reg.rango_afectacion || "",
+                reg["Tipo de prioridad"] || reg.prioridad || "",
+                reg["Stoppers Dominion"] || reg.stoppers_dominion || "",
+                reg["Estado Programación"] || reg.estado_programacion || "",
+                reg["Fecha Programación"] || reg.fecha_programacion || "",
+                reg.Observaciones || reg.observaciones || "",
+                reg["Estado Gestión"] || reg.estado_gestion || "",
+                reg["Técnico Asignado"] || reg.tecnico_asignado || "",
+                reg.Acompañamiento || reg.acompanamiento || "",
+                reg["Indicador backlog"] || reg.indicador_backlog || "",
+                reg["Stopper P3"] || reg.stopper_p3 || "",
+                reg["Estado OT"] || reg.estado_ot || "",
+                reg["Tipo facturación"] || reg.tipo_facturacion || "",
+                fechaVencFmFormateada,
+                reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""
             ];
+        }).filter(fila => {
+            const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+            const otVal = String(fila[idxOT] || "").trim();
+            // FILTRO CLAVE: Si la OT ya está en completadas, la eliminamos de la vista activa
+            return otVal && !otsCompletadasSet.has(otVal);
         });
         
-        let registrosD1 = {};
-        try {
-            const respD1 = await fetch(API_URL);
-            registrosD1 = await respD1.json();
-        } catch (error) {
-            console.error(error);
-        }
-
         window.registrosD1 = registrosD1;
         const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
         const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
@@ -558,7 +581,8 @@ async function cargarPlaneacion(){
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            if (otReg && !otsConfiguesSet.has(otReg)) {
+            // Tampoco rescatamos registros que ya pertenezcan a completadas
+            if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
                 if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
                     
                     let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
