@@ -493,7 +493,7 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
-        // --- COLOCA LA FUNCIÓN AUXILIAR AQUÍ ---
+        // Función auxiliar para convertir números seriales de Excel a formato DD/MM/YYYY
         const convertirSerialExcelFecha = (serial) => {
             if (!serial || isNaN(serial)) return serial;
             const diasEpoch = new Date(1899, 11, 30);
@@ -503,7 +503,7 @@ async function cargarPlaneacion(){
             const y = fecha.getFullYear();
             const m = String(fecha.getMonth() + 1).padStart(2, '0');
             const d = String(fecha.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            return `${d}/${m}/${y}`; // Formato DD/MM/YYYY solicitado
         };
 
         datosGlobal = listaRegistros.map(reg => {
@@ -513,30 +513,30 @@ async function cargarPlaneacion(){
             const fechaVencFmFormateada = /^\d+$/.test(fechaVencFmCruda) ? convertirSerialExcelFecha(Number(fechaVencFmCruda)) : fechaVencFmCruda;
 
             return [
-                reg.ID || reg.id || "",
-                reg.Departamento || reg.departamento || "",
-                reg.Municipio || reg.municipio || "",
-                reg.IM || reg.im || "",
-                reg.OT || reg.ot || "",
-                reg["Tipo de afectación"] || reg.afectacion || "",
-                "",
-                reg["Total IDs afectados"] || reg.total_ids_afectados || "",
-                reg["Días OT"] || reg.dias_ot || reg.dias_vigencia_ot || reg["Días vigencia OT"] || "-",
-                reg["Rango de afectación"] || reg.rango_afectacion || "",
-                reg["Tipo de prioridad"] || reg.prioridad || "",
-                reg["Stoppers Dominion"] || reg.stoppers_dominion || "",
-                reg["Estado Programación"] || reg.estado_programacion || "",
-                reg["Fecha Programación"] || reg.fecha_programacion || "",
-                reg.Observaciones || reg.observaciones || "",
-                reg["Estado Gestión"] || reg.estado_gestion || "",
-                reg["Técnico Asignado"] || reg.tecnico_asignado || "",
-                reg.Acompañamiento || reg.acompanamiento || "",
-                reg["Indicador backlog"] || reg.indicador_backlog || "",
-                reg["Stopper P3"] || reg.stopper_p3 || "",
-                reg["Estado OT"] || reg.estado_ot || "",
-                reg["Tipo facturación"] || reg.tipo_facturacion || "",
-                fechaVencFmFormateada,
-                reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""
+                reg.ID || reg.id || "",                                                             // 0: ID
+                reg.Departamento || reg.departamento || "",                                         // 1: Departamento
+                reg.Municipio || reg.municipio || "",                                               // 2: Municipio
+                reg.IM || reg.im || "",                                                             // 3: IM
+                reg.OT || reg.ot || "",                                                             // 4: OT
+                reg["Tipo de afectación"] || reg.afectacion || "",                                  // 5: Tipo de afectación
+                "",                                                                                 // 6: Nuevo
+                reg["Total IDs afectados"] || reg.total_ids_afectados || "",                        // 7: Total IDs afectados
+                reg["Días vigencia OT"] || reg["Días OT"] || reg.dias_ot || reg.dias_vigencia_ot || "-", // 8: Días vigencia OT
+                reg["Rango de afectación"] || reg.rango_afectacion || "",                           // 9: Rango de afectación
+                reg["Tipo de prioridad"] || reg.prioridad || "",                                    // 10: Tipo de prioridad
+                reg["Stoppers Dominion"] || reg.stoppers_dominion || "",                            // 11: Stoppers Dominion
+                reg["Estado Programación"] || reg.estado_programacion || "",                        // 12: Estado Programación
+                reg["Fecha Programación"] || reg.fecha_programacion || "",                          // 13: Fecha Programación
+                reg.Observaciones || reg.observaciones || "",                                       // 14: Observaciones
+                reg["Estado Gestión"] || reg.estado_gestion || "",                                  // 15: Estado Gestión
+                reg["Técnico Asignado"] || reg.tecnico_asignado || "",                              // 16: Técnico Asignado
+                reg.Acompañamiento || reg.acompanamiento || "",                                     // 17: Acompañamiento
+                reg["Indicador backlog"] || reg.indicador_backlog || "",                            // 18: Indicador backlog
+                reg["Stopper P3"] || reg.stopper_p3 || "",                                          // 19: Stopper P3
+                reg["Estado OT"] || reg.estado_ot || "",                                            // 20: Estado OT
+                reg["Tipo facturación"] || reg.tipo_facturacion || "",                              // 21: Tipo facturación
+                fechaVencFmFormateada,                                                              // 22: Fecha vencimiento FM (DD/MM/YYYY)
+                reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""                     // 23: Alerta vencimiento FM
             ];
         });
         
