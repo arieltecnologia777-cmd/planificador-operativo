@@ -121,9 +121,7 @@ main.main-content {
     justify-content: center !important;
     background-color: transparent !important;
     background-blend-mode: normal !important;
-    filter: contrast(1.08) saturate(1.25) brightness(1.05) sepia(0.28) hue-rotate(-10deg) !important;
 }
-
 .hero h1, 
 .hero-title, 
 .hero span[class*="title"] {
