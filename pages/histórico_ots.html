@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de OTs Completadas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #2d3748;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .table-wrapper {
+            max-height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f1f5f9;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        .badge-existente {
+            background-color: #c6f6d5;
+            color: #22543d;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .btn-reabrir-ot {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-reabrir-ot:hover {
+            background: #2b6cb0;
+        }
+        .btn-volver {
+            background: #4a5568;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-volver:hover {
+            background: #2d3748;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>📋 Histórico de OTs Completadas</h1>
+                <p class="subtitle">Consulta todas las órdenes que han finalizado su gestión operativa y revierte las que necesites.</p>
+            </div>
+            <div>
+                <a href="index.html" class="btn-volver">⬅ Volver a Planeación</a>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <input type="text" id="filtroBusquedaHistorico" class="search-input" placeholder="🔍 Buscar en todo el histórico...">
+            <span id="contadorRegistros" style="font-size: 0.85rem; color: #4a5568; font-weight: 650;"></span>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="historico-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Departamento</th>
+                        <th>Municipio</th>
+                        <th>IM</th>
+                        <th>OT</th>
+                        <th>Afectación</th>
+                        <th>Estado Gestión</th>
+                        <th>Técnico Asignado</th>
+                        <th>Observación</th>
+                        <th>Fecha Completada</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="historicoBody">
+                    <!-- Los registros se inyectarán dinámicamente mediante historico.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Vinculación del script que creamos -->
+    <script src="historico.js"></script>
+</body>
+</html>
