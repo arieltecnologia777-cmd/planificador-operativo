@@ -142,13 +142,13 @@ button{
 }
 
 /* =========================
-   HERO (LIGERAMENTE MÁS ANGOSTO Y EQUILIBRADO)
+   HERO (COLORES ORIGINALES SIN FILTROS)
    ========================= */
 
 .hero{
     position:relative;
-    min-height: 132px !important;
-    margin-bottom: 14px !important;
+    min-height:190px;
+    margin-bottom:16px;
     overflow:hidden;
     isolation:isolate;
 
@@ -159,8 +159,8 @@ button{
 
     border:1px solid #d4e3f6;
     border-radius:18px;
-    padding: 16px 24px !important;
-    box-shadow:0 5px 20px rgba(30,64,175,.12);
+    padding:25px 28px;
+    box-shadow:0 7px 25px rgba(30,64,175,.13);
     color:#fff;
     /* Se eliminó por completo el filtro para que mantenga el color original de la imagen */
 }
@@ -186,7 +186,7 @@ button{
     display:flex;
     flex-direction:column;
 
-    height: 96px !important;
+    height:150px;
 }
 
 .hero-badge{
@@ -197,8 +197,8 @@ button{
     width:auto;
     max-width:max-content;
 
-    gap:6px;
-    padding: 4px 10px !important;
+    gap:7px;
+    padding:5px 12px;
 
     border-radius:20px;
 
@@ -206,35 +206,35 @@ button{
 
     color:#fff;
 
-    font-size:.62rem !important;
+    font-size:.67rem;
     font-weight:800;
 
     letter-spacing:.03em;
 
     margin-bottom:2px;
-    margin-top: -6px !important;
+    margin-top:-12px;
 }
 
 .hero-badge span{
-    width:5px;
-    height:5px;
+    width:6px;
+    height:6px;
     border-radius:50%;
     background:#fff;
 }
 
 .hero h1{
-    font-size: 1.8rem !important;
+    font-size:2rem;
     font-weight:850;
     color:#fff;
     line-height:1.05;
-    margin-bottom:2px;
-    margin-top: -3px !important;
+    margin-bottom:3px;
+    margin-top:-4px;
     letter-spacing:-.035em;
 }
 
 .hero p{
     color:rgba(255,255,255,.92);
-    font-size: .83rem !important;
+    font-size:.86rem;
     margin:0;
 }
 
@@ -243,9 +243,9 @@ button{
 
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:7px;
 
-    font-size:.65rem !important;
+    font-size:.69rem;
     color:rgba(255,255,255,.9);
 }
 .clock-icon{
