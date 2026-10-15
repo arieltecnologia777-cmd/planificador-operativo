@@ -1,7 +1,6 @@
-const DATASET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQf6zIgwVnOQ72fcweEEMdRKylGsKFe30Mpea50qWIbr-m6ELzpxaUV2fnFRwH7TX1AMIabPbOqoJ/pub?output=csv";
-
-const API_URL =
-"https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion";
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
+const API_URL = `${API_BASE_URL}/planeacion`;
 
 let datosGlobal = [];
 let encabezadosGlobal = [];
@@ -473,6 +472,9 @@ function pintarTabla(datos){
     inicializarRedimensionamientoColumnas();
 }
 
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
+
 async function cargarPlaneacion(){
     try {
         // 1. Cargamos la data unificada desde D1 (base-backlog)
@@ -508,9 +510,8 @@ async function cargarPlaneacion(){
 
         // Mapeamos cada registro asegurando que cada columna caiga exactamente en su lugar correcto
         datosGlobal = listaRegistros.map(reg => {
-            // Si el registro viene como un arreglo plano o como un objeto de D1
             if (Array.isArray(reg)) {
-                return reg; // Si ya es matriz, lo respetamos
+                return reg; 
             }
             
             return [
@@ -518,9 +519,9 @@ async function cargarPlaneacion(){
                 reg.departamento || reg.departamentoOriginal || "",     // 1: Departamento
                 reg.municipio || reg.municipioOriginal || "",           // 2: Municipio
                 reg.im || reg.imOriginal || "",                         // 3: IM
-                reg.ot || "",                                           // 4: OT (¡CRUCIAL QUE VAYA AQUÍ!)
+                reg.ot || "",                                           // 4: OT
                 reg.afectacion || reg.tipoAfectacion || "",             // 5: Tipo de afectación
-                "",                                                     // 6: Nuevo (se calcula dinámicamente)
+                "",                                                     // 6: Nuevo
                 reg.totalIdsAfectados || reg.idsAfectados || "",        // 7: Total IDs afectados
                 reg.diasOt || reg.diasVigenciaOt || "",                 // 8: Días vigencia OT
                 reg.rangoAfectacion || "",                              // 9: Rango de afectación
@@ -541,7 +542,7 @@ async function cargarPlaneacion(){
             ];
         });
 
-        const idxOT = 4; // Posición fija y segura de la OT
+        const idxOT = 4;
         const idxID = 0;
         const idxIM = 3;
         const idxDepto = 1;
@@ -549,7 +550,6 @@ async function cargarPlaneacion(){
         
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
-        // Rescate de registros adicionales guardados en D1 que no estén en el base-backlog
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
             if (otReg && !otsConfiguesSet.has(otReg)) {
