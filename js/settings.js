@@ -88,7 +88,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 5. Transiciones de vistas dentro del Modal de Herramientas Avanzadas
+    // 5. Transiciones de vistas dentro del Modal de Herramientas Avanzadas (Gestionado puramente en JS)
     const menuTools = document.getElementById("vistaMenuHerramientas");
     const formNota = document.getElementById("vistaFormNota");
     const formBacklog = document.getElementById("vistaFormBacklog");
@@ -452,7 +452,7 @@ document.addEventListener("click", async (e) => {
                 
                 let todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                // Filtro dinámico compatible con "Orden De Trabajo" y "# OT"
+                // Filtro dinámico compatible con tus encabezados ("Orden De Trabajo", "# OT", "OT")
                 todasLasFilas = todasLasFilas.filter(fila => {
                     const llave = String(fila["Orden De Trabajo"] || fila["# OT"] || fila["OT"] || "").trim();
                     return llave !== "";
