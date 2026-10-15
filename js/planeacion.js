@@ -345,36 +345,31 @@ function buscarIndiceColumnaFlexible(encabezados, terminos) {
 }
 
 function pintarTabla(datos){
+    const encabezados = encabezadosGlobal;
+
+    const idxID = buscarIndiceColumnaFlexible(encabezados, ["ID"]);
+    const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
+    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
+    const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
+    const idxIM = buscarIndiceColumnaFlexible(encabezados, ["IM"]);
+    const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
+    const idxIdsAfectados = buscarIndiceColumnaFlexible(encabezados, ["Total IDs afectados", "IDs afectados"]);
+    const idxDias = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
+    const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
+    const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
+    const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
+    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
+    const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
+    const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
+    const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
+    const idxFechaFM = buscarIndiceColumnaFlexible(encabezados, ["Fecha vencimiento FM", "Vencimiento FM"]);
+    const idxAlertaFM = buscarIndiceColumnaFlexible(encabezados, ["Alerta vencimiento FM", "Alerta FM"]);
+
     const planeacionBody = document.getElementById("planeacionBody");
     if (!planeacionBody) return;
 
-    if (!datos || datos.length === 0) {
-        planeacionBody.innerHTML = `<tr><td colspan="24" style="text-align: center; padding: 20px; color: #718096;">No hay registros para mostrar.</td></tr>`;
-        return;
-    }
-
     planeacionBody.innerHTML = datos.map(fila => {
-        // Posiciones fijas garantizadas del 0 al 23 según el orden oficial de encabezados
-        const valID = fila[0] !== undefined ? fila[0] : "";
-        const valDepto = fila[1] !== undefined ? fila[1] : "";
-        const valMuni = fila[2] !== undefined ? fila[2] : "";
-        const valIM = fila[3] !== undefined ? fila[3] : "";
-        const otVal = String(fila[4] || "").trim();
-        const valAfec = fila[5] !== undefined ? fila[5] : "";
-        
-        const valIdsAfectados = fila[7] !== undefined ? fila[7] : "";
-        const valDias = fila[8] !== undefined ? fila[8] : "";
-        const valRango = fila[9] !== undefined ? fila[9] : "";
-        const valPrioridad = fila[10] !== undefined ? fila[10] : "";
-        const valStoppers = fila[11] !== undefined ? fila[11] : "";
-        
-        const valBacklog = fila[18] !== undefined ? fila[18] : "";
-        const valStopperP3 = fila[19] !== undefined ? fila[19] : "";
-        const valEstadoOT = fila[20] !== undefined ? fila[20] : "";
-        const valTipoFact = fila[21] !== undefined ? fila[21] : "";
-        const valFechaFM = fila[22] !== undefined ? fila[22] : "";
-        const valAlertaFM = fila[23] !== undefined ? fila[23] : "";
-
+        const otVal = String(fila[idxOT] || "").trim();
         const d1 = (window.registrosD1 || {})[otVal] || {};
 
         const nuevo = esCasoNuevo(otVal);
@@ -398,18 +393,18 @@ function pintarTabla(datos){
 
         return `
         <tr>
-            <td>${valID}</td>
-            <td>${valDepto}</td>
-            <td>${valMuni}</td>
-            <td>${valIM}</td>
-            <td><b>${otVal}</b></td>
-            <td>${valAfec}</td>
+            <td>${fila[idxID] !== undefined ? fila[idxID] : ""}</td>
+            <td>${fila[idxDepto] !== undefined ? fila[idxDepto] : ""}</td>
+            <td>${fila[idxMunicipio] !== undefined ? fila[idxMunicipio] : ""}</td>
+            <td>${fila[idxIM] !== undefined ? fila[idxIM] : ""}</td>
+            <td>${fila[idxOT] !== undefined ? fila[idxOT] : ""}</td>
+            <td>${fila[idxAfectacion] !== undefined ? fila[idxAfectacion] : ""}</td>
             <td style="text-align: center; background-color: #f7fafc;">${htmlBadgeNuevo}</td>
-            <td class="${ocultarClase}">${valIdsAfectados}</td>
-            <td class="${ocultarClase}">${valDias}</td>
-            <td class="${ocultarClase}">${valRango}</td>
-            <td class="${ocultarClase}">${valPrioridad}</td>
-            <td class="${ocultarClase}">${valStoppers}</td>
+            <td class="${ocultarClase}">${idxIdsAfectados !== -1 ? (fila[idxIdsAfectados] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxDias !== -1 ? (fila[idxDias] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxRangoAfectacion !== -1 ? (fila[idxRangoAfectacion] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : ""}</td>
+            <td class="${ocultarClase}">${idxStoppersDominion !== -1 ? (fila[idxStoppersDominion] || "") : ""}</td>
             <td>
                 <select class="edit-select estado-programacion">
                     <option value=""></option>
@@ -432,10 +427,10 @@ function pintarTabla(datos){
                         
                         <button type="button" class="btn-abrir-modal-obs" 
                             data-ot="${otVal}" 
-                            data-id="${valID}" 
-                            data-depto="${valDepto}" 
-                            data-muni="${valMuni}" 
-                            data-afec="${valAfec}" 
+                            data-id="${idxID !== -1 ? (fila[idxID] || "") : ""}" 
+                            data-depto="${idxDepto !== -1 ? (fila[idxDepto] || "") : ""}" 
+                            data-muni="${idxMunicipio !== -1 ? (fila[idxMunicipio] || "") : ""}" 
+                            data-afec="${idxAfectacion !== -1 ? (fila[idxAfectacion] || "") : ""}" 
                             title="Ampliar y editar observaciones">✏️</button>
                     </div>
                 </div>
@@ -464,12 +459,12 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
-            <td>${valBacklog}</td>
-            <td>${valStopperP3}</td>
-            <td>${valEstadoOT}</td>
-            <td>${valTipoFact}</td>
-            <td>${valFechaFM}</td>
-            <td>${valAlertaFM}</td>
+            <td>${idxBacklog !== -1 ? (fila[idxBacklog] || "") : ""}</td>
+            <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
+            <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
+            <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
+            <td>${idxFechaFM !== -1 ? (fila[idxFechaFM] || "") : ""}</td>
+            <td>${idxAlertaFM !== -1 ? (fila[idxAlertaFM] || "") : ""}</td>
         </tr>`;
     }).join("");
 
@@ -480,6 +475,7 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
+        // 1. Cargamos el backlog base y las completadas en paralelo para filtrar de entrada
         const [respBacklog, respD1, respCompletadas] = await Promise.all([
             fetch(WORKER_DATA_URL),
             fetch(API_URL),
@@ -494,6 +490,7 @@ async function cargarPlaneacion(){
             console.error(e);
         }
 
+        // Poblar el Set de OTs completadas para excluirlas de la vista principal
         otsCompletadasSet.clear();
         try {
             const dataCompletadas = await respCompletadas.json();
@@ -503,7 +500,7 @@ async function cargarPlaneacion(){
                 });
             }
         } catch (e) {
-            console.error(e);
+            console.error("No hay completadas aún o error al leerlas:", e);
         }
 
         let listaRegistros = [];
@@ -513,7 +510,6 @@ async function cargarPlaneacion(){
             listaRegistros = Object.values(dataBacklog);
         }
 
-        // 1. DEFINIMOS LOS ENCABEZADOS PRIMERO PARA TENER LOS ÍNDICES SEGUROS
         encabezadosGlobal = [
             "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
             "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
@@ -522,12 +518,6 @@ async function cargarPlaneacion(){
             "Acompañamiento", "Indicador backlog", "Stopper P3", "Estado OT", 
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
-
-        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
-        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
-        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
-        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
-        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
 
         const convertirSerialExcelFecha = (serial) => {
             if (!serial || isNaN(serial)) return serial;
@@ -541,7 +531,7 @@ async function cargarPlaneacion(){
             return `${d}/${m}/${y}`;
         };
 
-        // 2. MAPEAMOS LAS FILAS DEL BACKLOG
+        // Mapeamos y EXCLUIMOS automáticamente las que ya estén en la tabla de completadas
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
@@ -575,30 +565,44 @@ async function cargarPlaneacion(){
                 reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""
             ];
         }).filter(fila => {
+            const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
             const otVal = String(fila[idxOT] || "").trim();
+            // FILTRO CLAVE: Si la OT ya está en completadas, la eliminamos de la vista activa
             return otVal && !otsCompletadasSet.has(otVal);
         });
         
         window.registrosD1 = registrosD1;
+        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
+        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
         const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
-        // 3. RESCATAMOS LAS OTS HUÉRFANAS DESDE D1 CON SU ESTRUCTURA COMPLETA
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
+            // Tampoco rescatamos registros que ya pertenezcan a completadas
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
                 
+                // Rescatamos la OT si existe en D1 para asegurar que NUNCA se omita,
+                // usando una fila vacía con la estructura completa de encabezados
                 let filaRescatada = new Array(encabezadosGlobal.length).fill("");
 
-                filaRescatada[idxOT] = otReg;
+                // Asignamos la OT en su columna correspondiente
+                const idxOTFija = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+                if (idxOTFija !== -1) filaRescatada[idxOTFija] = otReg;
+
+                // Recuperamos los datos guardados en D1 para que NUNCA salgan los guiones "--"
                 if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "";
                 if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "";
                 if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "";
                 if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "";
 
-                datosGlobal.push(filaRescatada);
+                if (!datosGlobal.some(f => f[idxOTFija] === otReg)) {
+                    datosGlobal.push(filaRescatada);
+                }
             }
-        });
-        
+        });        
         renderizarFiltrosDinamicos(datosGlobal);
         datosFiltradosGlobal = datosGlobal;
         actualizarOpcionesFiltros(datosGlobal);
