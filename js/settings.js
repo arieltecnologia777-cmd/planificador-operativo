@@ -88,21 +88,60 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 5. Desde el menú de herramientas, seleccionar "Forzar Fecha OT"
+    // 5. Transiciones de vistas dentro del Modal de Herramientas Avanzadas
+    const menuTools = document.getElementById("vistaMenuHerramientas");
+    const formNota = document.getElementById("vistaFormNota");
+    const formBacklog = document.getElementById("vistaFormBacklog");
+    const formIndBacklog = document.getElementById("vistaFormIndBacklog");
+
+    if (menuTools && formNota && formBacklog && formIndBacklog) {
+        if (target.closest("#btnIrANota")) {
+            menuTools.style.display = "none";
+            formNota.style.display = "block";
+            formBacklog.style.display = "none";
+            formIndBacklog.style.display = "none";
+            return;
+        }
+        if (target.closest("#btnIrABacklog")) {
+            menuTools.style.display = "none";
+            formNota.style.display = "none";
+            formBacklog.style.display = "block";
+            formIndBacklog.style.display = "none";
+            return;
+        }
+        if (target.closest("#btnIrAIndBacklog")) {
+            menuTools.style.display = "none";
+            formNota.style.display = "none";
+            formBacklog.style.display = "none";
+            formIndBacklog.style.display = "block";
+            return;
+        }
+        if (target.closest("#btnVolverMenuDesdeNota") || target.closest("#btnVolverMenuDesdeNotaX") ||
+            target.closest("#btnVolverMenuDesdeBacklog") || target.closest("#btnVolverMenuDesdeBacklogX") ||
+            target.closest("#btnVolverMenuDesdeIndBacklog") || target.closest("#btnVolverMenuDesdeIndBacklogX")) {
+            menuTools.style.display = "block";
+            formNota.style.display = "none";
+            formBacklog.style.display = "none";
+            formIndBacklog.style.display = "none";
+            return;
+        }
+    }
+
+    // 6. Desde el menú de herramientas, seleccionar "Forzar Fecha OT"
     if (target.closest("#btnAbrirForzarFecha")) {
         document.getElementById("modalAdminTools").style.display = "none";
         document.getElementById("modalAdminFecha").style.display = "grid";
         return;
     }
 
-    // 6. Volver del modal de fecha al menú de herramientas
+    // 7. Volver del modal de fecha al menú de herramientas
     if (target.closest("#btnVolverTools, #cerrarModalAdmin")) {
         document.getElementById("modalAdminFecha").style.display = "none";
         document.getElementById("modalAdminTools").style.display = "grid";
         return;
     }
 
-    // 7. Guardar la nueva fecha forzada para la OT en el servidor
+    // 8. Guardar la nueva fecha forzada para la OT en el servidor
     if (target.closest("#btnAdminGuardarFecha")) {
         if (procesandoCambioFecha) return;
 
@@ -169,21 +208,21 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 8. Desde el menú de herramientas, abrir la sección de borrado (Eliminar Data)
+    // 9. Desde el menú de herramientas, abrir la sección de borrado (Eliminar Data)
     if (target.closest("#btnAbrirBorrarData")) {
         document.getElementById("modalAdminTools").style.display = "none";
         document.getElementById("modalAdminBorrar").style.display = "grid";
         return;
     }
 
-    // 9. Volver del modal de borrado al menú de herramientas
+    // 10. Volver del modal de borrado al menú de herramientas
     if (target.closest("#btnVolverToolsBorrar, #cerrarModalBorrar")) {
         document.getElementById("modalAdminBorrar").style.display = "none";
         document.getElementById("modalAdminTools").style.display = "grid";
         return;
     }
 
-    // 10. Ejecutar Borrado Masivo utilizando el modal seguro
+    // 11. Ejecutar Borrado Masivo utilizando el modal seguro
     if (target.closest("#btnAdminBorrarMasivo")) {
         solicitarClaveSegura("⚠️ DOBLE CANDADO: Ingresa la clave para vaciar toda la tabla:", async (claveSeguridad) => {
             if (!claveSeguridad) return;
@@ -218,7 +257,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 11. Ejecutar Borrado por OT Individual utilizando el modal seguro
+    // 12. Ejecutar Borrado por OT Individual utilizando el modal seguro
     if (target.closest("#btnAdminBorrarOt")) {
         const inputOtBorrar = document.getElementById("adminInputOtBorrar");
         const otVal = inputOtBorrar ? inputOtBorrar.value.trim() : "";
@@ -267,7 +306,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 12. Cargue masivo del Excel de Backlog hacia la tabla base_backlog con barra de progreso real y limpieza previa
+    // 13. Cargue masivo del Excel de Backlog hacia la tabla base_backlog
     const btnProcesar = target.closest("#btnProcesarBacklog");
     if (btnProcesar) {
         const fileInput = document.getElementById("inputExcelBacklog");
@@ -388,7 +427,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // 13. Cargue masivo del Excel de Indicador Backlog hacia la tabla indicador_backlog
+    // 14. Cargue masivo del Excel de Indicador Backlog hacia la tabla indicador_backlog
     const btnProcesarInd = target.closest("#btnProcesarIndBacklog");
     if (btnProcesarInd) {
         const fileInput = document.getElementById("inputExcelIndBacklog");
