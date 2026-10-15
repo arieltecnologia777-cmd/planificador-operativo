@@ -290,13 +290,11 @@ document.addEventListener("click", async (e) => {
                 const primeraHojaName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[primeraHojaName];
                 
-                // Convertir a JSON
                 let todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                // 🛡️ FILTRO ESTRICTO: Eliminar filas vacías o basura al final del Excel
                 todasLasFilas = todasLasFilas.filter(fila => {
                     const llave = String(fila["Llave"] || fila["ID"] || fila["ID MINTIC"] || "").trim();
-                    return llave !== ""; // Solo conserva filas con identificador real
+                    return llave !== "";
                 });
 
                 if (todasLasFilas.length === 0) {
@@ -304,7 +302,6 @@ document.addEventListener("click", async (e) => {
                     return;
                 }
 
-                // CREAR MODAL DE BLOQUEO Y BARRA DE PROGRESO EN VIVO
                 const modalBloqueo = document.createElement('div');
                 modalBloqueo.id = "modalProgresoCargue";
                 modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
@@ -321,12 +318,10 @@ document.addEventListener("click", async (e) => {
                 `;
                 document.body.appendChild(modalBloqueo);
 
-                // BLOQUEAR CIERRE / SALIDA ACCIDENTAL DE LA PÁGINA
                 window.onbeforeunload = function() {
                     return "Hay una sincronización activa con la base de datos. Si sales ahora, se interrumpirá el proceso.";
                 };
 
-                // VACIAR LA TABLA ANTES DE CARGAR LOS NUEVOS DATOS PARA EVITAR DUPLICADOS FANTASMA
                 try {
                     await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog", {
                         method: "DELETE",
@@ -361,7 +356,6 @@ document.addEventListener("click", async (e) => {
 
                     await Promise.all(promesas);
 
-                    // ACTUALIZAR BARRA DE ESTADO REAL Y PORCENTAJE
                     const procesados = Math.min(i + tamanoLote, total);
                     const porcentaje = Math.round((procesados / total) * 100);
                     
@@ -374,7 +368,6 @@ document.addEventListener("click", async (e) => {
                     if (textoPct) textoPct.innerText = porcentaje + "%";
                 }
 
-                // DESBLOQUEAR Y FINALIZAR
                 window.onbeforeunload = null;
                 if (modalBloqueo) document.body.removeChild(modalBloqueo);
 
@@ -395,114 +388,7 @@ document.addEventListener("click", async (e) => {
         return;
     }
 
-    // Botones para cerrar o confirmar el modal de clave segura
-    if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
-        document.getElementById("modalClaveSegura").style.display = "none";
-        callbackClaveSegura = null;
-        return;
-    }
-
-    if (target.closest("#btnConfirmarClave")) {
-        const input = document.getElementById("inputClaveSegura");
-        const pass = input ? input.value.trim() : "";
-        document.getElementById("modalClaveSegura").style.display = "none";
-        
-        if (typeof callbackClaveSegura === "function") {
-            callbackClaveSegura(pass);
-            callbackClaveSegura = null;
-        }
-        return;
-    }
-});
-
-// Permitir presionar "Enter" en los campos de contraseña
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        const modalPass = document.getElementById("modalAdminPassword");
-        if (modalPass && modalPass.style.display === "grid") {
-            const btnVerificar = document.getElementById("btnVerificarPassword");
-            if (btnVerificar) btnVerificar.click();
-        }
-
-        const modalClave = document.getElementById("modalClaveSegura");
-        if (modalClave && modalClave.style.display === "grid") {
-            const btnConfirmar = document.getElementById("btnConfirmarClave");
-            if (btnConfirmar) btnConfirmar.click();
-        }
-    }
-});
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Elementos de navegación del modal para Ind Backlog
-    const btnAbrirMenuInd = document.getElementById("btnAbrirFormIndBacklog"); // Asegúrate de asignar este ID en tu botón del menú principal si aún no lo tiene
-    const vistaFormInd = document.getElementById("vistaFormIndBacklog");
-    const vistaMenuPrincipal = document.getElementById("vistaMenuPrincipalModal"); // Asumiendo que usas un contenedor principal en el modal
-    const btnVolver1 = document.getElementById("btnVolverMenuDesdeIndBacklog");
-    const btnVolver2 = document.getElementById("btnVolverMenuDesdeIndBacklogX");
-
-    // 2. Elementos del cargue masivo
-    const inputExcelInd = document.getElementById("inputExcelIndBacklog");
-    const btnProcesarInd = document.getElementById("btnProcesarIndBacklog");
-
-    if (btnProcesarInd && inputExcelInd) {
-        btnProcesarInd.addEventListener("click", async () => {
-            const archivo = inputExcelInd.files[0];
-            if (!archivo) {
-                alert("Por favor, selecciona un archivo Excel primero.");
-                return;
-            }
-
-            const confirmar = window.confirm(`¿Deseas cargar el archivo "${archivo.name}" a la tabla indicador_backlog?`);
-            if (!confirmar) return;
-
-            btnProcesarInd.disabled = true;
-            btnProcesarInd.textContent = "⏳ Cargando al servidor...";
-
-            const lector = new FileReader();
-            lector.onload = async function (evt) {
-                try {
-                    const datosBinarios = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(datosBinarios, { type: "array" });
-                    const primeraHoja = workbook.SheetNames[0];
-                    const hoja = workbook.Sheets[primeraHoja];
-                    const filasExcel = XLSX.utils.sheet_to_json(hoja);
-
-                    if (!filasExcel.length) {
-                        alert("El archivo Excel está vacío.");
-                        btnProcesarInd.disabled = false;
-                        btnProcesarInd.textContent = "🚀 Cargar Ind Backlog al Servidor";
-                        return;
-                    }
-
-                    let contador = 0;
-                    for (const filaObj of filasExcel) {
-                        try {
-                            const resp = await fetch(`${API_BASE_URL}/indicador-backlog`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(filaObj)
-                            });
-                            const resJson = await resp.json();
-                            if (resJson.ok) contador++;
-                        } catch (errPost) {
-                            console.error("Error al subir fila de indicador:", errPost);
-                        }
-                    }
-
-                    inputExcelInd.value = "";
-                    alert(`¡Cargue masivo completado con éxito! Se guardaron ${contador} registros en indicador_backlog.`);
-                    location.reload();
-                } catch (error) {
-                    console.error("Error leyendo el Excel:", error);
-                    alert("Ocurrió un error al procesar el archivo Excel.");
-                    btnProcesarInd.disabled = false;
-                    btnProcesarInd.textContent = "🚀 Cargar Ind Backlog al Servidor";
-                }
-            };
-            lector.readAsArrayBuffer(archivo);
-        });
-    }
-});
-// Cargue masivo del Excel de Indicador Backlog hacia la tabla indicador_backlog
+    // 13. Cargue masivo del Excel de Indicador Backlog hacia la tabla indicador_backlog
     const btnProcesarInd = target.closest("#btnProcesarIndBacklog");
     if (btnProcesarInd) {
         const fileInput = document.getElementById("inputExcelIndBacklog");
@@ -527,9 +413,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 let todasLasFilas = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                // Filtro estricto para ignorar filas vacías
+                // Filtro dinámico compatible con "Orden De Trabajo" y "# OT"
                 todasLasFilas = todasLasFilas.filter(fila => {
-                    const llave = String(fila["Llave"] || fila["ID"] || fila["OT"] || "").trim();
+                    const llave = String(fila["Orden De Trabajo"] || fila["# OT"] || fila["OT"] || "").trim();
                     return llave !== "";
                 });
 
@@ -538,7 +424,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                // Modal con barra de progreso en vivo
                 const modalBloqueo = document.createElement('div');
                 modalBloqueo.id = "modalProgresoCargueInd";
                 modalBloqueo.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;color:white;font-family:sans-serif;";
@@ -615,3 +500,40 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.readAsArrayBuffer(archivo);
         return;
     }
+
+    // Botones para cerrar o confirmar el modal de clave segura
+    if (target.closest("#cerrarModalClave, #btnCancelarClave")) {
+        document.getElementById("modalClaveSegura").style.display = "none";
+        callbackClaveSegura = null;
+        return;
+    }
+
+    if (target.closest("#btnConfirmarClave")) {
+        const input = document.getElementById("inputClaveSegura");
+        const pass = input ? input.value.trim() : "";
+        document.getElementById("modalClaveSegura").style.display = "none";
+        
+        if (typeof callbackClaveSegura === "function") {
+            callbackClaveSegura(pass);
+            callbackClaveSegura = null;
+        }
+        return;
+    }
+});
+
+// Permitir presionar "Enter" en los campos de contraseña
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        const modalPass = document.getElementById("modalAdminPassword");
+        if (modalPass && modalPass.style.display === "grid") {
+            const btnVerificar = document.getElementById("btnVerificarPassword");
+            if (btnVerificar) btnVerificar.click();
+        }
+
+        const modalClave = document.getElementById("modalClaveSegura");
+        if (modalClave && modalClave.style.display === "grid") {
+            const btnConfirmar = document.getElementById("btnConfirmarClave");
+            if (btnConfirmar) btnConfirmar.click();
+        }
+    }
+});
