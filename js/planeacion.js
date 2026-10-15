@@ -474,80 +474,107 @@ function pintarTabla(datos){
 }
 
 async function cargarPlaneacion(){
-    const resp = await fetch(DATASET_URL);
-    const texto = await resp.text();
+    try {
+        // 1. Cargamos la data unificada desde la tabla base_backlog en Cloudflare D1
+        const respBacklog = await fetch("https://planeacion-api.modulo-de-exclusiones.workers.dev/api/base-backlog");
+        const dataBacklog = await respBacklog.json();
 
-    const filas = texto.trim().split(/\r?\n/).map(fila => {
-        const valores = [];
-        let actual = "";
-        let dentroComillas = false;
+        // 2. Cargamos los estados y notas guardados en D1 (registrosD1)
+        let registrosD1 = {};
+        try {
+            const respD1 = await fetch(API_URL);
+            registrosD1 = await respD1.json();
+        } catch (error) {
+            console.error("Error al cargar registros D1:", error);
+        }
+        window.registrosD1 = registrosD1;
 
-        for(let i=0; i<fila.length; i++){
-            const caracter = fila[i];
-            if(caracter === '"'){
-                dentroComillas = !dentroComillas;
-            } else if(caracter === "," && !dentroComillas){
-                valores.push(actual);
-                actual = "";
+        // Si dataBacklog viene como array de objetos o filas estructuradas desde D1:
+        let filasBase = [];
+        if (Array.isArray(dataBacklog)) {
+            // Si la API devuelve un array de objetos con las columnas de base_backlog
+            if (dataBacklog.length > 0 && typeof dataBacklog[0] === 'object' && !Array.isArray(dataBacklog[0])) {
+                // Definimos los encabezados estándar basados en base_backlog
+                encabezadosGlobal = [
+                    "ID", "Departamento", "Municipio", "IM", "OT", "Tipo de afectación", 
+                    "Nuevo", "Total IDs afectados", "Días vigencia OT", "Rango de afectación", 
+                    "Tipo de prioridad", "Stoppers Dominion", "Estado Programación", 
+                    "Fecha Programación", "Observaciones", "Estado Gestión", "Técnico Asignado", 
+                    "Acompañamiento", "Indicador backlog", "Stopper P3", "Estado OT", 
+                    "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
+                ];
+
+                datosGlobal = dataBacklog.map(reg => [
+                    reg.id || reg.idOriginal || "",
+                    reg.departamento || reg.departamentoOriginal || "",
+                    reg.municipio || reg.municipioOriginal || "",
+                    reg.im || reg.imOriginal || "",
+                    reg.ot || "",
+                    reg.afectacion || "",
+                    "", 
+                    reg.totalIdsAfectados || reg.idsAfectados || "",
+                    reg.diasOt || "",
+                    reg.rangoAfectacion || "",
+                    reg.prioridad || "",
+                    reg.stoppers || "",
+                    reg.estadoProgramacion || "",
+                    reg.fechaProgramacion || "",
+                    reg.observacion || "",
+                    reg.estadoGestion || "",
+                    reg.tecnicoAsignado || "",
+                    reg.acompanamiento || "",
+                    reg.indicadorBacklog || reg.backlog || "",
+                    reg.stopperP3 || "",
+                    reg.estadoOt || "",
+                    reg.tipoFacturacion || "",
+                    reg.fechaVencimientoFm || "",
+                    reg.alertaVencimientoFm || ""
+                ]);
             } else {
-                actual += caracter;
+                // Si ya viene en formato de matriz (AOA)
+                encabezadosGlobal = dataBacklog[0] || [];
+                datosGlobal = dataBacklog.slice(1);
             }
         }
-        valores.push(actual);
-        return valores;
-    });
 
-    encabezadosGlobal = filas[0];
-    datosGlobal = filas.slice(1);
+        const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+        const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
+        const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
+        const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
+        const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
+        const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
 
-    let registrosD1 = {};
-    try {
-        const respD1 = await fetch(API_URL);
-        registrosD1 = await respD1.json();
-    } catch (error) {
-        console.error(error);
-    }
+        // Rescate de registros adicionales desde D1 si no están en el base_backlog
+        Object.values(registrosD1).forEach(reg => {
+            const otReg = String(reg.ot || "").trim();
+            if (otReg && !otsConfiguesSet.has(otReg)) {
+                if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
+                    let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
+                    filaRescatada = filaRescatada.map(() => "");
 
-    window.registrosD1 = registrosD1;
-const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
-    const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
-    const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
-    const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
-    const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
-    const otsConfiguesSet = new Set(datosGlobal.map(f => String(f[idxOT]).trim()));
+                    filaRescatada[idxOT] = otReg;
+                    if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
+                    if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
+                    if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
+                    if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
 
-    Object.values(registrosD1).forEach(reg => {
-        const otReg = String(reg.ot || "").trim();
-        if (otReg && !otsConfiguesSet.has(otReg)) {
-            if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
-                
-                // Creamos una fila limpia basada en la estructura general del dataset
-                let filaRescatada = datosGlobal.length > 0 ? [...datosGlobal[0]] : new Array(encabezadosGlobal.length).fill("");
-                
-                // Limpiamos todas las celdas para que no arrastren valores cruzados
-                filaRescatada = filaRescatada.map(() => "");
-
-                // Asignamos cada valor en su índice exacto detectado por los nombres de columnas
-                filaRescatada[idxOT] = otReg;
-                if (idxID !== -1) filaRescatada[idxID] = reg.idOriginal || "--";
-                if (idxIM !== -1) filaRescatada[idxIM] = reg.imOriginal || "--";
-                if (idxDepto !== -1) filaRescatada[idxDepto] = reg.departamentoOriginal || "--";
-                if (idxMuni !== -1) filaRescatada[idxMuni] = reg.municipioOriginal || "--";
-
-                if (!datosGlobal.some(f => f[idxOT] === otReg)) {
-                    datosGlobal.push(filaRescatada);
+                    if (!datosGlobal.some(f => f[idxOT] === otReg)) {
+                        datosGlobal.push(filaRescatada);
+                    }
                 }
             }
-        }
-    });
-    
-    renderizarFiltrosDinamicos(datosGlobal);
-    datosFiltradosGlobal = datosGlobal;
-    actualizarOpcionesFiltros(datosGlobal);
-    pintarTabla(datosGlobal);
-    actualizarKPIs(datosGlobal);
-}
+        });
+        
+        renderizarFiltrosDinamicos(datosGlobal);
+        datosFiltradosGlobal = datosGlobal;
+        actualizarOpcionesFiltros(datosGlobal);
+        pintarTabla(datosGlobal);
+        actualizarKPIs(datosGlobal);
 
+    } catch (error) {
+        console.error("❌ Error al cargar planeación desde D1 (base-backlog):", error);
+    }
+}
 function actualizarKPIs(datos){
     const encabezados = encabezadosGlobal;
     const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
