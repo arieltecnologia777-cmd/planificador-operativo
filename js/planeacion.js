@@ -1,3 +1,9 @@
+async function cargarPlaneacion(){
+    try {
+        const respBacklog = await fetch(WORKER_DATA_URL);
+        const dataBacklog = await respBacklog.json();
+        console.log("Respuesta cruda de base-backlog:", dataBacklog); // <--- Revisa esto en la consola F12
+        
 const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
 const WORKER_DATA_URL = `${API_BASE_URL}/base-backlog`;
 const API_URL = `${API_BASE_URL}/planeacion`;
