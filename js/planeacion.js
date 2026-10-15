@@ -493,34 +493,34 @@ async function cargarPlaneacion(){
             "Tipo facturación", "Fecha vencimiento FM", "Alerta vencimiento FM"
         ];
 
-        datosGlobal = listaRegistros.map(reg => {
+       datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
             return [
-                reg.id || reg.ID || "",
-                reg.departamento || reg.Departamento || "",
-                reg.municipio || reg.Municipio || "",
-                reg.im || reg.IM || "",
-                reg.ot || reg.OT || "",
-                reg.afectacion || reg.tipo_afectacion || reg.Afectacion || "",
-                "",
-                reg.total_ids_afectados || reg.ids_afectados || reg.totalIdsAfectados || "",
-                reg.dias_vigencia_ot || reg.dias_ot || reg.diasOt || "",
-                reg.rango_afectacion || reg.rangoAfectacion || "",
-                reg.tipo_prioridad || reg.prioridad || "",
-                reg.stoppers_dominion || reg.stoppers || "",
-                reg.estado_programacion || reg.estadoProgramacion || "",
-                reg.fecha_programacion || reg.fechaProgramacion || "",
-                reg.observaciones || reg.observacion || "",
-                reg.estado_gestion || reg.estadoGestion || "",
-                reg.tecnico_asignado || reg.tecnicoAsignado || "",
-                reg.acompanamiento || "",
-                reg.indicador_backlog || reg.backlog || "",
-                reg.stopper_p3 || reg.stopperP3 || "",
-                reg.estado_ot || reg.estadoOt || "",
-                reg.tipo_facturacion || reg.tipoFacturacion || "",
-                reg.fecha_vencimiento_fm || reg.fechaVencimientoFm || "",
-                reg.alerta_vencimiento_fm || reg.alertaVencimientoFm || ""
+                reg.ID || reg.id || "",                                                             // 0: ID
+                reg.Departamento || reg.departamento || "",                                         // 1: Departamento
+                reg.Municipio || reg.municipio || "",                                               // 2: Municipio
+                reg.IM || reg.im || "",                                                             // 3: IM
+                reg.OT || reg.ot || "",                                                             // 4: OT
+                reg["Tipo de afectación"] || reg.afectacion || "",                                  // 5: Tipo de afectación
+                "",                                                                                 // 6: Nuevo
+                reg["Total IDs afectados"] || reg.total_ids_afectados || "",                        // 7: Total IDs afectados
+                reg["Días OT"] || reg.dias_vigencia_ot || reg["Días vigencia OT"] || "",            // 8: Días vigencia OT
+                reg["Rango de afectación"] || reg.rango_afectacion || "",                           // 9: Rango de afectación
+                reg["Tipo de prioridad"] || reg.prioridad || "",                                    // 10: Tipo de prioridad
+                reg["Stoppers Dominion"] || reg.stoppers_dominion || "",                            // 11: Stoppers Dominion
+                reg["Estado Programación"] || reg.estado_programacion || "",                        // 12: Estado Programación
+                reg["Fecha Programación"] || reg.fecha_programacion || "",                          // 13: Fecha Programación
+                reg.Observaciones || reg.observaciones || "",                                       // 14: Observaciones
+                reg["Estado Gestión"] || reg.estado_gestion || "",                                  // 15: Estado Gestión
+                reg["Técnico Asignado"] || reg.tecnico_asignado || "",                              // 16: Técnico Asignado
+                reg.Acompañamiento || reg.acompanamiento || "",                                     // 17: Acompañamiento
+                reg["Indicador backlog"] || reg.indicador_backlog || "",                            // 18: Indicador backlog
+                reg["Stopper P3"] || reg.stopper_p3 || "",                                          // 19: Stopper P3
+                reg["Estado OT"] || reg.estado_ot || "",                                            // 20: Estado OT
+                reg["Tipo facturación"] || reg.tipo_facturacion || "",                              // 21: Tipo facturación
+                reg["Vigencia FM (Fecha vencimiento)"] || reg.fecha_vencimiento_fm || "",           // 22: Fecha vencimiento FM
+                reg["Alerta vencimiento FM"] || reg.alerta_vencimiento_fm || ""                     // 23: Alerta vencimiento FM
             ];
         });
 
