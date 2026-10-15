@@ -1473,7 +1473,7 @@ document.addEventListener("blur", async e => {
 }, true);
 
 async function guardarOT(fila, observacionForzada = null){
-    const ot = fila.children[4].textContent.trim();
+    const ot = fila.children[4]?.textContent.trim() || "";
     
     const inputFecha = fila.querySelector(".fecha-input");
     let fechaVal = inputFecha?.value || "";
@@ -1486,16 +1486,11 @@ async function guardarOT(fila, observacionForzada = null){
 
     const fechaLocalHoy = new Date().toLocaleDateString('en-CA');
 
-    // --- EXTRACCIÓN SEGURA DE LAS CELDAS VISIBLES EN LA TABLA ---
-    const idxID = buscarIndiceColumnaFlexible(encabezadosGlobal, ["ID"]);
-    const idxIM = buscarIndiceColumnaFlexible(encabezadosGlobal, ["IM"]);
-    const idxDepto = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Departamento"]);
-    const idxMuni = buscarIndiceColumnaFlexible(encabezadosGlobal, ["Municipio"]);
-
-    const valId = idxID !== -1 && fila.children[idxID] ? fila.children[idxID].textContent.trim() : "";
-    const valIm = idxIM !== -1 && fila.children[idxIM] ? fila.children[idxIM].textContent.trim() : "";
-    const valDepto = idxDepto !== -1 && fila.children[idxDepto] ? fila.children[idxDepto].textContent.trim() : "";
-    const valMuni = idxMuni !== -1 && fila.children[idxMuni] ? fila.children[idxMuni].textContent.trim() : "";
+    // --- LECTURA DIRECTA Y FIJA DE LAS CELDAS VISIBLES DE LA TABLA ---
+    const valId = fila.children[0]?.textContent.trim() || "";
+    const valDepto = fila.children[1]?.textContent.trim() || "";
+    const valMuni = fila.children[2]?.textContent.trim() || "";
+    const valIm = fila.children[3]?.textContent.trim() || "";
 
     const payload = {
         ot,
