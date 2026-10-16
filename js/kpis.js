@@ -1,5 +1,9 @@
 const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
+// Variable de control global para el modo de simulación y caché de datos
+let modoPesoMaximoActivo = false;
+let datosKpiGlobales = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. Control del Sidebar: Inicia colapsado por defecto y abre/cierra al hacer clic
     const btnToggle = document.getElementById("btnToggleSidebar");
@@ -12,9 +16,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 2. Control de los modales de administración y herramientas avanzadas
     initModalesAdmin();
 
-    // 3. Cargar y renderizar los KPIs al abrir la página
+    // 3. Inicializar el botón de alternancia de pesos máximos
+    initBotonAlternarPesos();
+
+    // 4. Cargar y renderizar los KPIs al abrir la página
     await cargarYRenderizarKPIs();
 });
+
+// --- CONFIGURACIÓN DEL BOTÓN DE ALTERNANCIA ---
+function initBotonAlternarPesos() {
+    const btnSimular = document.getElementById("btnSimularPesoMaximo");
+    if (btnSimular) {
+        btnSimular.addEventListener("click", () => {
+            modoPesoMaximoActivo = !modoPesoMaximoActivo;
+            
+            if (modoPesoMaximoActivo) {
+                btnSimular.style.background = "#10b981";
+                btnSimular.innerHTML = "⚖️ Volver a Datos Reales (D1)";
+            } else {
+                btnSimular.style.background = "#2563eb";
+                btnSimular.innerHTML = "⭐ Simular con Pesos Máximos";
+            }
+
+            // Repintar con la data actual según el modo seleccionado
+            if (datosKpiGlobales) {
+                if (datosKpiGlobales.R1) calcularYPintarFilaTabla('R1', datosKpiGlobales.R1);
+                if (datosKpiGlobales.R2) calcularYPintarFilaTabla('R2', datosKpiGlobales.R2);
+            }
+        });
+    }
+}
 
 // --- LÓGICA DE MODALES Y CLAVE ADMIN ---
 function initModalesAdmin() {
@@ -33,7 +64,6 @@ function initModalesAdmin() {
     const spanNombreArchivo = document.getElementById("nombreArchivoSeleccionado");
     const btnLanzarCargue = document.getElementById("btnLanzarCargue");
 
-    // Abrir modal de contraseña desde el botón del sidebar
     if (btnAbrirConfig) {
         btnAbrirConfig.addEventListener("click", (e) => {
             e.preventDefault();
@@ -44,12 +74,10 @@ function initModalesAdmin() {
         });
     }
 
-    // Cerrar modal de contraseña
     const cerrarPw = () => { if (modalPassword) modalPassword.style.display = "none"; };
     if (cerrarModalPassword) cerrarModalPassword.addEventListener("click", cerrarPw);
     if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
 
-    // Verificar contraseña de administrador de forma limpia y directa sin falsos avisos
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", () => {
             const pass = inputAdminPassword ? inputAdminPassword.value.trim() : "";
@@ -68,12 +96,10 @@ function initModalesAdmin() {
         });
     }
 
-    // Cerrar modal de herramientas avanzadas
     const cerrarTools = () => { if (modalAdminTools) modalAdminTools.style.display = "none"; };
     if (cerrarModalTools) cerrarModalTools.addEventListener("click", cerrarTools);
     if (btnCerrarTools) btnCerrarTools.addEventListener("click", cerrarTools);
 
-    // Mostrar nombre del archivo seleccionado al explorar
     if (inputExcelMasivo) {
         inputExcelMasivo.addEventListener("change", (e) => {
             const file = e.target.files[0];
@@ -85,7 +111,6 @@ function initModalesAdmin() {
         });
     }
 
-    // Botón de confirmación antes de lanzar el cargue
     if (btnLanzarCargue) {
         btnLanzarCargue.addEventListener("click", () => {
             const fileInput = document.getElementById("inputExcelMasivo");
@@ -192,21 +217,34 @@ async function cargarYRenderizarKPIs() {
 
         if (!resultado.ok) return;
 
-        const data = resultado.data;
-        if (data.R1) calcularYPintarFilaTabla('R1', data.R1);
-        if (data.R2) calcularYPintarFilaTabla('R2', data.R2);
+        datosKpiGlobales = resultado.data; // Guardamos en caché global
+        if (datosKpiGlobales.R1) calcularYPintarFilaTabla('R1', datosKpiGlobales.R1);
+        if (datosKpiGlobales.R2) calcularYPintarFilaTabla('R2', datosKpiGlobales.R2);
 
     } catch (error) {
         console.error("Error al cargar datos desde el Worker:", error);
     }
 }
 
-// --- MOTOR MATEMÁTICO Y RENDERIZADO CON LÍNEA DE META ---
+// Motor matemático con soporte para alternar entre datos reales y pesos máximos ideales
 function calcularYPintarFilaTabla(zona, d) {
-    const cumpOper = d.meta_operatividad > 0 ? d.ejec_operatividad / d.meta_operatividad : 0;
-    const cumpSla = d.meta_sla > 0 ? d.ejec_sla / d.meta_sla : 0;
-    const cumpBacklog = d.meta_backlog > 0 ? d.ejec_backlog / d.meta_backlog : 0;
-    const cumpMpr = d.meta_mpr > 0 ? d.ejec_mpr / d.meta_mpr : 0;
+    let ejecOper = d.ejec_operatividad;
+    let ejSla = d.ejec_sla;
+    let ejBacklog = d.ejec_backlog;
+    let ejMpr = d.ejec_mpr;
+
+    if (modoPesoMaximoActivo) {
+        // Forzamos el cumplimiento al 100% ideal para maximizar el peso generado
+        ejecOper = d.meta_operatividad > 0 ? d.meta_operatividad : ejecOper;
+        ejSla = d.meta_sla > 0 ? d.meta_sla : ejSla;
+        ejBacklog = d.meta_backlog > 0 ? d.meta_backlog : ejBacklog;
+        ejMpr = d.meta_mpr > 0 ? d.meta_mpr : ejMpr;
+    }
+
+    const cumpOper = d.meta_operatividad > 0 ? ejecOper / d.meta_operatividad : 0;
+    const cumpSla = d.meta_sla > 0 ? ejSla / d.meta_sla : 0;
+    const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
+    const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
     const pesoGenOper = Math.min(cumpOper, 1.0) * d.peso_operatividad;
     const pesoGenSla = Math.min(cumpSla, 1.0) * d.peso_sla;
@@ -215,7 +253,6 @@ function calcularYPintarFilaTabla(zona, d) {
 
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
     
-    // Meta general fijada en 99% (0.99)
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
 
@@ -224,34 +261,31 @@ function calcularYPintarFilaTabla(zona, d) {
 
     const z = zona.toLowerCase();
     
-    // Asignar indicadores individuales
-    asignarTexto(`${z}-oper-ejec`, fmtPct(d.ejec_operatividad));
+    asignarTexto(`${z}-oper-ejec`, fmtPct(ejecOper));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
     asignarBarraConLineaMeta(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
     asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
 
-    asignarTexto(`${z}-sla-ejec`, fmtPct(d.ejec_sla));
+    asignarTexto(`${z}-sla-ejec`, fmtPct(ejSla));
     asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
     asignarBarraConLineaMeta(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
     asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
-    asignarTexto(`${z}-backlog-ejec`, fmtPct(d.ejec_backlog));
+    asignarTexto(`${z}-backlog-ejec`, fmtPct(ejBacklog));
     asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
     asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
     asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
-    asignarTexto(`${z}-mpr-ejec`, fmtPct(d.ejec_mpr));
+    asignarTexto(`${z}-mpr-ejec`, fmtPct(ejMpr));
     asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
     asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
     asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
-    // Renderizar cumplimiento general con su respectiva línea de meta (99%)
+    // Renderizar cumplimiento general con línea de meta (99%)
     const elGral = document.getElementById(`${z}-cump-general`);
     if (elGral) {
-        // El ancho máximo visual representa un 130% para dejar margen de sobrecumplimiento
         const escalaMax = 1.30; 
         const anchoBarraPct = Math.min((cumpGeneralRelativo / escalaMax) * 100, 100);
-        // Posición exacta donde cae la meta (99%, es decir, 1.0 relativo al 99%)
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
         const claseColor = obtenerColorPorcentaje(cumpGeneralRelativo);
 
@@ -271,9 +305,9 @@ function asignarTexto(id, valor) {
 }
 
 function obtenerColorPorcentaje(cump) {
-    if (cump >= 1.0) return 'green';    // Cumplió o superó la meta (>= 100%)
-    if (cump >= 0.85) return 'amber';   // Cerca de la meta (85% - 99%)
-    return 'red';                       // Alerta (< 85%)
+    if (cump >= 1.0) return 'green';    
+    if (cump >= 0.85) return 'amber';   
+    return 'red';                       
 }
 
 function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
@@ -284,17 +318,14 @@ function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
     if (elTexto) elTexto.innerText = (cumplimiento * 100).toFixed(2).replace('.', ',') + ' %';
     
     if (elBarra && elContenedor) {
-        // Usamos una escala máxima de 130% para que valores altos quepan y la línea de meta quede proporcionada
         const escalaMax = 1.30;
         const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
-        // La meta (100% de ejecución) se ubica proporcionalmente en la barra
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
 
         elBarra.style.width = anchoBarraPct + '%';
         elBarra.classList.remove('green', 'amber', 'red');
         elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
 
-        // Verificar si ya existe la línea de meta dentro del contenedor, si no, crearla dinámicamente
         let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
         if (!lineaMeta) {
             lineaMeta = document.createElement('div');
