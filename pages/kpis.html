@@ -15,6 +15,17 @@
         transform: none !important;
     }
 
+    /* Reducción general de espacios verticales en el contenedor de KPIs */
+    .dashboard-container {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+    .kpi-module-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px !important; /* Espaciado ultra compacto entre secciones */
+    }
+
     /* Rangos de colores degradados exactos */
     .kpi-progress-bar.green { 
         background: linear-gradient(90deg, #6ee7b7, #10b981) !important; 
@@ -32,17 +43,17 @@
         background: linear-gradient(90deg, #fca5a5, #ef4444) !important; 
     }
 
-    /* Estilo Sticky Note (Nota adhesiva compacta tipo Power BI) */
+    /* Estilo Sticky Note compacto */
     .sticky-note-container {
         background: #fff8dc;
         border-left: 5px solid #f59e0b;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.04);
         border-radius: 6px;
-        padding: 12px 18px;
-        margin-bottom: 15px; /* Reducido para evitar espacios muertos */
+        padding: 10px 15px;
+        margin-bottom: 0 !important;
         font-family: inherit;
         color: #1f2937;
-        max-width: 420px; /* Acotada hacia la izquierda como Power BI */
+        max-width: 420px;
     }
     .sticky-note-header {
         display: flex;
@@ -50,27 +61,39 @@
         align-items: center;
         font-weight: bold;
         color: #b45309;
-        margin-bottom: 6px;
-        font-size: 0.95rem;
+        margin-bottom: 4px;
+        font-size: 0.9rem;
     }
     .sticky-note-content ul {
         margin: 0;
-        padding-left: 18px;
-        font-size: 0.85rem;
+        padding-left: 16px;
+        font-size: 0.82rem;
     }
     .sticky-note-content li {
-        margin-bottom: 4px;
-        line-height: 1.4;
+        margin-bottom: 2px;
+        line-height: 1.3;
     }
 
-    /* Contenedor compacto para el bloque de seguimiento inferior */
+    /* Bloque de seguimiento inferior compacto */
     .sticky-note-seguimiento {
         background: #ffffff;
         border-left: 5px solid #2563eb;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.04);
         border-radius: 6px;
-        padding: 15px 20px;
-        margin-top: 15px; /* Margen superior ajustado para eliminar espacios largos */
+        padding: 12px 18px;
+        margin-top: 5px !important;
+    }
+
+    /* Encabezados de tabla idénticos al estilo brillante del dashboard */
+    .tabla-kpis thead th {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100% !important;
+        color: #ffffff !important;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none !important;
+        padding: 10px 12px !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 </style>
 </head>
@@ -128,9 +151,9 @@
 
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" style="padding-top: 15px !important;">
 
-        <header class="hero">
+        <header class="hero" style="margin-bottom: 12px !important; padding: 20px !important;">
             <div class="hero-content">
                 <div class="hero-badge">
                     <span></span>
@@ -144,12 +167,13 @@
         <div class="dashboard-container">
             <div class="kpi-module-container">
                 
-                <!-- STICKY NOTE: NOTAS IMPORTANTES (Compacta y a la izquierda) -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
-                    <div class="sticky-note-container" style="margin-bottom: 0; flex: 1; min-width: 300px;">
+                <!-- SECCIÓN SUPERIOR: NOTAS IMPORTANTES + BOTÓN CENTRADO -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <!-- STICKY NOTE: NOTAS IMPORTANTES -->
+                    <div class="sticky-note-container">
                         <div class="sticky-note-header">
                             <span>📌 Notas importantes</span>
-                            <span style="font-size: 0.8rem; font-weight: normal; color: #b45309;">Metas octubre 2026</span>
+                            <span style="font-size: 0.78rem; font-weight: normal; color: #b45309;">Metas octubre 2026</span>
                         </div>
                         <div class="sticky-note-content">
                             <ul>
@@ -159,22 +183,21 @@
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE SIMULACIÓN ALINEADO ARRIBA -->
-                    <div>
-                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
+                    <!-- BOTÓN DE SIMULACIÓN CENTRADO EXACTO -->
+                    <div style="flex: 1; display: flex; justify-content: center;">
+                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
                             Simular con pesos máximos
                         </button>
                     </div>
                 </div>
 
                 <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2 - Protagonistas) -->
-                <div class="kpis-grid-zonas">
+                <div class="kpis-grid-zonas" style="margin-top: 5px !important; margin-bottom: 5px !important;">
                     
                     <!-- ZONA R1 -->
                     <div class="tabla-kpi-wrapper">
                         <div class="zona-header-kpi">
                             <span class="zona-titulo-tag">📍 ZONA <span style="color: #2563eb;">R1</span></span>
-                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px;">R1</span>
                         </div>
                         <table class="tabla-kpis">
                             <thead>
@@ -249,7 +272,6 @@
                     <div class="tabla-kpi-wrapper">
                         <div class="zona-header-kpi">
                             <span class="zona-titulo-tag">📍 ZONA <span style="color: #2563eb;">R2</span></span>
-                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px; background: #475569;">R2</span>
                         </div>
                         <table class="tabla-kpis">
                             <thead>
@@ -322,12 +344,12 @@
 
                 </div>
 
-                <!-- STICKY NOTE: SEGUIMIENTO INFERIOR (Compacto y cercano) -->
+                <!-- STICKY NOTE: SEGUIMIENTO INFERIOR -->
                 <div class="sticky-note-seguimiento">
-                    <div style="font-weight: bold; color: #1e40af; margin-bottom: 8px; font-size: 0.95rem;">
+                    <div style="font-weight: bold; color: #1e40af; margin-bottom: 6px; font-size: 0.9rem;">
                         📋 Seguimiento y Observaciones:
                     </div>
-                    <div id="contenedor-seguimiento" style="font-size: 0.88rem; color: #374151;">
+                    <div id="contenedor-seguimiento" style="font-size: 0.85rem; color: #374151; line-height: 1.4;">
                         Cargando notas de seguimiento...
                     </div>
                 </div>
