@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     initModalesAdmin();
     initBotonAlternarPesos();
+    initEditorNotasAdmin();
+    await cargarNotasSeguimiento();
     await cargarYRenderizarKPIs();
 });
 
@@ -81,6 +83,7 @@ function initModalesAdmin() {
                     modalAdminTools.style.display = "flex";
                     if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
                     if (inputExcelMasivo) inputExcelMasivo.value = "";
+                    cargarNotasEnEditorAdmin();
                 }
             } else {
                 alert("Por favor ingrese la contraseña.");
@@ -116,6 +119,77 @@ function initModalesAdmin() {
             if (confirmar) {
                 if (modalAdminTools) modalAdminTools.style.display = "none";
                 ejecutarCargueExcelConProgreso(fileInput.files[0]);
+            }
+        });
+    }
+}
+
+// --- GESTIÓN DE NOTAS DESDE D1 ---
+async function cargarNotasSeguimiento() {
+    try {
+        const notasUrl = WORKER_URL.replace('/api/kpis', '/api/notas');
+        const res = await fetch(notasUrl);
+        const json = await res.json();
+        if (json.ok && json.data) {
+            const notaGen = json.data.find(n => n.zona === 'GENERAL' || n.zona === 'R1');
+            const contenedor = document.getElementById('contenedor-seguimiento');
+            if (contenedor && notaGen) {
+                contenedor.innerHTML = `<div style="white-space: pre-line; line-height: 1.6;">${notaGen.contenido}</div>`;
+            }
+        }
+    } catch (e) {
+        console.error("Error al cargar notas de seguimiento:", e);
+    }
+}
+
+async function cargarNotasEnEditorAdmin() {
+    try {
+        const notasUrl = WORKER_URL.replace('/api/kpis', '/api/notas');
+        const res = await fetch(notasUrl);
+        const json = await res.json();
+        if (json.ok && json.data) {
+            const notaGen = json.data.find(n => n.zona === 'GENERAL' || n.zona === 'R1');
+            const textarea = document.getElementById('inputAdminNotas');
+            if (textarea && notaGen) {
+                textarea.value = notaGen.contenido || "";
+            }
+        }
+    } catch (e) {
+        console.error("Error al cargar notas en admin:", e);
+    }
+}
+
+function initEditorNotasAdmin() {
+    const btnGuardarNotas = document.getElementById('btnGuardarNotas');
+    if (btnGuardarNotas) {
+        btnGuardarNotas.addEventListener('click', async () => {
+            const textarea = document.getElementById('inputAdminNotas');
+            const contenido = textarea ? textarea.value : "";
+
+            btnGuardarNotas.innerText = "Guardando...";
+            btnGuardarNotas.disabled = true;
+
+            try {
+                const notasUrl = WORKER_URL.replace('/api/kpis', '/api/notas');
+                const res = await fetch(notasUrl, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ zona: 'GENERAL', contenido: contenido })
+                });
+                const json = await res.json();
+
+                if (json.ok) {
+                    alert("¡Notas de seguimiento guardadas con éxito!");
+                    await cargarNotasSeguimiento();
+                } else {
+                    alert("Error al guardar las notas.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Hubo un error de conexión al guardar las notas.");
+            } finally {
+                btnGuardarNotas.innerText = "💾 Guardar Notas";
+                btnGuardarNotas.disabled = false;
             }
         });
     }
