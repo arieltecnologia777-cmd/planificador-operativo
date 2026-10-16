@@ -217,7 +217,7 @@ async function cargarYRenderizarKPIs() {
         console.error("Error al cargar datos desde el Worker:", error);
     }
 }
-// --- MOTOR MATEMÁTICO: CÁLCULO PONDERADO TOTAL SIN TOPES EN SIMULACIÓN ---
+// --- MOTOR MATEMÁTICO: SIMULACIÓN PRECISA Y MODO NORMAL IDÉNTICO A EXCEL ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -234,7 +234,7 @@ function calcularYPintarFilaTabla(zona, d) {
     let pesoVisualOper, pesoVisualSla, pesoVisualBacklog, pesoVisualMpr;
 
     if (modoPesoMaximoActivo) {
-        // Pesos fijos máximos para la simulación
+        // Pesos fijos máximos exactos para la simulación
         pBacklog = 0.430;
         pOper = 0.370;
         pSla = 0.100;
@@ -245,7 +245,7 @@ function calcularYPintarFilaTabla(zona, d) {
         pesoVisualSla = 0.100;
         pesoVisualMpr = 0.100;
     } else {
-        // Pesos reales de tu Excel
+        // Pesos reales y exactos de tu Excel
         pBacklog = Number(d.peso_backlog) || 0.43; 
         pOper = Number(d.peso_operatividad) || 0.37; 
         pSla = Number(d.peso_sla) || 0.10;
@@ -257,7 +257,7 @@ function calcularYPintarFilaTabla(zona, d) {
         pesoVisualMpr = pMpr;
     }
 
-    // Cálculo general multiplicando el cumplimiento real (con sobrecumplimiento) por su peso respectivo
+    // Cálculo general exacto ponderado (tanto para normal como para simulación)
     const cumplimientoGeneral = (cumpBacklog * pBacklog) + 
                                 (cumpOper * pOper) + 
                                 (cumpSla * pSla) + 
