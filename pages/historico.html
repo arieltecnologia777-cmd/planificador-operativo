@@ -68,14 +68,21 @@
         <section class="panel">
             <div class="planeacion-header">
                 <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                    <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; width: 100%;">
-                        <h2>Órdenes Completadas</h2>
-                        
-                        <input
-                            id="filtroBusquedaHistorico"
-                            type="text"
-                            placeholder="🔍 Buscar en todo el histórico..."
-                            style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
+                    <div class="header-title-group" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <h2>Órdenes Completadas</h2>
+                            
+                            <input
+                                id="filtroBusquedaHistorico"
+                                type="text"
+                                placeholder="🔍 Buscar en todo el histórico..."
+                                style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
+                        </div>
+
+                        <!-- Botón Exportar Histórico -->
+                        <button type="button" onclick="exportarHistoricoOTs()" style="background-color: #2b6cb0; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2c5282'" onmouseout="this.style.backgroundColor='#2b6cb0'">
+                            📥 Exportar Histórico
+                        </button>
                     </div>
                 </div>
             </div>
