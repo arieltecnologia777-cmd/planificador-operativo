@@ -226,7 +226,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS PARA SIMULACIÓN ---
+// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS Y COLORES RESTAURADOS ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -238,7 +238,7 @@ function calcularYPintarFilaTabla(zona, d) {
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // Asignación de pesos según el modo activo (reales de D1 o fijos de simulación)
+    // Asignación de pesos fijos exactos según el modo activo
     let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
@@ -329,9 +329,10 @@ function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
         const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
 
-        elBarra.style.width = anchoBarraPct + '%';
+        // Asignar color dinámico correctamente antes de redimensionar
         elBarra.classList.remove('green', 'near-green', 'amber', 'red');
         elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
+        elBarra.style.width = anchoBarraPct + '%';
 
         let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
         if (!lineaMeta) {
