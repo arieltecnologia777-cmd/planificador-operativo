@@ -2471,3 +2471,196 @@ body.modo-ampliado .planeacion-table-wrapper {
 .filtro-grupo-mes:hover {
     background: #f1f5f9;
 }
+/* ==========================================================
+   ESTILOS ESPECÍFICOS - MÓDULO DE KPIS
+   ================================================---------- */
+.kpi-module-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+}
+
+.kpi-header-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.kpi-notas-importantes {
+    font-size: 0.85rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.kpi-notas-importantes h4 {
+    color: #dc2626;
+    margin: 0 0 6px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.kpi-notas-importantes ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.badge-meta-periodo {
+    background: #64748b;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.kpis-grid-zonas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    gap: 20px;
+}
+
+.tabla-kpi-wrapper {
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.zona-header-kpi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.zona-titulo-tag {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tabla-kpis {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.tabla-kpis th {
+    background: #475569;
+    color: #ffffff;
+    padding: 10px;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+}
+
+.tabla-kpis td {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-weight: 500;
+}
+
+.tabla-kpis tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.fila-cumplimiento-general {
+    background: #f1f5f9;
+    font-weight: 700;
+}
+
+/* Barras de progreso internas de celdas */
+.kpi-progress-bg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 22px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 4px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.kpi-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.kpi-progress-bar.green {
+    background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%);
+}
+
+.kpi-progress-bar.amber {
+    background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #fbbf24 50%, #d97706 100%);
+}
+
+.kpi-progress-bar.red {
+    background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%);
+}
+
+.kpi-progress-txt {
+    position: relative;
+    z-index: 3;
+    font-weight: 700;
+    font-size: 0.7rem;
+    line-height: 22px;
+    color: #0f172a;
+}
+
+.kpi-badge-general {
+    font-weight: 800;
+    padding: 4px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.kpi-badge-general.red {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+}
+
+.kpi-seguimiento-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    font-size: 0.85rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.kpi-seguimiento-box h4 {
+    color: #dc2626;
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.kpi-seguimiento-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
