@@ -276,7 +276,7 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(ejBacklog));
-    asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
+    asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_meta || d.meta_backlog));
     asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
     asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
@@ -307,10 +307,16 @@ function asignarTexto(id, valor) {
     if (el) el.innerText = valor;
 }
 
+// Rangos de color mejorados: 
+// - 'green' (>= 100%): Verde brillante oficial.
+// - 'near-green' (95% a 99.9%): Verde suave / esmeralda claro (cercano a la meta pero sin ser amarillo).
+// - 'amber' (85% a 94.9%): Amarillo / ámbar de precaución.
+// - 'red' (< 85%): Rojo de alerta.
 function obtenerColorPorcentaje(cump) {
-    if (cump >= 1.0) return 'green';    
-    if (cump >= 0.85) return 'amber';   
-    return 'red';                       
+    if (cump >= 1.0) return 'green';        
+    if (cump >= 0.95) return 'near-green';  
+    if (cump >= 0.85) return 'amber';       
+    return 'red';                           
 }
 
 function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
@@ -326,7 +332,7 @@ function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
 
         elBarra.style.width = anchoBarraPct + '%';
-        elBarra.classList.remove('green', 'amber', 'red');
+        elBarra.classList.remove('green', 'near-green', 'amber', 'red');
         elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
 
         let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
