@@ -2292,17 +2292,17 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* Altura extendida para mostrar esas 3 filas adicionales cuando se activa el modo zoom */
+/* Forzar que la tabla ocupe todo el espacio disponible hacia abajo en modo zoom */
 body.modo-zoom .planeacion-table-wrapper,
 body.modo-ampliado .planeacion-table-wrapper {
-    max-height: 92vh !important;
-    height: 92vh !important;
+    max-height: 82vh !important;
+    height: 82vh !important;
 }
 
-/* Permitir que el panel principal también se expanda verticalmente al límite en modo zoom */
+/* Forzar que el panel principal se expanda por completo ocupando toda la altura de la pantalla */
 body.modo-zoom .panel.panel-zoom,
 body.modo-ampliado .panel.panel-zoom {
     display: flex;
     flex-direction: column;
-    height: 97vh !important;
+    height: 98vh !important;
 }
