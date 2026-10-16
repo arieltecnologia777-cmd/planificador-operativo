@@ -91,7 +91,7 @@
         margin-top: 5px !important;
     }
 
-    /* Encabezados de tabla idénticos al estilo azul brillante del dashboard (Forzado total) */
+    /* Encabezados de tabla idénticos al estilo azul brillante del dashboard */
     .tabla-kpis th, 
     .tabla-kpis thead th {
         background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
@@ -175,8 +175,8 @@
         <div class="dashboard-container">
             <div class="kpi-module-container">
                 
-                <!-- SECCIÓN SUPERIOR: NOTAS IMPORTANTES + BOTÓN CENTRADO ABSOLUTO -->
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <!-- SECCIÓN SUPERIOR: NOTAS IMPORTANTES Y BOTÓN CENTRADO ABSOLUTO -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
                     <!-- STICKY NOTE: NOTAS IMPORTANTES -->
                     <div class="sticky-note-container">
                         <div class="sticky-note-header">
@@ -191,8 +191,8 @@
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE SIMULACIÓN CENTRADO PERFECTAMENTE ENTRE LAS DOS COLUMNAS -->
-                    <div style="flex: 2; display: flex; justify-content: center;">
+                    <!-- BOTÓN DE SIMULACIÓN CENTRADO EXACTO EN SU PROPIA ZONA -->
+                    <div style="flex: 1; display: flex; justify-content: center; align-self: center;">
                         <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.2s;">
                             Simular con pesos máximos
                         </button>
