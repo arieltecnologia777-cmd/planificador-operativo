@@ -201,7 +201,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO Y RENDERIZADO DINÁMICO DE BARRAS Y COLORES ---
+// --- MOTOR MATEMÁTICO Y RENDERIZADO CON LÍNEA DE META ---
 function calcularYPintarFilaTabla(zona, d) {
     const cumpOper = d.meta_operatividad > 0 ? d.ejec_operatividad / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? d.ejec_sla / d.meta_sla : 0;
@@ -215,7 +215,7 @@ function calcularYPintarFilaTabla(zona, d) {
 
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
     
-    // Meta de cumplimiento general fijada en 99% (0.99)
+    // Meta general fijada en 99% (0.99)
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
 
@@ -224,37 +224,42 @@ function calcularYPintarFilaTabla(zona, d) {
 
     const z = zona.toLowerCase();
     
-    // Pintar indicadores individuales con colores dinámicos correctos
+    // Asignar indicadores individuales
     asignarTexto(`${z}-oper-ejec`, fmtPct(d.ejec_operatividad));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
-    asignarBarraYColorDinamico(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
+    asignarBarraConLineaMeta(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
     asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
 
     asignarTexto(`${z}-sla-ejec`, fmtPct(d.ejec_sla));
     asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
-    asignarBarraYColorDinamico(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
+    asignarBarraConLineaMeta(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
     asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(d.ejec_backlog));
     asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
-    asignarBarraYColorDinamico(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
+    asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
     asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
     asignarTexto(`${z}-mpr-ejec`, fmtPct(d.ejec_mpr));
     asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
-    asignarBarraYColorDinamico(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
+    asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
     asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
-    // Renderizar cumplimiento general con barra dinámica basada en la meta del 99%
+    // Renderizar cumplimiento general con su respectiva línea de meta (99%)
     const elGral = document.getElementById(`${z}-cump-general`);
     if (elGral) {
-        const pctGralVal = cumpGeneralRelativo * 100;
-        const colorGral = obtenerColorPorcentaje(cumpGeneralRelativo);
-        
+        // El ancho máximo visual representa un 130% para dejar margen de sobrecumplimiento
+        const escalaMax = 1.30; 
+        const anchoBarraPct = Math.min((cumpGeneralRelativo / escalaMax) * 100, 100);
+        // Posición exacta donde cae la meta (99%, es decir, 1.0 relativo al 99%)
+        const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
+        const claseColor = obtenerColorPorcentaje(cumpGeneralRelativo);
+
         elGral.innerHTML = `
             <div class="kpi-progress-bg" style="width: 100%; margin: 0;">
-                <div class="kpi-progress-bar ${colorGral}" style="width: ${Math.min(pctGralVal, 100)}%;"></div>
-                <span class="kpi-progress-txt" style="font-weight: 700;">${fmtPct(cumplimientoGeneral)}</span>
+                <div class="kpi-progress-bar ${claseColor}" style="width: ${anchoBarraPct}%;"></div>
+                <div class="kpi-meta-line" style="left: ${posicionMetaPct}%;"></div>
+                <span class="kpi-progress-txt">${fmtPct(cumplimientoGeneral)}</span>
             </div>
         `;
     }
@@ -265,26 +270,37 @@ function asignarTexto(id, valor) {
     if (el) el.innerText = valor;
 }
 
-// Lógica de colores tipo arcoíris según el nivel de cumplimiento alcanzado
 function obtenerColorPorcentaje(cump) {
     if (cump >= 1.0) return 'green';    // Cumplió o superó la meta (>= 100%)
     if (cump >= 0.85) return 'amber';   // Cerca de la meta (85% - 99%)
-    return 'red';                       // Alerta / Bajo cumplimiento (< 85%)
+    return 'red';                       // Alerta (< 85%)
 }
 
-function asignarBarraYColorDinamico(idBarra, idTexto, cumplimiento) {
+function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
     const elTexto = document.getElementById(idTexto);
+    const elContenedor = elTexto ? elTexto.closest('.kpi-progress-bg') : null;
     const elBarra = document.getElementById(idBarra);
     
     if (elTexto) elTexto.innerText = (cumplimiento * 100).toFixed(2).replace('.', ',') + ' %';
     
-    if (elBarra) {
-        const porcentajeVisual = Math.min(cumplimiento * 100, 100);
-        elBarra.style.width = porcentajeVisual + '%';
-        
-        // Remover clases de color anteriores y asignar la correcta dinámicamente
+    if (elBarra && elContenedor) {
+        // Usamos una escala máxima de 130% para que valores altos quepan y la línea de meta quede proporcionada
+        const escalaMax = 1.30;
+        const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
+        // La meta (100% de ejecución) se ubica proporcionalmente en la barra
+        const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
+
+        elBarra.style.width = anchoBarraPct + '%';
         elBarra.classList.remove('green', 'amber', 'red');
-        const claseColor = obtenerColorPorcentaje(cumplimiento);
-        elBarra.classList.add(claseColor);
+        elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
+
+        // Verificar si ya existe la línea de meta dentro del contenedor, si no, crearla dinámicamente
+        let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
+        if (!lineaMeta) {
+            lineaMeta = document.createElement('div');
+            lineaMeta.className = 'kpi-meta-line';
+            elContenedor.appendChild(lineaMeta);
+        }
+        lineaMeta.style.left = posicionMetaPct + '%';
     }
 }
