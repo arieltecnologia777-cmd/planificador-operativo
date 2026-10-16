@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de KPIs - Planeación Operativa</title>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        /* Estilos específicos adaptados para el panel de KPIs con la misma línea estética */
+        .kpi-module-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .kpi-header-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .kpi-notas-importantes {
+            font-size: 0.85rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .kpi-notas-importantes h4 {
+            color: #dc2626;
+            margin: 0 0 6px 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .kpi-notas-importantes ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .badge-meta-periodo {
+            background: #64748b;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .kpis-grid-zonas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 20px;
+        }
+
+        .tabla-kpi-wrapper {
+            background: #ffffff;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .zona-header-kpi {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .zona-titulo-tag {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Reutilizando la estructura de tus tablas dinámicas */
+        .tabla-kpis {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .tabla-kpis th {
+            background: #475569;
+            color: #ffffff;
+            padding: 10px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+        }
+
+        .tabla-kpis td {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .tabla-kpis tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .fila-cumplimiento-general {
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+
+        .kpi-seguimiento-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .kpi-seguimiento-box h4 {
+            color: #dc2626;
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .kpi-seguimiento-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
+    ☰
+</button>
+
+<div class="layout">
+    
+    <!-- BARRA LATERAL (Sidebar sincronizado) -->
+    <aside class="sidebar">
+        <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
+            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="planeacion.html">
+                <span class="nav-icon">📅</span>
+                Planeación
+            </a>
+            <a href="historico.html">
+                <span class="nav-icon">📋</span>
+                Histórico OTs
+            </a>
+            <a href="kpis.html" class="active">
+                <span class="nav-icon">📈</span>
+                KPIs
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">📡</span>
+                Centros Digitales
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">🗺️</span>
+                Mapa
+            </a>
+            <a href="#" onclick="alert('Página en construcción'); return false;">
+                <span class="nav-icon">📈</span>
+                Reportes
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span></span>
+                    MÓDULO DE RENDIMIENTO
+                </div>
+                <h1>Medición de KPI's</h1>
+                <p>Seguimiento detallado de metas, ponderación y cumplimiento por zonas operativas.</p>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="kpi-module-container">
+                
+                <!-- NOTAS IMPORTANTES -->
+                <div class="kpi-header-box">
+                    <div class="kpi-notas-importantes">
+                        <h4>Notas importantes</h4>
+                        <ul>
+                            <li>Cálculo no es lineal, el peso que genera cada KPI es de acuerdo al acercamiento de la meta</li>
+                            <li>Meta backlog: 93%</li>
+                            <li>Meta SLA y operatividad: 100%</li>
+                            <li>Meta MPR: 98%</li>
+                        </ul>
+                    </div>
+                    <div class="badge-meta-periodo">
+                        Metas octubre 2026
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2) -->
+                <div class="kpis-grid-zonas">
+                    
+                    <!-- ZONA R1 -->
+                    <div class="tabla-kpi-wrapper">
+                        <div class="zona-header-kpi">
+                            <span class="zona-titulo-tag">📍 ZONA <span style="color: #2563eb;">R1</span></span>
+                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px;">R1</span>
+                        </div>
+                        <table class="tabla-kpis">
+                            <thead>
+                                <tr>
+                                    <th>Indicador</th>
+                                    <th>Ejecutado</th>
+                                    <th>Meta</th>
+                                    <th>Cumplimiento</th>
+                                    <th>Peso generado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">Backlog</td>
+                                    <td>96,86 %</td>
+                                    <td>93,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 52%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">104.15 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,430</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">Operatividad</td>
+                                    <td>97,52 %</td>
+                                    <td>100,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 48%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #fbbf24 50%, #d97706 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">97.52 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,342</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">SLA</td>
+                                    <td>100,00 %</td>
+                                    <td>100,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">100.00 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,100</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">MPR</td>
+                                    <td>87,72 %</td>
+                                    <td>98,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 44%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">89.51 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,000</td>
+                                </tr>
+                                <tr class="fila-cumplimiento-general">
+                                    <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R1</td>
+                                    <td colspan="2">
+                                        <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; font-weight: 800; padding: 4px; border-radius: 4px; text-align: center;">
+                                            88.17 %
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ZONA R2 -->
+                    <div class="tabla-kpi-wrapper">
+                        <div class="zona-header-kpi">
+                            <span class="zona-titulo-tag">📍 ZONA <style="color: #2563eb;">R2</span></span>
+                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px; background: #475569;">R2</span>
+                        </div>
+                        <table class="tabla-kpis">
+                            <thead>
+                                <tr>
+                                    <th>Indicador</th>
+                                    <th>Ejecutado</th>
+                                    <th>Meta</th>
+                                    <th>Cumplimiento</th>
+                                    <th>Peso generado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">Backlog</td>
+                                    <td>91,34 %</td>
+                                    <td>93,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 49%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #fbbf24 50%, #d97706 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">98.22 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,000</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">Operatividad</td>
+                                    <td>95,83 %</td>
+                                    <td>100,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 47%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #fbbf24 50%, #d97706 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">95.83 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,324</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">SLA</td>
+                                    <td>100,00 %</td>
+                                    <td>100,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #34d399 50%, #059669 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">100.00 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,100</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 700; text-align: left;">MPR</td>
+                                    <td>86,84 %</td>
+                                    <td>98,00 %</td>
+                                    <td>
+                                        <div style="position: relative; display: block; width: 100%; height: 22px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 4px; overflow: hidden; text-align: center;">
+                                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 43%; background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, #f87171 50%, #dc2626 100%);"></div>
+                                            <span style="position: relative; z-index: 3; font-weight: 700; font-size: 0.7rem; line-height: 22px; color: #0f172a;">88.61 %</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700;">0,000</td>
+                                </tr>
+                                <tr class="fila-cumplimiento-general">
+                                    <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R2</td>
+                                    <td colspan="2">
+                                        <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; font-weight: 800; padding: 4px; border-radius: 4px; text-align: center;">
+                                            41.03 %
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- SEGUIMIENTO E INSTRUCTIVO -->
+                <div class="kpi-seguimiento-box">
+                    <h4>Seguimiento:</h4>
+                    <ul>
+                        <li><strong>Backlog:</strong> R1 cumple <span style="color: #10b981;">✅</span>, afectación de KPI en Antioquia, se requiere dar prioridad a los casos con vencimiento de SLA y solicitar exclusiones a las OTs exógenas</li>
+                        <li><strong>Operatividad:</strong> afectación en Antioquia, Cesar y Guajira, se requiere dar prioridad a los casos con vencimiento de SLA y solicitar exclusiones a las OTs exógenas</li>
+                        <li><strong>SLA:</strong> R1 cumple <span style="color: #10b981;">✅</span>, R2 se identifican los casos para ajuste</li>
+                        <li><strong>MPR:</strong> Medición de KPI sobre mes vencido en curso de validación por parte de Claro y la interventoría, KPI aumentará de manera paulatina de acuerdo al proceso de medición antes mencionado</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    // Control para colapsar/expandir el sidebar con el mismo comportamiento del Dashboard
+    document.addEventListener("click", (e) => {
+        const btnToggle = e.target.closest("#btnToggleSidebar");
+        if (btnToggle) {
+            document.body.classList.toggle("sidebar-colapsado");
+        }
+    });
+</script>
+
+</body>
+</html>
