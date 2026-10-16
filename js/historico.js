@@ -168,7 +168,7 @@ function actualizarOpcionesFiltrosHistorico() {
         ` + afecDisp.map(a => `<label class="multi-filtro-item"><input type="checkbox" value="${a}" class="chkAfecHist" ${afecHistSeleccionadas.includes(a) ? "checked" : ""}> ${a}</label>`).join("");
     }
 
-    // 3. Renderizar Fecha de Cierre Jerárquica
+    // 3. Renderizar Fecha de Cierre Jerárquica (Exacta a Planeación)
     const elFecha = document.getElementById("listaFechaHist");
     if (elFecha) {
         const mesesNombres = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
@@ -224,7 +224,7 @@ function actualizarOpcionesFiltrosHistorico() {
                     const estaChequeado = fechaHistSeleccionadas.includes(fechaStr) ? "checked" : "";
                     htmlJerarquico += `
                                 <label class="multi-filtro-item" style="padding-left: 30px; display: block;">
-                                    <input type="checkbox" value="${fechaStr}" class="chkFechaHist" ${estaChequeado}> ${dia} (${fechaStr})
+                                    <input type="checkbox" value="${fechaStr}" class="chkFechaHist" ${estaChequeado}> ${dia}
                                 </label>`;
                 });
                 htmlJerarquico += `</div></div>`;
