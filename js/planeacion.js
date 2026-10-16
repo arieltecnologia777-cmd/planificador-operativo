@@ -450,7 +450,7 @@ function pintarTabla(datos){
             <td>
                 <select class="edit-select tecnico-asignado">
                     <option value=""></option>
-                    ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.tecnicoAsigned === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
+                    ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.tecnicoAsignado === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
             <td>
@@ -1824,7 +1824,7 @@ window.exportarPlaneacion = function() {
                 item.valorFechaExportar,
                 limpiarTexto(item.regD1.observacion), 
                 limpiarTexto(item.regD1.estadoGestion),
-                limpiarTexto(item.regD1.tecnicoAsigned),
+                limpiarTexto(item.regD1.tecnicoAsignado),
                 limpiarTexto(item.regD1.acompanamiento),
                 getValorFlexible(["Indicador backlog", "Backlog"]), 
                 getValorFlexible(["Stopper P3"]),
@@ -2226,7 +2226,7 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
     const estadoAnterior = selectEstado.dataset.valorAnterior || "";
     const nuevoEstado = selectEstado.value;
 
-    // Si selecciona "Operativa" y antes no lo estava
+    // Si selecciona "Operativa" y antes no lo estaba
     if (nuevoEstado === "Operativa" && estadoAnterior !== "Operativa") {
         
         // 1. Creamos y mostramos el Toast flotante con cuenta regresiva de 5 segundos
