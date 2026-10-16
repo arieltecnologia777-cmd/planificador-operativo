@@ -180,9 +180,7 @@ window.exportarHistoricoOTs = function() {
 const dia = String(ahora.getDate()).padStart(2, '0');
 const mes = String(ahora.getMonth() + 1).padStart(2, '0');
 const anio = ahora.getFullYear();
-const hora = String(ahora.getHours()).padStart(2, '0');
-const min = String(ahora.getMinutes()).padStart(2, '0');
-const timestamp = `${dia}-${mes}-${anio}_${hora}-${min}`;
+const timestamp = `${dia}-${mes}-${anio}`;
         XLSX.writeFile(wb, `Historico_OTs_Completadas_${timestamp}.xlsx`);
 
     } catch (error) {
