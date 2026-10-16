@@ -49,8 +49,6 @@ async function inicializarDashboard() {
 
         // 2. Llamada para calcular y pintar el nuevo Indicador Backlog desde D1
         await cargarYCalcularIndicadorBacklog();
-
-        cargarYCalcularBacklogUnificado();
     } catch (error) {
         console.error("Error al cargar los datos del Worker en el dashboard:", error);
     }
