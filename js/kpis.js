@@ -1,11 +1,9 @@
 const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
-// Variable de control global para el modo de simulación y caché de datos
 let modoPesoMaximoActivo = false;
 let datosKpiGlobales = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Control del Sidebar: Inicia colapsado por defecto y abre/cierra al hacer clic
     const btnToggle = document.getElementById("btnToggleSidebar");
     if (btnToggle) {
         btnToggle.addEventListener("click", () => {
@@ -13,13 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 2. Control de los modales de administración y herramientas avanzadas
     initModalesAdmin();
-
-    // 3. Inicializar el botón de alternancia de pesos máximos
     initBotonAlternarPesos();
-
-    // 4. Cargar y renderizar los KPIs al abrir la página
     await cargarYRenderizarKPIs();
 });
 
@@ -38,7 +31,6 @@ function initBotonAlternarPesos() {
                 btnSimular.innerHTML = "⭐ Simular con Pesos Máximos";
             }
 
-            // Repintar con la data actual según el modo seleccionado
             if (datosKpiGlobales) {
                 if (datosKpiGlobales.R1) calcularYPintarFilaTabla('R1', datosKpiGlobales.R1);
                 if (datosKpiGlobales.R2) calcularYPintarFilaTabla('R2', datosKpiGlobales.R2);
@@ -129,7 +121,7 @@ function initModalesAdmin() {
     }
 }
 
-// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) CON BARRA DE PROGRESO ---
+// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) ---
 async function ejecutarCargueExcelConProgreso(file) {
     const modalProgreso = document.getElementById("modalProgresoSinc");
     const barra = document.getElementById("barraProgresoSinc");
@@ -209,7 +201,7 @@ async function ejecutarCargueExcelConProgreso(file) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- CARGAR DESDE D1, CALCULAR Y PINTAR EN HTML ---
+// --- CARGAR DESDE D1 ---
 async function cargarYRenderizarKPIs() {
     try {
         const response = await fetch(WORKER_URL);
@@ -217,7 +209,7 @@ async function cargarYRenderizarKPIs() {
 
         if (!resultado.ok) return;
 
-        datosKpiGlobales = resultado.data; // Guardamos en caché global
+        datosKpiGlobales = resultado.data; 
         if (datosKpiGlobales.R1) calcularYPintarFilaTabla('R1', datosKpiGlobales.R1);
         if (datosKpiGlobales.R2) calcularYPintarFilaTabla('R2', datosKpiGlobales.R2);
 
@@ -226,7 +218,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS Y COLORES RESTAURADOS ---
+// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS DE SIMULACIÓN ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -238,7 +230,7 @@ function calcularYPintarFilaTabla(zona, d) {
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // Asignación de pesos fijos exactos según el modo activo
+    // Asignación de pesos fijos exactos exigidos para la simulación
     let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
@@ -279,7 +271,7 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(ejBacklog));
-    asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_meta || d.meta_backlog));
+    asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
     asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
     asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
@@ -288,6 +280,7 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
     asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
+    // Renderizar barra de cumplimiento general inferior
     const elGral = document.getElementById(`${z}-cump-general`);
     if (elGral) {
         const escalaMax = 1.30; 
@@ -329,9 +322,8 @@ function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
         const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
 
-        // Asignar color dinámico correctamente antes de redimensionar
-        elBarra.classList.remove('green', 'near-green', 'amber', 'red');
-        elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
+        // Limpiar y aplicar la clase de color correcta
+        elBarra.className = 'kpi-progress-bar ' + obtenerColorPorcentaje(cumplimiento);
         elBarra.style.width = anchoBarraPct + '%';
 
         let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
