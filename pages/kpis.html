@@ -267,16 +267,6 @@
 <script src="../js/kpis.js"></script>
 <script src="../js/settings.js"></script>
 
-<!-- Script para controlar el botón de hamburguesa -->
-<script>
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
-            document.body.classList.toggle("sidebar-colapsado");
-        }
-    });
-</script>
-
 <!-- Modales idénticos a planeacion.html -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
@@ -295,7 +285,7 @@
     </div>
 </div>
 
-<!-- Modal de Herramientas Avanzadas enfocado exclusivamente en la Carga Masiva de KPIs -->
+<!-- Modal de Herramientas Avanzadas -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 450px;">
         <div class="obs-modal-header">
@@ -308,16 +298,6 @@
                     📂 Subir Excel de KPIs (Actualización)
                 </label>
                 <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
-            </div>
-
-            <div id="containerProgresoMasivo" class="progreso-masivo-container" style="display: none;">
-                <div class="progreso-masivo-header">
-                    <span id="textoProgreso">Procesando archivo...</span>
-                    <span id="porcentajeProgreso">0%</span>
-                </div>
-                <div class="progreso-masivo-track">
-                    <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%;"></div>
-                </div>
             </div>
         </div>
         <div class="obs-modal-footer">
