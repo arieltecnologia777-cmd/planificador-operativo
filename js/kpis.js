@@ -226,7 +226,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO CON CÁLCULO DE CUMPLIMIENTO GENERAL POR PESO MÁXIMO ---
+// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS PARA SIMULACIÓN ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -238,16 +238,19 @@ function calcularYPintarFilaTabla(zona, d) {
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    let pOper = d.peso_operatividad;
-    let pSla = d.peso_sla;
-    let pBacklog = d.peso_backlog;
-    let pMpr = d.peso_mpr;
+    // Asignación de pesos según el modo activo (reales de D1 o fijos de simulación)
+    let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
         pBacklog = 0.430;
         pOper = 0.370;
         pSla = 0.100;
         pMpr = 0.100;
+    } else {
+        pBacklog = d.peso_backlog;
+        pOper = d.peso_operatividad;
+        pSla = d.peso_sla;
+        pMpr = d.peso_mpr;
     }
 
     const pesoGenOper = Math.min(cumpOper, 1.0) * pOper;
@@ -307,11 +310,6 @@ function asignarTexto(id, valor) {
     if (el) el.innerText = valor;
 }
 
-// Rangos de color mejorados: 
-// - 'green' (>= 100%): Verde brillante oficial.
-// - 'near-green' (95% a 99.9%): Verde suave / esmeralda claro (cercano a la meta pero sin ser amarillo).
-// - 'amber' (85% a 94.9%): Amarillo / ámbar de precaución.
-// - 'red' (< 85%): Rojo de alerta.
 function obtenerColorPorcentaje(cump) {
     if (cump >= 1.0) return 'green';        
     if (cump >= 0.95) return 'near-green';  
