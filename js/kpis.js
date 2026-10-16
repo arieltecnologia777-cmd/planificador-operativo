@@ -217,7 +217,8 @@ async function cargarYRenderizarKPIs() {
         console.error("Error al cargar datos desde el Worker:", error);
     }
 }
-// --- MOTOR MATEMÁTICO: SIMULACIÓN CON TOPES MÁXIMOS EXACTOS Y MODO NORMAL PRECISO ---
+
+// --- MOTOR MATEMÁTICO: SIMULACIÓN CON PESOS MÁXIMOS FIJOS Y CÁLCULO PRECISO ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -232,45 +233,38 @@ function calcularYPintarFilaTabla(zona, d) {
 
     let pOper, pSla, pBacklog, pMpr;
     let pesoGenOper, pesoGenSla, pesoGenBacklog, pesoGenMpr;
-    let cumpEfectivoOper, cumpEfectivoSla, cumpEfectivoBacklog, cumpEfectivoMpr;
 
     if (modoPesoMaximoActivo) {
-        // 1. Pesos fijos máximos exactos para la simulación
+        // 1. En simulación, los pesos son los topes fijos exactos (0,430, 0,370, etc.)
         pBacklog = 0.430;
         pOper = 0.370;
         pSla = 0.100;
         pMpr = 0.100;
 
-        // En simulación, el cumplimiento para el cálculo ponderado se limita al 100% (tope máximo del peso)
-        cumpEfectivoBacklog = Math.min(cumpBacklog, 1.0);
-        cumpEfectivoOper = Math.min(cumpOper, 1.0);
-        cumpEfectivoSla = Math.min(cumpSla, 1.0);
-        cumpEfectivoMpr = Math.min(cumpMpr, 1.0);
-
-        pesoGenBacklog = cumpEfectivoBacklog * pBacklog;
-        pesoGenOper = cumpEfectivoOper * pOper;
-        pesoGenSla = cumpEfectivoSla * pSla;
-        pesoGenMpr = cumpEfectivoMpr * pMpr;
+        // La columna visual muestra exactamente el peso máximo fijo de la simulación
+        pesoGenBacklog = pBacklog;
+        pesoGenOper = pOper;
+        pesoGenSla = pSla;
+        pesoGenMpr = pMpr;
     } else {
-        // 2. Pesos reales y exactos de tu Excel (Modo Normal)
+        // 2. En modo normal, toma los pesos reales de tu Excel
         pBacklog = Number(d.peso_backlog) || 0.43; 
         pOper = Number(d.peso_operatividad) || 0.37; 
         pSla = Number(d.peso_sla) || 0.10;
         pMpr = Number(d.peso_mpr) || 0.10;
 
-        cumpEfectivoBacklog = cumpBacklog;
-        cumpEfectivoOper = cumpOper;
-        cumpEfectivoSla = cumpSla;
-        cumpEfectivoMpr = cumpMpr;
-
-        pesoGenBacklog = cumpEfectivoBacklog * pBacklog;
-        pesoGenOper = cumpEfectivoOper * pOper;
-        pesoGenSla = cumpEfectivoSla * pSla;
-        pesoGenMpr = cumpEfectivoMpr * pMpr;
+        // El peso visual en la tabla muestra el valor real configurado
+        pesoGenBacklog = pBacklog;
+        pesoGenOper = pOper;
+        pesoGenSla = pSla;
+        pesoGenMpr = pMpr;
     }
 
-    // Cálculo del cumplimiento general sumando los pesos generados efectivos
-    const cumplimientoGeneral = pesoGenBacklog + pesoGenOper + pesoGenSla + pesoGenMpr;
+    // Cálculo general exacto ponderado utilizando el cumplimiento real por el peso correspondiente
+    const cumplimientoGeneral = (cumpBacklog * pBacklog) + 
+                                (cumpOper * pOper) + 
+                                (cumpSla * pSla) + 
+                                (cumpMpr * pMpr);
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
@@ -283,22 +277,22 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarTexto(`${z}-oper-ejec`, fmtPct(ejecOper));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
     asignarBarraConLineaMeta(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
-    asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
+    asignarTexto(`${z}-oper-peso`, fmtNum(pOper));
 
     asignarTexto(`${z}-sla-ejec`, fmtPct(ejSla));
     asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
     asignarBarraConLineaMeta(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
-    asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
+    asignarTexto(`${z}-sla-peso`, fmtNum(pSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(ejBacklog));
     asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
     asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
-    asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
+    asignarTexto(`${z}-backlog-peso`, fmtNum(pBacklog));
 
     asignarTexto(`${z}-mpr-ejec`, fmtPct(ejMpr));
     asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
     asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
-    asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
+    asignarTexto(`${z}-mpr-peso`, fmtNum(pMpr));
 
     // Renderizar barra de cumplimiento general inferior
     const elGral = document.getElementById(`${z}-cump-general`);
@@ -316,7 +310,9 @@ function calcularYPintarFilaTabla(zona, d) {
             </div>
         `;
     }
-}function asignarTexto(id, valor) {
+}
+
+function asignarTexto(id, valor) {
     const el = document.getElementById(id);
     if (el) el.innerText = valor;
 }
