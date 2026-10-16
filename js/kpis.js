@@ -218,20 +218,19 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO EXACTO SEGÚN POWER BI ---
+// --- MOTOR MATEMÁTICO: RESPETA PESOS EXACTOS DEL EXCEL Y FORMULA PONDERADA ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
     const ejBacklog = d.ejec_backlog;
     const ejMpr = d.ejec_mpr;
 
-    // Cumplimiento de cada indicador (Ejecutado / Meta)
     const cumpOper = d.meta_operatividad > 0 ? ejecOper / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? ejSla / d.meta_sla : 0;
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // Asignación de pesos fijos para la simulación o los reales de D1
+    // Definir los pesos a utilizar (los reales exactos que subiste o los fijos de simulación)
     let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
@@ -240,20 +239,20 @@ function calcularYPintarFilaTabla(zona, d) {
         pSla = 0.100;
         pMpr = 0.100;
     } else {
-        pBacklog = d.peso_backlog;
-        pOper = d.peso_operatividad;
+        pBacklog = d.peso_backlog; // Respeta exactamente el decimal de tu Excel
+        pOper = d.peso_operatividad; // Respeta exactamente el decimal de tu Excel (ej: 0,333)
         pSla = d.peso_sla;
         pMpr = d.peso_mpr;
     }
 
-    // Peso generado por cada KPI (Cumplimiento * Peso asignado, sin topes artificiales)
-    const pesoGenOper = cumpOper * pOper;
-    const pesoGenSla = cumpSla * pSla;
-    const pesoGenBacklog = cumpBacklog * pBacklog;
-    const pesoGenMpr = cumpMpr * pMpr;
+    // El valor visual que se muestra en la columna de peso es tu peso configurado exacto
+    const pesoVisualOper = pOper;
+    const pesoVisualSla = pSla;
+    const pesoVisualBacklog = pBacklog;
+    const pesoVisualMpr = pMpr;
 
-    // Ecuación exacta de cumplimiento general de la zona
-    const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
+    // Cálculo del cumplimiento general ponderado utilizando tu peso real
+    const cumplimientoGeneral = (cumpOper * pOper) + (cumpSla * pSla) + (cumpBacklog * pBacklog) + (cumpMpr * pMpr);
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
@@ -266,22 +265,22 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarTexto(`${z}-oper-ejec`, fmtPct(ejecOper));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
     asignarBarraConLineaMeta(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
-    asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
+    asignarTexto(`${z}-oper-peso`, fmtNum(pesoVisualOper));
 
     asignarTexto(`${z}-sla-ejec`, fmtPct(ejSla));
     asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
     asignarBarraConLineaMeta(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
-    asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
+    asignarTexto(`${z}-sla-peso`, fmtNum(pesoVisualSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(ejBacklog));
     asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
     asignarBarraConLineaMeta(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
-    asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
+    asignarTexto(`${z}-backlog-peso`, fmtNum(pesoVisualBacklog));
 
     asignarTexto(`${z}-mpr-ejec`, fmtPct(ejMpr));
     asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
     asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
-    asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
+    asignarTexto(`${z}-mpr-peso`, fmtNum(pesoVisualMpr));
 
     // Renderizar barra de cumplimiento general inferior
     const elGral = document.getElementById(`${z}-cump-general`);
@@ -300,17 +299,12 @@ function calcularYPintarFilaTabla(zona, d) {
         `;
     }
 }
+
 function asignarTexto(id, valor) {
     const el = document.getElementById(id);
     if (el) el.innerText = valor;
 }
 
-// --- NUEVOS RANGOS DE COLOR EXACTOS ---
-// 0 a 89 -> rojo ('red')
-// 90 a 94 -> amarillo ('amber')
-// 95 a 97 -> amarillo tirando a verde ('yellow-green')
-// 98 a 99 -> verde intermedio suave ('soft-green')
-// 100 o superior -> verde intenso de cumplimiento ('green')
 function obtenerColorPorcentaje(cumpVal) {
     const pct = cumpVal * 100;
     if (pct >= 100) return 'green';        
