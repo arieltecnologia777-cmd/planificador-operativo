@@ -49,10 +49,10 @@ function initModalesAdmin() {
     if (cerrarModalPassword) cerrarModalPassword.addEventListener("click", cerrarPw);
     if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
 
-    // Verificar contraseña de administrador (Acceso directo limpio sin falsos positivos)
+    // Verificar contraseña de administrador de forma limpia y directa
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", () => {
-            const pass = inputAdminPassword ? inputAdminPassword.value : "";
+            const pass = inputAdminPassword ? inputAdminPassword.value.trim() : "";
             const claveSistema = (typeof CLAVE_ADMIN !== 'undefined') ? CLAVE_ADMIN : "admin123";
 
             if (pass === claveSistema || pass === "admin123") {
@@ -104,11 +104,11 @@ function initModalesAdmin() {
     }
 }
 
-// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) CON BARRA DE PROGRESO ESTILO MODERNO ---
+// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) CON BARRA DE PROGRESO ---
 async function ejecutarCargueExcelConProgreso(file) {
     const modalProgreso = document.getElementById("modalProgresoSinc");
     const barra = document.getElementById("barraProgresoSinc");
-    const txtPorcentaje = document.getElementById("porcentajeProgreso");
+    const txtPorcentaje = document.getElementById("porcentajeProgresoSinc");
     const txtProgreso = document.getElementById("textoProgresoSinc");
 
     if (modalProgreso) modalProgreso.style.display = "flex";
