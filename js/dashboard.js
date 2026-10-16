@@ -500,7 +500,7 @@ document.addEventListener("click", async (e) => {
         const nuevaNota = txtModalNotaDia ? txtModalNotaDia.value.trim() : "";
 
         try {
-            const resp = await fetch(`${API_BASE_URL}/notas`, {
+            const resp = await fetch(`${API_BASE_URL}/nota-dia`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nota: nuevaNota })
@@ -521,7 +521,6 @@ document.addEventListener("click", async (e) => {
         }
     }
 });
-
 document.addEventListener("DOMContentLoaded", inicializarDashboard);
 
 async function cargarYCalcularIndicadorBacklog() {
