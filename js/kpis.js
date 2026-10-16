@@ -30,6 +30,8 @@ function initModalesAdmin() {
     const btnCerrarTools = document.getElementById("btnCerrarTools");
 
     const inputExcelMasivo = document.getElementById("inputExcelMasivo");
+    const spanNombreArchivo = document.getElementById("nombreArchivoSeleccionado");
+    const btnLanzarCargue = document.getElementById("btnLanzarCargue");
 
     // Abrir modal de contraseña desde el botón del sidebar
     if (btnAbrirConfig) {
@@ -47,7 +49,7 @@ function initModalesAdmin() {
     if (cerrarModalPassword) cerrarModalPassword.addEventListener("click", cerrarPw);
     if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
 
-    // Verificar contraseña de administrador (Sin alertas molestas cuando es correcta)
+    // Verificar contraseña de administrador (Acceso directo limpio sin falsos positivos)
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", () => {
             const pass = inputAdminPassword ? inputAdminPassword.value : "";
@@ -55,7 +57,11 @@ function initModalesAdmin() {
 
             if (pass === claveSistema || pass === "admin123") {
                 cerrarPw();
-                if (modalAdminTools) modalAdminTools.style.display = "flex";
+                if (modalAdminTools) {
+                    modalAdminTools.style.display = "flex";
+                    if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
+                    if (inputExcelMasivo) inputExcelMasivo.value = "";
+                }
             } else {
                 alert("Contraseña incorrecta.");
             }
@@ -63,31 +69,49 @@ function initModalesAdmin() {
     }
 
     // Cerrar modal de herramientas avanzadas
-    const cerrarTools = () => { 
-        if (modalAdminTools) modalAdminTools.style.display = "none"; 
-        const progContainer = document.getElementById("containerProgresoMasivo");
-        if (progContainer) progContainer.style.display = "none";
-    };
+    const cerrarTools = () => { if (modalAdminTools) modalAdminTools.style.display = "none"; };
     if (cerrarModalTools) cerrarModalTools.addEventListener("click", cerrarTools);
     if (btnCerrarTools) btnCerrarTools.addEventListener("click", cerrarTools);
 
-    // Conectar el input de Excel masivo
+    // Mostrar nombre del archivo seleccionado al explorar
     if (inputExcelMasivo) {
-        inputExcelMasivo.addEventListener("change", manejarCargueExcel);
+        inputExcelMasivo.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file && spanNombreArchivo) {
+                spanNombreArchivo.innerText = file.name;
+            } else if (spanNombreArchivo) {
+                spanNombreArchivo.innerText = "Ningún archivo seleccionado";
+            }
+        });
+    }
+
+    // Botón de confirmación antes de lanzar el cargue
+    if (btnLanzarCargue) {
+        btnLanzarCargue.addEventListener("click", () => {
+            const fileInput = document.getElementById("inputExcelMasivo");
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                alert("Por favor seleccione un archivo Excel antes de continuar.");
+                return;
+            }
+
+            const archivoNombre = fileInput.files[0].name;
+            const confirmar = confirm(`¿Estás seguro de sincronizar y actualizar los KPIs con el archivo "${archivoNombre}"?`);
+            if (confirmar) {
+                if (modalAdminTools) modalAdminTools.style.display = "none";
+                ejecutarCargueExcelConProgreso(fileInput.files[0]);
+            }
+        });
     }
 }
 
-// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) CON BARRA DE PROGRESO ---
-async function manejarCargueExcel(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const progContainer = document.getElementById("containerProgresoMasivo");
-    const barra = document.getElementById("barraProgresoAnimada");
+// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) CON BARRA DE PROGRESO ESTILO MODERNO ---
+async function ejecutarCargueExcelConProgreso(file) {
+    const modalProgreso = document.getElementById("modalProgresoSinc");
+    const barra = document.getElementById("barraProgresoSinc");
     const txtPorcentaje = document.getElementById("porcentajeProgreso");
-    const txtProgreso = document.getElementById("textoProgreso");
+    const txtProgreso = document.getElementById("textoProgresoSinc");
 
-    if (progContainer) progContainer.style.display = "block";
+    if (modalProgreso) modalProgreso.style.display = "flex";
     if (txtProgreso) txtProgreso.innerText = "Leyendo archivo Excel...";
     if (barra) barra.style.width = "20%";
     if (txtPorcentaje) txtPorcentaje.innerText = "20%";
@@ -100,11 +124,11 @@ async function manejarCargueExcel(e) {
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const rows = XLSX.utils.sheet_to_json(sheet);
 
-            if (txtProgreso) txtProgreso.innerText = "Subiendo datos a Cloudflare D1...";
-            if (barra) barra.style.width = "60%";
-            if (txtPorcentaje) txtPorcentaje.innerText = "60%";
-
             let total = rows.length;
+            if (txtProgreso) txtProgreso.innerText = `Procesando 0 de ${total} registros...`;
+            if (barra) barra.style.width = "50%";
+            if (txtPorcentaje) txtPorcentaje.innerText = "50%";
+
             let actual = 0;
 
             for (let row of rows) {
@@ -134,32 +158,27 @@ async function manejarCargueExcel(e) {
                 });
 
                 actual++;
-                let progresoPct = Math.round(60 + (actual / total) * 35);
+                let progresoPct = Math.round(50 + (actual / total) * 45);
                 if (barra) barra.style.width = progresoPct + "%";
                 if (txtPorcentaje) txtPorcentaje.innerText = progresoPct + "%";
+                if (txtProgreso) txtProgreso.innerText = `Procesando ${actual} de ${total} registros...`;
             }
 
             if (barra) barra.style.width = "100%";
             if (txtPorcentaje) txtPorcentaje.innerText = "100%";
-            if (txtProgreso) txtProgreso.innerText = "¡Actualización completada!";
+            if (txtProgreso) txtProgreso.innerText = "¡Sincronización completada con éxito!";
 
-            alert("¡KPIs actualizados y guardados en D1 con éxito!");
-            
-            // Cerrar modal de herramientas tras el cargue exitoso
             setTimeout(() => {
-                const modalTools = document.getElementById("modalAdminTools");
-                if (modalTools) modalTools.style.display = "none";
-                if (progContainer) progContainer.style.display = "none";
-                const inputEl = document.getElementById("inputExcelMasivo");
-                if (inputEl) inputEl.value = "";
-            }, 600);
+                if (modalProgreso) modalProgreso.style.display = "none";
+                alert("¡KPIs actualizados y guardados en D1 con éxito!");
+            }, 500);
             
             await cargarYRenderizarKPIs();
 
         } catch (err) {
             console.error("Error al procesar el Excel:", err);
             alert("Hubo un error al leer o subir el archivo Excel.");
-            if (progContainer) progContainer.style.display = "none";
+            if (modalProgreso) modalProgreso.style.display = "none";
         }
     };
     reader.readAsArrayBuffer(file);
