@@ -201,7 +201,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// Motor matemático y renderizado dinámico en la tabla HTML
+// --- MOTOR MATEMÁTICO Y RENDERIZADO DINÁMICO DE BARRAS Y COLORES ---
 function calcularYPintarFilaTabla(zona, d) {
     const cumpOper = d.meta_operatividad > 0 ? d.ejec_operatividad / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? d.ejec_sla / d.meta_sla : 0;
@@ -214,33 +214,50 @@ function calcularYPintarFilaTabla(zona, d) {
     const pesoGenMpr = Math.min(cumpMpr, 1.0) * d.peso_mpr;
 
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
+    
+    // Meta de cumplimiento general fijada en 99% (0.99)
+    const META_CUMPLIMIENTO_GRAL = 0.99;
+    const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
 
     const fmtPct = (val) => (val * 100).toFixed(2).replace('.', ',') + ' %';
     const fmtNum = (val) => Number(val).toFixed(3).replace('.', ',');
 
     const z = zona.toLowerCase();
     
+    // Pintar indicadores individuales con colores dinámicos correctos
     asignarTexto(`${z}-oper-ejec`, fmtPct(d.ejec_operatividad));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
-    asignarBarraYTexto(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
+    asignarBarraYColorDinamico(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
     asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
 
     asignarTexto(`${z}-sla-ejec`, fmtPct(d.ejec_sla));
     asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
-    asignarBarraYTexto(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
+    asignarBarraYColorDinamico(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
     asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
     asignarTexto(`${z}-backlog-ejec`, fmtPct(d.ejec_backlog));
     asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
-    asignarBarraYTexto(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
+    asignarBarraYColorDinamico(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
     asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
     asignarTexto(`${z}-mpr-ejec`, fmtPct(d.ejec_mpr));
     asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
-    asignarBarraYTexto(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
+    asignarBarraYColorDinamico(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
     asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
-    asignarTexto(`${z}-cump-general`, fmtPct(cumplimientoGeneral));
+    // Renderizar cumplimiento general con barra dinámica basada en la meta del 99%
+    const elGral = document.getElementById(`${z}-cump-general`);
+    if (elGral) {
+        const pctGralVal = cumpGeneralRelativo * 100;
+        const colorGral = obtenerColorPorcentaje(cumpGeneralRelativo);
+        
+        elGral.innerHTML = `
+            <div class="kpi-progress-bg" style="width: 100%; margin: 0;">
+                <div class="kpi-progress-bar ${colorGral}" style="width: ${Math.min(pctGralVal, 100)}%;"></div>
+                <span class="kpi-progress-txt" style="font-weight: 700;">${fmtPct(cumplimientoGeneral)}</span>
+            </div>
+        `;
+    }
 }
 
 function asignarTexto(id, valor) {
@@ -248,13 +265,26 @@ function asignarTexto(id, valor) {
     if (el) el.innerText = valor;
 }
 
-function asignarBarraYTexto(idBarra, idTexto, cumplimiento) {
+// Lógica de colores tipo arcoíris según el nivel de cumplimiento alcanzado
+function obtenerColorPorcentaje(cump) {
+    if (cump >= 1.0) return 'green';    // Cumplió o superó la meta (>= 100%)
+    if (cump >= 0.85) return 'amber';   // Cerca de la meta (85% - 99%)
+    return 'red';                       // Alerta / Bajo cumplimiento (< 85%)
+}
+
+function asignarBarraYColorDinamico(idBarra, idTexto, cumplimiento) {
     const elTexto = document.getElementById(idTexto);
     const elBarra = document.getElementById(idBarra);
     
     if (elTexto) elTexto.innerText = (cumplimiento * 100).toFixed(2).replace('.', ',') + ' %';
+    
     if (elBarra) {
         const porcentajeVisual = Math.min(cumplimiento * 100, 100);
         elBarra.style.width = porcentajeVisual + '%';
+        
+        // Remover clases de color anteriores y asignar la correcta dinámicamente
+        elBarra.classList.remove('green', 'amber', 'red');
+        const claseColor = obtenerColorPorcentaje(cumplimiento);
+        elBarra.classList.add(claseColor);
     }
 }
