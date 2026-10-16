@@ -1623,52 +1623,6 @@ if(wrapper) {
     });
 }
 
-window.addEventListener("load", () => {
-    const topScroll = document.querySelector(".planeacion-scroll-top");
-    const tableWrapper = document.querySelector(".planeacion-table-wrapper");
-    const topScrollInner = document.querySelector(".planeacion-scroll-top-inner");
-
-    if (!topScroll || !tableWrapper || !topScrollInner) return;
-
-    function ajustarAnchoBarra() {
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        if (maxScrollTabla > 0) {
-            topScrollInner.style.width = (topScroll.clientWidth + maxScrollTabla) + "px";
-        }
-    }
-
-    ajustarAnchoBarra();
-    window.addEventListener("resize", ajustarAnchoBarra);
-    setTimeout(ajustarAnchoBarra, 400);
-
-    let syncing = false;
-
-    topScroll.addEventListener("scroll", () => {
-        if (syncing) return;
-        syncing = true;
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
-        
-        if (maxScrollBarra > 0) {
-            const porcentaje = topScroll.scrollLeft / maxScrollBarra;
-            tableWrapper.scrollLeft = porcentaje * maxScrollTabla;
-        }
-        syncing = false;
-    });
-
-    tableWrapper.addEventListener("scroll", () => {
-        if (syncing) return;
-        syncing = true;
-        const maxScrollTabla = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        const maxScrollBarra = topScroll.scrollWidth - topScroll.clientWidth;
-        
-        if (maxScrollTabla > 0 && maxScrollBarra > 0) {
-            const porcentaje = tableWrapper.scrollLeft / maxScrollTabla;
-            topScroll.scrollLeft = porcentaje * maxScrollBarra;
-        }
-        syncing = false;
-    });
-});
 
 function actualizarStickyTabla() {
     const header = document.querySelector('.planeacion-header');
