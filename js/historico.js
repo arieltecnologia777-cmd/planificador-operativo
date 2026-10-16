@@ -85,6 +85,14 @@ window.ordenarHistoricoDesdeFiltro = function(campo, asc) {
     aplicarFiltrosHistorico();
 };
 
+function extraerFechaLimpia(valorCelda) {
+    const texto = String(valorCelda || "").trim();
+    if (!texto) return "";
+    if (texto.includes("T")) return texto.split('T')[0];
+    if (texto.includes(" ")) return texto.split(' ')[0];
+    return texto.substring(0, 10);
+}
+
 function obtenerDatosBaseFiltroHistorial() {
     const filtroBusquedaEl = document.getElementById("filtroBusquedaHistorico");
     const texto = filtroBusquedaEl ? filtroBusquedaEl.value.toLowerCase() : "";
@@ -110,7 +118,7 @@ function actualizarOpcionesFiltrosHistorico() {
         return datosBase.filter(fila => {
             const deptoVal = fila[1];
             const afecVal = fila[5];
-            const fechaVal = String(fila[9]).split('T')[0];
+            const fechaVal = extraerFechaLimpia(fila[9]);
 
             if (excluir !== 'depto' && deptoHistSeleccionados.length > 0 && !deptoHistSeleccionados.includes(deptoVal)) return false;
             if (excluir !== 'afec' && afecHistSeleccionadas.length > 0 && !afecHistSeleccionadas.includes(afecVal)) return false;
@@ -167,13 +175,17 @@ function actualizarOpcionesFiltrosHistorico() {
         const arbolFechas = {};
 
         datosFecha.forEach(f => {
-            const fechaStr = String(f[9]).split('T')[0];
-            if (fechaStr && /^\d{4}-\d{2}-\d{2}$/.test(fechaStr)) {
-                const [anio, mes, dia] = fechaStr.split("-");
-                if (!arbolFechas[anio]) arbolFechas[anio] = {};
-                if (!arbolFechas[anio][mes]) arbolFechas[anio][mes] = [];
-                if (!arbolFechas[anio][mes].includes(fechaStr)) {
-                    arbolFechas[anio][mes].push(fechaStr);
+            const fechaStr = extraerFechaLimpia(f[9]);
+            if (fechaStr && fechaStr.length >= 10) {
+                const anio = fechaStr.substring(0, 4);
+                const mes = fechaStr.substring(5, 7);
+                
+                if (/^\d{4}$/.test(anio) && /^\d{2}$/.test(mes)) {
+                    if (!arbolFechas[anio]) arbolFechas[anio] = {};
+                    if (!arbolFechas[anio][mes]) arbolFechas[anio][mes] = [];
+                    if (!arbolFechas[anio][mes].includes(fechaStr)) {
+                        arbolFechas[anio][mes].push(fechaStr);
+                    }
                 }
             }
         });
@@ -208,7 +220,7 @@ function actualizarOpcionesFiltrosHistorico() {
                 
                 const diasOrdenados = arbolFechas[anio][mesIdx].sort();
                 diasOrdenados.forEach(fechaStr => {
-                    const [, , dia] = fechaStr.split("-");
+                    const dia = fechaStr.substring(8, 10);
                     const estaChequeado = fechaHistSeleccionadas.includes(fechaStr) ? "checked" : "";
                     htmlJerarquico += `
                                 <label class="multi-filtro-item" style="padding-left: 30px; display: block;">
@@ -230,7 +242,7 @@ function aplicarFiltrosHistorico() {
     let resultado = datosHistoricoGlobal.filter(fila => {
         const deptoVal = fila[1];
         const afecVal = fila[5];
-        const fechaVal = String(fila[9]).split('T')[0];
+        const fechaVal = extraerFechaLimpia(fila[9]);
 
         const cumpleTexto = !texto || fila.some(celda => String(celda).toLowerCase().includes(texto));
         const cumpleDepto = deptoHistSeleccionados.length === 0 || deptoHistSeleccionados.includes(deptoVal);
