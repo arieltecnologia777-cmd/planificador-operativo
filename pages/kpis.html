@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Fuerza el zoom al 107% aislando esta vista de reglas globales heredadas */
+    /* Fuerza el zoom al 103% aislando esta vista de reglas globales heredadas */
     html, body {
-        zoom: 107% !important;
+        zoom: 103% !important;
         transform: none !important;
     }
 
@@ -175,8 +175,8 @@
         <div class="dashboard-container">
             <div class="kpi-module-container">
                 
-                <!-- SECCIÓN SUPERIOR: NOTAS IMPORTANTES Y BOTÓN CENTRADO ABSOLUTO -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                <!-- SECCIÓN SUPERIOR: NOTAS IMPORTANTES A LA IZQUIERDA Y BOTÓN A LA DERECHA (MISMA ALTURA) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <!-- STICKY NOTE: NOTAS IMPORTANTES -->
                     <div class="sticky-note-container">
                         <div class="sticky-note-header">
@@ -191,9 +191,9 @@
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE SIMULACIÓN CENTRADO EXACTO EN SU PROPIA ZONA -->
-                    <div style="flex: 1; display: flex; justify-content: center; align-self: center;">
-                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.2s;">
+                    <!-- BOTÓN DE SIMULACIÓN ALINEADO A LA DERECHA EN LA MISMA POSICIÓN VERTICAL -->
+                    <div>
+                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: background 0.2s;">
                             Simular con pesos máximos
                         </button>
                     </div>
