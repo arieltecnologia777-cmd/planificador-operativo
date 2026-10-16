@@ -218,7 +218,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO: RESPETA PESOS EXACTOS DEL EXCEL Y FORMULA PONDERADA ---
+// --- MOTOR MATEMÁTICO: PESOS EXACTOS DEL EXCEL + TOPE MÁXIMO ESTRICTO (POWER BI) ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -230,7 +230,7 @@ function calcularYPintarFilaTabla(zona, d) {
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // Definir los pesos a utilizar (los reales exactos que subiste o los fijos de simulación)
+    // Asignación de pesos (respeta exactamente tus decimales del Excel o los fijos de simulación)
     let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
@@ -239,20 +239,29 @@ function calcularYPintarFilaTabla(zona, d) {
         pSla = 0.100;
         pMpr = 0.100;
     } else {
-        pBacklog = d.peso_backlog; // Respeta exactamente el decimal de tu Excel
-        pOper = d.peso_operatividad; // Respeta exactamente el decimal de tu Excel (ej: 0,333)
+        pBacklog = d.peso_backlog; 
+        pOper = d.peso_operatividad; // Respeta tu 0,333 o valor exacto subido
         pSla = d.peso_sla;
         pMpr = d.peso_mpr;
     }
 
-    // El valor visual que se muestra en la columna de peso es tu peso configurado exacto
+    // El peso visual en la tabla muestra tu peso configurado exacto
     const pesoVisualOper = pOper;
     const pesoVisualSla = pSla;
     const pesoVisualBacklog = pBacklog;
     const pesoVisualMpr = pMpr;
 
-    // Cálculo del cumplimiento general ponderado utilizando tu peso real
-    const cumplimientoGeneral = (cumpOper * pOper) + (cumpSla * pSla) + (cumpBacklog * pBacklog) + (cumpMpr * pMpr);
+    // Aplicación del tope máximo estricto del 100% por KPI al igual que en Power BI (MIN(Cumplimiento, 1.0))
+    const cumpEfectivoOper = Math.min(cumpOper, 1.0);
+    const cumpEfectivoSla = Math.min(cumpSla, 1.0);
+    const cumpEfectivoBacklog = Math.min(cumpBacklog, 1.0);
+    const cumpEfectivoMpr = Math.min(cumpMpr, 1.0);
+
+    // Ecuación exacta de cumplimiento general ponderado con topes
+    const cumplimientoGeneral = (cumpEfectivoOper * pOper) + 
+                                (cumpEfectivoSla * pSla) + 
+                                (cumpEfectivoBacklog * pBacklog) + 
+                                (cumpEfectivoMpr * pMpr);
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
