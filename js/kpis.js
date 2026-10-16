@@ -218,7 +218,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO CON PESOS FIJOS EXACTOS DE SIMULACIÓN ---
+// --- MOTOR MATEMÁTICO CON PESOS FIJOS DE SIMULACIÓN Y CÁLCULO DE PESO GENERADO MÁXIMO ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -245,10 +245,16 @@ function calcularYPintarFilaTabla(zona, d) {
         pMpr = d.peso_mpr;
     }
 
-    const pesoGenOper = Math.min(cumpOper, 1.0) * pOper;
-    const pesoGenSla = Math.min(cumpSla, 1.0) * pSla;
-    const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * pBacklog;
-    const pesoGenMpr = Math.min(cumpMpr, 1.0) * pMpr;
+    // Cuando el modo peso máximo está activo, forzamos que el peso generado tome el tope máximo si el cumplimiento es excelente o simulamos su potencial
+    const factorOper = modoPesoMaximoActivo ? 1.0 : Math.min(cumpOper, 1.0);
+    const factorSla = modoPesoMaximoActivo ? 1.0 : Math.min(cumpSla, 1.0);
+    const factorBacklog = modoPesoMaximoActivo ? 1.0 : Math.min(cumpBacklog, 1.0);
+    const factorMpr = modoPesoMaximoActivo ? 1.0 : Math.min(cumpMpr, 1.0);
+
+    const pesoGenOper = factorOper * pOper;
+    const pesoGenSla = factorSla * pSla;
+    const pesoGenBacklog = factorBacklog * pBacklog;
+    const pesoGenMpr = factorMpr * pMpr;
 
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
     
@@ -303,11 +309,19 @@ function asignarTexto(id, valor) {
     if (el) el.innerText = valor;
 }
 
-function obtenerColorPorcentaje(cump) {
-    if (cump >= 1.0) return 'green';        
-    if (cump >= 0.95) return 'near-green';  
-    if (cump >= 0.85) return 'amber';       
-    return 'red';                           
+// --- NUEVOS RANGOS DE COLOR EXACTOS ---
+// 0 a 89 -> rojo ('red')
+// 90 a 94 -> amarillo ('amber')
+// 95 a 97 -> amarillo tirando a verde ('yellow-green')
+// 98 a 99 -> verde intermedio suave ('soft-green')
+// 100 o superior -> verde intenso de cumplimiento ('green')
+function obtenerColorPorcentaje(cumpVal) {
+    const pct = cumpVal * 100;
+    if (pct >= 100) return 'green';        
+    if (pct >= 98) return 'soft-green';    
+    if (pct >= 95) return 'yellow-green';  
+    if (pct >= 90) return 'amber';         
+    return 'red';                          
 }
 
 function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
@@ -322,7 +336,6 @@ function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
         const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
         const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
 
-        // Limpiar y aplicar la clase de color correcta
         elBarra.className = 'kpi-progress-bar ' + obtenerColorPorcentaje(cumplimiento);
         elBarra.style.width = anchoBarraPct + '%';
 
