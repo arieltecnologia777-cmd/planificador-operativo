@@ -2292,17 +2292,17 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* Forzar que la tabla ocupe todo el espacio disponible hacia abajo en modo zoom */
+/* Altura máxima absoluta para que la tabla ocupe toda la pantalla hacia abajo */
 body.modo-zoom .planeacion-table-wrapper,
 body.modo-ampliado .planeacion-table-wrapper {
-    max-height: 82vh !important;
-    height: 82vh !important;
+    max-height: 90vh !important;
+    height: 90vh !important;
 }
 
-/* Forzar que el panel principal se expanda por completo ocupando toda la altura de la pantalla */
+/* Forzar que el panel principal se extienda al borde inferior absoluto */
 body.modo-zoom .panel.panel-zoom,
 body.modo-ampliado .panel.panel-zoom {
     display: flex;
     flex-direction: column;
-    height: 98vh !important;
+    height: 99vh !important;
 }
