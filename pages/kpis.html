@@ -15,12 +15,39 @@
         transform: none !important;
         margin: 0;
         padding: 0;
+        height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* Layout general */
+    .layout {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* Sidebar fijo que ocupa toda la altura de la pantalla */
+    aside.sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        width: 260px !important;
+        z-index: 1000 !important;
+        overflow-y: auto;
+    }
+
+    /* Contenido principal con margen izquierdo para no quedar debajo del sidebar */
+    .main-content {
+        margin-left: 260px !important;
+        width: calc(100% - 260px) !important;
+        min-height: 100vh;
+        padding-top: 5px !important;
+        box-sizing: border-box;
     }
 
     /* Reducción radical de espacios superiores entre el Hero y todo el contenido */
-    .main-content {
-        padding-top: 5px !important;
-    }
     .hero {
         margin-bottom: 5px !important;
         padding: 12px 20px !important;
@@ -110,10 +137,8 @@
 
 <body>
 
-<!-- Botón de toggle omitido para mantener el sidebar fijo tal como el dashboard -->
-
 <div class="layout">
-    
+
     <aside class="sidebar">
         <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
             <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
