@@ -54,7 +54,6 @@
             </a>
 
             <div class="export-box">
-                <!-- Botón de Herramientas Avanzadas ubicado en el sidebar idéntico a planeacion.html -->
                 <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     ⚙️ Herramientas Avanzadas
                 </button>
@@ -267,7 +266,7 @@
 <script src="../js/kpis.js"></script>
 <script src="../js/settings.js"></script>
 
-<!-- Modales idénticos a planeacion.html -->
+<!-- MODAL 1: CLAVE ADMIN -->
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
@@ -285,34 +284,54 @@
     </div>
 </div>
 
-<!-- Modal de Herramientas Avanzadas con Barra de Progreso y selector -->
+<!-- MODAL 2: HERRAMIENTAS AVANZADAS (CARGUE MASIVO CON DISEÑO EXACTO) -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
-    <div class="obs-modal-content" style="max-width: 450px;">
+    <div class="obs-modal-content" style="max-width: 480px;">
         <div class="obs-modal-header">
-            <h3>⚙️ Herramientas Avanzadas</h3>
+            <h3>📁 Cargue Masivo KPIs</h3>
             <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
         </div>
-        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div class="carga-masiva-container">
-                <label for="inputExcelMasivo" class="btn-subir-excel" style="cursor: pointer; background: #28a745; color: white; padding: 12px; border-radius: 4px; font-size: 1rem; display: block; text-align: center; font-weight: 500;">
-                    📂 Subir Excel de KPIs (Actualización)
-                </label>
-                <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
+        <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+            
+            <!-- Caja de selección de archivo idéntica a tu referencia -->
+            <div style="border: 1px solid #cbd5e0; padding: 15px; border-radius: 8px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="inputExcelMasivo" style="background: #e2e8f0; border: 1px solid #cbd5e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #334155;">
+                        Seleccionar archivo
+                    </label>
+                    <span id="nombreArchivoSeleccionado" style="font-size: 0.9rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Ningún archivo seleccionado</span>
+                    <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
+                </div>
+
+                <button type="button" id="btnLanzarCargue" style="width: 100%; background: #334155; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    🚀 Cargar KPIs al Servidor
+                </button>
             </div>
 
-            <!-- Contenedor de barra de progreso heredado de planeación y dashboard -->
-            <div id="containerProgresoMasivo" class="progreso-masivo-container" style="display: none;">
-                <div class="progreso-masivo-header" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
-                    <span id="textoProgreso">Procesando archivo...</span>
-                    <span id="porcentajeProgreso">0%</span>
-                </div>
-                <div class="progreso-masivo-track" style="background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden;">
-                    <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%; height: 100%; background: #28a745; transition: width 0.2s ease;"></div>
-                </div>
-            </div>
         </div>
         <div class="obs-modal-footer">
-            <button type="button" id="btnCerrarTools" class="obs-btn-secundario">Cerrar</button>
+            <button type="button" id="btnCerrarTools" class="obs-btn-secundario" style="background: #e2e8f0; border: 1px solid #cbd5e0; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">Volver al Menú</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 3: VENTANA DE PROGRESO Y SINCRONIZACIÓN -->
+<div id="modalProgresoSinc" class="obs-modal-overlay" style="display: none;">
+    <div class="obs-modal-content" style="max-width: 420px; text-align: center; padding: 25px;">
+        <h3 style="color: #1e293b; margin-bottom: 8px;">Sincronizando KPIs</h3>
+        <p id="textoProgresoSinc" style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Preparando registros...</p>
+        
+        <!-- Barra de progreso idéntica a tu imagen de referencia -->
+        <div style="background: #e2e8f0; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 15px;">
+            <div id="barraProgresoSinc" style="width: 0%; height: 100%; background: #334155; transition: width 0.2s ease;"></div>
+        </div>
+
+        <div id="porcentajeProgresoSinc" style="font-size: 1.25rem; font-weight: bold; color: #1e293b; margin-bottom: 20px;">0%</div>
+
+        <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 6px;">
+            <p style="color: #c53030; font-size: 0.85px; font-weight: 600; margin: 0; font-size: 0.8rem;">
+                ⚠️ Proceso en curso.<br>No cierres ni recargues la página hasta finalizar.
+            </p>
         </div>
     </div>
 </div>
