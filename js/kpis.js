@@ -218,19 +218,20 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO CON PESOS FIJOS DE SIMULACIÓN Y CÁLCULO DE PESO GENERADO MÁXIMO ---
+// --- MOTOR MATEMÁTICO EXACTO SEGÚN POWER BI ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
     const ejBacklog = d.ejec_backlog;
     const ejMpr = d.ejec_mpr;
 
+    // Cumplimiento de cada indicador (Ejecutado / Meta)
     const cumpOper = d.meta_operatividad > 0 ? ejecOper / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? ejSla / d.meta_sla : 0;
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // Asignación de pesos fijos exactos exigidos para la simulación
+    // Asignación de pesos fijos para la simulación o los reales de D1
     let pOper, pSla, pBacklog, pMpr;
 
     if (modoPesoMaximoActivo) {
@@ -245,17 +246,13 @@ function calcularYPintarFilaTabla(zona, d) {
         pMpr = d.peso_mpr;
     }
 
-    // Cuando el modo peso máximo está activo, forzamos que el peso generado tome el tope máximo si el cumplimiento es excelente o simulamos su potencial
-    const factorOper = modoPesoMaximoActivo ? 1.0 : Math.min(cumpOper, 1.0);
-    const factorSla = modoPesoMaximoActivo ? 1.0 : Math.min(cumpSla, 1.0);
-    const factorBacklog = modoPesoMaximoActivo ? 1.0 : Math.min(cumpBacklog, 1.0);
-    const factorMpr = modoPesoMaximoActivo ? 1.0 : Math.min(cumpMpr, 1.0);
+    // Peso generado por cada KPI (Cumplimiento * Peso asignado, sin topes artificiales)
+    const pesoGenOper = cumpOper * pOper;
+    const pesoGenSla = cumpSla * pSla;
+    const pesoGenBacklog = cumpBacklog * pBacklog;
+    const pesoGenMpr = cumpMpr * pMpr;
 
-    const pesoGenOper = factorOper * pOper;
-    const pesoGenSla = factorSla * pSla;
-    const pesoGenBacklog = factorBacklog * pBacklog;
-    const pesoGenMpr = factorMpr * pMpr;
-
+    // Ecuación exacta de cumplimiento general de la zona
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
@@ -303,7 +300,6 @@ function calcularYPintarFilaTabla(zona, d) {
         `;
     }
 }
-
 function asignarTexto(id, valor) {
     const el = document.getElementById(id);
     if (el) el.innerText = valor;
