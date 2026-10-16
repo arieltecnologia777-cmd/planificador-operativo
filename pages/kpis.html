@@ -9,16 +9,43 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Fuerza el zoom al 103% aislando esta vista de reglas globales heredadas */
+    /* Fuerza el zoom al 100% aislando esta vista de reglas globales heredadas */
     html, body {
-        zoom: 103% !important;
+        zoom: 100% !important;
         transform: none !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Corrección de estructura general para sidebar fijo idéntico al dashboard */
+    .layout {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    aside.sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        z-index: 1000 !important;
+        overflow-y: auto;
+    }
+
+    .main-content {
+        margin-left: 260px !important; /* Espacio exacto para el sidebar expandido */
+        flex: 1;
+        padding-top: 5px !important;
+        min-width: 0;
+        transition: margin-left 0.3s ease;
+    }
+
+    /* Si el body tiene la clase de sidebar colapsado, ajustamos el margen izquierdo */
+    body.sidebar-colapsado .main-content {
+        margin-left: 70px !important; /* Espacio cuando el sidebar está colapsado */
     }
 
     /* Reducción radical de espacios superiores entre el Hero y todo el contenido */
-    .main-content {
-        padding-top: 5px !important;
-    }
     .hero {
         margin-bottom: 5px !important;
         padding: 12px 20px !important;
