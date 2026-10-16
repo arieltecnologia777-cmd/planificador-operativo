@@ -176,7 +176,13 @@ window.exportarHistoricoOTs = function() {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Historico_OTs_Completadas");
 
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        const ahora = new Date();
+const dia = String(ahora.getDate()).padStart(2, '0');
+const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+const anio = ahora.getFullYear();
+const hora = String(ahora.getHours()).padStart(2, '0');
+const min = String(ahora.getMinutes()).padStart(2, '0');
+const timestamp = `${dia}-${mes}-${anio}_${hora}-${min}`;
         XLSX.writeFile(wb, `Historico_OTs_Completadas_${timestamp}.xlsx`);
 
     } catch (error) {
