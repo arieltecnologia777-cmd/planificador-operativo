@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    // Control del menú lateral (si aplica en tu diseño)
+    // Control del menú lateral (si tu diseño lo usa)
     document.addEventListener("click", (e) => {
         const btnToggle = e.target.closest("#btnToggleSidebar");
         if (btnToggle) {
@@ -10,17 +10,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1. Al cargar la página, consultamos los datos de D1 y pintamos la tabla
     await cargarYRenderizarKPIs();
 
-    // 2. Si tienes un input de tipo file para cargar el Excel, configuramos el evento
-    const inputExcel = document.getElementById("inputCargarExcel"); // Cambia el ID según tu HTML
+    // 2. Vinculamos el input de carga de Excel (Asegúrate de que tu input en HTML tenga id="inputCargarExcel")
+    const inputExcel = document.getElementById("inputCargarExcel");
     if (inputExcel) {
         inputExcel.addEventListener("change", manejarCargueExcel);
     }
 });
 
-// --- FUNCIÓN GET: CARGAR Y PINTAR DESDE D1 ---
+const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
+
+// --- 1. OBTENER DATOS (GET) Y CALCULAR EN EL CLIENTE ---
 async function cargarYRenderizarKPIs() {
     try {
-        const response = await fetch('https://dominion-kpis.tu-usuario.workers.dev/api/kpis');
+        const response = await fetch(WORKER_URL);
         const resultado = await response.json();
 
         if (!resultado.ok) {
@@ -37,7 +39,7 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO EN EL CLIENTE (JS) ---
+// --- 2. MOTOR MATEMÁTICO (Cálculos idénticos a tu lógica de negocio) ---
 function procesarYPintarZona(zona, d) {
     // Metas fijas del negocio
     const metas = {
@@ -47,19 +49,19 @@ function procesarYPintarZona(zona, d) {
         mpr: 0.98
     };
 
-    // 1. Cálculos de cumplimiento (Ejecutado / Meta)
+    // Cálculos de cumplimiento (Ejecutado / Meta)
     const cumpBacklog = d.ejec_backlog / metas.backlog;
     const cumpOper = d.ejec_operatividad / metas.operatividad;
     const cumpSla = d.ejec_sla / metas.sla;
     const cumpMpr = d.ejec_mpr / metas.mpr;
 
-    // 2. Pesos generados (Cumplimiento acotado a máximo 1.0 * Peso asignado)
+    // Pesos generados (Cumplimiento acotado a máximo 1.0 * Peso asignado)
     const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * d.peso_backlog;
     const pesoGenOper = Math.min(cumpOper, 1.0) * d.peso_operatividad;
     const pesoGenSla = Math.min(cumpSla, 1.0) * d.peso_sla;
     const pesoGenMpr = Math.min(cumpMpr, 1.0) * d.peso_mpr;
 
-    // 3. Cumplimiento general de la zona (Suma de pesos generados)
+    // Cumplimiento general de la zona (Suma de pesos generados)
     const cumplimientoGeneral = pesoGenBacklog + pesoGenOper + pesoGenSla + pesoGenMpr;
 
     // Formateadores visuales
@@ -73,10 +75,16 @@ function procesarYPintarZona(zona, d) {
     console.log(`MPR -> Ejec: ${fmtValor(d.ejec_mpr)} | Cump: ${fmtPorcentaje(cumpMpr)} | P.Gen: ${fmtValor(pesoGenMpr)}`);
     console.log(`CUMPLIMIENTO GENERAL: ${fmtPorcentaje(cumplimientoGeneral)}`);
 
-    // TODO: Aquí inyectas estos valores calculados en los elementos HTML de tu tabla (ej. document.getElementById(`r1-backlog`).innerText = ...)
+    // 💡 AQUÍ PUEDES INYECTAR LOS DATOS A TUS ELEMENTOS HTML:
+    // Ejemplo:
+    // const elZona = zona.toLowerCase(); // 'r1' o 'r2'
+    // if(document.getElementById(`${elZona}-backlog-ejec`)) {
+    //     document.getElementById(`${elZona}-backlog-ejec`).innerText = fmtPorcentaje(d.ejec_backlog);
+    //     document.getElementById(`${elZona}-cump-general`).innerText = fmtPorcentaje(cumplimientoGeneral);
+    // }
 }
 
-// --- FUNCIÓN PUT: LEER EXCEL CON SHEETJS Y ENVIAR AL WORKER ---
+// --- 3. PROCESAR EXCEL Y ENVIAR (PUT) ---
 async function manejarCargueExcel(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -94,7 +102,6 @@ async function manejarCargueExcel(e) {
 
             // Recorremos las filas del Excel y enviamos un PUT por cada zona al Worker
             for (let row of rows) {
-                // Adaptamos las propiedades según los nombres de las columnas de tu Excel
                 const payload = {
                     zona: row["Zona"],
                     ejec_backlog: row["Backlog"],
@@ -107,7 +114,7 @@ async function manejarCargueExcel(e) {
                     peso_mpr: row["Peso MPR"]
                 };
 
-                const response = await fetch('https://dominion-kpis.tu-usuario.workers.dev/api/kpis', {
+                const response = await fetch(WORKER_URL, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -118,7 +125,7 @@ async function manejarCargueExcel(e) {
             }
 
             alert("¡Excel procesado y guardado en D1 con éxito!");
-            await cargarYRenderizarKPIs(); // Recargamos la tabla con los datos nuevos
+            await cargarYRenderizarKPIs(); // Refrescamos la pantalla con los nuevos datos
 
         } catch (err) {
             console.error("Error procesando el archivo Excel:", err);
