@@ -14,6 +14,20 @@
             zoom: 100% !important;
             transform: none !important;
         }
+
+        /* Colores y degradados exactos para las barras de KPI */
+        .kpi-progress-bar.green { 
+            background: linear-gradient(90deg, #6ee7b7, #10b981) !important; 
+        }
+        .kpi-progress-bar.near-green { 
+            background: linear-gradient(90deg, #a7f3d0, #34d399) !important; 
+        }
+        .kpi-progress-bar.amber { 
+            background: linear-gradient(90deg, #fcd34d, #f59e0b) !important; 
+        }
+        .kpi-progress-bar.red { 
+            background: linear-gradient(90deg, #fca5a5, #ef4444) !important; 
+        }
     </style>
 </head>
 
@@ -98,10 +112,10 @@
                         </ul>
                     </div>
                    <div class="badge-meta-periodo" style="padding: 0; background: transparent; border: none;">
-    <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
-        Alternar a Pesos Máximos
-    </button>
-</div>
+                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
+                            Alternar a Pesos Máximos
+                        </button>
+                    </div>
                 </div>
 
                 <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2) -->
@@ -130,7 +144,7 @@
                                     <td id="r1-backlog-meta">93,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r1-backlog-bar" class="kpi-progress-bar green" style="width: 0%;"></div>
+                                            <div id="r1-backlog-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r1-backlog-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -142,7 +156,7 @@
                                     <td id="r1-oper-meta">100,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r1-oper-bar" class="kpi-progress-bar amber" style="width: 0%;"></div>
+                                            <div id="r1-oper-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r1-oper-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -154,7 +168,7 @@
                                     <td id="r1-sla-meta">100,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r1-sla-bar" class="kpi-progress-bar green" style="width: 0%;"></div>
+                                            <div id="r1-sla-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r1-sla-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -166,7 +180,7 @@
                                     <td id="r1-mpr-meta">98,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r1-mpr-bar" class="kpi-progress-bar red" style="width: 0%;"></div>
+                                            <div id="r1-mpr-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r1-mpr-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -174,10 +188,8 @@
                                 </tr>
                                 <tr class="fila-cumplimiento-general">
                                     <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R1</td>
-                                    <td colspan="2">
-                                        <div id="r1-cump-general" class="kpi-badge-general red">
-                                            0,00 %
-                                        </div>
+                                    <td colspan="2" style="padding: 6px;">
+                                        <div id="r1-cump-general"></div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -207,7 +219,7 @@
                                     <td id="r2-backlog-meta">93,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r2-backlog-bar" class="kpi-progress-bar amber" style="width: 0%;"></div>
+                                            <div id="r2-backlog-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r2-backlog-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -219,7 +231,7 @@
                                     <td id="r2-oper-meta">100,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r2-oper-bar" class="kpi-progress-bar amber" style="width: 0%;"></div>
+                                            <div id="r2-oper-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r2-oper-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -231,7 +243,7 @@
                                     <td id="r2-sla-meta">100,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r2-sla-bar" class="kpi-progress-bar green" style="width: 0%;"></div>
+                                            <div id="r2-sla-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r2-sla-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -243,7 +255,7 @@
                                     <td id="r2-mpr-meta">98,00 %</td>
                                     <td>
                                         <div class="kpi-progress-bg">
-                                            <div id="r2-mpr-bar" class="kpi-progress-bar red" style="width: 0%;"></div>
+                                            <div id="r2-mpr-bar" class="kpi-progress-bar" style="width: 0%;"></div>
                                             <span id="r2-mpr-cump" class="kpi-progress-txt">0,00 %</span>
                                         </div>
                                     </td>
@@ -251,10 +263,8 @@
                                 </tr>
                                 <tr class="fila-cumplimiento-general">
                                     <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R2</td>
-                                    <td colspan="2">
-                                        <div id="r2-cump-general" class="kpi-badge-general red">
-                                            0,00 %
-                                        </div>
+                                    <td colspan="2" style="padding: 6px;">
+                                        <div id="r2-cump-general"></div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -294,7 +304,7 @@
     </div>
 </div>
 
-<!-- MODAL 2: HERRAMIENTAS AVANZADAS (CARGUE MASIVO CON DISEÑO EXACTO) -->
+<!-- MODAL 2: HERRAMIENTAS AVANZADAS -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 480px;">
         <div class="obs-modal-header">
@@ -302,8 +312,6 @@
             <button type="button" id="cerrarModalTools" class="obs-modal-close">&times;</button>
         </div>
         <div class="obs-modal-body" style="display: flex; flex-direction: column; gap: 15px;">
-            
-            <!-- Caja de selección de archivo idéntica a tu referencia -->
             <div style="border: 1px solid #cbd5e0; padding: 15px; border-radius: 8px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <label for="inputExcelMasivo" style="background: #e2e8f0; border: 1px solid #cbd5e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #334155;">
@@ -317,7 +325,6 @@
                     🚀 Cargar KPIs al Servidor
                 </button>
             </div>
-
         </div>
         <div class="obs-modal-footer">
             <button type="button" id="btnCerrarTools" class="obs-btn-secundario" style="background: #e2e8f0; border: 1px solid #cbd5e0; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">Volver al Menú</button>
@@ -325,24 +332,15 @@
     </div>
 </div>
 
-<!-- MODAL 3: VENTANA DE PROGRESO Y SINCRONIZACIÓN CENTRADA -->
+<!-- MODAL 3: PROGRESO -->
 <div id="modalProgresoSinc" class="obs-modal-overlay" style="display: none; justify-content: center; align-items: center;">
     <div class="obs-modal-content" style="max-width: 420px; text-align: center; padding: 25px;">
         <h3 style="color: #1e293b; margin-bottom: 8px;">Sincronizando KPIs</h3>
         <p id="textoProgresoSinc" style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Preparando registros...</p>
-        
-        <!-- Barra de progreso -->
         <div style="background: #e2e8f0; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 15px;">
             <div id="barraProgresoSinc" style="width: 0%; height: 100%; background: #334155; transition: width 0.2s ease;"></div>
         </div>
-
         <div id="porcentajeProgresoSinc" style="font-size: 1.25rem; font-weight: bold; color: #1e293b; margin-bottom: 20px;">0%</div>
-
-        <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 6px;">
-            <p style="color: #c53030; font-size: 0.8rem; font-weight: 600; margin: 0;">
-                ⚠️ Proceso en curso.<br>No cierres ni recargues la página hasta finalizar.
-            </p>
-        </div>
     </div>
 </div>
 
