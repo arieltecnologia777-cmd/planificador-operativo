@@ -111,11 +111,13 @@ function renderizarPinesEstaticos(deptoSeleccionado) {
 
 async function cargarNotaDelDia() {
     try {
-        const resp = await fetch(`${API_BASE_URL}/notas`);
+        const resp = await fetch(`${API_BASE_URL}/nota-dia`);
         const data = await resp.json();
         const txtNotas = document.getElementById("txtNotasDia");
-        if (txtNotas && data.ok) {
-            txtNotas.textContent = data.nota || "Sin notas registradas para hoy.";
+        if (txtNotas) {
+            // Evaluamos si el servidor devuelve la nota directamente o mediante un objeto JSON
+            const textoNota = data.nota || (typeof data === 'string' ? data : "Sin notas registradas para hoy.");
+            txtNotas.textContent = textoNota;
         }
     } catch (err) {
         console.error("Error al cargar la nota:", err);
