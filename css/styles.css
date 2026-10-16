@@ -2292,18 +2292,20 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* Forzar expansión total de la tabla en modo zoom */
+/* Forzar que el contenedor de la tabla absorba todo el espacio vertical disponible */
 body.modo-zoom .planeacion-table-wrapper,
 body.modo-ampliado .planeacion-table-wrapper {
-    max-height: none !important;
-    height: calc(100vh - 220px) !important; /* Resta el espacio de la cabecera y filtros para ajustarse perfecto a la pantalla */
+    flex: 1 !important;
+    max-height: 75vh !important;
+    height: 75vh !important;
 }
 
-/* Forzar que el panel principal ocupe todo el alto disponible */
+/* Forzar que el panel principal trabaje en modelo flexible vertical */
 body.modo-zoom .panel.panel-zoom,
 body.modo-ampliado .panel.panel-zoom {
     display: flex !important;
     flex-direction: column !important;
-    height: calc(100vh - 90px) !important;
-    max-height: none !important;
+    height: 96vh !important;
+    max-height: 96vh !important;
+    overflow: hidden !important;
 }
