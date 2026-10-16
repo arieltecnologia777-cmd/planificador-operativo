@@ -32,16 +32,17 @@
         background: linear-gradient(90deg, #fca5a5, #ef4444) !important; 
     }
 
-    /* Estilo Sticky Note (Nota adhesiva) */
+    /* Estilo Sticky Note (Nota adhesiva compacta tipo Power BI) */
     .sticky-note-container {
         background: #fff8dc;
         border-left: 5px solid #f59e0b;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.04);
         border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 25px;
+        padding: 12px 18px;
+        margin-bottom: 15px; /* Reducido para evitar espacios muertos */
         font-family: inherit;
         color: #1f2937;
+        max-width: 420px; /* Acotada hacia la izquierda como Power BI */
     }
     .sticky-note-header {
         display: flex;
@@ -49,16 +50,27 @@
         align-items: center;
         font-weight: bold;
         color: #b45309;
-        margin-bottom: 10px;
-        font-size: 1.1rem;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
     }
     .sticky-note-content ul {
         margin: 0;
-        padding-left: 20px;
+        padding-left: 18px;
+        font-size: 0.85rem;
     }
     .sticky-note-content li {
-        margin-bottom: 6px;
-        line-height: 1.5;
+        margin-bottom: 4px;
+        line-height: 1.4;
+    }
+
+    /* Contenedor compacto para el bloque de seguimiento inferior */
+    .sticky-note-seguimiento {
+        background: #ffffff;
+        border-left: 5px solid #2563eb;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.04);
+        border-radius: 6px;
+        padding: 15px 20px;
+        margin-top: 15px; /* Margen superior ajustado para eliminar espacios largos */
     }
 </style>
 </head>
@@ -132,28 +144,30 @@
         <div class="dashboard-container">
             <div class="kpi-module-container">
                 
-                <!-- STICKY NOTE: NOTAS IMPORTANTES -->
-                <div class="sticky-note-container">
-                    <div class="sticky-note-header">
-                        <span>📌 Notas importantes</span>
-                        <span style="font-size: 0.85rem; font-weight: normal; color: #b45309;">Metas octubre 2026</span>
+                <!-- STICKY NOTE: NOTAS IMPORTANTES (Compacta y a la izquierda) -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                    <div class="sticky-note-container" style="margin-bottom: 0; flex: 1; min-width: 300px;">
+                        <div class="sticky-note-header">
+                            <span>📌 Notas importantes</span>
+                            <span style="font-size: 0.8rem; font-weight: normal; color: #b45309;">Metas octubre 2026</span>
+                        </div>
+                        <div class="sticky-note-content">
+                            <ul>
+                                <li>Cálculo no es lineal, el peso depende del acercamiento a la meta</li>
+                                <li>Meta backlog: 93% | SLA y Operatividad: 100% | MPR: 98%</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="sticky-note-content">
-                        <ul>
-                            <li>Cálculo no es lineal, el peso que genera cada KPI es de acuerdo al acercamiento de la meta</li>
-                            <li>Meta backlog: 93%</li>
-                            <li>Meta SLA y operatividad: 100%</li>
-                            <li>Meta MPR: 98%</li>
-                        </ul>
-                    </div>
-                    <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
-                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
+
+                    <!-- BOTÓN DE SIMULACIÓN ALINEADO ARRIBA -->
+                    <div>
+                        <button type="button" id="btnSimularPesoMaximo" style="background: #2563eb; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">
                             Simular con pesos máximos
                         </button>
                     </div>
                 </div>
 
-                <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2) -->
+                <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2 - Protagonistas) -->
                 <div class="kpis-grid-zonas">
                     
                     <!-- ZONA R1 -->
@@ -308,12 +322,12 @@
 
                 </div>
 
-                <!-- STICKY NOTE: SEGUIMIENTO INFERIOR -->
-                <div class="sticky-note-container" style="background: #ffffff; border-left: 5px solid #2563eb; margin-top: 30px;">
-                    <div class="sticky-note-header" style="color: #1e40af;">
-                        <span>📋 Seguimiento:</span>
+                <!-- STICKY NOTE: SEGUIMIENTO INFERIOR (Compacto y cercano) -->
+                <div class="sticky-note-seguimiento">
+                    <div style="font-weight: bold; color: #1e40af; margin-bottom: 8px; font-size: 0.95rem;">
+                        📋 Seguimiento y Observaciones:
                     </div>
-                    <div id="contenedor-seguimiento" class="sticky-note-content">
+                    <div id="contenedor-seguimiento" style="font-size: 0.88rem; color: #374151;">
                         Cargando notas de seguimiento...
                     </div>
                 </div>
@@ -360,7 +374,7 @@
             
             <!-- Sección Cargue Excel -->
             <div style="border: 1px solid #cbd5e0; padding: 15px; border-radius: 8px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px;">
-                <h4 style="font-size: 0.95krem; color: #1e293b; margin: 0;">Cargue Masivo KPIs</h4>
+                <h4 style="font-size: 0.95rem; color: #1e293b; margin: 0;">Cargue Masivo KPIs</h4>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <label for="inputExcelMasivo" style="background: #e2e8f0; border: 1px solid #cbd5e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #334155;">
                         Seleccionar archivo
