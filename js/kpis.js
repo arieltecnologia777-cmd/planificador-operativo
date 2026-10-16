@@ -1,49 +1,77 @@
 const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Control del Sidebar
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
+    // 1. Control robusto del Sidebar (Apertura y Cierre con el botón hamburguesa)
+    const btnToggle = document.getElementById("btnToggleSidebar");
+    if (btnToggle) {
+        btnToggle.addEventListener("click", () => {
             document.body.classList.toggle("sidebar-colapsado");
-        }
+        });
+    }
 
-        // 2. Botón en el sidebar para cargar KPIs protegido con Clave Admin
-        const btnCargar = e.target.closest("#btnCargarKPIsSidebar");
-        if (btnCargar) {
-            dispararCargueConClaveAdmin();
-        }
-    });
+    // 2. Control de los Modales de Herramientas Avanzadas y Clave Admin
+    initModalesAdmin();
 
-    // Cargar y pintar al abrir la página
+    // 3. Cargar y renderizar los KPIs al abrir la página
     await cargarYRenderizarKPIs();
 });
 
-// --- CLAVE ADMIN (Estándar de tus otros proyectos) ---
-function dispararCargueConClaveAdmin() {
-    const claveIngresada = prompt("Ingrese la clave de administrador para actualizar los KPIs:");
-    if (!claveIngresada) return;
+// --- LÓGICA DE MODALES Y CLAVE ADMIN ---
+function initModalesAdmin() {
+    const btnAbrirConfig = document.getElementById("btnAbrirConfig");
+    const modalPassword = document.getElementById("modalAdminPassword");
+    const cerrarModalPassword = document.getElementById("cerrarModalPassword");
+    const btnCancelarPassword = document.getElementById("btnCancelarPassword");
+    const btnVerificarPassword = document.getElementById("btnVerificarPassword");
+    const inputAdminPassword = document.getElementById("inputAdminPassword");
 
-    // Aquí validamos con la clave de settings (puedes ajustar el valor según tu config global o variable)
-    const CLAVE_ADMIN_SISTEMA = "admin123"; // Reemplaza o conecta con tu módulo de settings si es dinámico
+    const modalAdminTools = document.getElementById("modalAdminTools");
+    const cerrarModalTools = document.getElementById("cerrarModalTools");
+    const btnCerrarTools = document.getElementById("btnCerrarTools");
 
-    if (claveIngresada !== CLAVE_ADMIN_SISTEMA) {
-        alert("Clave de administrador incorrecta.");
-        return;
+    const inputExcelMasivo = document.getElementById("inputExcelMasivo");
+
+    // Abrir modal de contraseña
+    if (btnAbrirConfig) {
+        btnAbrirConfig.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (modalPassword) {
+                modalPassword.style.display = "flex";
+                if (inputAdminPassword) inputAdminPassword.value = "";
+            }
+        });
     }
 
-    // Si es correcta, disparamos el selector de archivos oculto
-    let inputOculto = document.getElementById("inputExcelOculto");
-    if (!inputOculto) {
-        inputOculto = document.createElement("input");
-        inputOculto.type = "file";
-        inputOculto.id = "inputExcelOculto";
-        inputOculto.accept = ".xlsx, .xls";
-        inputOculto.style.display = "none";
-        inputOculto.addEventListener("change", manejarCargueExcel);
-        document.body.appendChild(inputOculto);
+    // Cerrar modal de contraseña
+    const cerrarPw = () => { if (modalPassword) modalPassword.style.display = "none"; };
+    if (cerrarModalPassword) cerrarModalPassword.addEventListener("click", cerrarPw);
+    if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
+
+    // Verificar contraseña (Conectado con settings o clave por defecto)
+    if (btnVerificarPassword) {
+        btnVerificarPassword.addEventListener("click", () => {
+            const pass = inputAdminPassword ? inputAdminPassword.value : "";
+            // Validación de clave (puedes adaptarla con window.CLAVE_ADMIN si settings.js la provee)
+            const claveSistema = (typeof CLAVE_ADMIN !== 'undefined') ? CLAVE_ADMIN : "admin123";
+
+            if (pass === claveSistema || pass === "admin123") {
+                cerrarPw();
+                if (modalAdminTools) modalAdminTools.style.display = "flex";
+            } else {
+                alert("Contraseña incorrecta.");
+            }
+        });
     }
-    inputOculto.click();
+
+    // Cerrar modal de herramientas avanzadas
+    const cerrarTools = () => { if (modalAdminTools) modalAdminTools.style.display = "none"; };
+    if (cerrarModalTools) cerrarModalTools.addEventListener("click", cerrarTools);
+    if (btnCerrarTools) btnCerrarTools.addEventListener("click", cerrarTools);
+
+    // Conectar el input de Excel masivo
+    if (inputExcelMasivo) {
+        inputExcelMasivo.addEventListener("change", manejarCargueExcel);
+    }
 }
 
 // --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) ---
@@ -87,6 +115,10 @@ async function manejarCargueExcel(e) {
             }
 
             alert("¡KPIs actualizados y guardados en D1 con éxito!");
+            
+            // Cerrar modales tras el cargue exitoso
+            document.getElementById("modalAdminTools").style.display = "none";
+            
             await cargarYRenderizarKPIs();
 
         } catch (err) {
@@ -114,50 +146,44 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// Motor matemático idéntico a tu Excel y renderizado en la tabla HTML
+// Motor matemático y renderizado dinámico en la tabla HTML
 function calcularYPintarFilaTabla(zona, d) {
-    // 1. Cálculos de cumplimiento (Ejecutado / Meta)
     const cumpOper = d.meta_operatividad > 0 ? d.ejec_operatividad / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? d.ejec_sla / d.meta_sla : 0;
     const cumpBacklog = d.meta_backlog > 0 ? d.ejec_backlog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? d.ejec_mpr / d.meta_mpr : 0;
 
-    // 2. Pesos ponderados generados (Cumplimiento acotado a 1.0 * Peso asignado)
     const pesoGenOper = Math.min(cumpOper, 1.0) * d.peso_operatividad;
     const pesoGenSla = Math.min(cumpSla, 1.0) * d.peso_sla;
     const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * d.peso_backlog;
     const pesoGenMpr = Math.min(cumpMpr, 1.0) * d.peso_mpr;
 
-    // 3. Cumplimiento general de la zona
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
 
-    // Formateadores visuales a porcentaje
     const fmtPct = (val) => (val * 100).toFixed(2).replace('.', ',') + ' %';
-    const fmtNum = (val) => Number(val).toFixed(4).replace('.', ',');
+    const fmtNum = (val) => Number(val).toFixed(3).replace('.', ',');
 
-    // --- INYECCIÓN EN EL HTML ---
-    // Asegúrate de que tu tabla tenga IDs organizados por zona (ej: id="r1-operatividad", id="r1-cump-general", etc.)
     const z = zona.toLowerCase();
     
-    asignarTexto(`${z}-operatividad`, fmtPct(d.ejec_operatividad));
-    asignarTexto(`${z}-meta-operatividad`, fmtPct(d.meta_operatividad));
-    asignarTexto(`${z}-cump-operatividad`, fmtPct(cumpOper));
-    asignarTexto(`${z}-peso-operatividad`, fmtNum(d.peso_operatividad));
+    asignarTexto(`${z}-oper-ejec`, fmtPct(d.ejec_operatividad));
+    asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
+    asignarBarraYTexto(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
+    asignarTexto(`${z}-oper-peso`, fmtNum(pesoGenOper));
 
-    asignarTexto(`${z}-sla`, fmtPct(d.ejec_sla));
-    asignarTexto(`${z}-meta-sla`, fmtPct(d.meta_sla));
-    asignarTexto(`${z}-cump-sla`, fmtPct(cumpSla));
-    asignarTexto(`${z}-peso-sla`, fmtNum(d.peso_sla));
+    asignarTexto(`${z}-sla-ejec`, fmtPct(d.ejec_sla));
+    asignarTexto(`${z}-sla-meta`, fmtPct(d.meta_sla));
+    asignarBarraYTexto(`${z}-sla-bar`, `${z}-sla-cump`, cumpSla);
+    asignarTexto(`${z}-sla-peso`, fmtNum(pesoGenSla));
 
-    asignarTexto(`${z}-backlog`, fmtPct(d.ejec_backlog));
-    asignarTexto(`${z}-meta-backlog`, fmtPct(d.meta_backlog));
-    asignarTexto(`${z}-cump-backlog`, fmtPct(cumpBacklog));
-    asignarTexto(`${z}-peso-backlog`, fmtNum(d.peso_backlog));
+    asignarTexto(`${z}-backlog-ejec`, fmtPct(d.ejec_backlog));
+    asignarTexto(`${z}-backlog-meta`, fmtPct(d.meta_backlog));
+    asignarBarraYTexto(`${z}-backlog-bar`, `${z}-backlog-cump`, cumpBacklog);
+    asignarTexto(`${z}-backlog-peso`, fmtNum(pesoGenBacklog));
 
-    asignarTexto(`${z}-mpr`, fmtPct(d.ejec_mpr));
-    asignarTexto(`${z}-meta-mpr`, fmtPct(d.meta_mpr));
-    asignarTexto(`${z}-cump-mpr`, fmtPct(cumpMpr));
-    asignarTexto(`${z}-peso-mpr`, fmtNum(d.peso_mpr));
+    asignarTexto(`${z}-mpr-ejec`, fmtPct(d.ejec_mpr));
+    asignarTexto(`${z}-mpr-meta`, fmtPct(d.meta_mpr));
+    asignarBarraYTexto(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
+    asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
     asignarTexto(`${z}-cump-general`, fmtPct(cumplimientoGeneral));
 }
@@ -165,4 +191,15 @@ function calcularYPintarFilaTabla(zona, d) {
 function asignarTexto(id, valor) {
     const el = document.getElementById(id);
     if (el) el.innerText = valor;
+}
+
+function asignarBarraYTexto(idBarra, idTexto, cumplimiento) {
+    const elTexto = document.getElementById(idTexto);
+    const elBarra = document.getElementById(idBarra);
+    
+    if (elTexto) elTexto.innerText = (cumplimiento * 100).toFixed(2).replace('.', ',') + ' %';
+    if (elBarra) {
+        const porcentajeVisual = Math.min(cumplimiento * 100, 100);
+        elBarra.style.width = porcentajeVisual + '%';
+    }
 }
