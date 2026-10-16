@@ -25,10 +25,10 @@ function initBotonAlternarPesos() {
             
             if (modoPesoMaximoActivo) {
                 btnSimular.style.background = "#10b981";
-                btnSimular.innerHTML = "⚖️ Volver a Datos Reales (D1)";
+                btnSimular.innerHTML = "Volver a peso variable";
             } else {
                 btnSimular.style.background = "#2563eb";
-                btnSimular.innerHTML = "⭐ Simular con Pesos Máximos";
+                btnSimular.innerHTML = "Simular con pesos máximos";
             }
 
             if (datosKpiGlobales) {
