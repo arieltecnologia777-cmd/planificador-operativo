@@ -2292,17 +2292,17 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* Altura extendida para la tabla y su contenedor cuando se activa el modo zoom */
+/* Altura extendida para mostrar esas 3 filas adicionales cuando se activa el modo zoom */
 body.modo-zoom .planeacion-table-wrapper,
 body.modo-ampliado .planeacion-table-wrapper {
-    max-height: 85vh !important; /* Ajusta este valor (ej. 85vh o 90vh) según qué tan abajo quieras que llegue */
-    height: 85vh !important;
+    max-height: 92vh !important;
+    height: 92vh !important;
 }
 
-/* Permitir que el panel principal también se expanda verticalmente en modo zoom */
+/* Permitir que el panel principal también se expanda verticalmente al límite en modo zoom */
 body.modo-zoom .panel.panel-zoom,
 body.modo-ampliado .panel.panel-zoom {
     display: flex;
     flex-direction: column;
-    height: 92vh !important;
+    height: 97vh !important;
 }
