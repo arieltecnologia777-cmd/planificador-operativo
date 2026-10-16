@@ -27,18 +27,18 @@
         position: relative;
     }
 
-    /* Sidebar fijo que ocupa el 100% de la altura de la pantalla y organiza los elementos en columna flexible */
+    /* Sidebar fijo con ancho optimizado y estilizado */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         height: 100% !important;
         min-height: 100vh !important;
-        width: 260px !important;
+        width: 240px !important; /* Ligeramente más angosto */
         z-index: 1000 !important;
         display: flex !important;
         flex-direction: column !important;
-        justify-content: space-between !important; /* Separa los bloques arriba y abajo */
+        justify-content: space-between !important;
         box-sizing: border-box;
     }
 
@@ -48,10 +48,10 @@
         flex: 1;
     }
 
-    /* Contenido principal con margen izquierdo para no quedar debajo del sidebar */
+    /* Contenido principal adaptado al nuevo ancho del sidebar */
     .main-content {
-        margin-left: 260px !important;
-        width: calc(100% - 260px) !important;
+        margin-left: 240px !important;
+        width: calc(100% - 240px) !important;
         min-height: 100vh;
         padding-top: 5px !important;
         box-sizing: border-box;
@@ -152,7 +152,7 @@
     <aside class="sidebar">
         <div>
             <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 110px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
             </div>
 
             <nav class="sidebar-nav">
@@ -187,9 +187,9 @@
             </nav>
         </div>
 
-        <!-- Herramientas Avanzadas al fondo con línea divisoria sutil -->
-        <div style="border-top: 1px solid #e2e8f0; padding: 15px 12px; width: 100%; box-sizing: border-box;">
-            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <!-- Herramientas Avanzadas al fondo: más angosto y texto horizontal fluido -->
+        <div style="border-top: 1px solid #e2e8f0; padding: 10px 12px; width: 100%; box-sizing: border-box;">
+            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
                 ⚙️ Herramientas Avanzadas
             </button>
         </div>
