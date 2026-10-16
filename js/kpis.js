@@ -226,31 +226,41 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// Motor matemático con soporte para alternar entre datos reales y pesos máximos ideales
+// --- MOTOR MATEMÁTICO CON CÁLCULO DE CUMPLIMIENTO GENERAL POR PESO MÁXIMO ---
 function calcularYPintarFilaTabla(zona, d) {
-    let ejecOper = d.ejec_operatividad;
-    let ejSla = d.ejec_sla;
-    let ejBacklog = d.ejec_backlog;
-    let ejMpr = d.ejec_mpr;
-
-    if (modoPesoMaximoActivo) {
-        // Forzamos el cumplimiento al 100% ideal para maximizar el peso generado
-        ejecOper = d.meta_operatividad > 0 ? d.meta_operatividad : ejecOper;
-        ejSla = d.meta_sla > 0 ? d.meta_sla : ejSla;
-        ejBacklog = d.meta_backlog > 0 ? d.meta_backlog : ejBacklog;
-        ejMpr = d.meta_mpr > 0 ? d.meta_mpr : ejMpr;
-    }
+    // 1. Mantener los valores ejecutados y metas originales intactos
+    const ejecOper = d.ejec_operatividad;
+    const ejSla = d.ejec_sla;
+    const ejBacklog = d.ejec_backlog;
+    const ejMpr = d.ejec_mpr;
 
     const cumpOper = d.meta_operatividad > 0 ? ejecOper / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? ejSla / d.meta_sla : 0;
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    const pesoGenOper = Math.min(cumpOper, 1.0) * d.peso_operatividad;
-    const pesoGenSla = Math.min(cumpSla, 1.0) * d.peso_sla;
-    const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * d.peso_backlog;
-    const pesoGenMpr = Math.min(cumpMpr, 1.0) * d.peso_mpr;
+    // 2. Definir los pesos a utilizar (Normales o Pesos Máximos Simulados)
+    let pOper = d.peso_operatividad;
+    let pSla = d.peso_sla;
+    let pBacklog = d.peso_backlog;
+    let pMpr = d.peso_mpr;
 
+    if (modoPesoMaximoActivo) {
+        // Aquí aplicamos los pesos máximos ideales o ampliados para simular el aumento en el cumplimiento general
+        // (Si prefieres usar un factor multiplicador de peso máximo o valores fijos ideales, se ajusta aquí)
+        pBacklog = Math.max(pBacklog, 0.430);
+        pOper = Math.max(pOper, 0.370);
+        pSla = Math.max(pSla, 0.100);
+        pMpr = Math.max(pMpr, 0.100);
+    }
+
+    // 3. Calcular el peso generado por cada indicador utilizando los pesos correspondientes
+    const pesoGenOper = Math.min(cumpOper, 1.0) * pOper;
+    const pesoGenSla = Math.min(cumpSla, 1.0) * pSla;
+    const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * pBacklog;
+    const pesoGenMpr = Math.min(cumpMpr, 1.0) * pMpr;
+
+    // El cumplimiento general de la zona es la suma de los pesos generados (aumenta al tener pesos máximos mayores)
     const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
@@ -261,6 +271,7 @@ function calcularYPintarFilaTabla(zona, d) {
 
     const z = zona.toLowerCase();
     
+    // Asignar textos y barras individuales (manteniendo el ejecutado real)
     asignarTexto(`${z}-oper-ejec`, fmtPct(ejecOper));
     asignarTexto(`${z}-oper-meta`, fmtPct(d.meta_operatividad));
     asignarBarraConLineaMeta(`${z}-oper-bar`, `${z}-oper-cump`, cumpOper);
@@ -281,7 +292,7 @@ function calcularYPintarFilaTabla(zona, d) {
     asignarBarraConLineaMeta(`${z}-mpr-bar`, `${z}-mpr-cump`, cumpMpr);
     asignarTexto(`${z}-mpr-peso`, fmtNum(pesoGenMpr));
 
-    // Renderizar cumplimiento general con línea de meta (99%)
+    // Renderizar cumplimiento general de la zona (la barra de abajo más grande que aumenta con los pesos máximos)
     const elGral = document.getElementById(`${z}-cump-general`);
     if (elGral) {
         const escalaMax = 1.30; 
@@ -296,42 +307,5 @@ function calcularYPintarFilaTabla(zona, d) {
                 <span class="kpi-progress-txt">${fmtPct(cumplimientoGeneral)}</span>
             </div>
         `;
-    }
-}
-
-function asignarTexto(id, valor) {
-    const el = document.getElementById(id);
-    if (el) el.innerText = valor;
-}
-
-function obtenerColorPorcentaje(cump) {
-    if (cump >= 1.0) return 'green';    
-    if (cump >= 0.85) return 'amber';   
-    return 'red';                       
-}
-
-function asignarBarraConLineaMeta(idBarra, idTexto, cumplimiento) {
-    const elTexto = document.getElementById(idTexto);
-    const elContenedor = elTexto ? elTexto.closest('.kpi-progress-bg') : null;
-    const elBarra = document.getElementById(idBarra);
-    
-    if (elTexto) elTexto.innerText = (cumplimiento * 100).toFixed(2).replace('.', ',') + ' %';
-    
-    if (elBarra && elContenedor) {
-        const escalaMax = 1.30;
-        const anchoBarraPct = Math.min((cumplimiento / escalaMax) * 100, 100);
-        const posicionMetaPct = ( (1.0 / escalaMax) * 100 );
-
-        elBarra.style.width = anchoBarraPct + '%';
-        elBarra.classList.remove('green', 'amber', 'red');
-        elBarra.classList.add(obtenerColorPorcentaje(cumplimiento));
-
-        let lineaMeta = elContenedor.querySelector('.kpi-meta-line');
-        if (!lineaMeta) {
-            lineaMeta = document.createElement('div');
-            lineaMeta.className = 'kpi-meta-line';
-            elContenedor.appendChild(lineaMeta);
-        }
-        lineaMeta.style.left = posicionMetaPct + '%';
     }
 }
