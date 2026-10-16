@@ -1,7 +1,7 @@
 const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Control robusto del Sidebar (Apertura y Cierre con el botón hamburguesa)
+    // 1. Control del Sidebar idéntico a planeacion.js
     const btnToggle = document.getElementById("btnToggleSidebar");
     if (btnToggle) {
         btnToggle.addEventListener("click", () => {
@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 2. Control de los Modales de Herramientas Avanzadas y Clave Admin
+    // 2. Control de los modales de administración y herramientas avanzadas
     initModalesAdmin();
 
     // 3. Cargar y renderizar los KPIs al abrir la página
@@ -31,7 +31,7 @@ function initModalesAdmin() {
 
     const inputExcelMasivo = document.getElementById("inputExcelMasivo");
 
-    // Abrir modal de contraseña
+    // Abrir modal de contraseña desde el botón del sidebar
     if (btnAbrirConfig) {
         btnAbrirConfig.addEventListener("click", (e) => {
             e.preventDefault();
@@ -47,11 +47,11 @@ function initModalesAdmin() {
     if (cerrarModalPassword) cerrarModalPassword.addEventListener("click", cerrarPw);
     if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
 
-    // Verificar contraseña (Conectado con settings o clave por defecto)
+    // Verificar contraseña de administrador
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", () => {
             const pass = inputAdminPassword ? inputAdminPassword.value : "";
-            // Validación de clave (puedes adaptarla con window.CLAVE_ADMIN si settings.js la provee)
+            // Validación de clave conectada con settings o por defecto
             const claveSistema = (typeof CLAVE_ADMIN !== 'undefined') ? CLAVE_ADMIN : "admin123";
 
             if (pass === claveSistema || pass === "admin123") {
@@ -116,8 +116,9 @@ async function manejarCargueExcel(e) {
 
             alert("¡KPIs actualizados y guardados en D1 con éxito!");
             
-            // Cerrar modales tras el cargue exitoso
-            document.getElementById("modalAdminTools").style.display = "none";
+            // Cerrar modal de herramientas tras el cargue exitoso
+            const modalTools = document.getElementById("modalAdminTools");
+            if (modalTools) modalTools.style.display = "none";
             
             await cargarYRenderizarKPIs();
 
