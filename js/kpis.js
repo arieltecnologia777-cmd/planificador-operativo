@@ -218,13 +218,14 @@ async function cargarYRenderizarKPIs() {
     }
 }
 
-// --- MOTOR MATEMÁTICO: PESOS EXACTOS DEL EXCEL + TOPE MÁXIMO ESTRICTO (POWER BI) ---
+// --- MOTOR MATEMÁTICO: CÁLCULO EXACTO IDÉNTICO A EXCEL ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
     const ejBacklog = d.ejec_backlog;
     const ejMpr = d.ejec_mpr;
 
+    // Cumplimiento individual directo (Ejecutado / Meta) sin topes artificiales
     const cumpOper = d.meta_operatividad > 0 ? ejecOper / d.meta_operatividad : 0;
     const cumpSla = d.meta_sla > 0 ? ejSla / d.meta_sla : 0;
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
@@ -240,7 +241,7 @@ function calcularYPintarFilaTabla(zona, d) {
         pMpr = 0.100;
     } else {
         pBacklog = d.peso_backlog; 
-        pOper = d.peso_operatividad; // Respeta tu 0,333 o valor exacto subido
+        pOper = d.peso_operatividad; // Respeta tu 0,333 o el valor exacto de tu Excel
         pSla = d.peso_sla;
         pMpr = d.peso_mpr;
     }
@@ -251,17 +252,11 @@ function calcularYPintarFilaTabla(zona, d) {
     const pesoVisualBacklog = pBacklog;
     const pesoVisualMpr = pMpr;
 
-    // Aplicación del tope máximo estricto del 100% por KPI al igual que en Power BI (MIN(Cumplimiento, 1.0))
-    const cumpEfectivoOper = Math.min(cumpOper, 1.0);
-    const cumpEfectivoSla = Math.min(cumpSla, 1.0);
-    const cumpEfectivoBacklog = Math.min(cumpBacklog, 1.0);
-    const cumpEfectivoMpr = Math.min(cumpMpr, 1.0);
-
-    // Ecuación exacta de cumplimiento general ponderado con topes
-    const cumplimientoGeneral = (cumpEfectivoOper * pOper) + 
-                                (cumpEfectivoSla * pSla) + 
-                                (cumpEfectivoBacklog * pBacklog) + 
-                                (cumpEfectivoMpr * pMpr);
+    // Ecuación exacta de cumplimiento general ponderado (Cumplimiento * Peso) idéntica a Excel
+    const cumplimientoGeneral = (cumpOper * pOper) + 
+                                (cumpSla * pSla) + 
+                                (cumpBacklog * pBacklog) + 
+                                (cumpMpr * pMpr);
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
