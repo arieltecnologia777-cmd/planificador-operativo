@@ -129,5 +129,60 @@ document.addEventListener("input", (e) => {
         pintarTablaHistorico(filtrados);
     }
 });
+window.exportarHistoricoOTs = function() {
+    try {
+        // Obtenemos los datos actuales de la tabla de completadas
+        const filasTabla = document.querySelectorAll("#tablaCompletadasBody tr"); // Ajusta el selector según el id de tu tbody
+        
+        if (!filasTabla || filasTabla.length === 0) {
+            alert("No hay registros en el histórico para exportar.");
+            return;
+        }
+
+        const headers = [
+            "ID", "Departamento", "Municipio", "IM", "OT", 
+            "Afectación", "Estado Gestión", "Técnico Asignado", 
+            "Observación", "Fecha Completada"
+        ];
+
+        const dataAOA = [headers];
+
+        filasTabla.forEach(fila => {
+            const celdas = fila.querySelectorAll("td");
+            if (celdas.length >= 10) {
+                dataAOA.push([
+                    celdas[0].textContent.trim(),
+                    celdas[1].textContent.trim(),
+                    celdas[2].textContent.trim(),
+                    celdas[3].textContent.trim(),
+                    celdas[4].textContent.trim(),
+                    celdas[5].textContent.trim(),
+                    celdas[6].textContent.trim(),
+                    celdas[7].textContent.trim(),
+                    celdas[8].textContent.trim(),
+                    celdas[9].textContent.trim()
+                ]);
+            }
+        });
+
+        // Creamos la hoja de Excel con SheetJS
+        const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        if (ws && ws['!ref']) {
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Historico_OTs_Completadas");
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        XLSX.writeFile(wb, `Historico_OTs_Completadas_${timestamp}.xlsx`);
+
+    } catch (error) {
+        console.error("❌ Error al exportar el histórico:", error);
+        alert("Ocurrió un error al exportar el archivo de histórico.");
+    }
+};
 
 document.addEventListener("DOMContentLoaded", cargarHistorico);
