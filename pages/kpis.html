@@ -285,7 +285,7 @@
     </div>
 </div>
 
-<!-- Modal de Herramientas Avanzadas -->
+<!-- Modal de Herramientas Avanzadas con Barra de Progreso y selector -->
 <div id="modalAdminTools" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 450px;">
         <div class="obs-modal-header">
@@ -298,6 +298,17 @@
                     📂 Subir Excel de KPIs (Actualización)
                 </label>
                 <input type="file" id="inputExcelMasivo" accept=".xlsx, .xls" style="display: none;">
+            </div>
+
+            <!-- Contenedor de barra de progreso heredado de planeación y dashboard -->
+            <div id="containerProgresoMasivo" class="progreso-masivo-container" style="display: none;">
+                <div class="progreso-masivo-header" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
+                    <span id="textoProgreso">Procesando archivo...</span>
+                    <span id="porcentajeProgreso">0%</span>
+                </div>
+                <div class="progreso-masivo-track" style="background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden;">
+                    <div id="barraProgresoAnimada" class="progreso-masivo-barra" style="width: 0%; height: 100%; background: #28a745; transition: width 0.2s ease;"></div>
+                </div>
             </div>
         </div>
         <div class="obs-modal-footer">
