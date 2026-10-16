@@ -2318,3 +2318,156 @@ body.modo-ampliado .planeacion-table-wrapper {
     max-height: none !important;
     overflow-y: auto !important;
 }
+
+/* ==========================================================
+   ESTILOS DE FILTROS EN CASCADA UNIFICADOS PARA HISTÓRICO Y PLANEACIÓN
+   ========================================================== */
+
+.planeacion-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.multi-filtro-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-multi-filtro {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-multi-filtro:hover {
+    background-color: #f8fafc;
+    border-color: var(--primary-light);
+}
+
+.multi-filtro-lista {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    min-width: 240px;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 9999;
+    padding: 6px;
+}
+
+.multi-filtro-lista.show {
+    display: block;
+}
+
+.multi-filtro-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.multi-filtro-item input {
+    width: 14px;
+    height: 14px;
+}
+
+.multi-filtro-item:hover {
+    background-color: #f5f8fc;
+}
+
+.buscar-multifiltro {
+    width: calc(100% - 16px);
+    margin: 8px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+.multi-filtro-reset {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #dc2626;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+    user-select: none;
+    font-size: 0.85rem;
+}
+
+.multi-filtro-reset:hover {
+    background: #fef2f2;
+}
+
+.filtro-sort-container {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.filtro-sort-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--muted);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filtro-sort-header {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.75rem;
+}
+
+.filtro-sort-header span {
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.filtro-sort-header span:hover {
+    text-decoration: underline;
+}
+
+.filtro-grupo-anio, 
+.filtro-grupo-mes {
+    padding: 4px 8px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+    font-size: 0.85srem;
+}
+
+.filtro-grupo-anio:hover, 
+.filtro-grupo-mes:hover {
+    background: #f1f5f9;
+}
