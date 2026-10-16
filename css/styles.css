@@ -2664,3 +2664,38 @@ body.modo-ampliado .planeacion-table-wrapper {
     margin: 0;
     padding-left: 18px;
 }
+.kpi-progress-bg {
+    position: relative;
+    background: #e2e8f0;
+    border-radius: 6px;
+    height: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+.kpi-progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+.kpi-progress-bar.green { background: linear-gradient(90deg, #6ee7b7, #10b981); }
+.kpi-progress-bar.amber { background: linear-gradient(90deg, #fcd34d, #f59e0b); }
+.kpi-progress-bar.red { background: linear-gradient(90deg, #fca5a5, #ef4444); }
+
+/* Línea vertical negra que marca la meta exacto */
+.kpi-meta-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #000000;
+    z-index: 3;
+}
+.kpi-progress-txt {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #1e293b;
+    z-index: 4;
+}
