@@ -217,7 +217,7 @@ async function cargarYRenderizarKPIs() {
         console.error("Error al cargar datos desde el Worker:", error);
     }
 }
-// --- MOTOR MATEMÁTICO: PESOS MÁXIMOS FIJOS Y PESOS REALES DE EXCEL ---
+// --- MOTOR MATEMÁTICO: CÁLCULO PONDERADO TOTAL SIN TOPES EN SIMULACIÓN ---
 function calcularYPintarFilaTabla(zona, d) {
     const ejecOper = d.ejec_operatividad;
     const ejSla = d.ejec_sla;
@@ -230,12 +230,11 @@ function calcularYPintarFilaTabla(zona, d) {
     const cumpBacklog = d.meta_backlog > 0 ? ejBacklog / d.meta_backlog : 0;
     const cumpMpr = d.meta_mpr > 0 ? ejMpr / d.meta_mpr : 0;
 
-    // 1. Definición estricta de los pesos según el modo activo
     let pOper, pSla, pBacklog, pMpr;
     let pesoVisualOper, pesoVisualSla, pesoVisualBacklog, pesoVisualMpr;
 
     if (modoPesoMaximoActivo) {
-        // En modo simulación, los pesos llegan fijos a su tope máximo exacto
+        // Pesos fijos máximos para la simulación
         pBacklog = 0.430;
         pOper = 0.370;
         pSla = 0.100;
@@ -246,30 +245,23 @@ function calcularYPintarFilaTabla(zona, d) {
         pesoVisualSla = 0.100;
         pesoVisualMpr = 0.100;
     } else {
-        // En modo normal, toma los pesos reales de tu Excel
+        // Pesos reales de tu Excel
         pBacklog = Number(d.peso_backlog) || 0.43; 
         pOper = Number(d.peso_operatividad) || 0.37; 
         pSla = Number(d.peso_sla) || 0.10;
         pMpr = Number(d.peso_mpr) || 0.10;
 
-        // El peso visual en la tabla respeta tus decimales exactos del Excel
         pesoVisualBacklog = pBacklog;
         pesoVisualOper = pOper;
         pesoVisualSla = pSla;
         pesoVisualMpr = pMpr;
     }
 
-    // 2. Cálculo del aporte ponderado para el cumplimiento general
-    // (Aplicando el tope del 100% por indicador al igual que en Power BI)
-    const cumpEfectivoBacklog = Math.min(cumpBacklog, 1.0);
-    const cumpEfectivoOper = Math.min(cumpOper, 1.0);
-    const cumpEfectivoSla = Math.min(cumpSla, 1.0);
-    const cumpEfectivoMpr = Math.min(cumpMpr, 1.0);
-
-    const cumplimientoGeneral = (cumpEfectivoBacklog * pBacklog) + 
-                                (cumpEfectivoOper * pOper) + 
-                                (cumpEfectivoSla * pSla) + 
-                                (cumpEfectivoMpr * pMpr);
+    // Cálculo general multiplicando el cumplimiento real (con sobrecumplimiento) por su peso respectivo
+    const cumplimientoGeneral = (cumpBacklog * pBacklog) + 
+                                (cumpOper * pOper) + 
+                                (cumpSla * pSla) + 
+                                (cumpMpr * pMpr);
     
     const META_CUMPLIMIENTO_GRAL = 0.99;
     const cumpGeneralRelativo = cumplimientoGeneral / META_CUMPLIMIENTO_GRAL;
