@@ -1,273 +1,168 @@
-<!DOCTYPE html>
-<html lang="es">
+const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de KPIs - Planeación Operativa</title>
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Control del Sidebar
+    document.addEventListener("click", (e) => {
+        const btnToggle = e.target.closest("#btnToggleSidebar");
+        if (btnToggle) {
+            document.body.classList.toggle("sidebar-colapsado");
+        }
 
-   <link rel="stylesheet" href="../css/styles.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-</head>
+        // 2. Botón en el sidebar para cargar KPIs protegido con Clave Admin
+        const btnCargar = e.target.closest("#btnCargarKPIsSidebar");
+        if (btnCargar) {
+            dispararCargueConClaveAdmin();
+        }
+    });
 
-<body>
+    // Cargar y pintar al abrir la página
+    await cargarYRenderizarKPIs();
+});
 
-<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-    ☰
-</button>
+// --- CLAVE ADMIN (Estándar de tus otros proyectos) ---
+function dispararCargueConClaveAdmin() {
+    const claveIngresada = prompt("Ingrese la clave de administrador para actualizar los KPIs:");
+    if (!claveIngresada) return;
 
-<div class="layout">
-    
-    <!-- BARRA LATERAL (Sidebar sincronizado) -->
-    <aside class="sidebar">
-        <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
-        </div>
+    // Aquí validamos con la clave de settings (puedes ajustar el valor según tu config global o variable)
+    const CLAVE_ADMIN_SISTEMA = "admin123"; // Reemplaza o conecta con tu módulo de settings si es dinámico
 
-        <nav class="sidebar-nav">
-            <a href="dashboard.html">
-                <span class="nav-icon">📊</span>
-                Dashboard
-            </a>
-            <a href="planeacion.html">
-                <span class="nav-icon">📅</span>
-                Planeación
-            </a>
-            <a href="historico.html">
-                <span class="nav-icon">📋</span>
-                Histórico OTs
-            </a>
-            <a href="kpis.html" class="active">
-                <span class="nav-icon">📈</span>
-                KPIs
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
-                Centros Digitales
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
-                Mapa
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
-                Reportes
-            </a>
-        </nav>
-    </aside>
+    if (claveIngresada !== CLAVE_ADMIN_SISTEMA) {
+        alert("Clave de administrador incorrecta.");
+        return;
+    }
 
-    <main class="main-content">
+    // Si es correcta, disparamos el selector de archivos oculto
+    let inputOculto = document.getElementById("inputExcelOculto");
+    if (!inputOculto) {
+        inputOculto = document.createElement("input");
+        inputOculto.type = "file";
+        inputOculto.id = "inputExcelOculto";
+        inputOculto.accept = ".xlsx, .xls";
+        inputOculto.style.display = "none";
+        inputOculto.addEventListener("change", manejarCargueExcel);
+        document.body.appendChild(inputOculto);
+    }
+    inputOculto.click();
+}
 
-        <header class="hero">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span></span>
-                    MÓDULO DE RENDIMIENTO
-                </div>
-                <h1>Medición de KPI's</h1>
-                <p>Seguimiento detallado de metas, ponderación y cumplimiento por zonas operativas.</p>
-            </div>
-        </header>
+// --- PROCESAR EXCEL Y ENVIAR AL WORKER (PUT) ---
+async function manejarCargueExcel(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-        <div class="dashboard-container">
-            <div class="kpi-module-container">
-                
-                <!-- NOTAS IMPORTANTES -->
-                <div class="kpi-header-box">
-                    <div class="kpi-notas-importantes">
-                        <h4>Notas importantes</h4>
-                        <ul>
-                            <li>Cálculo no es lineal, el peso que genera cada KPI es de acuerdo al acercamiento de la meta</li>
-                            <li>Meta backlog: 93%</li>
-                            <li>Meta SLA y operatividad: 100%</li>
-                            <li>Meta MPR: 98%</li>
-                        </ul>
-                    </div>
-                    <div class="badge-meta-periodo">
-                        Metas octubre 2026
-                    </div>
-                </div>
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet);
 
-                <!-- CONTENEDOR DE TABLAS DE ZONAS (R1 y R2) -->
-                <div class="kpis-grid-zonas">
+            for (let row of rows) {
+                const payload = {
+                    zona: row["Zona"] || row["zona"],
+                    ejec_operatividad: Number(row["Operatividad"] || 0),
+                    meta_operatividad: Number(row["Meta Operatividad"] || 1),
+                    peso_operatividad: Number(row["Peso operatividad"] || row["Peso operativo"] || 0),
                     
-                    <!-- ZONA R1 -->
-                    <div class="tabla-kpi-wrapper">
-                        <div class="zona-header-kpi">
-                            <span class="zona-titulo-tag">📍 ZONA <span style="color: #2563eb;">R1</span></span>
-                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px;">R1</span>
-                        </div>
-                        <table class="tabla-kpis">
-                            <thead>
-                                <tr>
-                                    <th>Indicador</th>
-                                    <th>Ejecutado</th>
-                                    <th>Meta</th>
-                                    <th>Cumplimiento</th>
-                                    <th>Peso generado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">Backlog</td>
-                                    <td id="r1_backlog_ejec">96,86 %</td>
-                                    <td>93,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar green" style="width: 52%;"></div>
-                                            <span class="kpi-progress-txt">104.15 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,430</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">Operatividad</td>
-                                    <td id="r1_oper_ejec">97,52 %</td>
-                                    <td>100,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar amber" style="width: 48%;"></div>
-                                            <span class="kpi-progress-txt">97.52 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,342</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">SLA</td>
-                                    <td id="r1_sla_ejec">100,00 %</td>
-                                    <td>100,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar green" style="width: 50%;"></div>
-                                            <span class="kpi-progress-txt">100.00 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,100</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">MPR</td>
-                                    <td id="r1_mpr_ejec">87,72 %</td>
-                                    <td>98,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar red" style="width: 44%;"></div>
-                                            <span class="kpi-progress-txt">89.51 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,000</td>
-                                </tr>
-                                <tr class="fila-cumplimiento-general">
-                                    <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R1</td>
-                                    <td colspan="2">
-                                        <div class="kpi-badge-general red">
-                                            88.17 %
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    ejec_sla: Number(row["SLA"] || 0),
+                    meta_sla: Number(row["Meta SLA"] || 1),
+                    peso_sla: Number(row["Peso SLA"] || 0),
+                    
+                    ejec_backlog: Number(row["Backlog"] || 0),
+                    meta_backlog: Number(row["Meta backlog"] || 1),
+                    peso_backlog: Number(row["Peso backlog"] || 0),
+                    
+                    ejec_mpr: Number(row["MPR"] || 0),
+                    meta_mpr: Number(row["Meta MPR"] || 1),
+                    peso_mpr: Number(row["Peso MPR"] || 0)
+                };
 
-                    <!-- ZONA R2 -->
-                    <div class="tabla-kpi-wrapper">
-                        <div class="zona-header-kpi">
-                            <span class="zona-titulo-tag">📍 ZONA <span style="color: #2563eb;">R2</span></span>
-                            <span class="btn-zona active" style="font-size: 0.75rem; padding: 3px 10px; background: #475569;">R2</span>
-                        </div>
-                        <table class="tabla-kpis">
-                            <thead>
-                                <tr>
-                                    <th>Indicador</th>
-                                    <th>Ejecutado</th>
-                                    <th>Meta</th>
-                                    <th>Cumplimiento</th>
-                                    <th>Peso generado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">Backlog</td>
-                                    <td id="r2_backlog_ejec">91,34 %</td>
-                                    <td>93,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar amber" style="width: 49%;"></div>
-                                            <span class="kpi-progress-txt">98.22 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,000</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">Operatividad</td>
-                                    <td id="r2_oper_ejec">95,83 %</td>
-                                    <td>100,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar amber" style="width: 47%;"></div>
-                                            <span class="kpi-progress-txt">95.83 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,324</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">SLA</td>
-                                    <td id="r2_sla_ejec">100,00 %</td>
-                                    <td>100,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar green" style="width: 50%;"></div>
-                                            <span class="kpi-progress-txt">100.00 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,100</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 700; text-align: left;">MPR</td>
-                                    <td id="r2_mpr_ejec">86,84 %</td>
-                                    <td>98,00 %</td>
-                                    <td>
-                                        <div class="kpi-progress-bg">
-                                            <div class="kpi-progress-bar red" style="width: 43%;"></div>
-                                            <span class="kpi-progress-txt">88.61 %</span>
-                                        </div>
-                                    </td>
-                                    <td style="font-weight: 700;">0,000</td>
-                                </tr>
-                                <tr class="fila-cumplimiento-general">
-                                    <td colspan="3" style="text-align: right; font-weight: 700;">Cumplimiento general zona R2</td>
-                                    <td colspan="2">
-                                        <div class="kpi-badge-general red">
-                                            41.03 %
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                await fetch(WORKER_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
 
-                </div>
+            alert("¡KPIs actualizados y guardados en D1 con éxito!");
+            await cargarYRenderizarKPIs();
 
-                <!-- SEGUIMIENTO E INSTRUCTIVO -->
-                <div class="kpi-seguimiento-box">
-                    <h4>Seguimiento:</h4>
-                    <ul>
-                        <li><strong>Backlog:</strong> R1 cumple ✅, afectación de KPI en Antioquia, se requiere dar prioridad a los casos con vencimiento de SLA y solicitar exclusiones a las OTs exógenas</li>
-                        <li><strong>Operatividad:</strong> afectación en Antioquia, Cesar y Guajira, se requiere dar prioridad a los casos con vencimiento de SLA y solicitar exclusiones a las OTs exógenas</li>
-                        <li><strong>SLA:</strong> R1 cumple ✅, R2 se identifican los casos para ajuste</li>
-                        <li><strong>MPR:</strong> Medición de KPI sobre mes vencido en curso de validación por parte de Claro y la interventoría, KPI aumentará de manera paulatina de acuerdo al proceso de medición antes mencionado</li>
-                    </ul>
-                </div>
+        } catch (err) {
+            console.error("Error al procesar el Excel:", err);
+            alert("Hubo un error al leer o subir el archivo Excel.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
 
-            </div>
-        </div>
+// --- CARGAR DESDE D1, CALCULAR Y PINTAR EN HTML ---
+async function cargarYRenderizarKPIs() {
+    try {
+        const response = await fetch(WORKER_URL);
+        const resultado = await response.json();
 
-    </main>
+        if (!resultado.ok) return;
 
-</div>
+        const data = resultado.data;
+        if (data.R1) calcularYPintarFilaTabla('R1', data.R1);
+        if (data.R2) calcularYPintarFilaTabla('R2', data.R2);
 
-<!-- Archivo JS específico para la lógica de KPIs -->
-<script src="../js/kpis.js"></script>
+    } catch (error) {
+        console.error("Error al cargar datos desde el Worker:", error);
+    }
+}
 
-</body>
-</html>
+// Motor matemático idéntico a tu Excel y renderizado en la tabla HTML
+function calcularYPintarFilaTabla(zona, d) {
+    // 1. Cálculos de cumplimiento (Ejecutado / Meta)
+    const cumpOper = d.meta_operatividad > 0 ? d.ejec_operatividad / d.meta_operatividad : 0;
+    const cumpSla = d.meta_sla > 0 ? d.ejec_sla / d.meta_sla : 0;
+    const cumpBacklog = d.meta_backlog > 0 ? d.ejec_backlog / d.meta_backlog : 0;
+    const cumpMpr = d.meta_mpr > 0 ? d.ejec_mpr / d.meta_mpr : 0;
+
+    // 2. Pesos ponderados generados (Cumplimiento acotado a 1.0 * Peso asignado)
+    const pesoGenOper = Math.min(cumpOper, 1.0) * d.peso_operatividad;
+    const pesoGenSla = Math.min(cumpSla, 1.0) * d.peso_sla;
+    const pesoGenBacklog = Math.min(cumpBacklog, 1.0) * d.peso_backlog;
+    const pesoGenMpr = Math.min(cumpMpr, 1.0) * d.peso_mpr;
+
+    // 3. Cumplimiento general de la zona
+    const cumplimientoGeneral = pesoGenOper + pesoGenSla + pesoGenBacklog + pesoGenMpr;
+
+    // Formateadores visuales a porcentaje
+    const fmtPct = (val) => (val * 100).toFixed(2).replace('.', ',') + ' %';
+    const fmtNum = (val) => Number(val).toFixed(4).replace('.', ',');
+
+    // --- INYECCIÓN EN EL HTML ---
+    // Asegúrate de que tu tabla tenga IDs organizados por zona (ej: id="r1-operatividad", id="r1-cump-general", etc.)
+    const z = zona.toLowerCase();
+    
+    asignarTexto(`${z}-operatividad`, fmtPct(d.ejec_operatividad));
+    asignarTexto(`${z}-meta-operatividad`, fmtPct(d.meta_operatividad));
+    asignarTexto(`${z}-cump-operatividad`, fmtPct(cumpOper));
+    asignarTexto(`${z}-peso-operatividad`, fmtNum(d.peso_operatividad));
+
+    asignarTexto(`${z}-sla`, fmtPct(d.ejec_sla));
+    asignarTexto(`${z}-meta-sla`, fmtPct(d.meta_sla));
+    asignarTexto(`${z}-cump-sla`, fmtPct(cumpSla));
+    asignarTexto(`${z}-peso-sla`, fmtNum(d.peso_sla));
+
+    asignarTexto(`${z}-backlog`, fmtPct(d.ejec_backlog));
+    asignarTexto(`${z}-meta-backlog`, fmtPct(d.meta_backlog));
+    asignarTexto(`${z}-cump-backlog`, fmtPct(cumpBacklog));
+    asignarTexto(`${z}-peso-backlog`, fmtNum(d.peso_backlog));
+
+    asignarTexto(`${z}-mpr`, fmtPct(d.ejec_mpr));
+    asignarTexto(`${z}-meta-mpr`, fmtPct(d.meta_mpr));
+    asignarTexto(`${z}-cump-mpr`, fmtPct(cumpMpr));
+    asignarTexto(`${z}-peso-mpr`, fmtNum(d.peso_mpr));
+
+    asignarTexto(`${z}-cump-general`, fmtPct(cumplimientoGeneral));
+}
+
+function asignarTexto(id, valor) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = valor;
+}
