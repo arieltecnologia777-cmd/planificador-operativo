@@ -132,7 +132,7 @@ document.addEventListener("input", (e) => {
 window.exportarHistoricoOTs = function() {
     try {
         // Obtenemos los datos actuales de la tabla de completadas
-        const filasTabla = document.querySelectorAll("#tablaCompletadasBody tr"); // Ajusta el selector según el id de tu tbody
+        const filasTabla = document.querySelectorAll("#historicoBody tr"); // Ajusta el selector según el id de tu tbody
         
         if (!filasTabla || filasTabla.length === 0) {
             alert("No hay registros en el histórico para exportar.");
