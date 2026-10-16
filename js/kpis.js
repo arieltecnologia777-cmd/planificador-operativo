@@ -1,7 +1,7 @@
 const WORKER_URL = 'https://kpis.modulo-de-exclusiones.workers.dev/api/kpis';
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Control del Sidebar idéntico a planeacion.js
+    // 1. Control del Sidebar: Inicia colapsado por defecto y alterna al hacer clic
     const btnToggle = document.getElementById("btnToggleSidebar");
     if (btnToggle) {
         btnToggle.addEventListener("click", () => {
@@ -51,7 +51,6 @@ function initModalesAdmin() {
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", () => {
             const pass = inputAdminPassword ? inputAdminPassword.value : "";
-            // Validación de clave conectada con settings o por defecto
             const claveSistema = (typeof CLAVE_ADMIN !== 'undefined') ? CLAVE_ADMIN : "admin123";
 
             if (pass === claveSistema || pass === "admin123") {
