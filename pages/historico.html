@@ -74,51 +74,51 @@
 
         <section class="panel">
            <div class="planeacion-header" style="margin-bottom: 10px;">
-    <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
-        <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-            <h2>Órdenes Completadas</h2>
-            
-            <input
-                id="filtroBusquedaHistorico"
-                type="text"
-                placeholder="🔍 Buscar en todo el histórico..."
-                style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
+                <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
+                    <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%;">
+                        <h2>Órdenes Completadas</h2>
+                        
+                        <input
+                            id="filtroBusquedaHistorico"
+                            type="text"
+                            placeholder="🔍 Buscar en todo el histórico..."
+                            style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
 
-            <!-- FILTROS EN CASCADA PARA HISTÓRICO -->
-            <div class="planeacion-filtros-container" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                
-                <!-- Filtro Departamento -->
-<div class="multi-filtro-dropdown">
-    <button type="button" id="btnDeptoHist" class="btn-multi-filtro">
-        <span id="txtDeptoHist">Departamento</span> <span class="arrow">▾</span>
-    </button>
-    <div id="listaDeptoHist" class="multi-filtro-lista"></div>
-</div>
+                        <!-- FILTROS EN CASCADA CON LAS CLASES EXACTAS DE PLANEACIÓN -->
+                        <div class="planeacion-filtros" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 0;">
+                            
+                            <!-- Filtro Departamento -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnDeptoHist" class="btn-multi-filtro">
+                                    <span id="txtDeptoHist">Departamento</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaDeptoHist" class="multi-filtro-lista"></div>
+                            </div>
 
-<!-- Filtro Tipo de Afectación -->
-<div class="multi-filtro-dropdown">
-    <button type="button" id="btnAfecHist" class="btn-multi-filtro">
-        <span id="txtAfecHist">Tipo de afectación</span> <span class="arrow">▾</span>
-    </button>
-    <div id="listaAfecHist" class="multi-filtro-lista"></div>
-</div>
+                            <!-- Filtro Tipo de Afectación -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnAfecHist" class="btn-multi-filtro">
+                                    <span id="txtAfecHist">Tipo de afectación</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaAfecHist" class="multi-filtro-lista"></div>
+                            </div>
 
-<!-- Filtro Fecha de Cierre -->
-<div class="multi-filtro-dropdown">
-    <button type="button" id="btnFechaHist" class="btn-multi-filtro">
-        <span id="txtFechaHist">Fecha de cierre</span> <span class="arrow">▾</span>
-    </button>
-    <div id="listaFechaHist" class="multi-filtro-lista"></div>
-</div>
+                            <!-- Filtro Fecha de Cierre -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnFechaHist" class="btn-multi-filtro">
+                                    <span id="txtFechaHist">Fecha de cierre</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaFechaHist" class="multi-filtro-lista"></div>
+                            </div>
 
-                <!-- Botón Limpiar Filtros -->
-                <button type="button" id="btnLimpiarFiltrosHist" class="btn-limpiar-header" style="background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
-                    ✖ Limpiar filtros
-                </button>
+                            <!-- Botón Limpiar Filtros -->
+                            <button type="button" id="btnLimpiarFiltrosHist" class="btn-limpiar-header" style="background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
+                                ✖ Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
             <div class="planeacion-table-wrapper" style="margin-top: 15px;">
                 <table class="planeacion-table">
@@ -147,6 +147,7 @@
     </main>
 
 </div>
+
 <!-- Librería SheetJS (XLSX) para la exportación a Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <!-- Único script necesario para esta vista -->
