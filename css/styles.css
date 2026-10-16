@@ -2292,20 +2292,29 @@ body.sidebar-colapsado .btn-sidebar-toggle::after {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
-/* Forzar que el contenedor de la tabla absorba todo el espacio vertical disponible */
-body.modo-zoom .planeacion-table-wrapper,
-body.modo-ampliado .planeacion-table-wrapper {
-    flex: 1 !important;
-    max-height: 75vh !important;
-    height: 75vh !important;
+/* Forzar expansión absoluta del panel y la tabla en modo zoom */
+body.modo-zoom .main-content,
+body.modo-ampliado .main-content {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    overflow: hidden !important;
 }
 
-/* Forzar que el panel principal trabaje en modelo flexible vertical */
 body.modo-zoom .panel.panel-zoom,
 body.modo-ampliado .panel.panel-zoom {
     display: flex !important;
     flex-direction: column !important;
-    height: 96vh !important;
-    max-height: 96vh !important;
-    overflow: hidden !important;
+    flex: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin-bottom: 10px !important;
+}
+
+body.modo-zoom .planeacion-table-wrapper,
+body.modo-ampliado .planeacion-table-wrapper {
+    flex: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: auto !important;
 }
