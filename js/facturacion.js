@@ -97,7 +97,22 @@ function aplicarFiltrosGlobales() {
         return matchReg;
     });
 
-    // 2. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios
+    // 2. Dataset exclusivo para la GRÁFICA DE TENDENCIA: Filtra por región, perfil, aprobación y búsqueda, pero IGNORA el mes para mostrar todo el año
+    const registrosParaGrafica = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchSearch = tecnico.includes(searchVal);
+
+        return matchReg && matchPerfil && matchAprob && matchSearch;
+    });
+
+    // 3. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios (incluyendo mes)
     const filtradosCompletos = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
@@ -118,7 +133,7 @@ function aplicarFiltrosGlobales() {
     renderTable(tecnicosData);
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion);
     renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(filtradosCompletos);
+    initChartsDinamicos(registrosParaGrafica, fRegion);
 }
 
 function resetFiltros() {
@@ -257,6 +272,134 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
+// Gráfica de tendencia anual dinámica con tooltip flotante interactivo y línea de meta
+function initChartsDinamicos(records, fRegion = "TODOS") {
+    const ctxTendencia = document.getElementById('tendenciaChart');
+    if (!ctxTendencia) return;
+
+    const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const acumuladoMeses = new Array(12).fill(0);
+
+    let metaRegionalTotal = META_GLOBAL_TOTAL;
+    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
+        metaRegionalTotal = METAS_REGIONALES[fRegion];
+    }
+    
+    // Línea de meta constante de referencia para todo el año
+    const metaLineData = new Array(12).fill(metaRegionalTotal);
+
+    records.forEach(r => {
+        const mesStr = String(r.mes || r.MES || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        
+        if (aprobReg.includes("ACEPTADO")) {
+            const montoAprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+            
+            const match = mesStr.match(/\d{4}\s+(\d{2})/);
+            if (match && match[1]) {
+                const mesIndex = parseInt(match[1], 10) - 1;
+                if (mesIndex >= 0 && mesIndex < 12) {
+                    acumuladoMeses[mesIndex] += montoAprobado;
+                }
+            } else {
+                const upperMes = mesStr.toUpperCase();
+                const keywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+                for (let i = 0; i < keywords.length; i++) {
+                    if (upperMes.includes(keywords[i])) {
+                        acumuladoMeses[i] += montoAprobado;
+                        break;
+                    }
+                }
+            }
+        }
+    });
+
+    if (chartTendencia) chartTendencia.destroy();
+    
+    chartTendencia = new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [
+                {
+                    label: 'Ejecución',
+                    data: acumuladoMeses,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 4,
+                    order: 1
+                },
+                {
+                    label: 'Meta',
+                    data: metaLineData,
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    order: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: { 
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { 
+                    min: 0, 
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
+                            return '$ ' + value;
+                        }
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
 // Renderizar Estado Regional
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
@@ -269,7 +412,7 @@ function renderizarEstadoRegional(rows) {
         
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         if (aprobReg.includes("ACEPTADO")) {
-            mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+            mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
         }
     });
 
@@ -504,119 +647,6 @@ function abrirDetalleTecnico(index) {
 function cerrarModalDetalle() {
     const modal = document.getElementById('modalDetalleTecnico');
     if (modal) modal.style.display = 'none';
-}
-
-// Gráfica de tendencia dinámica con línea de Comportamiento (Aprobado) y línea de Meta fija
-function initChartsDinamicos(records, fRegion = "TODOS") {
-    const ctxTendencia = document.getElementById('tendenciaChart');
-    if (!ctxTendencia) return;
-
-    const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    const acumuladoMeses = new Array(12).fill(0);
-
-    // Calcular la meta fija mensual según la regional seleccionada
-    let metaRegionalTotal = META_GLOBAL_TOTAL;
-    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
-        metaRegionalTotal = METAS_REGIONALES[fRegion];
-    }
-    
-    // Distribuir la meta de forma mensual para la línea de referencia (o dejarla fija como línea recta)
-    // Si prefieres la meta fija total como línea recta de referencia en cada mes:
-    const metaLineData = new Array(12).fill(metaRegionalTotal);
-
-    records.forEach(r => {
-        const mesStr = String(r.mes || r.MES || "").trim();
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        
-        if (aprobReg.includes("ACEPTADO")) {
-            const montoAprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-            
-            const match = mesStr.match(/\d{4}\s+(\d{2})/);
-            if (match && match[1]) {
-                const mesIndex = parseInt(match[1], 10) - 1;
-                if (mesIndex >= 0 && mesIndex < 12) {
-                    acumuladoMeses[mesIndex] += montoAprobado;
-                }
-            } else {
-                const upperMes = mesStr.toUpperCase();
-                const keywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-                for (let i = 0; i < keywords.length; i++) {
-                    if (upperMes.includes(keywords[i])) {
-                        acumuladoMeses[i] += montoAprobado;
-                        break;
-                    }
-                }
-            }
-        }
-    });
-
-    if (chartTendencia) chartTendencia.destroy();
-    
-    chartTendencia = new Chart(ctxTendencia, {
-        type: 'line',
-        data: {
-            labels: mesesLabels,
-            datasets: [
-                {
-                    label: 'Aprobado',
-                    data: acumuladoMeses,
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#2563eb',
-                    pointRadius: 4,
-                    order: 1
-                },
-                {
-                    label: 'Meta',
-                    data: metaLineData,
-                    borderColor: '#94a3b8', // Línea gris
-                    borderWidth: 2,
-                    borderDash: [5, 5], // Línea punteada como en tu ejemplo
-                    fill: false,
-                    pointRadius: 0, // Sin puntos en la línea de meta para mantener limpieza visual
-                    order: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { 
-                    display: true,
-                    position: 'top',
-                    align: 'end',
-                    labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: { 
-                    min: 0, 
-                    grid: { color: '#f1f5f9' },
-                    ticks: {
-                        callback: function(value) {
-                            if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
-                            return '$ ' + value;
-                        }
-                    }
-                },
-                x: { grid: { display: false } }
-            }
-        }
-    });
 }
 
 function exportExcel() {
