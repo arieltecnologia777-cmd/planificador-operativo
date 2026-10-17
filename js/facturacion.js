@@ -506,29 +506,38 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-// Gráfica de tendencia dinámica agrupada por meses según los filtros
+// Gráfica de tendencia dinámica agrupada por meses según el formato '2026 XX NOMBRE'
 function initChartsDinamicos(records) {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
 
-    // Meses base a mostrar
     const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    const mesesKeywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
     const acumuladoMeses = new Array(12).fill(0);
 
     records.forEach(r => {
-        const mesStr = String(r.mes || r.MES || "").toUpperCase();
+        const mesStr = String(r.mes || r.MES || "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
         // Solo sumamos los aprobados para la tendencia temporal
         if (aprobReg.includes("ACEPTADO")) {
             const montoAprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
             
-            // Identificar a qué mes corresponde el registro
-            for (let i = 0; i < mesesKeywords.length; i++) {
-                if (mesStr.includes(mesesKeywords[i]) || mesStr.includes(`0${i+1}`) || mesStr.includes(`-${i+1}-`)) {
-                    acumuladoMeses[i] += montoAprobado;
-                    break;
+            // Extraer el número del mes (ej. de "2026 02 FEBRERO" extrae "02" o "2")
+            const match = mesStr.match(/\d{4}\s+(\d{2})/);
+            if (match && match[1]) {
+                const mesIndex = parseInt(match[1], 10) - 1; // Índice de 0 a 11
+                if (mesIndex >= 0 && mesIndex < 12) {
+                    acumuladoMeses[mesIndex] += montoAprobado;
+                }
+            } else {
+                // Fallback por si acaso encuentra nombres directos de meses
+                const upperMes = mesStr.toUpperCase();
+                const keywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+                for (let i = 0; i < keywords.length; i++) {
+                    if (upperMes.includes(keywords[i])) {
+                        acumuladoMeses[i] += montoAprobado;
+                        break;
+                    }
                 }
             }
         }
