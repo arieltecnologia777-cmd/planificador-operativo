@@ -116,18 +116,23 @@ aside.sidebar {
     flex: 1;
 }
 
+/* Fila superior dividida exactamente 50% y 50% */
 .fact-top-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Mitad y mitad exactas */
-    gap: 20px;
-    align-items: stretch;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .fact-right-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Paneles unificados */
@@ -138,6 +143,7 @@ aside.sidebar {
     padding: 18px 20px !important;
     box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
     box-sizing: border-box !important;
+    width: 100% !important;
 }
 
 /* Estado Regional */
@@ -291,7 +297,7 @@ table.fact-table tr:hover td { background: #f8fafc; }
 }
 
 .nav-submenu {
-    display: none; /* Por defecto cerrado */
+    display: none;
     flex-direction: column;
     background: #f8fafc;
     padding-left: 12px;
