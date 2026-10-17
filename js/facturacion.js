@@ -400,7 +400,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional ordenado en columnas fijas
+// Renderizar Estado Regional compacto y ajustado al espacio
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -417,10 +417,10 @@ function renderizarEstadoRegional(rows) {
     });
 
     let html = `
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: grid; grid-template-columns: 110px 80px 1fr; align-items: center; padding: 4px 8px; font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 4px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
                 <div>Regional</div>
-                <div style="text-align: center;">Efectividad</div>
+                <div style="text-align: center;">Efectiv.</div>
                 <div style="text-align: right;">Total</div>
             </div>
     `;
@@ -433,22 +433,22 @@ function renderizarEstadoRegional(rows) {
         const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
-            <div style="display: grid; grid-template-columns: 110px 80px 1fr; align-items: center; padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
-                    <span style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">${reg}</span>
+            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
+                    <span style="font-weight: 700; color: #0f172a; font-size: 0.82rem;">${reg}</span>
                 </div>
                 <div style="text-align: center;">
-                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 0.78rem; font-weight: bold;">${ef}%</span>
+                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 1px 5px; border-radius: 5px; font-size: 0.72rem; font-weight: bold;">${ef}%</span>
                 </div>
-                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.85rem;">
+                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.8rem;">
                     ${formatMoney(val.aprobado)}
                 </div>
             </div>
         `;
     }
     html += `</div>`;
-    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 10px;">Sin datos regionales</div>';
+    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 // Validación de contraseña de administrador
 async function verificarPassword() {
