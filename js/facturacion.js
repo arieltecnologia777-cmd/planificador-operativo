@@ -5,12 +5,14 @@ const IMPORTAR_API_URL = `${API_BASE_URL}/facturacion/importar`;
 
 let tecnicosData = [];
 let registrosCrudos = [];
+let chartTendencia = null;
+let chartGauge = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
 });
 
-// GET: Cargar registros desde Cloudflare D1 con inspector de claves
+// GET: Cargar registros desde Cloudflare D1
 async function cargarDatosDesdeAPI() {
     try {
         console.log("Consultando API en:", FACTURACION_API_URL);
@@ -20,14 +22,8 @@ async function cargarDatosDesdeAPI() {
             console.log("Registros crudos recibidos de D1:", registrosCrudos);
             
             if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
-                // Imprimimos la primera fila en consola para ver las columnas exactas
-                console.table(registrosCrudos[0]);
-
-                tecnicosData = procesarDatosParaVista(registrosCrudos);
-                renderTable(tecnicosData);
-                actualizarKPIsGenerales(registrosCrudos);
-                renderizarEstadoRegional(registrosCrudos);
-                initChartsDinamicos(registrosCrudos);
+                poblarSelectsFiltros(registrosCrudos);
+                aplicarFiltrosGlobales();
             } else {
                 console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
@@ -40,12 +36,88 @@ async function cargarDatosDesdeAPI() {
         actualizarKPIsGenerales([]);
     }
 }
-// Agrupar registros por técnico leyendo correctamente estimado_a_facturar y total_aprobado
+
+// Poblar los selects del acordeón de filtros dinámicamente
+function poblarSelectsFiltros(rows) {
+    const regiones = new Set();
+    const meses = new Set();
+    const perfiles = new Set();
+    const aprobaciones = new Set();
+
+    rows.forEach(r => {
+        const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '];
+        const mes = r.mes || r.MES;
+        const perfil = r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'];
+        const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
+
+        if (reg) regiones.add(String(reg).trim());
+        if (mes) meses.add(String(mes).trim());
+        if (perfil) perfiles.add(String(perfil).trim());
+        if (aprob) aprobaciones.add(String(aprob).trim());
+    });
+
+    llenarSelectHTML('filtroRegion', regiones);
+    llenarSelectHTML('filtroMes', meses);
+    llenarSelectHTML('filtroPerfilWfm', perfiles);
+    llenarSelectHTML('filtroAprobacion', aprobaciones);
+}
+
+function llenarSelectHTML(elementId, setValues) {
+    const select = document.getElementById(elementId);
+    if (!select) return;
+    let html = `<option value="TODOS">Todos</option>`;
+    Array.from(setValues).sort().forEach(val => {
+        html += `<option value="${val}">${val}</option>`;
+    });
+    select.innerHTML = html;
+}
+
+// Filtrar registros crudos según los 4 filtros del sidebar + buscador de texto
+function aplicarFiltrosGlobales() {
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const filtrados = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchSearch = tecnico.includes(searchVal);
+
+        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
+    });
+
+    tecnicosData = procesarDatosParaVista(filtrados);
+    renderTable(tecnicosData);
+    actualizarKPIsGenerales(filtrados);
+    renderizarEstadoRegional(filtrados);
+    initChartsDinamicos(filtrados);
+}
+
+function resetFiltros() {
+    if (document.getElementById('filtroRegion')) document.getElementById('filtroRegion').value = "TODOS";
+    if (document.getElementById('filtroMes')) document.getElementById('filtroMes').value = "TODOS";
+    if (document.getElementById('filtroPerfilWfm')) document.getElementById('filtroPerfilWfm').value = "TODOS";
+    if (document.getElementById('filtroAprobacion')) document.getElementById('filtroAprobacion').value = "TODOS";
+    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    aplicarFiltrosGlobales();
+}
+
+// Agrupar registros por técnico
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
     rows.forEach(r => {
-        const nombreTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
+        const nombreTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
         const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         
         if (!mapaTecnicos[nombreTecnico]) {
@@ -61,7 +133,6 @@ function procesarDatosParaVista(rows) {
             };
         }
 
-        // Leemos las columnas reales que contienen los valores monetarios en D1
         const metaVal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
         const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
         const rechazadoVal = Number(r.valor_visita ?? 0);
@@ -80,7 +151,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales con las columnas correctas
+// Actualizar Tarjetas KPI generales con decimales exactos
 function actualizarKPIsGenerales(rows) {
     let totalMeta = rows.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? 0), 0);
     let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
@@ -89,10 +160,10 @@ function actualizarKPIsGenerales(rows) {
     
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
-    if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoneyCompact(totalMeta);
-    if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoneyCompact(totalAprobado);
-    if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoneyCompact(totalRechazado);
-    if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoneyCompact(totalSubsanado);
+    if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
+    if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
+    if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
+    if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoney(totalSubsanado);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
 
     let porcMeta = totalMeta > 0 ? 100 : 0;
@@ -114,7 +185,8 @@ function actualizarKPIsGenerales(rows) {
 
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
-        new Chart(ctxGauge, {
+        if (chartGauge) chartGauge.destroy();
+        chartGauge = new Chart(ctxGauge, {
             type: 'doughnut',
             data: {
                 datasets: [{
@@ -142,7 +214,7 @@ function renderizarEstadoRegional(rows) {
     rows.forEach(r => {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         if (!mapaRegiones[reg]) mapaRegiones[reg] = { aprobado: 0, meta: 0 };
-        mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURED ?? 0);
+        mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
         mapaRegiones[reg].meta += Number(r.estimado_a_facturar ?? r.facturacion ?? 0);
     });
 
@@ -167,19 +239,17 @@ function renderizarEstadoRegional(rows) {
     }
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 10px;">Sin datos regionales</div>';
 }
+
 // Validación de contraseña de administrador
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
-    
     try {
         const response = await fetch(VERIFICAR_KEY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: passwordIngresada })
         });
-
         const resultado = await response.json();
-
         if (response.ok && (resultado.success === true || resultado.ok === true)) {
             cerrarModalPassword();
             document.getElementById('modalHerramientas').style.display = 'flex';
@@ -211,7 +281,6 @@ async function procesarYSubirExcel(event) {
     if (!file) return;
 
     cerrarModalHerramientas();
-    
     const modalCarga = document.getElementById('modalCargandoExcel');
     const barra = document.getElementById('barraProgreso');
     const txtPorc = document.getElementById('txtPorcentajeCarga');
@@ -272,13 +341,10 @@ async function procesarYSubirExcel(event) {
 }
 
 function formatMoney(amount) {
-    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {maximumFractionDigits: 0});
-}
-
-function formatMoneyCompact(amount) {
-    let val = Number(amount || 0);
-    if (val >= 1000000) return '$ ' + (val / 1000000).toFixed(1) + 'M';
-    return '$ ' + val.toLocaleString('es-CO');
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
 }
 
 function renderTable(records) {
@@ -286,7 +352,7 @@ function renderTable(records) {
     if (!tbody) return;
     
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles. Sube una base desde Herramientas Avanzadas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>`;
         return;
     }
 
@@ -383,27 +449,12 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-function filterTable() {
-    const searchInput = document.getElementById('searchInput');
-    const selectFiltroRegional = document.getElementById('selectFiltroRegional');
-    
-    const query = searchInput ? searchInput.value.toLowerCase() : "";
-    const regionalFiltro = selectFiltroRegional ? selectFiltroRegional.value : "TODAS";
-
-    const filtered = tecnicosData.filter(r => {
-        const matchNombre = r.nombre.toLowerCase().includes(query);
-        const matchRegional = regionalFiltro === "TODAS" || r.regional === regionalFiltro;
-        return matchNombre && matchRegional;
-    });
-
-    renderTable(filtered);
-}
-
 function initChartsDinamicos(records) {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (ctxTendencia) {
-        let totalAprobado = records.reduce((acc, r) => acc + Number(r.total_aprobado || r.TOTAL_APROBADO || r['Total  Aprobado'] || r['Total Aprobado'] || 0), 0);
-        new Chart(ctxTendencia, {
+        let totalAprobado = records.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
+        if (chartTendencia) chartTendencia.destroy();
+        chartTendencia = new Chart(ctxTendencia, {
             type: 'line',
             data: {
                 labels: ['Ene', 'Feb', 'Mar', 'Abr'],
