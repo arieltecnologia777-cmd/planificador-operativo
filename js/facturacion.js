@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual dinámica con cursor láser rojo y sincronización exacta de meses
+// Gráfica de tendencia anual con cursor láser rojo exacto y sin desfase de mes
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,7 +314,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin seguro para dibujar la línea vertical láser de color ROJO sin errores de undefined
+    // Plugin para dibujar la línea vertical láser de color ROJO exactamente en el punto activo
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -330,8 +330,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 ctx.moveTo(x, topY);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)'; // Rojo láser brillante
-                ctx.setLineDash([3, 3]); // Línea punteada de mira
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante
+                ctx.setLineDash([3, 3]); // Línea punteada tipo mira
                 ctx.stroke();
                 ctx.restore();
             }
@@ -371,12 +371,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Sincronización exacta por índice sin desfase
+            // Corrección definitiva del desfase al entrar desde cualquier dirección
             interaction: {
-                mode: 'index',
+                mode: 'nearest',
                 axis: 'x',
                 intersect: false,
             },
+            // Forzar el cursor en cruz (puntero láser)
             onHover: (event, chartElement) => {
                 event.native.target.style.cursor = chartElement.length ? 'crosshair' : 'default';
             },
