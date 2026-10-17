@@ -1018,7 +1018,7 @@ div:has(> .tabla-rangos) {
        ========================================================================= */
     @media screen and (min-width: 1600px) {
         #mapaLeaflet .pin-estatico-neon:nth-child(1) { /* Antioquia */
-            left: 42% !important; /* Modifica este porcentaje según necesites moverlo */
+            left: 52% !important; /* Modifica este porcentaje según necesites moverlo */
         }
         #mapaLeaflet .pin-estatico-neon:nth-child(2) { /* Cesar (Más a la izquierda) */
             left: 54% !important; 
