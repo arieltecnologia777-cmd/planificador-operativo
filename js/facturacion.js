@@ -22,7 +22,7 @@ function renderTable(records) {
     if (!tbody) return;
     let html = '';
 
-    records.forEach(r => {
+    records.forEach((r, index) => {
         const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
         const barColor = r.efectividad >= 70 ? "#22c55e" : (r.efectividad >= 50 ? "#f59e0b" : "#ef4444");
 
@@ -42,10 +42,75 @@ function renderTable(records) {
                     </div>
                 </td>
                 <td><span class="badge-status ${badgeClass}">${r.estado}</span></td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
+                </td>
             </tr>
         `;
     });
     tbody.innerHTML = html;
+}
+
+function abrirDetalleTecnico(index) {
+    const r = tecnicosData[index];
+    if (!r) return;
+
+    const modalBody = document.getElementById('modalBodyContent');
+    const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
+
+    modalBody.innerHTML = `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
+                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
+                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
+                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Efectividad Global del Técnico</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta establecida.</div>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
+            </div>
+        </div>
+    `;
+
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'none';
 }
 
 function filterTable() {
