@@ -1,38 +1,103 @@
-// Datos de respaldo locales si la API está offline
-let tecnicosData = [
-    { nombre: "Hailen Julio", regional: "Antioquia", meta: 12000000, aprobado: 8400000, rechazado: 1200000, subsanado: 2000000, efectividad: 70, estado: "En progreso" },
-    { nombre: "Juan Torres", regional: "Cesar", meta: 10000000, aprobado: 6200000, rechazado: 1800000, subsanado: 2000000, efectividad: 62, estado: "En progreso" },
-    { nombre: "Samuel Pushaina", regional: "La Guajira", meta: 8000000, aprobado: 3600000, rechazado: 2400000, subsanado: 2000000, efectividad: 45, estado: "En riesgo" },
-    { nombre: "Hardy Whitaker", regional: "Sai", meta: 9000000, aprobado: 7000000, rechazado: 1000000, subsanado: 1000000, efectividad: 78, estado: "En progreso" },
-    { nombre: "Elger Hernández", regional: "Cesar", meta: 15000000, aprobado: 12000000, rechazado: 1500000, subsanado: 1500000, efectividad: 80, estado: "En progreso" },
-    { nombre: "Sammy Eliud", regional: "Antioquia", meta: 11000000, aprobado: 9000000, rechazado: 1000000, subsanado: 1000000, efectividad: 82, estado: "En progreso" }
-];
-
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api"; // O tu endpoint del worker de facturación
+let tecnicosData = [];
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
     initCharts();
 });
 
-// GET: Cargar registros desde Cloudflare Worker
+// GET: Cargar todos los registros desde Cloudflare D1 a través del Worker
 async function cargarDatosDesdeAPI() {
     try {
         const response = await fetch(`${API_BASE_URL}/facturacion`);
         if (response.ok) {
-            const data = await response.json();
-            if (Array.isArray(data) && data.length > 0) {
-                // Transformar datos del D1 si es necesario para la tabla
-                console.log("Datos cargados desde D1:", data.length);
-            }
+            const rawData = await response.json();
+            
+            // Agrupar o formatear los datos crudos del Excel para la vista de técnicos
+            tecnicosData = procesarDatosParaVista(rawData);
+            renderTable(tecnicosData);
+            actualizarKPIsGenerales(rawData);
         }
     } catch (err) {
-        console.warn("Usando datos locales por defecto (API no disponible o inicializando):", err);
+        console.warn("No se pudieron obtener datos de la API:", err);
+        renderTable([]);
     }
-    renderTable(tecnicosData);
 }
 
-// Lógica de Modales de Herramientas Avanzadas
+// Procesar registros del Excel para consolidar por técnico
+function procesarDatosParaVista(rows) {
+    const mapaTecnicos = {};
+
+    rows.forEach(r => {
+        const nombreTecnico = r.tecnico_programado || "Sin asignar";
+        const regional = r.region || "General";
+        
+        if (!mapaTecnicos[nombreTecnico]) {
+            mapaTecnicos[nombreTecnico] = {
+                nombre: nombreTecnico,
+                regional: regional,
+                meta: 0,
+                aprobado: 0,
+                rechazado: 0,
+                subsanado: 0,
+                efectividad: 0,
+                estado: "En progreso"
+            };
+        }
+
+        mapaTecnicos[nombreTecnico].meta += Number(r.facturacion || 0);
+        mapaTecnicos[nombreTecnico].aprobado += Number(r.total_aprobado || 0);
+        mapaTecnicos[nombreTecnico].rechazado += Number(r.valor_visita || 0); // Ajuste según métrica
+        mapaTecnicos[nombreTecnico].subsanado += Number(r.trasiego_esp || 0);
+    });
+
+    return Object.values(mapaTecnicos).map(t => {
+        t.efectividad = t.meta > 0 ? Math.round((t.aprobado / t.meta) * 100) : 0;
+        t.estado = t.efectividad >= 70 ? "En progreso" : "En riesgo";
+        return t;
+    });
+}
+
+function actualizarKPIsGenerales(rows) {
+    let totalMeta = rows.reduce((acc, r) => acc + Number(r.facturacion || 0), 0);
+    let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado || 0), 0);
+    let totalRechazado = rows.reduce((acc, r) => acc + Number(r.valor_visita || 0), 0);
+    let totalSubsanado = rows.reduce((acc, r) => acc + Number(r.trasiego_esp || 0), 0);
+    
+    let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
+
+    if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
+    if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
+    if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
+    if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoney(totalSubsanado);
+    if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
+}
+
+// Verificación de contraseña conectada al Worker y variable FACT_KEY
+async function verificarPassword() {
+    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/verificar-key`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: passwordIngresada })
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok && resultado.success) {
+            cerrarModalPassword();
+            document.getElementById('modalHerramientas').style.display = 'flex';
+        } else {
+            document.getElementById('errorPasswordMsg').style.display = 'block';
+        }
+    } catch (err) {
+        console.error("Error al validar clave:", err);
+        document.getElementById('errorPasswordMsg').style.display = 'block';
+    }
+}
+
 function abrirModalPassword() {
     document.getElementById('inputPasswordAdmin').value = '';
     document.getElementById('errorPasswordMsg').style.display = 'none';
@@ -43,46 +108,33 @@ function cerrarModalPassword() {
     document.getElementById('modalPassword').style.display = 'none';
 }
 
-async function verificarPassword() {
-    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
-    
-    // Aquí puedes validar contra tu key o un valor directo
-    if (passwordIngresada === "Admin2026*" || passwordIngresada === "admin") {
-        cerrarModalPassword();
-        document.getElementById('modalHerramientas').style.display = 'flex';
-    } else {
-        document.getElementById('errorPasswordMsg').style.display = 'block';
-    }
-}
-
 function cerrarModalHerramientas() {
     document.getElementById('modalHerramientas').style.display = 'none';
 }
 
-// Cargue de Excel y envío masivo al Worker con barra de avance
+// Cargue de Excel y sincronización masiva
 async function procesarYSubirExcel(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     cerrarModalHerramientas();
     
-    // Mostrar modal de carga bloqueante con barra en 0%
     const modalCarga = document.getElementById('modalCargandoExcel');
     const barra = document.getElementById('barraProgreso');
     const txtPorc = document.getElementById('txtPorcentajeCarga');
     const txtEstado = document.getElementById('txtEstadoCarga');
     
-    barra.style.width = '10%';
-    txtPorc.innerText = '10%';
+    barra.style.width = '15%';
+    txtPorc.innerText = '15%';
     txtEstado.innerText = 'Leyendo archivo Excel...';
     modalCarga.style.display = 'flex';
 
     const reader = new FileReader();
     reader.onload = async function(e) {
         try {
-            barra.style.width = '40%';
-            txtPorc.innerText = '40%';
-            txtEstado.innerText = 'Procesando registros...';
+            barra.style.width = '50%';
+            txtPorc.innerText = '50%';
+            txtEstado.innerText = 'Procesando filas...';
 
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
@@ -96,16 +148,17 @@ async function procesarYSubirExcel(event) {
                 return;
             }
 
-            barra.style.width = '70%';
-            txtPorc.innerText = '70%';
-            txtEstado.innerText = 'Sincronizando con Cloudflare D1...';
+            barra.style.width = '75%';
+            txtPorc.innerText = '75%';
+            txtEstado.innerText = 'Guardando en Cloudflare D1...';
 
-            // Enviar en lotes o completo al worker
             const response = await fetch(`${API_BASE_URL}/facturacion/importar`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(jsonData)
             });
+
+            if (!response.ok) throw new Error("Error en la inserción masiva");
 
             barra.style.width = '100%';
             txtPorc.innerText = '100%';
@@ -113,8 +166,8 @@ async function procesarYSubirExcel(event) {
 
             setTimeout(() => {
                 modalCarga.style.display = 'none';
-                alert(`¡Proceso exitoso! Se sincronizaron los registros correctamente.`);
-                location.reload(); // Recargar para pintar los datos nuevos con GET
+                alert("¡Base de facturación cargada y sincronizada con éxito!");
+                location.reload();
             }, 1000);
 
         } catch (error) {
@@ -126,14 +179,19 @@ async function procesarYSubirExcel(event) {
 }
 
 function formatMoney(amount) {
-    return '$ ' + Number(amount).toLocaleString('es-CO', {maximumFractionDigits: 0});
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {maximumFractionDigits: 0});
 }
 
 function renderTable(records) {
     const tbody = document.getElementById('tableBody');
     if (!tbody) return;
-    let html = '';
+    
+    if(records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles. Sube una base desde Herramientas Avanzadas.</td></tr>`;
+        return;
+    }
 
+    let html = '';
     records.forEach((r, index) => {
         const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
         const barColor = r.efectividad >= 70 ? "#22c55e" : (r.efectividad >= 50 ? "#f59e0b" : "#ef4444");
@@ -186,44 +244,23 @@ function initCharts() {
             type: 'line',
             data: {
                 labels: ['Ene', 'Feb', 'Mar', 'Abr'],
-                datasets: [
-                    {
-                        label: 'Meta',
-                        data: [2500000, 6000000, 9300000, 11800000],
-                        borderColor: '#94a3b8',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        fill: false
-                    },
-                    {
-                        label: 'Aprobado',
-                        data: [700000, 3800000, 7200000, 9600000],
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        fill: true,
-                        tension: 0.3
-                    }
-                ]
+                datasets: [{
+                    label: 'Aprobado',
+                    data: [0, 0, 0, 0],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: {
-                        min: 0,
-                        max: 15000000,
-                        ticks: { 
-                            callback: (val) => '$ ' + (val/1000000).toLocaleString() + '.000.000'.replace('0.000.000', ''), 
-                            font: { size: 10, weight: 'bold' },
-                            color: '#64748b'
-                        },
-                        grid: { color: '#f1f5f9' }
-                    },
-                    x: { grid: { display: false }, ticks: { font: { weight: 'bold' }, color: '#64748b' } }
+                    y: { min: 0, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
@@ -233,19 +270,8 @@ function initCharts() {
     if (ctxGauge) {
         new Chart(ctxGauge, {
             type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [70, 30],
-                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: { tooltip: { enabled: false }, legend: { display: false } }
-            }
+            data: { datasets: [{ data: [0, 100], backgroundColor: ['#8b5cf6', '#e2e8f0'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { tooltip: { enabled: false }, legend: { display: false } } }
         });
     }
 }
