@@ -10,24 +10,25 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura fija y limpia sin colapsos raros */
+    /* Bloqueo del scroll global para que la página sea un cuadro fijo de pantalla completa */
     html, body {
         zoom: 100% !important;
         transform: none !important;
         margin: 0;
         padding: 0;
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden !important;
     }
 
     .layout {
         display: flex;
         width: 100%;
-        min-height: 100vh;
+        height: 100vh;
         position: relative;
+        overflow: hidden;
     }
 
-    /* Sidebar fijo permanente y ordenado */
+    /* Sidebar fijo que ahora SÍ llega exactamente hasta el fondo absoluto de la pantalla */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
@@ -39,6 +40,7 @@
         flex-direction: column !important;
         justify-content: space-between !important;
         box-sizing: border-box !important;
+        padding-bottom: 15px !important;
     }
 
     .sidebar-nav {
@@ -47,30 +49,31 @@
         flex: 1 !important;
     }
 
-    /* Contenido principal alineado correctamente al lado del sidebar */
+    /* Contenido principal estirado exactamente al alto de la ventana */
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
-        min-height: 100vh;
+        height: 100vh !important;
         padding: 10px 20px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
     }
 
-    /* El panel se estira para llenar el alto de la pantalla */
+    /* El panel se ajusta al espacio vertical remanente sin desbordar */
     .main-content > .panel {
         flex: 1 !important;
         display: flex !important;
         flex-direction: column !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 15px !important;
         overflow: hidden !important;
     }
 
-    /* Forzar que la tabla baje hasta el fondo con scroll interno */
+    /* Tabla con altura contenida y scroll interno fluido sin exceder el borde inferior */
     .planeacion-table-wrapper {
         flex: 1 !important;
-        max-height: calc(100vh - 210px) !important;
+        max-height: calc(100vh - 275px) !important;
         overflow-y: auto !important;
         margin-top: 15px !important;
     }
