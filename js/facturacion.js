@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con cursor láser rojo y sincronización exacta de meses
+// Gráfica de tendencia anual dinámica con cursor láser rojo y sincronización exacta de meses
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,11 +314,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin personalizado para dibujar la línea de mira láser de color ROJO
+    // Plugin seguro para dibujar la línea vertical láser de color ROJO sin errores de undefined
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
-            if (chart.tooltip._active && chart.tooltip._active.length) {
+            if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
                 const ctx = chart.ctx;
                 const activePoint = chart.tooltip._active[0];
                 const x = activePoint.element.x;
@@ -331,7 +331,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1.5;
                 ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)'; // Rojo láser brillante
-                ctx.setLineDash([3, 3]); // Línea punteada estilo mira
+                ctx.setLineDash([3, 3]); // Línea punteada de mira
                 ctx.stroke();
                 ctx.restore();
             }
@@ -371,7 +371,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Solución definitiva al desfase: se usa 'x' para alinear exactamente con el punto del mes verticalmente
+            // Sincronización exacta por índice sin desfase
             interaction: {
                 mode: 'index',
                 axis: 'x',
@@ -427,6 +427,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
