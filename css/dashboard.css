@@ -1014,23 +1014,27 @@ div:has(> .tabla-rangos) {
         }
     }
 /* =========================================================================
-       CORRECTOR DE POSICIÓN DE ETIQUETAS EN MAPA (PANTALLAS GRANDES)
+       AJUSTE DE ETIQUETAS FLOTANTES SOBRE LA IMAGEN DEL MAPA (PANTALLAS GRANDES)
        ========================================================================= */
     @media screen and (min-width: 1600px) {
-        /* Mueve SAI más a la derecha */
-        .leaflet-marker-icon:has(.sai-badge), 
-        img.leaflet-marker-icon[src*="sai"] ~ *,
-        div:has(> .sai-label) {
+        /* 1. Mueve SAI hacia la derecha y arriba */
+        .etiqueta-sai, /* Reemplaza o añade la clase/id real que usas para SAI */
+        div[data-depto="SAI"], 
+        .pin-sai {
             transform: translate(50px, -15px) !important;
         }
 
-        /* Mueve La Guajira hacia la izquierda */
-        .leaflet-marker-icon:has(.guajira-badge) {
-            transform: translate(-40px, 15px) !important;
+        /* 2. Mueve La Guajira hacia la izquierda */
+        .etiqueta-guajira, 
+        div[data-depto="LA GUAJIRA"], 
+        .pin-guajira {
+            transform: translate(-40px, 10px) !important;
         }
 
-        /* Mueve Cesar hacia la izquierda */
-        .leaflet-marker-icon:has(.cesar-badge) {
-            transform: translate(-30px, 10px) !important;
+        /* 3. Mueve Cesar hacia la izquierda */
+        .etiqueta-cesar, 
+        div[data-depto="CESAR"], 
+        .pin-cesar {
+            transform: translate(-30px, 5px) !important;
         }
     }
