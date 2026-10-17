@@ -984,3 +984,34 @@ div:has(> .tabla-rangos) {
     padding: 24px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
+
+/* Contenedor principal adaptable con max-width amplio para pantallas grandes (1920x1080) */
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 1720px;
+        margin: 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+        padding-bottom: 24px;
+    }
+
+    /* Grilla principal adaptada para expandirse fluidamente en pantallas grandes */
+    .panel-layout-pbi {
+        display: grid;
+        grid-template-columns: 2.35fr 1fr;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    @media screen and (min-width: 1600px) {
+        .dashboard-container {
+            max-width: 100% !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+        }
+        .panel-layout-pbi {
+            grid-template-columns: 2.45fr 1fr !important;
+        }
+    }
