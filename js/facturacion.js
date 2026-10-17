@@ -1,11 +1,11 @@
 // Datos de técnicos consolidados para la tabla y gráficos
 const tecnicosData = [
-    { nombre: "Hailen Julio", regional: "Antioquia", meta: 12000000, facturado: 8400000, estimado: 3200000, efectividad: 70, estado: "En progreso" },
-    { nombre: "Juan Torres", regional: "Cesar", meta: 10000000, facturado: 6200000, estimado: 2800000, efectividad: 62, estado: "En progreso" },
-    { nombre: "Samuel Pushaina", regional: "La Guajira", meta: 8000000, facturado: 3600000, estimado: 2200000, efectividad: 45, estado: "En riesgo" },
-    { nombre: "Hardy Whitaker", regional: "Sai", meta: 9000000, facturado: 7000000, estimado: 2000000, efectividad: 78, estado: "En progreso" },
-    { nombre: "Elger Hernández", regional: "Cesar", meta: 15000000, facturado: 12000000, estimado: 3500000, efectividad: 80, estado: "En progreso" },
-    { nombre: "Sammy Eliud", regional: "Antioquia", meta: 11000000, facturado: 9000000, estimado: 2500000, efectividad: 82, estado: "En progreso" }
+    { nombre: "Hailen Julio", regional: "Antioquia", meta: 12000000, aprobado: 8400000, rechazado: 1200000, subsanado: 2000000, efectividad: 70, estado: "En progreso" },
+    { nombre: "Juan Torres", regional: "Cesar", meta: 10000000, aprobado: 6200000, rechazado: 1800000, subsanado: 2000000, efectividad: 62, estado: "En progreso" },
+    { nombre: "Samuel Pushaina", regional: "La Guajira", meta: 8000000, aprobado: 3600000, rechazado: 2400000, subsanado: 2000000, efectividad: 45, estado: "En riesgo" },
+    { nombre: "Hardy Whitaker", regional: "Sai", meta: 9000000, aprobado: 7000000, rechazado: 1000000, subsanado: 1000000, efectividad: 78, estado: "En progreso" },
+    { nombre: "Elger Hernández", regional: "Cesar", meta: 15000000, aprobado: 12000000, rechazado: 1500000, subsanado: 1500000, efectividad: 80, estado: "En progreso" },
+    { nombre: "Sammy Eliud", regional: "Antioquia", meta: 11000000, aprobado: 9000000, rechazado: 1000000, subsanado: 1000000, efectividad: 82, estado: "En progreso" }
 ];
 
 function formatMoney(amount) {
@@ -31,8 +31,9 @@ function renderTable(records) {
                 <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
                 <td>${r.regional}</td>
                 <td>${formatMoney(r.meta)}</td>
-                <td>${formatMoney(r.facturado)}</td>
-                <td>${formatMoney(r.estimado)}</td>
+                <td>${formatMoney(r.aprobado)}</td>
+                <td>${formatMoney(r.rechazado)}</td>
+                <td>${formatMoney(r.subsanado)}</td>
                 <td>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
