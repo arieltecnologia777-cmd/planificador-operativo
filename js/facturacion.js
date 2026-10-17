@@ -8,6 +8,9 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 
+// Meta fija establecida para todos los técnicos
+const META_FIJA_TECNICO = 9500000;
+
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
 });
@@ -112,7 +115,7 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Agrupar registros por técnico
+// Agrupar registros por técnico aplicando la meta fija de 9.500.000 COP
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
@@ -124,36 +127,39 @@ function procesarDatosParaVista(rows) {
             mapaTecnicos[nombreTecnico] = {
                 nombre: nombreTecnico,
                 regional: regional,
-                meta: 0,
+                meta: META_FIJA_TECNICO, // Meta fija por técnico
                 aprobado: 0,
                 rechazado: 0,
                 subsanado: 0,
                 efectividad: 0,
-                estado: "En progreso"
+                estado: "No cumple"
             };
         }
 
-        const metaVal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
         const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
         const rechazadoVal = Number(r.valor_visita ?? 0);
         const subsanadoVal = Number(r.trasiego_esp ?? 0);
 
-        mapaTecnicos[nombreTecnico].meta += metaVal;
         mapaTecnicos[nombreTecnico].aprobado += aprobadoVal;
         mapaTecnicos[nombreTecnico].rechazado += rechazadoVal;
         mapaTecnicos[nombreTecnico].subsanado += subsanadoVal;
     });
 
     return Object.values(mapaTecnicos).map(t => {
+        // Cálculo de efectividad basado en aprobados / 9.500.000 COP
         t.efectividad = t.meta > 0 ? Math.round((t.aprobado / t.meta) * 100) : 0;
-        t.estado = t.efectividad >= 70 ? "En progreso" : "En riesgo";
+        // Estados estrictos: Cumple (>= 100%) o No cumple (< 100%)
+        t.estado = t.efectividad >= 100 ? "Cumple" : "No cumple";
         return t;
     });
 }
 
-// Actualizar Tarjetas KPI generales con decimales exactos
+// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rows) {
-    let totalMeta = rows.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? 0), 0);
+    // Calculamos la meta global sumando la meta fija (9.500.000) por cada técnico único detectado
+    const tecnicosUnicos = new Set(rows.map(r => r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION"));
+    let totalMeta = tecnicosUnicos.size * META_FIJA_TECNICO;
+
     let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
     let totalRechazado = rows.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
     let totalSubsanado = rows.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
@@ -215,14 +221,27 @@ function renderizarEstadoRegional(rows) {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         if (!mapaRegiones[reg]) mapaRegiones[reg] = { aprobado: 0, meta: 0 };
         mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
-        mapaRegiones[reg].meta += Number(r.estimado_a_facturar ?? r.facturacion ?? 0);
+    });
+
+    // Asignar meta proporcional por cantidad de técnicos en la región
+    // O simplificar tomando la suma de aprobados vs meta fija global de los técnicos de la región
+    // Aquí agrupamos técnicos por región para calcular la meta regional exacta
+    const mapaTecnicosPorRegion = {};
+    rows.forEach(r => {
+        const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
+        const tecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
+        if (!mapaTecnicosPorRegion[reg]) mapaTecnicosPorRegion[reg] = new Set();
+        mapaTecnicosPorRegion[reg].add(tecnico);
     });
 
     let html = '';
     for (const [reg, val] of Object.entries(mapaRegiones)) {
-        const ef = val.meta > 0 ? Math.round((val.aprobado / val.meta) * 100) : 0;
-        const colorClass = ef >= 70 ? "reg-pill-green" : (ef >= 50 ? "reg-pill-yellow" : "reg-pill-red");
-        const dotColor = ef >= 70 ? "#22c55e" : (ef >= 50 ? "#f59e0b" : "#ef4444");
+        const numTecnicosReg = mapaTecnicosPorRegion[reg]?.size || 1;
+        const metaRegional = numTecnicosReg * META_FIJA_TECNICO;
+        const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
+        
+        const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
+        const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
             <div class="reg-row">
@@ -358,8 +377,10 @@ function renderTable(records) {
 
     let html = '';
     records.forEach((r, index) => {
-        const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
-        const barColor = r.efectividad >= 70 ? "#22c55e" : (r.efectividad >= 50 ? "#f59e0b" : "#ef4444");
+        // Estados solo son 2: "Cumple" y "No cumple"
+        const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+        // Colores de barra según el porcentaje hacia el cumplimiento (arcoíris / progreso)
+        const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
             <tr>
@@ -372,7 +393,7 @@ function renderTable(records) {
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
                         <div style="width: 80px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
-                            <div style="width: ${r.efectividad}%; background: ${barColor}; height: 100%;"></div>
+                            <div style="width: ${Math.min(100, r.efectividad)}%; background: ${barColor}; height: 100%;"></div>
                         </div>
                     </div>
                 </td>
@@ -392,7 +413,7 @@ function abrirDetalleTecnico(index) {
 
     const modalBody = document.getElementById('modalBodyContent');
     if(!modalBody) return;
-    const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
+    const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
 
     modalBody.innerHTML = `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
@@ -413,7 +434,7 @@ function abrirDetalleTecnico(index) {
 
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
                 <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada</div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
                     <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
                 </div>
                 <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
@@ -432,8 +453,8 @@ function abrirDetalleTecnico(index) {
 
             <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Efectividad Global del Técnico</div>
-                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta establecida.</div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija de 9.500.000 COP.</div>
                 </div>
                 <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
             </div>
