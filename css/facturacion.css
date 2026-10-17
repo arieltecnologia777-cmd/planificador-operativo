@@ -118,8 +118,9 @@ aside.sidebar {
 
 .fact-top-row {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr; /* Mitad y mitad exactas */
+    gap: 20px;
+    align-items: stretch;
 }
 
 .fact-right-stack {
