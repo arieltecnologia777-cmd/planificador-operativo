@@ -32,12 +32,13 @@
             position: relative !important;
         }
 
-        /* Sidebar fijo que cubre todo el alto de la ventana */
+        /* Sidebar fijo que cubre todo el alto con min-height 100% */
         aside.sidebar {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            height: 100vh !important;
+            height: 100% !important;
+            min-height: 100vh !important;
             width: 240px !important;
             z-index: 1000 !important;
             display: flex !important;
@@ -74,6 +75,7 @@
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
+            flex: 1;
         }
 
         /* Grilla de 4 Tarjetas KPI superiores */
@@ -119,12 +121,14 @@
             grid-template-columns: 2.15fr 1fr;
             gap: 16px;
             align-items: stretch;
+            flex: 1;
         }
 
         .fact-left-stack {
             display: flex;
             flex-direction: column;
             gap: 16px;
+            flex: 1;
         }
 
         .fact-top-row {
@@ -137,6 +141,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            height: 100%;
         }
 
         /* Paneles unificados */
@@ -422,7 +427,7 @@
                         </div>
                     </div>
 
-                    <!-- Detalle por Técnico (Tabla Inferior con todo el contenido expandido) -->
+                    <!-- Detalle por Técnico (Tabla Inferior) -->
                     <div class="fact-panel">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                             <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
@@ -469,7 +474,7 @@
                         </div>
                     </div>
 
-                    <div class="fact-panel" style="padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div class="fact-panel" style="flex: 1; padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">🔔 Últimas notificaciones</h4>
                             <span style="font-size: 0.75rem; color: #2563eb; font-weight: 700; cursor: pointer;">Ver todas →</span>
