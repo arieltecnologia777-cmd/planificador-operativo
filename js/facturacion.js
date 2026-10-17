@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual dinámica con tooltip flotante interactivo y línea de meta
+// Gráfica de tendencia anual dinámica con cursor puntero, sin desfase y línea de meta
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -346,9 +346,15 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Corrección del desfase: Cambiamos a modo 'nearest' e intersect false para que apunte con precisión milimétrica al mes correcto
             interaction: {
-                mode: 'index',
+                mode: 'nearest',
+                axis: 'x',
                 intersect: false,
+            },
+            // Puntero láser (mano de enlace / pointer) al pasar por encima de los elementos interactivos
+            onHover: (event, chartElement) => {
+                event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
             },
             plugins: { 
                 legend: { 
@@ -397,7 +403,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
-
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
