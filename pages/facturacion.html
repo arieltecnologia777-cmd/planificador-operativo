@@ -25,11 +25,11 @@
             <nav class="sidebar-nav">
                 <!-- Acordeón Planeación -->
                 <div class="nav-accordion-group">
-                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeonPlaneacion()">
+                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuPlaneacion', 'accordionArrowPlaneacion')">
                         <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">📅</span> Planeación</span>
-                        <span id="accordionArrow" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
+                        <span id="accordionArrowPlaneacion" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
                     </button>
-                    <div id="accordionSubmenu" class="nav-submenu">
+                    <div id="accordionSubmenuPlaneacion" class="nav-submenu">
                         <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
                         <a href="planeacion.html"><span class="nav-icon">📅</span> Planeación</a>
                         <a href="historico.html"><span class="nav-icon">📋</span> Histórico OTs</a>
@@ -38,9 +38,40 @@
                 </div>
 
                 <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
-                <a href="#" onclick="alert('Página en construcción'); return false;"><span class="nav-icon">📡</span> Centros Digitales</a>
-                <a href="#" onclick="alert('Página en construcción'); return false;"><span class="nav-icon">🗺️</span> Mapa</a>
-                <a href="#" onclick="alert('Página en construcción'); return false;"><span class="nav-icon">📈</span> Reportes</a>
+
+                <!-- Nuevo Acordeón Filtros Funcionales -->
+                <div class="nav-accordion-group" style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px;">
+                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
+                        <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
+                    </button>
+                    <div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 10px;">
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región</label>
+                            <select id="filtroRegion" onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none;">
+                                <option value="TODAS">Todas</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
+                            <select id="filtroMes" onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none;">
+                                <option value="TODOS">Todos</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
+                            <select id="filtroPerfilWfm" onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none;">
+                                <option value="TODOS">Todos</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
+                            <select id="filtroAprobacion" onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none;">
+                                <option value="TODOS">Todas</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </nav>
         </div>
 
@@ -62,12 +93,7 @@
                     <p style="font-size: 0.9rem; margin: 0;">Aquí tienes un resumen de tu desempeño en facturación. Sigue así, ¡vamos por más!</p>
                 </div>
                 <div>
-                    <select id="selectMesFact" style="padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); color: #fff; font-weight: bold; outline: none; cursor: pointer;">
-                        <option value="2026-04" style="color: #000;">Abril 2026</option>
-                        <option value="2026-03" style="color: #000;">Marzo 2026</option>
-                        <option value="2026-02" style="color: #000;">Febrero 2026</option>
-                        <option value="2026-01" style="color: #000;">Enero 2026</option>
-                    </select>
+                    <button type="button" onclick="resetFiltros()" style="padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); color: #fff; font-weight: bold; outline: none; cursor: pointer; font-size: 0.85rem;">Limpiar Filtros</button>
                 </div>
             </header>
 
@@ -180,14 +206,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                             <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="filterTable()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; width: 210px; outline: none;">
-                                <select id="selectFiltroRegional" onchange="filterTable()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; background: #fff; cursor: pointer; outline: none;">
-                                    <option value="TODAS">Todas las regionales</option>
-                                    <option value="Antioquia">Antioquia</option>
-                                    <option value="Cesar">Cesar</option>
-                                    <option value="La Guajira">La Guajira</option>
-                                    <option value="Sai">Sai</option>
-                                </select>
+                                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; width: 210px; outline: none;">
                                 <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
                             </div>
                         </div>
@@ -309,10 +328,9 @@
 <script src="../js/facturacion.js"></script>
 <script src="../js/settings.js"></script>
 <script>
-    // Lógica del acordeón del sidebar
-    function toggleAcordeonPlaneacion() {
-        const submenu = document.getElementById('accordionSubmenu');
-        const arrow = document.getElementById('accordionArrow');
+    function toggleAcordeon(submenuId, arrowId) {
+        const submenu = document.getElementById(submenuId);
+        const arrow = document.getElementById(arrowId);
         if (submenu.style.display === 'flex') {
             submenu.style.display = 'none';
             arrow.style.transform = 'rotate(0deg)';
