@@ -40,16 +40,12 @@ async function cargarDatosDesdeAPI() {
         actualizarKPIsGenerales([]);
     }
 }
-
-// Agrupar registros por técnico de forma totalmente flexible
+// Agrupar registros por técnico leyendo correctamente estimado_a_facturar y total_aprobado
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
     rows.forEach(r => {
-        // Buscar el nombre del técnico probando múltiples variantes de claves
         const nombreTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
-        
-        // Buscar la regional o departamento
         const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         
         if (!mapaTecnicos[nombreTecnico]) {
@@ -65,11 +61,11 @@ function procesarDatosParaVista(rows) {
             };
         }
 
-        // Buscar valores numéricos probando minúsculas, mayúsculas y espacios en la base de datos
-        const metaVal = Number(r.facturacion || r.Facturacion || r.FACTURACION || 0);
-        const aprobadoVal = Number(r.total_aprobado || r.TOTAL_APROBADO || r['Total  Aprobado'] || r['Total Aprobado'] || 0);
-        const rechazadoVal = Number(r.valor_visita || r.VALOR_VISITA || r['Valor visita'] || 0);
-        const subsanadoVal = Number(r.trasiego_esp || r.TRASIEGO_ESP || r['TRASIEGO ESP.'] || r['TRASIEGO ESP'] || 0);
+        // Leemos las columnas reales que contienen los valores monetarios en D1
+        const metaVal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        const rechazadoVal = Number(r.valor_visita ?? 0);
+        const subsanadoVal = Number(r.trasiego_esp ?? 0);
 
         mapaTecnicos[nombreTecnico].meta += metaVal;
         mapaTecnicos[nombreTecnico].aprobado += aprobadoVal;
@@ -84,12 +80,12 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales
+// Actualizar Tarjetas KPI generales con las columnas correctas
 function actualizarKPIsGenerales(rows) {
-    let totalMeta = rows.reduce((acc, r) => acc + Number(r.facturacion || r.Facturacion || r.FACTURACION || 0), 0);
-    let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado || r.TOTAL_APROBADO || r['Total  Aprobado'] || r['Total Aprobado'] || 0), 0);
-    let totalRechazado = rows.reduce((acc, r) => acc + Number(r.valor_visita || r.VALOR_VISITA || r['Valor visita'] || 0), 0);
-    let totalSubsanado = rows.reduce((acc, r) => acc + Number(r.trasiego_esp || r.TRASIEGO_ESP || r['TRASIEGO ESP.'] || 0), 0);
+    let totalMeta = rows.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? 0), 0);
+    let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
+    let totalRechazado = rows.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
+    let totalSubsanado = rows.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
     
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
@@ -137,7 +133,7 @@ function actualizarKPIsGenerales(rows) {
     }
 }
 
-// Renderizar Estado Regional Dinámico
+// Renderizar Estado Regional
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -146,8 +142,8 @@ function renderizarEstadoRegional(rows) {
     rows.forEach(r => {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         if (!mapaRegiones[reg]) mapaRegiones[reg] = { aprobado: 0, meta: 0 };
-        mapaRegiones[reg].aprobado += Number(r.total_aprobado || r.TOTAL_APROBADO || r['Total  Aprobado'] || r['Total Aprobado'] || 0);
-        mapaRegiones[reg].meta += Number(r.facturacion || r.Facturacion || r.FACTURACION || 0);
+        mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURED ?? 0);
+        mapaRegiones[reg].meta += Number(r.estimado_a_facturar ?? r.facturacion ?? 0);
     });
 
     let html = '';
@@ -171,7 +167,6 @@ function renderizarEstadoRegional(rows) {
     }
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 10px;">Sin datos regionales</div>';
 }
-
 // Validación de contraseña de administrador
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
