@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura fija de pantalla completa sin scroll global */
+    /* Bloqueo total del scroll global para mantener la pantalla fija */
     html, body {
         zoom: 100% !important;
         transform: none !important;
@@ -28,18 +28,20 @@
         overflow: hidden !important;
     }
 
-    /* Sidebar fijo que cubre exactamente desde arriba hasta abajo */
+    /* Sidebar fijo con altura absoluta al 100vh exacto */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         height: 100vh !important;
+        min-height: 100vh !important;
         width: 240px !important;
         z-index: 1000 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
         box-sizing: border-box !important;
+        background: #ffffff !important;
     }
 
     .sidebar-nav {
@@ -48,7 +50,7 @@
         flex: 1 !important;
     }
 
-    /* Contenedor principal alineado al ancho del sidebar */
+    /* Contenido principal estirado al alto completo de la ventana */
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
@@ -60,6 +62,7 @@
         overflow: hidden !important;
     }
 
+    /* Panel estirado para consumir todo el espacio vertical disponible */
     .main-content > .panel {
         background: #ffffff !important;
         border: 1px solid var(--border, #cbd5e0) !important;
@@ -68,16 +71,16 @@
         box-shadow: var(--shadow, 0 10px 30px rgba(15,23,42,0.15)) !important;
         display: flex !important;
         flex-direction: column !important;
-        height: calc(100vh - 210px) !important; /* Altura controlada para evitar desbordes */
+        height: calc(100vh - 100px) !important; /* Panel expandido casi al borde inferior */
         box-sizing: border-box !important;
         overflow: hidden !important;
     }
 
-    /* Tabla con altura calibrada al milímetro para evitar espacios vacíos o saltos largos */
+    /* TABLA BAJADA AL MÁXIMO SIN MIEDO (Elimina por completo el espacio inferior) */
     .planeacion-table-wrapper {
         width: 100% !important;
         height: 100% !important;
-        max-height: calc(100vh - 310px) !important; /* Rango exacto medido para que cubra todo sin pasarse */
+        max-height: calc(100vh - 200px) !important; /* Rango ampliado para que cubra todo el espacio vacío */
         overflow-y: auto !important;
         overflow-x: auto !important;
         margin-top: 12px !important;
