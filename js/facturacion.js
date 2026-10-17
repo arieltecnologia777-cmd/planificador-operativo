@@ -172,18 +172,15 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI con la nueva estructura y condiciones
+// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
-    // 1. Meta fija según regional seleccionada
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
         totalMeta = METAS_REGIONALES[fRegion];
     }
 
-    // 2. Ejecutado: Total neto sin filtros de aprobación (suma de estimado a facturar)
     let totalEjecutado = rowsCompletos.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0), 0);
 
-    // 3. Aprobado: Solo filas donde la aprobación regional sea ACEPTADO (o incluya ACEPTADO)
     let totalAprobado = rowsCompletos.reduce((acc, r) => {
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         if (aprobReg.includes("ACEPTADO")) {
@@ -192,7 +189,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         return acc;
     }, 0);
 
-    // 4. Rechazado: Solo filas donde la aprobación regional diga RECHAZADO
     let totalRechazado = rowsCompletos.reduce((acc, r) => {
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         if (aprobReg.includes("RECHAZADO")) {
@@ -201,25 +197,28 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         return acc;
     }, 0);
 
-    // 5. Subsanado
-    let totalSubsanado = rowsCompletos.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
+    let totalEnTramite = rowsCompletos.reduce((acc, r) => {
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        if (!aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO")) {
+            return acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        }
+        return acc;
+    }, 0);
     
-    // Efectividad = Aprobado / Meta fija regional
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
-    // Pintar valores en HTML
     if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
     if(document.getElementById('kpiEjecutado')) document.getElementById('kpiEjecutado').innerText = formatMoney(totalEjecutado);
     if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
-    if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoney(totalSubsanado);
+    if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
 
     let porcMeta = totalMeta > 0 ? 100 : 0;
     let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
     let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
     let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
-    let porcSubsanado = totalMeta > 0 ? Math.min(100, Math.round((totalSubsanado / totalMeta) * 100)) : 0;
+    let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
 
     if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
     if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
@@ -233,8 +232,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barRechazado')) document.getElementById('barRechazado').style.width = porcRechazado + '%';
     if(document.getElementById('txtPorcRechazado')) document.getElementById('txtPorcRechazado').innerText = porcRechazado + '%';
 
-    if(document.getElementById('barSubsanado')) document.getElementById('barSubsanado').style.width = porcSubsanado + '%';
-    if(document.getElementById('txtPorcSubsanado')) document.getElementById('txtPorcSubsanado').innerText = porcSubsanado + '%';
+    if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
+    if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
