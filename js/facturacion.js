@@ -8,7 +8,6 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 
-// Meta fija establecida para todos los técnicos
 const META_FIJA_TECNICO = 9500000;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -30,13 +29,13 @@ async function cargarDatosDesdeAPI() {
             } else {
                 console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
-                actualizarKPIsGenerales([]);
+                actualizarKPIsGenerales([], []);
             }
         }
     } catch (err) {
         console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
-        actualizarKPIsGenerales([]);
+        actualizarKPIsGenerales([], []);
     }
 }
 
@@ -75,7 +74,7 @@ function llenarSelectHTML(elementId, setValues) {
     select.innerHTML = html;
 }
 
-// Filtrar registros crudos según los 4 filtros del sidebar + buscador de texto
+// Filtrar registros crudos según los filtros
 function aplicarFiltrosGlobales() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -83,7 +82,15 @@ function aplicarFiltrosGlobales() {
     const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const filtrados = registrosCrudos.filter(r => {
+    // 1. Dataset para la META: Solo filtra por Región (la meta es fija frente al mes)
+    const registrosParaMeta = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        return matchReg;
+    });
+
+    // 2. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios (incluyendo mes, perfil, aprobación y búsqueda)
+    const filtradosCompletos = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
         const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
@@ -99,11 +106,11 @@ function aplicarFiltrosGlobales() {
         return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
     });
 
-    tecnicosData = procesarDatosParaVista(filtrados);
+    tecnicosData = procesarDatosParaVista(filtradosCompletos);
     renderTable(tecnicosData);
-    actualizarKPIsGenerales(filtrados);
-    renderizarEstadoRegional(filtrados);
-    initChartsDinamicos(filtrados);
+    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta);
+    renderizarEstadoRegional(filtradosCompletos);
+    initChartsDinamicos(filtradosCompletos);
 }
 
 function resetFiltros() {
@@ -152,15 +159,18 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales de forma dinámica según los filtros seleccionados
-function actualizarKPIsGenerales(rows) {
-    const tecnicosUnicos = new Set(rows.map(r => r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION"));
+// Actualizar Tarjetas KPI: Meta fija según región, montos según mes/filtros
+function actualizarKPIsGenerales(rowsCompletos, rowsMeta) {
+    // La meta se calcula con base en los técnicos únicos de la región seleccionada (estática ante cambios de mes)
+    const tecnicosMetaUnicos = new Set(rowsMeta.map(r => r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION"));
+    let totalMeta = tecnicosMetaUnicos.size * META_FIJA_TECNICO;
+
+    // Los montos de aprobado, rechazado y subsanado se calculan con los filtros completos (incluyendo mes)
+    let totalAprobado = rowsCompletos.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
+    let totalRechazado = rowsCompletos.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
+    let totalSubsanado = rowsCompletos.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
     
-    let totalMeta = tecnicosUnicos.size * META_FIJA_TECNICO;
-    let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
-    let totalRechazado = rows.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
-    let totalSubsanado = rows.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
-    
+    // Efectividad = Aprobado (filtrado por mes) / Meta (fija por región)
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
     if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
