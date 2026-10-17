@@ -984,3 +984,32 @@ div:has(> .tabla-rangos) {
     padding: 24px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
+/* Estilo por defecto para pantallas pequeñas y medianas (Sin apretar nada) */
+    .panel-layout-pbi {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .mapa-departamento-container {
+        height: 100%;
+    }
+    #mapaLeaflet {
+        min-height: 280px !important;
+    }
+
+    /* Ajuste exclusivo para pantallas grandes (1600px en adelante) */
+    @media screen and (min-width: 1600px) {
+        .dashboard-container {
+            max-width: 100% !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+        }
+        .panel-layout-pbi {
+            grid-template-columns: 1fr 1.55fr !important;
+        }
+        #mapaLeaflet {
+            min-height: 340px !important;
+        }
+    }
