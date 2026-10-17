@@ -1,11 +1,11 @@
 // Datos de técnicos consolidados para la tabla y gráficos
 const tecnicosData = [
-    { nombre: "Carlos Pérez", regional: "Antioquia", meta: 12000000, facturado: 8400000, estimado: 3200000, efectividad: 70, estado: "En progreso" },
-    { nombre: "Andrés Ramírez", regional: "Cesar", meta: 10000000, facturado: 6200000, estimado: 2800000, efectividad: 62, estado: "En progreso" },
-    { nombre: "Laura Gómez", regional: "La Guajira", meta: 8000000, facturado: 3600000, estimado: 2200000, efectividad: 45, estado: "En riesgo" },
-    { nombre: "Jorge Torres", regional: "Sai", meta: 9000000, facturado: 7000000, estimado: 2000000, efectividad: 78, estado: "En progreso" },
+    { nombre: "Hailen Julio", regional: "Antioquia", meta: 12000000, facturado: 8400000, estimado: 3200000, efectividad: 70, estado: "En progreso" },
+    { nombre: "Juan Torres", regional: "Cesar", meta: 10000000, facturado: 6200000, estimado: 2800000, efectividad: 62, estado: "En progreso" },
+    { nombre: "Samuel Pushaina", regional: "La Guajira", meta: 8000000, facturado: 3600000, estimado: 2200000, efectividad: 45, estado: "En riesgo" },
+    { nombre: "Hardy Whitaker", regional: "Sai", meta: 9000000, facturado: 7000000, estimado: 2000000, efectividad: 78, estado: "En progreso" },
     { nombre: "Elger Hernández", regional: "Cesar", meta: 15000000, facturado: 12000000, estimado: 3500000, efectividad: 80, estado: "En progreso" },
-    { nombre: "Robin Rojas", regional: "Antioquia", meta: 11000000, facturado: 9000000, estimado: 2500000, efectividad: 82, estado: "En progreso" }
+    { nombre: "Sammy Eliud", regional: "Antioquia", meta: 11000000, facturado: 9000000, estimado: 2500000, efectividad: 82, estado: "En progreso" }
 ];
 
 function formatMoney(amount) {
