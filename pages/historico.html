@@ -28,7 +28,7 @@
         overflow: hidden !important;
     }
 
-    /* Sidebar fijo que ocupa el 100% de la altura */
+    /* Sidebar intacto tal como quedó perfecto */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
@@ -61,9 +61,10 @@
         overflow: hidden !important;
     }
 
-    /* Panel estirado para ocupar exactamente el espacio vertical restante */
+    /* Panel estirado al máximo hacia abajo con !important */
     .main-content > .panel {
         flex: 1 !important;
+        height: calc(100vh - 100px) !important;
         display: flex !important;
         flex-direction: column !important;
         margin-bottom: 5px !important;
@@ -72,7 +73,6 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }
 
-    /* Limpieza total de cualquier brillo o fondo en el encabezado */
     .planeacion-header {
         background: transparent !important;
         box-shadow: none !important;
@@ -90,11 +90,11 @@
         color: #1e293b !important;
     }
 
-    /* CONTENEDOR DE LA TABLA EXPANDIDO HASTA ABAJO CON SCROLL FLUIDO */
+    /* TABLA EXPANDIDA AL MÁXIMO CON !IMPORTANT SOBRE EL CSS GLOBAL */
     .planeacion-table-wrapper {
         flex: 1 !important;
         height: 100% !important;
-        max-height: none !important;
+        max-height: calc(100vh - 165px) !important;
         overflow-y: auto !important;
         display: block !important;
         border-bottom: 1px solid #cbd5e0 !important;
