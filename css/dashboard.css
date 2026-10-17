@@ -1014,24 +1014,16 @@ div:has(> .tabla-rangos) {
         }
     }
 /* =========================================================================
-       AJUSTE DE PINES ESTÁTICOS EXCLUSIVO PARA PANTALLAS GRANDES (1600px+)
+       AJUSTE FINO DE PINES ESTÁTICOS EN PANTALLAS GRANDES (1600px+)
        ========================================================================= */
     @media screen and (min-width: 1600px) {
-        /* Buscamos los pines dentro del contenedor del mapa y ajustamos su posición */
-        #mapaLeaflet .pin-estatico-neon {
-            /* Por defecto dejamos los valores base, pero puedes sobreescribir individualmente si usas un identificador o nth-child */
-        }
-        
-        /* Ajuste individual por posición de pin en pantallas grandes:
-           Pin 1: Antioquia, Pin 2: Cesar, Pin 3: La Guajira, Pin 4: SAI */
-           
         #mapaLeaflet .pin-estatico-neon:nth-child(4) { /* SAI (Más a la derecha) */
-            left: 22% !important; 
+            left: 26% !important; 
         }
-        #mapaLeaflet .pin-estatico-neon:nth-child(3) { /* La Guajira (Izquierda) */
-            left: 70% !important; 
+        #mapaLeaflet .pin-estatico-neon:nth-child(3) { /* La Guajira (Más a la izquierda) */
+            left: 65% !important; 
         }
-        #mapaLeaflet .pin-estatico-neon:nth-child(2) { /* Cesar (Izquierda) */
-            left: 58% !important; 
+        #mapaLeaflet .pin-estatico-neon:nth-child(2) { /* Cesar (Más a la izquierda) */
+            left: 54% !important; 
         }
     }
