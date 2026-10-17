@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con cursor láser rojo exacto basado en la posición del mouse
+// Gráfica de tendencia anual con cursor láser rojo libre de fricción y sincronización exacta de mes
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,29 +314,27 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea vertical láser roja exactamente donde está el cursor del mouse
+    // Plugin para dibujar la línea láser roja siguiendo de forma fluida el movimiento del mouse
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
             if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
                 const ctx = chart.ctx;
-                // Tomamos la posición X exacta del evento del mouse dentro del área de la gráfica
-                const eventoX = chart.tooltip._eventPosition ? chart.tooltip._eventPosition.x : null;
-                
-                if (eventoX !== null) {
-                    const topY = chart.scales.y.top;
-                    const bottomY = chart.scales.y.bottom;
+                const activePoint = chart.tooltip._active[0];
+                // Usamos la posición exacta del elemento activo del punto para alinear la línea roja milimétricamente
+                const x = activePoint.element.x;
+                const topY = chart.scales.y.top;
+                const bottomY = chart.scales.y.bottom;
 
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.moveTo(eventoX, topY);
-                    ctx.lineTo(eventoX, bottomY);
-                    ctx.lineWidth = 1.5;
-                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante
-                    ctx.setLineDash([3, 3]); // Línea punteada
-                    ctx.stroke();
-                    ctx.restore();
-                }
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, topY);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.restore();
             }
         }
     };
@@ -374,13 +372,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Interacción basada en el punto más cercano sin desfase de dirección
+            // Interacción optimizada por dataset para evitar bloqueos al cruzar la mitad de la gráfica
             interaction: {
-                mode: 'index',
+                mode: 'nearest',
                 axis: 'x',
                 intersect: false,
             },
-            // Puntero en cruz láser
             onHover: (event, chartElement) => {
                 event.native.target.style.cursor = chartElement.length ? 'crosshair' : 'default';
             },
@@ -402,6 +399,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
+                    // Evitamos que el tooltip interfiera con el movimiento lateral del cursor
+                    position: 'nearest',
                     callbacks: {
                         title: function(context) {
                             return context[0].label;
