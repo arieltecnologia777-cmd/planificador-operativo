@@ -506,43 +506,80 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
+// Gráfica de tendencia dinámica agrupada por meses según los filtros
 function initChartsDinamicos(records) {
     const ctxTendencia = document.getElementById('tendenciaChart');
-    if (ctxTendencia) {
-        let totalAprobado = records.reduce((acc, r) => {
-            const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-            if (aprobReg.includes("ACEPTADO")) {
-                return acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-            }
-            return acc;
-        }, 0);
+    if (!ctxTendencia) return;
 
-        if (chartTendencia) chartTendencia.destroy();
-        chartTendencia = new Chart(ctxTendencia, {
-            type: 'line',
-            data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr'],
-                datasets: [{
-                    label: 'Aprobado',
-                    data: [0, 0, 0, totalAprobado],
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { min: 0, grid: { color: '#f1f5f9' } },
-                    x: { grid: { display: false } }
+    // Meses base a mostrar
+    const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const mesesKeywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    const acumuladoMeses = new Array(12).fill(0);
+
+    records.forEach(r => {
+        const mesStr = String(r.mes || r.MES || "").toUpperCase();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        
+        // Solo sumamos los aprobados para la tendencia temporal
+        if (aprobReg.includes("ACEPTADO")) {
+            const montoAprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+            
+            // Identificar a qué mes corresponde el registro
+            for (let i = 0; i < mesesKeywords.length; i++) {
+                if (mesStr.includes(mesesKeywords[i]) || mesStr.includes(`0${i+1}`) || mesStr.includes(`-${i+1}-`)) {
+                    acumuladoMeses[i] += montoAprobado;
+                    break;
                 }
             }
-        });
-    }
+        }
+    });
+
+    if (chartTendencia) chartTendencia.destroy();
+    
+    chartTendencia = new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [{
+                label: 'Aprobado',
+                data: acumuladoMeses,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#2563eb',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ' Aprobado: $ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { 
+                    min: 0, 
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
+                            return '$ ' + value;
+                        }
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
 }
 
 function exportExcel() {
