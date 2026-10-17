@@ -37,13 +37,13 @@ async function cargarDatosDesdeAPI() {
             } else {
                 console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
-                actualizarKPIsGenerales([], []);
+                actualizarKPIsGenerales([], [], "TODOS");
             }
         }
     } catch (err) {
         console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
-        actualizarKPIsGenerales([], []);
+        actualizarKPIsGenerales([], [], "TODOS");
     }
 }
 
@@ -116,7 +116,7 @@ function aplicarFiltrosGlobales() {
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos);
     renderTable(tecnicosData);
-    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta);
+    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion);
     renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(filtradosCompletos);
 }
@@ -167,18 +167,20 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI: Meta fija según región, montos según mes/filtros
-function actualizarKPIsGenerales(rowsCompletos, rowsMeta) {
-    // La meta se calcula con base en los técnicos únicos de la región seleccionada (estática ante cambios de mes)
-    const tecnicosMetaUnicos = new Set(rowsMeta.map(r => r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION"));
-    let totalMeta = tecnicosMetaUnicos.size * META_FIJA_TECNICO;
+// Actualizar Tarjetas KPI: Meta fija según región seleccionada, montos según mes/filtros
+function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
+    // Si hay una región específica seleccionada (ej. R1 o R2), tomamos su meta fija exacta. Si es "TODOS", tomamos la suma global (514.140.000).
+    let totalMeta = META_GLOBAL_TOTAL;
+    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
+        totalMeta = METAS_REGIONALES[fRegion];
+    }
 
     // Los montos de aprobado, rechazado y subsanado se calculan con los filtros completos (incluyendo mes)
     let totalAprobado = rowsCompletos.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
     let totalRechazado = rowsCompletos.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
     let totalSubsanado = rowsCompletos.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
     
-    // Efectividad = Aprobado (filtrado por mes) / Meta (fija por región)
+    // Efectividad = Aprobado (filtrado por mes) / Meta fija regional
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
     if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
@@ -238,18 +240,9 @@ function renderizarEstadoRegional(rows) {
         mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
     });
 
-    const mapaTecnicosPorRegion = {};
-    rows.forEach(r => {
-        const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
-        const tecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
-        if (!mapaTecnicosPorRegion[reg]) mapaTecnicosPorRegion[reg] = new Set();
-        mapaTecnicosPorRegion[reg].add(tecnico);
-    });
-
     let html = '';
     for (const [reg, val] of Object.entries(mapaRegiones)) {
-        const numTecnicosReg = mapaTecnicosPorRegion[reg]?.size || 1;
-        const metaRegional = numTecnicosReg * META_FIJA_TECNICO;
+        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
         const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
         
         const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
@@ -464,7 +457,7 @@ function abrirDetalleTecnico(index) {
             <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
-                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija de 9.500.000 COP.</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
                 </div>
                 <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
             </div>
