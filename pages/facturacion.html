@@ -13,32 +13,31 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* Aislamiento total de estilos para evitar herencias de styles.css */
+        /* Permitir scroll natural y expansión completa de la pantalla */
         html, body {
             zoom: 100% !important;
             transform: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            height: 100vh !important;
-            overflow: hidden !important;
+            min-height: 100vh !important;
             background: #f3f6fb !important;
             font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+            overflow-x: hidden !important;
         }
 
         .layout {
             display: flex !important;
             width: 100% !important;
-            height: 100vh !important;
+            min-height: 100vh !important;
             position: relative !important;
-            overflow: hidden !important;
         }
 
+        /* Sidebar fijo que cubre todo el alto de la ventana */
         aside.sidebar {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             height: 100vh !important;
-            min-height: 100vh !important;
             width: 240px !important;
             z-index: 1000 !important;
             display: flex !important;
@@ -55,18 +54,18 @@
             flex: 1 !important;
         }
 
+        /* Contenido principal con scroll vertical completo */
         .main-content {
             margin-left: 240px !important;
             width: calc(100% - 240px) !important;
-            height: 100vh !important;
-            padding: 16px 24px !important;
+            min-height: 100vh !important;
+            padding: 16px 24px 32px 24px !important;
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
-            overflow-y: auto !important;
         }
 
-        /* Contenedor principal expandido para ocupar toda la pantalla verticalmente */
+        /* Contenedor principal de facturación */
         .fact-container {
             display: flex;
             flex-direction: column;
@@ -74,9 +73,7 @@
             max-width: 1720px;
             margin: 0 auto;
             width: 100%;
-            min-height: calc(100vh - 32px);
             box-sizing: border-box;
-            padding-bottom: 24px;
         }
 
         /* Grilla de 4 Tarjetas KPI superiores */
@@ -116,12 +113,11 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
         }
 
-        /* Grilla Central / Inferior expandida */
+        /* Grilla Central / Inferior */
         .fact-main-grid {
             display: grid;
             grid-template-columns: 2.15fr 1fr;
             gap: 16px;
-            flex: 1;
             align-items: stretch;
         }
 
@@ -129,7 +125,6 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            flex: 1;
         }
 
         .fact-top-row {
@@ -142,7 +137,6 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            height: 100%;
         }
 
         /* Paneles unificados */
@@ -188,8 +182,8 @@
         .badge-riesgo { background: #fee2e2; color: #dc2626; }
 
         .table-wrapper-fact {
-            max-height: 295px;
-            overflow-y: auto;
+            max-height: none !important;
+            overflow-y: visible !important;
             border: 1px solid #edf1f5;
             border-radius: 12px;
         }
@@ -428,8 +422,8 @@
                         </div>
                     </div>
 
-                    <!-- Detalle por Técnico (Tabla Inferior) -->
-                    <div class="fact-panel" style="flex: 1; display: flex; flex-direction: column;">
+                    <!-- Detalle por Técnico (Tabla Inferior con todo el contenido expandido) -->
+                    <div class="fact-panel">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                             <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
                             <div style="display: flex; gap: 10px; align-items: center;">
@@ -444,7 +438,7 @@
                                 <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
                             </div>
                         </div>
-                        <div class="table-wrapper-fact" style="flex: 1; max-height: none;">
+                        <div class="table-wrapper-fact">
                             <table class="fact-table">
                                 <thead>
                                     <tr>
@@ -475,7 +469,7 @@
                         </div>
                     </div>
 
-                    <div class="fact-panel" style="flex: 1; padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div class="fact-panel" style="padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">🔔 Últimas notificaciones</h4>
                             <span style="font-size: 0.75rem; color: #2563eb; font-weight: 700; cursor: pointer;">Ver todas →</span>
