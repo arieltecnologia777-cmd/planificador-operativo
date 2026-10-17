@@ -100,12 +100,22 @@ aside.sidebar {
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
 }
 
-/* Fila superior: Gráfica de tendencia flexible y Estado regional con ancho fijo de 380px exactos */
+/* Fila superior definitiva: Gráfica flexible a la izquierda y columna derecha fija de 380px */
 .fact-top-row {
     display: grid !important;
     grid-template-columns: 1fr 380px !important;
     gap: 16px !important;
     align-items: stretch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Contenedor derecho que apila Estado Regional y el Banner de forma proporcional */
+.fact-right-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    height: 100% !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
