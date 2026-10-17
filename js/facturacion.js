@@ -29,7 +29,6 @@ function renderTable(records) {
         html += `
             <tr>
                 <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
-                <td>${r.regional}</td>
                 <td>${formatMoney(r.meta)}</td>
                 <td>${formatMoney(r.aprobado)}</td>
                 <td>${formatMoney(r.rechazado)}</td>
