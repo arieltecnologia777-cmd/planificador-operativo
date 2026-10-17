@@ -97,7 +97,7 @@ function aplicarFiltrosGlobales() {
         return matchReg;
     });
 
-    // 2. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios (incluyendo mes, perfil, aprobación y búsqueda)
+    // 2. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios
     const filtradosCompletos = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
@@ -130,7 +130,7 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Agrupar registros por técnico aplicando la meta fija de 9.500.000 COP
+// Agrupar registros por técnico
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
@@ -151,8 +151,13 @@ function procesarDatosParaVista(rows) {
             };
         }
 
-        const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-        const rechazadoVal = Number(r.valor_visita ?? 0);
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const estAceptar = aprobReg.includes("ACEPTADO");
+        const estRechazar = aprobReg.includes("RECHAZADO");
+
+        const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        const aprobadoVal = estAceptar ? Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0) : 0;
+        const rechazadoVal = estRechazar ? montoBase : 0;
         const subsanadoVal = Number(r.trasiego_esp ?? 0);
 
         mapaTecnicos[nombreTecnico].aprobado += aprobadoVal;
@@ -167,35 +172,60 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI: Meta fija según región seleccionada, montos según mes/filtros
+// Actualizar Tarjetas KPI con la nueva estructura y condiciones
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
-    // Si hay una región específica seleccionada (ej. R1 o R2), tomamos su meta fija exacta. Si es "TODOS", tomamos la suma global (514.140.000).
+    // 1. Meta fija según regional seleccionada
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
         totalMeta = METAS_REGIONALES[fRegion];
     }
 
-    // Los montos de aprobado, rechazado y subsanado se calculan con los filtros completos (incluyendo mes)
-    let totalAprobado = rowsCompletos.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
-    let totalRechazado = rowsCompletos.reduce((acc, r) => acc + Number(r.valor_visita ?? 0), 0);
+    // 2. Ejecutado: Total neto sin filtros de aprobación (suma de estimado a facturar)
+    let totalEjecutado = rowsCompletos.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0), 0);
+
+    // 3. Aprobado: Solo filas donde la aprobación regional sea ACEPTADO (o incluya ACEPTADO)
+    let totalAprobado = rowsCompletos.reduce((acc, r) => {
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        if (aprobReg.includes("ACEPTADO")) {
+            return acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        }
+        return acc;
+    }, 0);
+
+    // 4. Rechazado: Solo filas donde la aprobación regional diga RECHAZADO
+    let totalRechazado = rowsCompletos.reduce((acc, r) => {
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        if (aprobReg.includes("RECHAZADO")) {
+            return acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        }
+        return acc;
+    }, 0);
+
+    // 5. Subsanado
     let totalSubsanado = rowsCompletos.reduce((acc, r) => acc + Number(r.trasiego_esp ?? 0), 0);
     
-    // Efectividad = Aprobado (filtrado por mes) / Meta fija regional
+    // Efectividad = Aprobado / Meta fija regional
     let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
 
+    // Pintar valores en HTML
     if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
+    if(document.getElementById('kpiEjecutado')) document.getElementById('kpiEjecutado').innerText = formatMoney(totalEjecutado);
     if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoney(totalSubsanado);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
 
     let porcMeta = totalMeta > 0 ? 100 : 0;
+    let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
     let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
     let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
     let porcSubsanado = totalMeta > 0 ? Math.min(100, Math.round((totalSubsanado / totalMeta) * 100)) : 0;
 
     if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
     if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
+
+    if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
+    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
 
     if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
     if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
@@ -237,7 +267,11 @@ function renderizarEstadoRegional(rows) {
     rows.forEach(r => {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         if (!mapaRegiones[reg]) mapaRegiones[reg] = { aprobado: 0 };
-        mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
+        
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        if (aprobReg.includes("ACEPTADO")) {
+            mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        }
     });
 
     let html = '';
@@ -476,7 +510,14 @@ function cerrarModalDetalle() {
 function initChartsDinamicos(records) {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (ctxTendencia) {
-        let totalAprobado = records.reduce((acc, r) => acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0), 0);
+        let totalAprobado = records.reduce((acc, r) => {
+            const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+            if (aprobReg.includes("ACEPTADO")) {
+                return acc + Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+            }
+            return acc;
+        }, 0);
+
         if (chartTendencia) chartTendencia.destroy();
         chartTendencia = new Chart(ctxTendencia, {
             type: 'line',
