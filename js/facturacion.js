@@ -13,9 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // GET: Cargar registros desde Cloudflare D1
 async function cargarDatosDesdeAPI() {
     try {
+        console.log("Consultando API en:", FACTURACION_API_URL);
         const response = await fetch(FACTURACION_API_URL);
         if (response.ok) {
             registrosCrudos = await response.json();
+            console.log("Registros obtenidos del Worker:", registrosCrudos.length);
             
             if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
                 tecnicosData = procesarDatosParaVista(registrosCrudos);
@@ -24,13 +26,16 @@ async function cargarDatosDesdeAPI() {
                 renderizarEstadoRegional(registrosCrudos);
                 initChartsDinamicos(registrosCrudos);
             } else {
-                // Si la base está vacía, ponemos todo en ceros dinámicamente
                 renderTable([]);
                 actualizarKPIsGenerales([]);
             }
+        } else {
+            console.error("Error en respuesta de la API:", response.status);
+            renderTable([]);
+            actualizarKPIsGenerales([]);
         }
     } catch (err) {
-        console.warn("No se pudieron obtener datos de la API:", err);
+        console.warn("Error de conexión al obtener datos de la API:", err);
         renderTable([]);
         actualizarKPIsGenerales([]);
     }
@@ -70,7 +75,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI de forma 100% dinámica
+// Actualizar Tarjetas KPI dinámicamente
 function actualizarKPIsGenerales(rows) {
     let totalMeta = rows.reduce((acc, r) => acc + Number(r.facturacion || 0), 0);
     let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado || 0), 0);
@@ -158,9 +163,10 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 10px;">Sin datos regionales</div>';
 }
 
-// Validación estricta de contraseña con VERIFICAR_KEY_URL
+// Validación de contraseña con console.log detallados para depuración
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
+    console.log("Intentando verificar contraseña en URL:", VERIFICAR_KEY_URL);
     
     try {
         const response = await fetch(VERIFICAR_KEY_URL, {
@@ -169,16 +175,20 @@ async function verificarPassword() {
             body: JSON.stringify({ key: passwordIngresada })
         });
 
+        console.log("Estado HTTP de respuesta de verificación:", response.status);
         const resultado = await response.json();
+        console.log("Resultado JSON del Worker:", resultado);
 
         if (response.ok && resultado.success) {
+            console.log("¡Contraseña correcta! Abriendo panel de herramientas.");
             cerrarModalPassword();
             document.getElementById('modalHerramientas').style.display = 'flex';
         } else {
+            console.warn("Contraseña rechazada por el servidor.");
             document.getElementById('errorPasswordMsg').style.display = 'block';
         }
     } catch (err) {
-        console.error("Error al validar clave:", err);
+        console.error("Error crítico en fetch de verificación de clave:", err);
         document.getElementById('errorPasswordMsg').style.display = 'block';
     }
 }
