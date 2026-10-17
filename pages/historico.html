@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura de pantalla completa idéntica a Planeación */
+    /* Estructura de pantalla completa */
     html, body {
         zoom: 100% !important;
         transform: none !important;
@@ -28,7 +28,7 @@
         overflow: hidden !important;
     }
 
-    /* Sidebar fijo con altura absoluta y extensión total hacia abajo */
+    /* Sidebar fijo forzado para que baje hasta el fondo absoluto de la pantalla */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
@@ -41,6 +41,7 @@
         flex-direction: column !important;
         justify-content: space-between !important;
         box-sizing: border-box !important;
+        border-radius: 0 !important;
     }
 
     .sidebar-nav {
@@ -70,11 +71,11 @@
         overflow: hidden !important;
     }
 
-    /* Tabla recortada una línea más arriba (de 180px a 200px) para que no quede tan abajo */
+    /* Tabla calibrada milimétricamente a -170px para que baje justo lo necesario */
     .planeacion-table-wrapper {
         flex: 1 !important;
         height: 100% !important;
-        max-height: calc(100vh - 200px) !important;
+        max-height: calc(100vh - 170px) !important;
         overflow-y: auto !important;
         margin-top: 15px !important;
         border: 1px solid #edf1f5 !important;
