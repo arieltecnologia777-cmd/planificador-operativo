@@ -1014,27 +1014,24 @@ div:has(> .tabla-rangos) {
         }
     }
 /* =========================================================================
-       AJUSTE DE ETIQUETAS FLOTANTES SOBRE LA IMAGEN DEL MAPA (PANTALLAS GRANDES)
+       AJUSTE DE PINES ESTÁTICOS EXCLUSIVO PARA PANTALLAS GRANDES (1600px+)
        ========================================================================= */
     @media screen and (min-width: 1600px) {
-        /* 1. Mueve SAI hacia la derecha y arriba */
-        .etiqueta-sai, /* Reemplaza o añade la clase/id real que usas para SAI */
-        div[data-depto="SAI"], 
-        .pin-sai {
-            transform: translate(50px, -15px) !important;
+        /* Buscamos los pines dentro del contenedor del mapa y ajustamos su posición */
+        #mapaLeaflet .pin-estatico-neon {
+            /* Por defecto dejamos los valores base, pero puedes sobreescribir individualmente si usas un identificador o nth-child */
         }
-
-        /* 2. Mueve La Guajira hacia la izquierda */
-        .etiqueta-guajira, 
-        div[data-depto="LA GUAJIRA"], 
-        .pin-guajira {
-            transform: translate(-40px, 10px) !important;
+        
+        /* Ajuste individual por posición de pin en pantallas grandes:
+           Pin 1: Antioquia, Pin 2: Cesar, Pin 3: La Guajira, Pin 4: SAI */
+           
+        #mapaLeaflet .pin-estatico-neon:nth-child(4) { /* SAI (Más a la derecha) */
+            left: 22% !important; 
         }
-
-        /* 3. Mueve Cesar hacia la izquierda */
-        .etiqueta-cesar, 
-        div[data-depto="CESAR"], 
-        .pin-cesar {
-            transform: translate(-30px, 5px) !important;
+        #mapaLeaflet .pin-estatico-neon:nth-child(3) { /* La Guajira (Izquierda) */
+            left: 70% !important; 
+        }
+        #mapaLeaflet .pin-estatico-neon:nth-child(2) { /* Cesar (Izquierda) */
+            left: 58% !important; 
         }
     }
