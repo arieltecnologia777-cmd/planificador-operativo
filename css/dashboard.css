@@ -984,30 +984,3 @@ div:has(> .tabla-rangos) {
     padding: 24px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
-
-/* Grilla principal reequilibrada: Mapa más compacto a la izquierda y tablas más anchas a la derecha */
-    .panel-layout-pbi {
-        display: grid;
-        grid-template-columns: 1fr 1.55fr !important;
-        gap: 16px;
-        align-items: start;
-    }
-
-    /* Asegurar que el mapa Leaflet tenga un ancho y alto equilibrado */
-    .mapa-departamento-container {
-        height: 50%;
-    }
-    #mapaLeaflet {
-        min-height: 100px !important;
-    }
-
-    @media screen and (min-width: 1600px) {
-        .dashboard-container {
-            max-width: 50% !important;
-            padding-left: 5px !important;
-            padding-right: 5px !important;
-        }
-        .panel-layout-pbi {
-            grid-template-columns: 1fr 1.65fr !important;
-        }
-    }
