@@ -8,25 +8,18 @@ const tecnicosData = [
     { nombre: "Robin Rojas", regional: "Antioquia", meta: 11000000, facturado: 9000000, estimado: 2500000, efectividad: 82, estado: "En progreso" }
 ];
 
-const regionesData = [
-    { nombre: "Antioquia", porcentaje: 85, monto: "$ 5.100.000", color: "#22c55e" },
-    { nombre: "Cesar", porcentaje: 62, monto: "$ 3.200.000", color: "#f59e0b" },
-    { nombre: "La Guajira", porcentaje: 45, monto: "$ 1.800.000", color: "#ef4444" },
-    { nombre: "Sai", porcentaje: 78, monto: "$ 2.100.000", color: "#22c55e" }
-];
-
 function formatMoney(amount) {
     return '$ ' + Number(amount).toLocaleString('es-CO', {maximumFractionDigits: 0});
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     renderTable(tecnicosData);
-    renderEstadoRegional();
     initCharts();
 });
 
 function renderTable(records) {
     const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
     let html = '';
 
     records.forEach(r => {
@@ -55,32 +48,12 @@ function renderTable(records) {
     tbody.innerHTML = html;
 }
 
-function renderEstadoRegional() {
-    const container = document.getElementById('listaEstadoRegional');
-    let html = '';
-
-    regionesData.forEach(reg => {
-        html += `
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">
-                    <span style="display: flex; align-items: center; gap: 6px;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: ${reg.color}; display: inline-block;"></span>
-                        ${reg.nombre}
-                    </span>
-                    <span style="color: #64748b;">${reg.monto} <strong style="color: #0f172a; margin-left: 6px;">${reg.porcentaje}%</strong></span>
-                </div>
-                <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
-                    <div style="width: ${reg.porcentaje}%; background: ${reg.color}; height: 100%;"></div>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
 function filterTable() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const regionalFiltro = document.getElementById('selectFiltroRegional').value;
+    const searchInput = document.getElementById('searchInput');
+    const selectFiltroRegional = document.getElementById('selectFiltroRegional');
+    
+    const query = searchInput ? searchInput.value.toLowerCase() : "";
+    const regionalFiltro = selectFiltroRegional ? selectFiltroRegional.value : "TODAS";
 
     const filtered = tecnicosData.filter(r => {
         const matchNombre = r.nombre.toLowerCase().includes(query);
@@ -92,70 +65,92 @@ function filterTable() {
 }
 
 function initCharts() {
-    // 1. Gráfico de Tendencia (Líneas)
-    new Chart(document.getElementById('tendenciaChart'), {
-        type: 'line',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr'],
-            datasets: [
-                {
-                    label: 'Meta',
-                    data: [3000000, 6000000, 9000000, 12000000],
-                    borderColor: '#cbd5e0',
-                    borderDash: [4, 4],
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: false
-                },
-                {
-                    label: 'Facturado',
-                    data: [1200000, 4500000, 7000000, 8400000],
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3
-                },
-                {
-                    label: 'Estimado',
-                    data: [500000, 1500000, 2800000, 3200000],
-                    borderColor: '#9333ea',
-                    borderWidth: 2,
-                    tension: 0.3
+    // 1. Gráfico de Tendencia ("Tu avance de facturación")
+    const ctxTendencia = document.getElementById('tendenciaChart');
+    if (ctxTendencia) {
+        new Chart(ctxTendencia, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr'],
+                datasets: [
+                    {
+                        label: 'Meta',
+                        data: [2500000, 6000000, 9300000, 11800000],
+                        borderColor: '#94a3b8',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#94a3b8',
+                        fill: false
+                    },
+                    {
+                        label: 'Facturado',
+                        data: [700000, 3800000, 7200000, 9600000],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#2563eb',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Estimado',
+                        data: [300000, 1300000, 3900000, 4000000],
+                        borderColor: '#9333ea',
+                        backgroundColor: 'rgba(147, 51, 234, 0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#9333ea',
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 15000000,
+                        ticks: { 
+                            callback: (val) => '$ ' + (val/1000000).toLocaleString() + '.000.000'.replace('0.000.000', ''), 
+                            font: { size: 10, weight: 'bold' },
+                            color: '#64748b'
+                        },
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { weight: 'bold' }, color: '#64748b' }
+                    }
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    ticks: { callback: (val) => '$ ' + (val/1000000) + 'M', font: { size: 10 } },
-                    grid: { color: '#f1f5f9' }
-                },
-                x: { grid: { display: false } }
             }
-        }
-    });
+        });
+    }
 
-    // 2. Gráfico Circular de Efectividad (Gauge Doughnut)
-    new Chart(document.getElementById('gaugeEfectividad'), {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: [70, 30],
-                backgroundColor: ['#0d9488', '#e2e8f0'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: { tooltip: { enabled: false }, legend: { display: false } }
-        }
-    });
+    // 2. Gráfico Circular de Efectividad (Gauge Doughnut en el KPI)
+    const ctxGauge = document.getElementById('gaugeEfectividad');
+    if (ctxGauge) {
+        new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [70, 30],
+                    backgroundColor: ['#00b087', '#e2e8f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            }
+        });
+    }
 }
 
 function exportExcel() {
