@@ -506,31 +506,38 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-// Gráfica de tendencia dinámica agrupada por meses según el formato '2026 XX NOMBRE'
-function initChartsDinamicos(records) {
+// Gráfica de tendencia dinámica con línea de Comportamiento (Aprobado) y línea de Meta fija
+function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
 
     const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const acumuladoMeses = new Array(12).fill(0);
 
+    // Calcular la meta fija mensual según la regional seleccionada
+    let metaRegionalTotal = META_GLOBAL_TOTAL;
+    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
+        metaRegionalTotal = METAS_REGIONALES[fRegion];
+    }
+    
+    // Distribuir la meta de forma mensual para la línea de referencia (o dejarla fija como línea recta)
+    // Si prefieres la meta fija total como línea recta de referencia en cada mes:
+    const metaLineData = new Array(12).fill(metaRegionalTotal);
+
     records.forEach(r => {
         const mesStr = String(r.mes || r.MES || "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
-        // Solo sumamos los aprobados para la tendencia temporal
         if (aprobReg.includes("ACEPTADO")) {
             const montoAprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
             
-            // Extraer el número del mes (ej. de "2026 02 FEBRERO" extrae "02" o "2")
             const match = mesStr.match(/\d{4}\s+(\d{2})/);
             if (match && match[1]) {
-                const mesIndex = parseInt(match[1], 10) - 1; // Índice de 0 a 11
+                const mesIndex = parseInt(match[1], 10) - 1;
                 if (mesIndex >= 0 && mesIndex < 12) {
                     acumuladoMeses[mesIndex] += montoAprobado;
                 }
             } else {
-                // Fallback por si acaso encuentra nombres directos de meses
                 const upperMes = mesStr.toUpperCase();
                 const keywords = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
                 for (let i = 0; i < keywords.length; i++) {
@@ -549,27 +556,48 @@ function initChartsDinamicos(records) {
         type: 'line',
         data: {
             labels: mesesLabels,
-            datasets: [{
-                label: 'Aprobado',
-                data: acumuladoMeses,
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.3,
-                pointBackgroundColor: '#2563eb',
-                pointRadius: 4
-            }]
+            datasets: [
+                {
+                    label: 'Aprobado',
+                    data: acumuladoMeses,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 4,
+                    order: 1
+                },
+                {
+                    label: 'Meta',
+                    data: metaLineData,
+                    borderColor: '#94a3b8', // Línea gris
+                    borderWidth: 2,
+                    borderDash: [5, 5], // Línea punteada como en tu ejemplo
+                    fill: false,
+                    pointRadius: 0, // Sin puntos en la línea de meta para mantener limpieza visual
+                    order: 2
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { 
-                legend: { display: false },
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return ' Aprobado: $ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
                         }
                     }
                 }
