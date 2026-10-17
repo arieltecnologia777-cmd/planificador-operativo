@@ -10,24 +10,22 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura fija y limpia sin colapsos raros */
+    /* FORZAR ALTURA COMPLETA Y EVITAR SCROLL GLOBAL */
     html, body {
-        zoom: 100% !important;
-        transform: none !important;
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        overflow-x: hidden;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
 
     .layout {
-        display: flex;
-        width: 100%;
-        min-height: 100vh;
-        position: relative;
+        display: flex !important;
+        height: 100vh !important;
+        width: 100% !important;
+        overflow: hidden !important;
     }
 
-    /* Sidebar fijo permanente y ordenado */
+    /* SIDEBAR FIJO QUE LLEGA HASTA EL FONDO ABSOLUTO DE LA PANTALLA */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
@@ -39,6 +37,7 @@
         flex-direction: column !important;
         justify-content: space-between !important;
         box-sizing: border-box !important;
+        border-radius: 0 !important; /* Quita esquinas flotantes si las tuviera */
     }
 
     .sidebar-nav {
@@ -47,23 +46,44 @@
         flex: 1 !important;
     }
 
-    /* Contenido principal alineado correctamente al lado del sidebar */
+    /* CONTENEDOR PRINCIPAL AJUSTADO AL SIDEBAR */
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
-        min-height: 100vh;
-        padding: 10px 20px;
-        box-sizing: border-box;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px 20px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
     }
 
-    /* Ocultar botón hamburguesa flotante ya que el sidebar es fijo permanente */
-    .btn-sidebar-toggle {
-        display: none !important;
+    /* PANEL Y TABLA EXPANDIDOS HASTA ABAJO CON SCROLL INTERNO FLUIDO */
+    .main-content > .panel {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        margin-bottom: 10px !important;
+        overflow: hidden !important;
+    }
+
+    .planeacion-table-wrapper {
+        flex: 1 !important;
+        height: auto !important;
+        max-height: calc(100vh - 210px) !important; /* Se estira dinámicamente hasta el borde inferior */
+        overflow-y: auto !important;
+        border: 1px solid #edf1f5 !important;
+        border-radius: 14px !important;
     }
     </style>
 </head>
 
-<body>
+<body class="sidebar-colapsado">
+
+<!-- Botón hamburguesa flotante fijo en la pantalla -->
+<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
+    ☰
+</button>
 
 <div class="layout">
 
@@ -214,6 +234,16 @@
 <!-- Scripts operativos de la vista -->
 <script src="../js/historico.js"></script>
 <script src="../js/settings.js"></script>
+
+<!-- Script para controlar el botón de hamburguesa -->
+<script>
+    document.addEventListener("click", (e) => {
+        const btnToggle = e.target.closest("#btnToggleSidebar");
+        if (btnToggle) {
+            document.body.classList.toggle("sidebar-colapsado");
+        }
+    });
+</script>
 
 </body>
 </html>
