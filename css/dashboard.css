@@ -1018,7 +1018,7 @@ div:has(> .tabla-rangos) {
        ========================================================================= */
     @media screen and (min-width: 1600px) {
         #mapaLeaflet .pin-estatico-neon:nth-child(4) { /* SAI (Más a la derecha) */
-            left: 30% !important; 
+            left: 40% !important; 
         }
         #mapaLeaflet .pin-estatico-neon:nth-child(3) { /* La Guajira (Más a la izquierda) */
             left: 65% !important; 
