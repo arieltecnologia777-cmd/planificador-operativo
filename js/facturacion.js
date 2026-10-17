@@ -8,7 +8,15 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 
-const META_FIJA_TECNICO = 9500000;
+// --- Meta fija x técnico ---
+const META_FIJA_TECNICO = 9500000; // Meta individual por técnico
+
+// Metas fijas exactas por regional y la suma total global
+const METAS_REGIONALES = {
+    "R1": 381140000,
+    "R2": 133000000
+};
+const META_GLOBAL_TOTAL = 514140000;
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
