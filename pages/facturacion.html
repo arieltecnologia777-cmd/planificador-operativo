@@ -23,10 +23,20 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="planeacion.html"><span class="nav-icon">📅</span> Planeación</a>
-                <a href="historico.html"><span class="nav-icon">📋</span> Histórico OTs</a>
-                <a href="kpis.html"><span class="nav-icon">📈</span> KPIs</a>
+                <!-- Acordeón Planeación -->
+                <div class="nav-accordion-group">
+                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeonPlaneacion()">
+                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">📅</span> Planeación</span>
+                        <span id="accordionArrow" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
+                    </button>
+                    <div id="accordionSubmenu" class="nav-submenu">
+                        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+                        <a href="planeacion.html"><span class="nav-icon">📅</span> Planeación</a>
+                        <a href="historico.html"><span class="nav-icon">📋</span> Histórico OTs</a>
+                        <a href="kpis.html"><span class="nav-icon">📈</span> KPIs</a>
+                    </div>
+                </div>
+
                 <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
                 <a href="#" onclick="alert('Página en construcción'); return false;"><span class="nav-icon">📡</span> Centros Digitales</a>
                 <a href="#" onclick="alert('Página en construcción'); return false;"><span class="nav-icon">🗺️</span> Mapa</a>
@@ -298,5 +308,19 @@
 <!-- Scripts -->
 <script src="../js/facturacion.js"></script>
 <script src="../js/settings.js"></script>
+<script>
+    // Lógica del acordeón del sidebar
+    function toggleAcordeonPlaneacion() {
+        const submenu = document.getElementById('accordionSubmenu');
+        const arrow = document.getElementById('accordionArrow');
+        if (submenu.style.display === 'flex') {
+            submenu.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            submenu.style.display = 'flex';
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    }
+</script>
 </body>
 </html>
