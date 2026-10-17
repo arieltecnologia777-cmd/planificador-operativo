@@ -7,9 +7,10 @@ let tecnicosData = [];
 let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
+let listaNotificacionesCambios = [];
 
 // --- Meta fija x técnico ---
-const META_FIJA_TECNICO = 9500000; // Meta individual por técnico
+const META_FIJA_TECNICO = 9500000;
 
 // Metas fijas exactas por regional y la suma total global
 const METAS_REGIONALES = {
@@ -34,6 +35,7 @@ async function cargarDatosDesdeAPI() {
             if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
                 poblarSelectsFiltros(registrosCrudos);
                 aplicarFiltrosGlobales();
+                verificarIncrementosAvance(registrosCrudos);
             } else {
                 console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
@@ -90,14 +92,12 @@ function aplicarFiltrosGlobales() {
     const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    // 1. Dataset para la META: Solo filtra por Región (la meta es fija frente al mes)
     const registrosParaMeta = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const matchReg = fRegion === "TODOS" || reg === fRegion;
         return matchReg;
     });
 
-    // 2. Dataset exclusivo para la GRÁFICA DE TENDENCIA: Filtra por región, perfil, aprobación y búsqueda, pero IGNORA el mes para mostrar todo el año
     const registrosParaGrafica = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
@@ -112,7 +112,6 @@ function aplicarFiltrosGlobales() {
         return matchReg && matchPerfil && matchAprob && matchSearch;
     });
 
-    // 3. Dataset para los MONTOS Y TABLA: Filtra por todos los criterios (incluyendo mes)
     const filtradosCompletos = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
@@ -285,7 +284,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         metaRegionalTotal = METAS_REGIONALES[fRegion];
     }
     
-    // Línea de meta constante de referencia para todo el año
     const metaLineData = new Array(12).fill(metaRegionalTotal);
 
     records.forEach(r => {
@@ -400,7 +398,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional compacto y ajustado al espacio
+// Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -450,6 +448,83 @@ function renderizarEstadoRegional(rows) {
     html += `</div>`;
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
+
+// Funciones para la Campana de Notificaciones e Incrementos
+function verificarIncrementosAvance(nuevosRegistros) {
+    const historialPrevio = JSON.parse(localStorage.getItem('fact_notif_historial') || "[]");
+    let nuevosCambiosDetectados = false;
+    
+    nuevosRegistros.forEach(r => {
+        const aprobReg = String(r.aprobacion_regional || "").toUpperCase();
+        if (aprobReg.includes("ACEPTADO")) {
+            const idOT = r.ot || r.OT || r.id || "OT-GENERAL";
+            const tecnico = r.tecnico_programado || r.perfil_wfm || "Técnico";
+            const monto = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
+            
+            const yaRegistrado = historialPrevio.some(h => h.id === idOT && h.monto === monto);
+            if (!yaRegistrado && monto > 0) {
+                listaNotificacionesCambios.unshift({
+                    id: idOT,
+                    titulo: `¡Incremento de avance aprobado!`,
+                    detalle: `El técnico ${tecnico} registró una aprobación por ${formatMoney(monto)}.`,
+                    fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    monto: monto
+                });
+                nuevosCambiosDetectados = true;
+            }
+        }
+    });
+
+    if (nuevosCambiosDetectados || listaNotificacionesCambios.length > 0) {
+        if (listaNotificacionesCambios.length === 0) listaNotificacionesCambios = historialPrevio;
+        localStorage.setItem('fact_notif_historial', JSON.stringify(listaNotificacionesCambios));
+        actualizarBadgeCampana();
+    }
+}
+
+function actualizarBadgeCampana() {
+    const badge = document.getElementById('badgeNotifCount');
+    if (badge) {
+        if (listaNotificacionesCambios.length > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = listaNotificacionesCambios.length;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function abrirModalNotificaciones() {
+    const body = document.getElementById('modalBodyNotificaciones');
+    if (!body) return;
+
+    if (listaNotificacionesCambios.length === 0) {
+        body.innerHTML = `<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay incrementos recientes en la base de facturación.</div>`;
+    } else {
+        let html = '';
+        listaNotificacionesCambios.forEach(n => {
+            html += `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; color: #1e293b; font-size: 0.88rem;">📈 ${n.titulo}</span>
+                        <span style="font-size: 0.72rem; color: #64748b;">${n.fecha}</span>
+                    </div>
+                    <div style="font-size: 0.82rem; color: #334155;">${n.detalle}</div>
+                </div>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalNotificaciones() {
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'none';
+}
+
 // Validación de contraseña de administrador
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
