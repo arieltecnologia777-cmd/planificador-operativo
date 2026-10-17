@@ -149,7 +149,7 @@ function initCharts() {
                         fill: false
                     },
                     {
-                        label: 'Facturado',
+                        label: 'Aprobado',
                         data: [700000, 3800000, 7200000, 9600000],
                         borderColor: '#2563eb',
                         backgroundColor: 'rgba(37, 99, 235, 0.12)',
@@ -160,7 +160,7 @@ function initCharts() {
                         tension: 0.3
                     },
                     {
-                        label: 'Estimado',
+                        label: 'Subsanado',
                         data: [300000, 1300000, 3900000, 4000000],
                         borderColor: '#9333ea',
                         backgroundColor: 'rgba(147, 51, 234, 0.05)',
