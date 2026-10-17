@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual dinámica con cursor puntero, sin desfase y línea de meta
+// Gráfica de tendencia anual dinámica corregida (sin desfase y con cursor láser crosshair)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -346,15 +346,14 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Corrección del desfase: Cambiamos a modo 'nearest' e intersect false para que apunte con precisión milimétrica al mes correcto
+            // Sincronización perfecta por índice exacto de la columna del mes
             interaction: {
-                mode: 'nearest',
-                axis: 'x',
+                mode: 'index',
                 intersect: false,
             },
-            // Puntero láser (mano de enlace / pointer) al pasar por encima de los elementos interactivos
+            // Cambiar el cursor a puntero láser tipo cruz (crosshair) al pasar sobre la gráfica
             onHover: (event, chartElement) => {
-                event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                event.native.target.style.cursor = chartElement.length ? 'crosshair' : 'default';
             },
             plugins: { 
                 legend: { 
