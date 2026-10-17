@@ -1014,17 +1014,23 @@ div:has(> .tabla-rangos) {
         }
     }
 /* =========================================================================
-       AJUSTES EXCLUSIVOS DE POSICIÓN PARA MARCADORES EN PANTALLAS GRANDES (1600px+)
+       CORRECTOR DE POSICIÓN DE ETIQUETAS EN MAPA (PANTALLAS GRANDES)
        ========================================================================= */
     @media screen and (min-width: 1600px) {
-        /* Ajusta aquí las clases o selectores de tus marcadores flotantes del mapa */
-        .leaflet-marker-pane .marker-sai {
-            transform: translate(45px, -10px) !important; /* Rueda SAI más a la derecha */
+        /* Mueve SAI más a la derecha */
+        .leaflet-marker-icon:has(.sai-badge), 
+        img.leaflet-marker-icon[src*="sai"] ~ *,
+        div:has(> .sai-label) {
+            transform: translate(50px, -15px) !important;
         }
-        .leaflet-marker-pane .marker-guajira {
-            transform: translate(-35px, 15px) !important; /* Rueda La Guajira hacia la izquierda */
+
+        /* Mueve La Guajira hacia la izquierda */
+        .leaflet-marker-icon:has(.guajira-badge) {
+            transform: translate(-40px, 15px) !important;
         }
-        .leaflet-marker-pane .marker-cesar {
-            transform: translate(-25px, 10px) !important; /* Rueda Cesar hacia la izquierda */
+
+        /* Mueve Cesar hacia la izquierda */
+        .leaflet-marker-icon:has(.cesar-badge) {
+            transform: translate(-30px, 10px) !important;
         }
     }
