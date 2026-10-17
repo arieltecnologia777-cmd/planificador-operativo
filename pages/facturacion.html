@@ -113,6 +113,28 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.04);
         }
 
+        /* Estilos exactos para Estado Regional */
+        .reg-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .reg-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .reg-pill {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .reg-pill-green { background: #e6f4ea; color: #137333; }
+        .reg-pill-yellow { background: #fef7e0; color: #b06000; }
+        .reg-pill-red { background: #fce8e6; color: #c5221f; }
+
         .badge-status {
             padding: 3px 10px;
             border-radius: 20px;
@@ -205,7 +227,7 @@
 
         <!-- 4 Tarjetas KPI Simétricas y Uniformes con SVGs exactos -->
         <div class="fact-kpi-grid">
-            <!-- 1. Meta de facturación (Azul - Imagen 1) -->
+            <!-- 1. Meta de facturación -->
             <div class="fact-kpi-card">
                 <div class="fact-kpi-top">
                     <div class="fact-kpi-icon-container" style="background: #0062ff;">
@@ -230,7 +252,7 @@
                 </div>
             </div>
 
-            <!-- 2. Facturado (Verde Turquesa - Imagen 2: Billetes) -->
+            <!-- 2. Facturado -->
             <div class="fact-kpi-card">
                 <div class="fact-kpi-top">
                     <div class="fact-kpi-icon-container" style="background: #00b087;">
@@ -255,7 +277,7 @@
                 </div>
             </div>
 
-            <!-- 3. Estimado a facturar (Morado) -->
+            <!-- 3. Estimado a facturar -->
             <div class="fact-kpi-card">
                 <div class="fact-kpi-top">
                     <div class="fact-kpi-icon-container" style="background: #8b5cf6;">
@@ -274,7 +296,7 @@
                 </div>
             </div>
 
-            <!-- 4. Efectividad (Amarillo / Turquesa circular - Imagen 3: Medalla) -->
+            <!-- 4. Efectividad -->
             <div class="fact-kpi-card" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16px 14px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="fact-kpi-icon-container" style="background: #f59e0b; min-width: 42px; width: 42px; height: 42px;">
@@ -294,7 +316,7 @@
             </div>
         </div>
 
-        <!-- Sección Central: Tendencia + Estado Regional + Panel Animador/Notificaciones -->
+        <!-- Sección Central: Tendencia + Estado Regional Exacto + Panel Animador/Notificaciones -->
         <div class="fact-grid-layout">
             <!-- Tendencia de Facturación -->
             <div class="panel-fact">
@@ -311,14 +333,68 @@
                 </div>
             </div>
 
-            <!-- Estado Regional -->
+            <!-- Estado Regional (Exacto a la imagen solicitada) -->
             <div class="panel-fact">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                    <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
+                    </div>
                     <span style="font-size: 0.8rem; color: #2563eb; font-weight: 700; cursor: pointer;" onclick="alert('Mostrando todas las regiones');">Ver todas →</span>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 14px;" id="listaEstadoRegional">
-                    <!-- Dinámico por JS -->
+
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <!-- Antioquia -->
+                    <div class="reg-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
+                            <span style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Antioquia</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span class="reg-pill reg-pill-green">85%</span>
+                            <span style="font-weight: 700; color: #334155; font-size: 0.88rem; min-width: 75px; text-align: right;">$ 5.100.000</span>
+                            <span style="color: #94a3b8; font-weight: bold; cursor: pointer;">›</span>
+                        </div>
+                    </div>
+
+                    <!-- Cesar -->
+                    <div class="reg-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                            <span style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Cesar</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span class="reg-pill reg-pill-yellow">62%</span>
+                            <span style="font-weight: 700; color: #334155; font-size: 0.88rem; min-width: 75px; text-align: right;">$ 3.200.000</span>
+                            <span style="color: #94a3b8; font-weight: bold; cursor: pointer;">›</span>
+                        </div>
+                    </div>
+
+                    <!-- La Guajira -->
+                    <div class="reg-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                            <span style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">La Guajira</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span class="reg-pill reg-pill-red">45%</span>
+                            <span style="font-weight: 700; color: #334155; font-size: 0.88rem; min-width: 75px; text-align: right;">$ 1.800.000</span>
+                            <span style="color: #94a3b8; font-weight: bold; cursor: pointer;">›</span>
+                        </div>
+                    </div>
+
+                    <!-- Sai -->
+                    <div class="reg-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
+                            <span style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Sai</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span class="reg-pill reg-pill-green">78%</span>
+                            <span style="font-weight: 700; color: #334155; font-size: 0.88rem; min-width: 75px; text-align: right;">$ 2.100.000</span>
+                            <span style="color: #94a3b8; font-weight: bold; cursor: pointer;">›</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
