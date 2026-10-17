@@ -179,7 +179,8 @@ async function verificarPassword() {
         const resultado = await response.json();
         console.log("Resultado JSON del Worker:", resultado);
 
-        if (response.ok && resultado.success) {
+        // Aceptamos tanto .success como .ok para evitar falsos negativos
+        if (response.ok && (resultado.success === true || resultado.ok === true)) {
             console.log("¡Contraseña correcta! Abriendo panel de herramientas.");
             cerrarModalPassword();
             document.getElementById('modalHerramientas').style.display = 'flex';
