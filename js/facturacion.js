@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual dinámica corregida (sin desfase y con cursor láser crosshair)
+// Gráfica de tendencia anual con cursor láser rojo y sincronización exacta de meses
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -313,6 +313,30 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 
     if (chartTendencia) chartTendencia.destroy();
+
+    // Plugin personalizado para dibujar la línea de mira láser de color ROJO
+    const laserCrosshairPlugin = {
+        id: 'laserCrosshair',
+        afterDraw: (chart) => {
+            if (chart.tooltip._active && chart.tooltip._active.length) {
+                const ctx = chart.ctx;
+                const activePoint = chart.tooltip._active[0];
+                const x = activePoint.element.x;
+                const topY = chart.scales.y.top;
+                const bottomY = chart.scales.y.bottom;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, topY);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)'; // Rojo láser brillante
+                ctx.setLineDash([3, 3]); // Línea punteada estilo mira
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
     
     chartTendencia = new Chart(ctxTendencia, {
         type: 'line',
@@ -343,15 +367,16 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 }
             ]
         },
+        plugins: [laserCrosshairPlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Sincronización perfecta por índice exacto de la columna del mes
+            // Solución definitiva al desfase: se usa 'x' para alinear exactamente con el punto del mes verticalmente
             interaction: {
                 mode: 'index',
+                axis: 'x',
                 intersect: false,
             },
-            // Cambiar el cursor a puntero láser tipo cruz (crosshair) al pasar sobre la gráfica
             onHover: (event, chartElement) => {
                 event.native.target.style.cursor = chartElement.length ? 'crosshair' : 'default';
             },
