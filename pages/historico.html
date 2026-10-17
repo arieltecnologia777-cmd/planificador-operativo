@@ -6,50 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de OTs Completadas</title>
 
-    <!-- Subimos dos niveles o salimos de pages con ../ para llegar a la carpeta css de la raíz -->
+    <!-- Hoja de estilos global de la raíz -->
     <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+    /* Estructura fija y limpia sin colapsos raros */
+    html, body {
+        zoom: 100% !important;
+        transform: none !important;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .layout {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* Sidebar fijo permanente y ordenado */
+    aside.sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        width: 240px !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+
+    .sidebar-nav {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+    }
+
+    /* Contenido principal alineado correctamente al lado del sidebar */
+    .main-content {
+        margin-left: 240px !important;
+        width: calc(100% - 240px) !important;
+        min-height: 100vh;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
+
+    /* Ocultar botón hamburguesa flotante ya que el sidebar es fijo permanente */
+    .btn-sidebar-toggle {
+        display: none !important;
+    }
+    </style>
 </head>
 
-<body class="sidebar-colapsado">
-
-<!-- Botón hamburguesa flotante fijo en la pantalla -->
-<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-    ☰
-</button>
+<body>
 
 <div class="layout">
 
   <aside class="sidebar">
-        <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+        <div>
+            <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
+                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="planeacion.html">
+                    <span class="nav-icon">📅</span>
+                    Planeación
+                </a>
+                <a href="historico.html" class="active">
+                    <span class="nav-icon">📋</span>
+                    Histórico OTs
+                </a>
+                <a href="kpis.html">
+                    <span class="nav-icon">📈</span>
+                    KPIs
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">📡</span>
+                    Centros Digitales
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">🗺️</span>
+                    Mapa
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">📈</span>
+                    Reportes
+                </a>
+
+                <!-- Botón Exportar en el Sidebar -->
+                <div class="sidebar-export-box" style="padding: 10px 12px; margin-top: 10px;">
+                    <button type="button" onclick="exportarHistoricoOTs()" style="width: 100%; background-color: #2b6cb0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2c5282'" onmouseout="this.style.backgroundColor='#2b6cb0'">
+                        📥 Exportar Histórico
+                    </button>
+                </div>
+            </nav>
         </div>
-        
-        <nav class="sidebar-nav">
-            <a href="https://planificador-operativo.pages.dev/pages/dashboard">
-                <span class="nav-icon">📊</span>
-                Dashboard
-            </a>
-            <a href="planeacion.html">
-                <span class="nav-icon">📅</span>
-                Planeación
-            </a>
-            <a href="#" class="active">
-                <span class="nav-icon">📋</span>
-                Histórico OTs
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
-                Centros Digitales
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
-                Mapa
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
-                Reportes
-            </a>
-        </nav>
+
+        <!-- Botón de Herramientas Avanzadas ubicado al fondo con línea divisoria sutil -->
+        <div style="border-top: 1px solid #e2e8f0; padding: 10px 12px; width: 100%; box-sizing: border-box;">
+            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+                ⚙️ Herramientas Avanzadas
+            </button>
+        </div>
     </aside>
 
     <main class="main-content">
@@ -66,9 +134,9 @@
         </header>
 
         <section class="panel">
-            <div class="planeacion-header">
-                <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                    <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; width: 100%;">
+           <div class="planeacion-header" style="margin-bottom: 10px;">
+                <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
+                    <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%;">
                         <h2>Órdenes Completadas</h2>
                         
                         <input
@@ -76,6 +144,39 @@
                             type="text"
                             placeholder="🔍 Buscar en todo el histórico..."
                             style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; width: 280px;">
+
+                        <!-- CONTENEDOR DE FILTROS EN CASCADA -->
+                        <div class="planeacion-filtros" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 0;">
+                            
+                            <!-- Filtro Departamento -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnDeptoHist" class="btn-multi-filtro">
+                                    <span id="txtDeptoHist">Departamento</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaDeptoHist" class="multi-filtro-lista"></div>
+                            </div>
+
+                            <!-- Filtro Tipo de Afectación -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnAfecHist" class="btn-multi-filtro">
+                                    <span id="txtAfecHist">Tipo de afectación</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaAfecHist" class="multi-filtro-lista"></div>
+                            </div>
+
+                            <!-- Filtro Fecha de Cierre -->
+                            <div class="multi-filtro-dropdown">
+                                <button type="button" id="btnFechaHist" class="btn-multi-filtro">
+                                    <span id="txtFechaHist">Fecha de cierre</span> <span class="arrow">▾</span>
+                                </button>
+                                <div id="listaFechaHist" class="multi-filtro-lista"></div>
+                            </div>
+
+                            <!-- Botón Limpiar Filtros -->
+                            <button type="button" id="btnLimpiarFiltrosHist" class="btn-limpiar-header" style="background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; position: static; transform: none;">
+                                ✖ Limpiar filtros
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,18 +209,11 @@
 
 </div>
 
-<!-- Script del histórico apuntando correctamente a la raíz mediante ../js/ -->
+<!-- Librería SheetJS (XLSX) para la exportación a Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Scripts operativos de la vista -->
 <script src="../js/historico.js"></script>
-
-<!-- Script para controlar el botón de hamburguesa -->
-<script>
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
-            document.body.classList.toggle("sidebar-colapsado");
-        }
-    });
-</script>
+<script src="../js/settings.js"></script>
 
 </body>
 </html>
