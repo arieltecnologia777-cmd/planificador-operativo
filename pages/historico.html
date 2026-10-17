@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura de pantalla completa */
+    /* Estructura estricta de pantalla completa */
     html, body {
         zoom: 100% !important;
         transform: none !important;
@@ -67,22 +67,33 @@
         flex-direction: column !important;
         margin-bottom: 5px !important;
         overflow: hidden !important;
+        background: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }
 
-    /* Eliminar cualquier cuadro o brillo que encierre el título */
+    /* Eliminar cualquier fondo, borde o brillo del encabezado de la tabla */
+    .planeacion-header {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 4px 8px !important;
+    }
+
     .planeacion-header h2 {
         background: transparent !important;
         box-shadow: none !important;
         border: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        font-size: 1.15rem !important;
+        color: #1e293b !important;
     }
 
-    /* FORZAR QUE LA TABLA OCUPE TODO HACIA ABAJO EXACTAMENTE HASTA EL BORDE INFERIOR */
+    /* CONTENEDOR DE LA TABLA ESTIRADO HASTA ABAJO CON SCROLL FLUIDO */
     .planeacion-table-wrapper {
         flex: 1 !important;
-        height: 100% !important;
-        max-height: calc(100vh - 150px) !important;
+        height: auto !important;
+        max-height: none !important;
         overflow-y: auto !important;
         display: block !important;
         border-bottom: 1px solid #cbd5e0 !important;
@@ -93,7 +104,7 @@
         border-collapse: collapse !important;
     }
 
-    /* Fijar encabezados de la tabla para que no se muevan al hacer scroll */
+    /* Fijar encabezados de la tabla */
     .planeacion-table thead th {
         position: sticky !important;
         top: 0 !important;
@@ -250,8 +261,28 @@
 
 <!-- Librería SheetJS (XLSX) para la exportación a Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<!-- Único script necesario para esta vista -->
+<!-- Script principal de la vista -->
 <script src="../js/historico.js"></script>
+
+<!-- Script para garantizar la apertura del modal de Herramientas Avanzadas -->
+<script>
+    document.addEventListener("click", function(e) {
+        const btnConfig = e.target.closest("#btnAbrirConfig");
+        if (btnConfig) {
+            const modalTools = document.getElementById("modalAdminTools");
+            if (modalTools) {
+                modalTools.style.display = "flex";
+            }
+        }
+        const btnCerrarTools = e.target.closest("#cerrarModalTools, #btnCerrarTools");
+        if (btnCerrarTools) {
+            const modalTools = document.getElementById("modalAdminTools");
+            if (modalTools) {
+                modalTools.style.display = "none";
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
