@@ -201,19 +201,30 @@
                 </div>
             </div>
 
-            <!-- Grilla Principal -->
-            <div class="fact-main-grid">
-                <!-- Columna Izquierda: Gráfica de Tendencia y Tabla -->
-                <div class="fact-left-stack">
-                    <div class="fact-panel">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
-                        </div>
-                        <div style="position: relative; height: 260px;">
-                            <canvas id="tendenciaChart"></canvas>
-                        </div>
+            <!-- Fila Superior: Tendencia de Facturación (Izquierda) y Estado Regional (Derecha) -->
+            <div class="fact-top-row">
+                <div class="fact-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
                     </div>
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="tendenciaChart"></canvas>
+                    </div>
+                </div>
 
+                <div class="fact-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grilla Principal Inferior: Tabla de Técnicos y Banner Lateral -->
+            <div class="fact-main-grid">
+                <div class="fact-left-stack">
                     <div class="fact-panel">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                             <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
@@ -244,17 +255,7 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Estado Regional, Banner y Notificaciones -->
                 <div class="fact-right-stack">
-                    <div class="fact-panel">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer">
-                            <!-- Dinámico -->
-                        </div>
-                    </div>
-
                     <div style="background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover; border-radius: 18px; padding: 22px 20px; color: #fff; height: 260px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center;">
                         <h4 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
                         <p style="margin: 0 0 16px 0; font-size: 0.85rem; opacity: 0.95;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
