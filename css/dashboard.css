@@ -1013,3 +1013,18 @@ div:has(> .tabla-rangos) {
             min-height: 340px !important;
         }
     }
+/* =========================================================================
+       AJUSTES EXCLUSIVOS DE POSICIÓN PARA MARCADORES EN PANTALLAS GRANDES (1600px+)
+       ========================================================================= */
+    @media screen and (min-width: 1600px) {
+        /* Ajusta aquí las clases o selectores de tus marcadores flotantes del mapa */
+        .leaflet-marker-pane .marker-sai {
+            transform: translate(45px, -10px) !important; /* Rueda SAI más a la derecha */
+        }
+        .leaflet-marker-pane .marker-guajira {
+            transform: translate(-35px, 15px) !important; /* Rueda La Guajira hacia la izquierda */
+        }
+        .leaflet-marker-pane .marker-cesar {
+            transform: translate(-25px, 10px) !important; /* Rueda Cesar hacia la izquierda */
+        }
+    }
