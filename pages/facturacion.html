@@ -78,12 +78,13 @@
             padding-bottom: 24px;
         }
 
-        /* 4 Tarjetas KPI Superiores proporcionales */
-        .fact-kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
+        /* 4 Tarjetas KPI Superiores alineadas al mismo ancho del bloque izquierdo */
+    .fact-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        /* Hacemos que ocupen exactamente la misma proporción que la sección superior izquierda */
+    }
 
         .fact-kpi-card {
             background: #ffffff !important;
@@ -114,13 +115,13 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
         }
 
-        /* Grilla Central simétrica */
-        .fact-main-grid {
-            display: grid;
-            grid-template-columns: 2.15fr 1fr;
-            gap: 16px;
-            align-items: stretch;
-        }
+        /* Contenedor general que alinea el ancho de la parte superior con la inferior */
+    .fact-main-grid {
+        display: grid;
+        grid-template-columns: 2.15fr 1fr;
+        gap: 16px;
+        align-items: stretch;
+    }
 
         .fact-left-stack {
             display: flex;
