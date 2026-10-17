@@ -1,6 +1,10 @@
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
+const VERIFICAR_KEY_URL = `${API_BASE_URL}/verificar-key`;
+const IMPORTAR_API_URL = `${API_BASE_URL}/facturacion/importar`;
+
 let tecnicosData = [];
 let registrosCrudos = [];
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
@@ -9,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // GET: Cargar registros desde Cloudflare D1
 async function cargarDatosDesdeAPI() {
     try {
-        const response = await fetch(`${API_BASE_URL}/facturacion`);
+        const response = await fetch(FACTURACION_API_URL);
         if (response.ok) {
             registrosCrudos = await response.json();
             
@@ -78,7 +82,6 @@ function actualizarKPIsGenerales(rows) {
     if(document.getElementById('kpiSubsanado')) document.getElementById('kpiSubsanado').innerText = formatMoneyCompact(totalSubsanado);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
 
-    // Porcentajes de barras KPI
     let porcMeta = totalMeta > 0 ? 100 : 0;
     let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
     let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
@@ -96,7 +99,6 @@ function actualizarKPIsGenerales(rows) {
     if(document.getElementById('barSubsanado')) document.getElementById('barSubsanado').style.width = porcSubsanado + '%';
     if(document.getElementById('txtPorcSubsanado')) document.getElementById('txtPorcSubsanado').innerText = porcSubsanado + '%';
 
-    // Actualizar Gauge Circular de Efectividad
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
         new Chart(ctxGauge, {
@@ -158,7 +160,7 @@ async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/verificar-key`, {
+        const response = await fetch(VERIFICAR_KEY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: passwordIngresada })
@@ -232,7 +234,7 @@ async function procesarYSubirExcel(event) {
             txtPorc.innerText = '75%';
             txtEstado.innerText = 'Guardando en Cloudflare D1...';
 
-            const response = await fetch(`${API_BASE_URL}/facturacion/importar`, {
+            const response = await fetch(IMPORTAR_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(jsonData)
