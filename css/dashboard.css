@@ -998,7 +998,7 @@ div:has(> .tabla-rangos) {
         height: 100%;
     }
     #mapaLeaflet {
-        min-height: 240px !important;
+        min-height: 150px !important;
     }
 
     @media screen and (min-width: 1600px) {
