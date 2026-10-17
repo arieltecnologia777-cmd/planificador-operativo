@@ -116,34 +116,29 @@ aside.sidebar {
     flex: 1;
 }
 
-/* Fila superior dividida exactamente 50% y 50% */
+/* Fila superior dividida en dos columnas principales exactas (Gráfica vs Bloque Derecho) */
 .fact-top-row {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: 1fr 420px !important; /* Gráfica flexible y bloque derecho con ancho fijo profesional */
     gap: 16px !important;
     align-items: stretch !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
+/* El contenedor derecho apila Estado Regional y Notificaciones de forma limpia */
 .fact-right-stack {
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
-    height: 100% !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
-/* Paneles unificados */
-.fact-panel {
-    background: #ffffff !important;
-    border: 1px solid #cbd5e0 !important;
-    border-radius: 18px !important;
-    padding: 18px 20px !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
-    box-sizing: border-box !important;
+/* Asegurar que los paneles dentro del stack derecho no se desborden */
+.fact-right-stack .fact-panel {
     width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* Estado Regional */
