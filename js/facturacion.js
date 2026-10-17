@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api";
+const API_BASE_URL = "https://facturacion.modulo-de-exclusiones.workers.dev/api";
 const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
 const VERIFICAR_KEY_URL = `${API_BASE_URL}/verificar-key`;
 const IMPORTAR_API_URL = `${API_BASE_URL}/facturacion/importar`;
