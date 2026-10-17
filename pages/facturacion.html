@@ -85,15 +85,19 @@
 
     <main class="main-content">
         <div class="fact-container">
-            <!-- Hero Personalizado -->
+            <!-- Hero Personalizado con el Botón de Campana -->
             <header class="hero" style="display: flex; justify-content: space-between; align-items: center; padding: 22px 30px; margin-bottom: 0; border-radius: 18px;">
                 <div class="hero-content">
                     <div class="hero-badge"><span></span> FINANCIERO</div>
                     <h1 id="heroSaludo" style="font-size: 1.65rem; margin-bottom: 4px;">¡Hola, Carlos!</h1>
                     <p style="font-size: 0.9rem; margin: 0;">Aquí tienes un resumen de tu desempeño en facturación. Sigue así, ¡vamos por más!</p>
                 </div>
-                <div>
-                    <button type="button" onclick="resetFiltros()" style="padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); color: #fff; font-weight: bold; outline: none; cursor: pointer; font-size: 0.85rem;">Limpiar Filtros</button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button type="button" onclick="abrirModalNotificaciones()" id="btnCampanaNotif" style="position: relative; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); padding: 10px 14px; border-radius: 12px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 0.85rem;">
+                        🔔 Notificaciones
+                        <span id="badgeNotifCount" style="display: none; background: #dc2626; color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: 900;">0</span>
+                    </button>
+                    <button type="button" onclick="resetFiltros()" style="padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); color: #fff; font-weight: bold; outline: none; cursor: pointer; font-size: 0.85rem;">Limpiar Filtros</button>
                 </div>
             </header>
 
@@ -201,7 +205,7 @@
                 </div>
             </div>
 
-            <!-- Fila Superior: Tendencia de Facturación (Izquierda) y Estado Regional (Derecha) -->
+            <!-- Fila Superior: Tendencia de Facturación (Izquierda) y Estado Regional + Banner (Derecha) -->
             <div class="fact-top-row">
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -212,58 +216,51 @@
                     </div>
                 </div>
 
-                <div class="fact-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="fact-panel" style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer">
+                            <!-- Dinámico -->
+                        </div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer">
-                        <!-- Dinámico -->
+
+                    <div style="background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover; border-radius: 18px; padding: 22px 20px; color: #fff; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
+                        <p style="margin: 0; font-size: 0.85rem; opacity: 0.95;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Grilla Principal Inferior: Tabla de Técnicos y Banner Lateral -->
-            <div class="fact-main-grid">
-                <div class="fact-left-stack">
-                    <div class="fact-panel">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; width: 210px; outline: none;">
-                                <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
-                            </div>
-                        </div>
-                        <div class="table-wrapper-fact">
-                            <table class="fact-table">
-                                <thead>
-                                    <tr>
-                                        <th>Técnico</th>
-                                        <th>Meta</th>
-                                        <th>Aprobado</th>
-                                        <th>Rechazado</th>
-                                        <th>Subsanado</th>
-                                        <th>Efectividad</th>
-                                        <th>Estado</th>
-                                        <th style="text-align: center;">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody">
-                                    <!-- Dinámico por JS -->
-                                </tbody>
-                            </table>
+            <!-- Grilla Principal Inferior: Detalle por Técnico -->
+            <div class="fact-main-grid" style="display: block;">
+                <div class="fact-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; width: 210px; outline: none;">
+                            <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="fact-right-stack">
-                    <div style="background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover; border-radius: 18px; padding: 22px 20px; color: #fff; height: 260px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center;">
-                        <h4 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
-                        <p style="margin: 0 0 16px 0; font-size: 0.85rem; opacity: 0.95;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
-                    </div>
-
-                    <div class="fact-panel" style="padding: 16px 18px;">
-                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">🔔 Últimas notificaciones</h4>
-                        <div style="font-size: 0.8rem; color: #64748b;">Base sincronizada con Cloudflare D1.</div>
+                    <div class="table-wrapper-fact">
+                        <table class="fact-table">
+                            <thead>
+                                <tr>
+                                    <th>Técnico</th>
+                                    <th>Meta</th>
+                                    <th>Aprobado</th>
+                                    <th>Rechazado</th>
+                                    <th>Subsanado</th>
+                                    <th>Efectividad</th>
+                                    <th>Estado</th>
+                                    <th style="text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Dinámico por JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -343,6 +340,24 @@
         </div>
         <div class="modal-footer">
             <button type="button" onclick="cerrarModalDetalle()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Notificaciones e Incrementos de Avance -->
+<div id="modalNotificaciones" class="modal-overlay">
+    <div class="modal-container" style="max-width: 550px;">
+        <div class="modal-header">
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                🔔 Historial de Incrementos y Cambios
+            </h3>
+            <button type="button" onclick="cerrarModalNotificaciones()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
+        </div>
+        <div class="modal-body" id="modalBodyNotificaciones" style="max-height: 350px; overflow-y: auto; gap: 10px;">
+            <div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay nuevas notificaciones registradas.</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="cerrarModalNotificaciones()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Cerrar</button>
         </div>
     </div>
 </div>
