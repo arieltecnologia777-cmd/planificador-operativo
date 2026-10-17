@@ -66,19 +66,20 @@
             overflow-y: auto !important;
         }
 
-        /* Contenedor principal de facturación */
+        /* Contenedor principal expandido para ocupar toda la pantalla verticalmente */
         .fact-container {
             display: flex;
             flex-direction: column;
             gap: 16px;
-            max-width: 1400px;
+            max-width: 1720px;
             margin: 0 auto;
             width: 100%;
+            min-height: calc(100vh - 32px);
             box-sizing: border-box;
             padding-bottom: 24px;
         }
 
-        /* Grilla de 4 Tarjetas KPI abarcando todo el ancho horizontal superior */
+        /* Grilla de 4 Tarjetas KPI superiores */
         .fact-kpi-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -115,11 +116,12 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
         }
 
-        /* Grilla Central / Inferior */
+        /* Grilla Central / Inferior expandida */
         .fact-main-grid {
             display: grid;
             grid-template-columns: 2.15fr 1fr;
             gap: 16px;
+            flex: 1;
             align-items: stretch;
         }
 
@@ -127,6 +129,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            flex: 1;
         }
 
         .fact-top-row {
@@ -185,7 +188,7 @@
         .badge-riesgo { background: #fee2e2; color: #dc2626; }
 
         .table-wrapper-fact {
-            max-height: 275px;
+            max-height: 295px;
             overflow-y: auto;
             border: 1px solid #edf1f5;
             border-radius: 12px;
@@ -267,7 +270,7 @@
                 </div>
             </header>
 
-            <!-- 4 Tarjetas KPI Superiores abarcando todo el ancho horizontal -->
+            <!-- 4 Tarjetas KPI Superiores -->
             <div class="fact-kpi-grid">
                 <!-- 1. Meta de facturación -->
                 <div class="fact-kpi-card">
@@ -426,7 +429,7 @@
                     </div>
 
                     <!-- Detalle por Técnico (Tabla Inferior) -->
-                    <div class="fact-panel">
+                    <div class="fact-panel" style="flex: 1; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                             <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
                             <div style="display: flex; gap: 10px; align-items: center;">
@@ -441,7 +444,7 @@
                                 <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
                             </div>
                         </div>
-                        <div class="table-wrapper-fact">
+                        <div class="table-wrapper-fact" style="flex: 1; max-height: none;">
                             <table class="fact-table">
                                 <thead>
                                     <tr>
@@ -462,7 +465,7 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha Stacked (Simétrica exactamente a la altura de los dos bloques de la izquierda) -->
+                <!-- Columna Derecha Stacked -->
                 <div class="fact-right-stack">
                     <div style="background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover; border-radius: 18px; padding: 22px 20px; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; height: 260px; box-sizing: border-box;">
                         <h4 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
