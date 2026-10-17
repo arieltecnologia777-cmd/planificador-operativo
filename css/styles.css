@@ -2699,3 +2699,22 @@ body.modo-ampliado .planeacion-table-wrapper {
     color: #1e293b;
     z-index: 4;
 }
+/* --- RESPONSIVE PARA PANTALLAS GRANDES (Módulos Financieros y similares) --- */
+@media screen and (min-width: 1400px) {
+    .fact-container {
+        max-width: 1550px !important;
+    }
+}
+
+@media screen and (min-width: 1600px) {
+    .fact-container {
+        max-width: 100% !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Expande las proporciones en monitores ultra-anchos */
+    .fact-main-grid {
+        grid-template-columns: 2.3fr 1fr !important;
+    }
+}
