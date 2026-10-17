@@ -116,10 +116,10 @@ aside.sidebar {
     flex: 1;
 }
 
-/* Fila superior con proporción equilibrada y limpia */
+/* Fila superior: Gráfica de tendencia flexible y Estado regional con ancho fijo de 380px */
 .fact-top-row {
     display: grid !important;
-    grid-template-columns: 1.4fr 1fr !important;
+    grid-template-columns: 1fr 380px !important;
     gap: 16px !important;
     align-items: stretch !important;
     width: 100% !important;
@@ -135,7 +135,7 @@ aside.sidebar {
     box-sizing: border-box !important;
 }
 
-/* Paneles unificados con contenedores intactos */
+/* Paneles unificados */
 .fact-panel {
     background: #ffffff !important;
     border: 1px solid #cbd5e0 !important;
