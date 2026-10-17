@@ -985,24 +985,20 @@ div:has(> .tabla-rangos) {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* Contenedor principal adaptable con max-width amplio para pantallas grandes (1920x1080) */
-    .dashboard-container {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        max-width: 1720px;
-        margin: 0 auto;
-        width: 100%;
-        box-sizing: border-box;
-        padding-bottom: 24px;
-    }
-
-    /* Grilla principal adaptada para expandirse fluidamente en pantallas grandes */
+/* Grilla principal reequilibrada: Mapa más compacto a la izquierda y tablas más anchas a la derecha */
     .panel-layout-pbi {
         display: grid;
-        grid-template-columns: 2.35fr 1fr;
+        grid-template-columns: 1fr 1.55fr !important;
         gap: 16px;
-        align-items: stretch;
+        align-items: start;
+    }
+
+    /* Asegurar que el mapa Leaflet tenga un ancho y alto equilibrado */
+    .mapa-departamento-container {
+        height: 100%;
+    }
+    #mapaLeaflet {
+        min-height: 340px !important;
     }
 
     @media screen and (min-width: 1600px) {
@@ -1012,6 +1008,6 @@ div:has(> .tabla-rangos) {
             padding-right: 10px !important;
         }
         .panel-layout-pbi {
-            grid-template-columns: 2.45fr 1fr !important;
+            grid-template-columns: 1fr 1.65fr !important;
         }
     }
