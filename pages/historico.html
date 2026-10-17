@@ -14,25 +14,27 @@
     html, body {
         zoom: 100% !important;
         transform: none !important;
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        overflow-x: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100vh !important;
+        overflow: hidden !important;
     }
 
     .layout {
-        display: flex;
-        width: 100%;
-        min-height: 100vh;
-        position: relative;
+        display: flex !important;
+        width: 100% !important;
+        height: 100vh !important;
+        position: relative !important;
+        overflow: hidden !important;
     }
 
-    /* Sidebar fijo permanente y ordenado (Intacta y perfecto) */
+    /* Sidebar fijo con altura absoluta y extensión total hacia abajo */
     aside.sidebar {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         height: 100vh !important;
+        min-height: 100vh !important;
         width: 240px !important;
         z-index: 1000 !important;
         display: flex !important;
@@ -47,31 +49,32 @@
         flex: 1 !important;
     }
 
-    /* Contenido principal alineado correctamente al lado del sidebar */
+    /* Contenido principal alineado al ancho del sidebar */
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
-        min-height: 100vh;
-        padding: 10px 20px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
+        height: 100vh !important;
+        padding: 10px 20px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
     }
 
-    /* El panel contenedor ocupa el espacio vertical óptimo */
+    /* Panel contenedor adaptado al espacio vertical */
     .main-content > .panel {
         flex: 1 !important;
         display: flex !important;
         flex-direction: column !important;
-        margin-bottom: 15px !important;
+        margin-bottom: 10px !important;
         overflow: hidden !important;
     }
 
-    /* Tabla ajustada milimétricamente (reducida el equivalente a una fila para dar respiro abajo) */
+    /* Tabla recortada una línea más arriba (de 180px a 200px) para que no quede tan abajo */
     .planeacion-table-wrapper {
         flex: 1 !important;
         height: 100% !important;
-        max-height: calc(100vh - 215px) !important;
+        max-height: calc(100vh - 200px) !important;
         overflow-y: auto !important;
         margin-top: 15px !important;
         border: 1px solid #edf1f5 !important;
