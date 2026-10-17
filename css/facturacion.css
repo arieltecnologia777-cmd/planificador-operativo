@@ -63,10 +63,10 @@ aside.sidebar {
     flex: 1;
 }
 
-/* Grilla de 5 Tarjetas KPI superiores */
+/* Grilla de Tarjetas KPI superiores */
 .fact-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 16px;
     width: 100%;
 }
@@ -100,23 +100,7 @@ aside.sidebar {
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
 }
 
-/* Grilla Central / Inferior */
-.fact-main-grid {
-    display: grid;
-    grid-template-columns: 2.15fr 1fr;
-    gap: 16px;
-    align-items: stretch;
-    flex: 1;
-}
-
-.fact-left-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
-}
-
-/* Fila superior: Gráfica de tendencia flexible y Estado regional con ancho fijo de 380px */
+/* Fila superior: Gráfica de tendencia flexible y Estado regional con ancho fijo de 380px exactos */
 .fact-top-row {
     display: grid !important;
     grid-template-columns: 1fr 380px !important;
@@ -126,13 +110,18 @@ aside.sidebar {
     box-sizing: border-box !important;
 }
 
-.fact-right-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    height: 100% !important;
-    width: 100% !important;
+/* Banner motivacional optimizado con soporte para el Avatar PNG */
+.fact-banner-avatar {
+    background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover !important;
+    border-radius: 18px !important;
+    padding: 20px !important;
+    color: #fff !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    min-height: 125px !important;
 }
 
 /* Paneles unificados */
