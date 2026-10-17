@@ -14,52 +14,106 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <style>
+    /* Fuerza el zoom al 100% aislando esta vista */
+    html, body {
+        zoom: 100% !important;
+        transform: none !important;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* Layout general */
+    .layout {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* Sidebar fijo que ocupa el 100% de la altura y separa los bloques arriba y abajo */
+    aside.sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100% !important;
+        min-height: 100vh !important;
+        width: 240px !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        box-sizing: border-box;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    /* Contenido principal adaptado al ancho del sidebar fijo */
+    .main-content {
+        margin-left: 240px !important;
+        width: calc(100% - 240px) !important;
+        min-height: 100vh;
+        padding-top: 5px !important;
+        box-sizing: border-box;
+    }
+    </style>
 </head>
 
 <body>
 
-<button type="button" id="btnToggleSidebar" class="btn-sidebar-toggle" title="Ocultar/Mostrar Menú">
-    ☰
-</button>
-
 <div class="layout">
     
-<aside class="sidebar">
-        <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-            <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+    <aside class="sidebar">
+        <div>
+            <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
+                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 110px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="planeacion.html">
+                    <span class="nav-icon">📅</span>
+                    Planeación
+                </a>
+                <a href="historico.html">
+                    <span class="nav-icon">📋</span>
+                    Histórico OTs
+                </a>
+                <a href="kpis.html">
+                    <span class="nav-icon">📈</span>
+                    KPIs
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">📡</span>
+                    Centros Digitales
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">🗺️</span>
+                    Mapa
+                </a>
+                <a href="#" onclick="alert('Página en construcción'); return false;">
+                    <span class="nav-icon">📈</span>
+                    Reportes
+                </a>
+            </nav>
         </div>
 
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="active">
-                <span class="nav-icon">📊</span>
-                Dashboard
-            </a>
-            <a href="planeacion.html">
-                <span class="nav-icon">📅</span>
-                Planeación
-            </a>
-            
-            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: calc(100% - 20px); margin: 10px 10px 0 10px; background: #4a5568; color: white; border: none; padding: 10px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <!-- Herramientas Avanzadas al fondo con línea divisoria sutil -->
+        <div style="border-top: 1px solid #e2e8f0; padding: 10px 12px; width: 100%; box-sizing: border-box;">
+            <button type="button" id="btnAbrirConfig" class="btn-config-avanzada" style="width: 100%; background: #4a5568; color: white; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
                 ⚙️ Herramientas Avanzadas
             </button>
-
-            <a href="historico.html">
-    <span class="nav-icon">📋</span>
-    Histórico OTs
-</a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📡</span>
-                Centros Digitales
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">🗺️</span>
-                Mapa
-            </a>
-            <a href="#" onclick="alert('Página en construcción'); return false;">
-                <span class="nav-icon">📈</span>
-                Reportes
-            </a>
-        </nav>
+        </div>
     </aside>
 
     <main class="main-content">
@@ -396,15 +450,6 @@
 <script src="../js/dashboard.js?v=29"></script>
 <script src="../js/settings.js"></script>
 
-<script>
-    document.addEventListener("click", (e) => {
-        const btnToggle = e.target.closest("#btnToggleSidebar");
-        if (btnToggle) {
-            document.body.classList.toggle("sidebar-colapsado");
-        }
-    });
-</script>
-
 <div id="modalAdminPassword" class="obs-modal-overlay" style="display: none;">
     <div class="obs-modal-content" style="max-width: 400px;">
         <div class="obs-modal-header">
@@ -529,15 +574,3 @@
 <script>
     document.addEventListener("change", function(e) {
         if (e.target && e.target.id === "inputExcelBacklog") {
-            const span = document.getElementById("nombreArchivoBacklog");
-            if (span && e.target.files.length > 0) span.innerText = e.target.files[0].name;
-        }
-        if (e.target && e.target.id === "inputExcelIndBacklog") {
-            const span = document.getElementById("nombreArchivoIndBacklog");
-            if (span && e.target.files.length > 0) span.innerText = e.target.files[0].name;
-        }
-    });
-</script>
-
-</body>
-</html>
