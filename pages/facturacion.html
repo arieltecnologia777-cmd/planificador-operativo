@@ -98,9 +98,10 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.12);
         }
 
+        /* Grilla principal alineada al mismo ancho que la tabla inferior */
         .fact-grid-layout {
             display: grid;
-            grid-template-columns: 1.4fr 1fr 1fr;
+            grid-template-columns: 1.35fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -113,7 +114,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.04);
         }
 
-        /* Estilos exactos para Estado Regional */
+        /* Estado Regional */
         .reg-row {
             display: flex;
             align-items: center;
@@ -135,17 +136,18 @@
         .reg-pill-yellow { background: #fef7e0; color: #b06000; }
         .reg-pill-red { background: #fce8e6; color: #c5221f; }
 
+        /* Estados de la tabla */
         .badge-status {
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.78rem;
+            font-weight: 800;
         }
         .badge-progreso { background: #fef3c7; color: #d97706; }
         .badge-riesgo { background: #fee2e2; color: #dc2626; }
 
         .table-wrapper-fact {
-            max-height: 280px;
+            max-height: 290px;
             overflow-y: auto;
             border: 1px solid #edf1f5;
             border-radius: 12px;
@@ -154,26 +156,27 @@
         table.fact-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             white-space: nowrap;
         }
 
         table.fact-table th {
-            background: #f1f5f9;
-            color: #1e293b;
-            padding: 10px 12px;
+            background: #f8fafc;
+            color: #475569;
+            padding: 12px 14px;
             font-weight: 800;
             text-align: left;
             position: sticky;
             top: 0;
             z-index: 10;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         table.fact-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #edf1f5;
-            color: #334155;
-            font-weight: 500;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
         }
 
         table.fact-table tr:hover td { background: #f8fafc; }
@@ -225,7 +228,7 @@
             </div>
         </header>
 
-        <!-- 4 Tarjetas KPI Simétricas y Uniformes con SVGs exactos -->
+        <!-- 4 Tarjetas KPI Simétricas y Uniformes -->
         <div class="fact-kpi-grid">
             <!-- 1. Meta de facturación -->
             <div class="fact-kpi-card">
@@ -316,9 +319,9 @@
             </div>
         </div>
 
-        <!-- Sección Central: Tu avance de facturación (Restaurado exacto) + Estado Regional + Panel Animador/Notificaciones -->
+        <!-- Sección Central: Avance + Estado Regional + Banner Animador / Notificaciones -->
         <div class="fact-grid-layout">
-            <!-- Tu avance de facturación (Líneas con áreas y leyenda superior derecha) -->
+            <!-- Tu avance de facturación -->
             <div class="panel-fact">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tu avance de facturación</h3>
@@ -396,13 +399,15 @@
 
             <!-- Columna Derecha: Banner Animador + Notificaciones -->
             <div style="display: flex; flex-direction: column; gap: 16px;">
-                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); border-radius: 18px; padding: 18px; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25); position: relative; overflow: hidden;">
-                    <h4 style="margin: 0 0 6px 0; font-size: 1rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
-                    <p style="margin: 0 0 12px 0; font-size: 0.82rem; opacity: 0.9; line-height: 1.4;">Ya llevas el 70% de tu meta. Con un poco más de esfuerzo la alcanzas.</p>
-                    <button type="button" onclick="alert('Detalle de metas abierto')" style="background: #fff; color: #1e40af; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">Ver detalle →</button>
+                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); border-radius: 18px; padding: 22px 20px; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25); position: relative; overflow: hidden; min-height: 115px; display: flex; flex-direction: column; justify-content: center;">
+                    <h4 style="margin: 0 0 6px 0; font-size: 1.05rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
+                    <p style="margin: 0 0 14px 0; font-size: 0.82rem; opacity: 0.92; line-height: 1.4;">Ya llevas el 70% de tu meta. Con un poco más de esfuerzo la alcanzas.</p>
+                    <div>
+                        <button type="button" onclick="alert('Detalle de metas abierto')" style="background: #fff; color: #1e40af; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">Ver detalle →</button>
+                    </div>
                 </div>
 
-                <div class="panel-fact" style="flex: 1; padding: 14px 16px;">
+                <div class="panel-fact" style="padding: 14px 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: #0f172a;">🔔 Últimas notificaciones</h4>
                         <span style="font-size: 0.75rem; color: #2563eb; font-weight: 700; cursor: pointer;">Ver todas →</span>
@@ -434,9 +439,9 @@
             </div>
         </div>
 
-        <!-- Detalle por Técnico (Tabla Inferior) -->
-        <div class="panel-fact">
-            <div class="panel-header" style="margin-bottom: 12px;">
+        <!-- Detalle por Técnico (Tabla Inferior alineada al ancho total exacto) -->
+        <div class="panel-fact" style="margin-bottom: 20px;">
+            <div class="panel-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
                 <div style="display: flex; gap: 12px; align-items: center;">
                     <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="filterTable()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.85rem; width: 220px;">
