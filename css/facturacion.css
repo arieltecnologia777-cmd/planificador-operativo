@@ -100,27 +100,17 @@ aside.sidebar {
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
 }
 
-/* Fila superior definitiva: Gráfica flexible a la izquierda y columna derecha fija de 380px */
+/* Fila superior definitiva: Dividida estrictamente en 3 columnas horizontales (Tendencia, Estado Regional y Banner Avatar) */
 .fact-top-row {
     display: grid !important;
-    grid-template-columns: 1fr 380px !important;
+    grid-template-columns: 1fr 340px 320px !important;
     gap: 16px !important;
     align-items: stretch !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
-/* Contenedor derecho que apila Estado Regional y el Banner de forma proporcional */
-.fact-right-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    height: 100% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* Banner motivacional optimizado con soporte para el Avatar PNG */
+/* Banner motivacional optimizado para la tercera columna horizontal con soporte para el Avatar PNG */
 .fact-banner-avatar {
     background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover !important;
     border-radius: 18px !important;
@@ -131,7 +121,8 @@ aside.sidebar {
     align-items: center !important;
     justify-content: space-between !important;
     gap: 12px !important;
-    min-height: 125px !important;
+    height: 100% !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
 }
 
 /* Paneles unificados */
