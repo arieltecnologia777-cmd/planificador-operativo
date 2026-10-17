@@ -10,31 +10,29 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Estructura fija de pantalla completa */
+    /* Estructura de pantalla completa idéntica a Planeación */
     html, body {
         zoom: 100% !important;
         transform: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        height: 100vh !important;
-        overflow: hidden !important;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow-x: hidden;
     }
 
     .layout {
-        display: flex !important;
-        width: 100% !important;
-        height: 100vh !important;
-        position: relative !;
-        overflow: hidden !;
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
     }
 
-    /* Sidebar intacto tal como quedó perfecto */
+    /* Sidebar fijo permanente y ordenado */
     aside.sidebar {
-        position: fixed !;
+        position: fixed !important;
         top: 0 !important;
         left: 0 !important;
-        height: 100% !important;
-        min-height: 100vh !important;
+        height: 100vh !important;
         width: 240px !important;
         z-index: 1000 !important;
         display: flex !important;
@@ -49,68 +47,40 @@
         flex: 1 !important;
     }
 
-    /* Contenido principal */
+    /* Contenido principal alineado correctamente al lado del sidebar */
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
-        height: 100vh !important;
-        display: flex !important;
-        flex-direction: column !important;
-        padding: 8px 12px !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
+        min-height: 100vh;
+        padding: 10px 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* Panel estirado al máximo hacia abajo con !important */
+    /* El panel contenedor ocupa todo el espacio vertical sobrante hacia abajo */
     .main-content > .panel {
         flex: 1 !important;
-        height: calc(100vh - 100px) !important;
         display: flex !important;
         flex-direction: column !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 15px !important;
         overflow: hidden !important;
-        background: #ffffff !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }
 
-    .planeacion-header {
-        background: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
-        padding: 4px 8px !important;
-    }
-
-    .planeacion-header h2 {
-        background: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 1.15rem !important;
-        color: #1e293b !important;
-    }
-
-    /* TABLA EXPANDIDA AL MÁXIMO CON !IMPORTANT SOBRE EL CSS GLOBAL */
+    /* Tabla expandida exactamente hasta el borde inferior con scroll interno fluido */
     .planeacion-table-wrapper {
         flex: 1 !important;
         height: 100% !important;
-        max-height: calc(150vh - 190px) !important;
+        max-height: calc(100vh - 180px) !important;
         overflow-y: auto !important;
-        display: block !important;
-        border-bottom: 1px solid #cbd5e0 !important;
+        margin-top: 15px !important;
+        border: 1px solid #edf1f5 !important;
+        border-radius: 14px !important;
     }
 
-    .planeacion-table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-    }
-
-    /* Fijar encabezados de la tabla */
-    .planeacion-table thead th {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 10 !important;
-        background: #f1f5f9 !important;
+    /* Ocultar botón hamburguesa flotante ya que el sidebar es fijo permanente */
+    .btn-sidebar-toggle {
+        display: none !important;
     }
     </style>
 </head>
@@ -119,10 +89,10 @@
 
 <div class="layout">
 
-    <aside class="sidebar">
+  <aside class="sidebar">
         <div>
             <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 110px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
+                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 120px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
             </div>
             
             <nav class="sidebar-nav">
@@ -155,8 +125,9 @@
                     Reportes
                 </a>
 
+                <!-- Botón Exportar en el Sidebar -->
                 <div class="sidebar-export-box" style="padding: 10px 12px; margin-top: 10px;">
-                    <button type="button" onclick="exportarHistoricoOTs()" style="width: 100%; background-color: #2b6cb0; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#2c5282'" onmouseout="this.style.backgroundColor='#2b6cb0'">
+                    <button type="button" onclick="exportarHistoricoOTs()" style="width: 100%; background-color: #2b6cb0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2c5282'" onmouseout="this.style.backgroundColor='#2b6cb0'">
                         📥 Exportar Histórico
                     </button>
                 </div>
@@ -173,7 +144,7 @@
 
     <main class="main-content">
 
-        <header class="hero" style="margin-bottom: 6px !important; padding: 10px 15px !important;">
+        <header class="hero">
             <div class="hero-content">
                 <div class="hero-badge">
                     <span></span>
@@ -185,7 +156,7 @@
         </header>
 
         <section class="panel">
-           <div class="planeacion-header" style="margin-bottom: 6px;">
+           <div class="planeacion-header" style="margin-bottom: 10px;">
                 <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
                     <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%;">
                         <h2>Órdenes Completadas</h2>
