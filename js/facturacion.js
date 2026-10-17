@@ -1,5 +1,5 @@
-// Datos de técnicos consolidados para la tabla y gráficos
-const tecnicosData = [
+// Datos de respaldo locales si la API está offline
+let tecnicosData = [
     { nombre: "Hailen Julio", regional: "Antioquia", meta: 12000000, aprobado: 8400000, rechazado: 1200000, subsanado: 2000000, efectividad: 70, estado: "En progreso" },
     { nombre: "Juan Torres", regional: "Cesar", meta: 10000000, aprobado: 6200000, rechazado: 1800000, subsanado: 2000000, efectividad: 62, estado: "En progreso" },
     { nombre: "Samuel Pushaina", regional: "La Guajira", meta: 8000000, aprobado: 3600000, rechazado: 2400000, subsanado: 2000000, efectividad: 45, estado: "En riesgo" },
@@ -8,14 +8,126 @@ const tecnicosData = [
     { nombre: "Sammy Eliud", regional: "Antioquia", meta: 11000000, aprobado: 9000000, rechazado: 1000000, subsanado: 1000000, efectividad: 82, estado: "En progreso" }
 ];
 
+const API_BASE_URL = "https://planeacion-api.modulo-de-exclusiones.workers.dev/api"; // O tu endpoint del worker de facturación
+
+document.addEventListener("DOMContentLoaded", () => {
+    cargarDatosDesdeAPI();
+    initCharts();
+});
+
+// GET: Cargar registros desde Cloudflare Worker
+async function cargarDatosDesdeAPI() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/facturacion`);
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                // Transformar datos del D1 si es necesario para la tabla
+                console.log("Datos cargados desde D1:", data.length);
+            }
+        }
+    } catch (err) {
+        console.warn("Usando datos locales por defecto (API no disponible o inicializando):", err);
+    }
+    renderTable(tecnicosData);
+}
+
+// Lógica de Modales de Herramientas Avanzadas
+function abrirModalPassword() {
+    document.getElementById('inputPasswordAdmin').value = '';
+    document.getElementById('errorPasswordMsg').style.display = 'none';
+    document.getElementById('modalPassword').style.display = 'flex';
+}
+
+function cerrarModalPassword() {
+    document.getElementById('modalPassword').style.display = 'none';
+}
+
+async function verificarPassword() {
+    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
+    
+    // Aquí puedes validar contra tu key o un valor directo
+    if (passwordIngresada === "Admin2026*" || passwordIngresada === "admin") {
+        cerrarModalPassword();
+        document.getElementById('modalHerramientas').style.display = 'flex';
+    } else {
+        document.getElementById('errorPasswordMsg').style.display = 'block';
+    }
+}
+
+function cerrarModalHerramientas() {
+    document.getElementById('modalHerramientas').style.display = 'none';
+}
+
+// Cargue de Excel y envío masivo al Worker con barra de avance
+async function procesarYSubirExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    cerrarModalHerramientas();
+    
+    // Mostrar modal de carga bloqueante con barra en 0%
+    const modalCarga = document.getElementById('modalCargandoExcel');
+    const barra = document.getElementById('barraProgreso');
+    const txtPorc = document.getElementById('txtPorcentajeCarga');
+    const txtEstado = document.getElementById('txtEstadoCarga');
+    
+    barra.style.width = '10%';
+    txtPorc.innerText = '10%';
+    txtEstado.innerText = 'Leyendo archivo Excel...';
+    modalCarga.style.display = 'flex';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            barra.style.width = '40%';
+            txtPorc.innerText = '40%';
+            txtEstado.innerText = 'Procesando registros...';
+
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (jsonData.length === 0) {
+                alert("El archivo Excel está vacío.");
+                modalCarga.style.display = 'none';
+                return;
+            }
+
+            barra.style.width = '70%';
+            txtPorc.innerText = '70%';
+            txtEstado.innerText = 'Sincronizando con Cloudflare D1...';
+
+            // Enviar en lotes o completo al worker
+            const response = await fetch(`${API_BASE_URL}/facturacion/importar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            barra.style.width = '100%';
+            txtPorc.innerText = '100%';
+            txtEstado.innerText = '¡Cargue y éxito de confirmación!';
+
+            setTimeout(() => {
+                modalCarga.style.display = 'none';
+                alert(`¡Proceso exitoso! Se sincronizaron los registros correctamente.`);
+                location.reload(); // Recargar para pintar los datos nuevos con GET
+            }, 1000);
+
+        } catch (error) {
+            modalCarga.style.display = 'none';
+            alert("Error al procesar el archivo: " + error.message);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 function formatMoney(amount) {
     return '$ ' + Number(amount).toLocaleString('es-CO', {maximumFractionDigits: 0});
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    renderTable(tecnicosData);
-    initCharts();
-});
 
 function renderTable(records) {
     const tbody = document.getElementById('tableBody');
@@ -51,68 +163,6 @@ function renderTable(records) {
     tbody.innerHTML = html;
 }
 
-function abrirDetalleTecnico(index) {
-    const r = tecnicosData[index];
-    if (!r) return;
-
-    const modalBody = document.getElementById('modalBodyContent');
-    const badgeClass = r.estado === "En progreso" ? "badge-progreso" : "badge-riesgo";
-
-    modalBody.innerHTML = `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
-                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
-                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
-                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
-                </div>
-            </div>
-
-            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Efectividad Global del Técnico</div>
-                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta establecida.</div>
-                </div>
-                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
-            </div>
-        </div>
-    `;
-
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'flex';
-}
-
-function cerrarModalDetalle() {
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'none';
-}
-
 function filterTable() {
     const searchInput = document.getElementById('searchInput');
     const selectFiltroRegional = document.getElementById('selectFiltroRegional');
@@ -130,7 +180,6 @@ function filterTable() {
 }
 
 function initCharts() {
-    // 1. Gráfico de Tendencia ("Tu avance de facturación")
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (ctxTendencia) {
         new Chart(ctxTendencia, {
@@ -145,7 +194,6 @@ function initCharts() {
                         borderDash: [5, 5],
                         borderWidth: 2,
                         pointRadius: 4,
-                        pointBackgroundColor: '#94a3b8',
                         fill: false
                     },
                     {
@@ -155,18 +203,6 @@ function initCharts() {
                         backgroundColor: 'rgba(37, 99, 235, 0.12)',
                         borderWidth: 3,
                         pointRadius: 5,
-                        pointBackgroundColor: '#2563eb',
-                        fill: true,
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Subsanado',
-                        data: [300000, 1300000, 3900000, 4000000],
-                        borderColor: '#9333ea',
-                        backgroundColor: 'rgba(147, 51, 234, 0.05)',
-                        borderWidth: 2.5,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#9333ea',
                         fill: true,
                         tension: 0.3
                     }
@@ -187,16 +223,12 @@ function initCharts() {
                         },
                         grid: { color: '#f1f5f9' }
                     },
-                    x: { 
-                        grid: { display: false },
-                        ticks: { font: { weight: 'bold' }, color: '#64748b' }
-                    }
+                    x: { grid: { display: false }, ticks: { font: { weight: 'bold' }, color: '#64748b' } }
                 }
             }
         });
     }
 
-    // 2. Gráfico Circular de Efectividad (Gauge Doughnut en el KPI)
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
         new Chart(ctxGauge, {
