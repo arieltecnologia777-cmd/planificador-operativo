@@ -66,7 +66,7 @@
             overflow-y: auto !important;
         }
 
-        /* Contenedor principal de facturación con proporciones ideales */
+        /* Contenedor principal de facturación */
         .fact-container {
             display: flex;
             flex-direction: column;
@@ -78,19 +78,26 @@
             padding-bottom: 24px;
         }
 
-        /* 4 Tarjetas KPI Superiores alineadas al mismo ancho del bloque izquierdo */
-    .fact-kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        /* Hacemos que ocupen exactamente la misma proporción que la sección superior izquierda */
-    }
+        /* Grilla Superior que alinea perfectamente las 4 KPIs con el bloque izquierdo inferior */
+        .fact-top-kpi-wrapper {
+            display: grid;
+            grid-template-columns: 2.15fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        /* Grilla interna para las 4 tarjetas KPI */
+        .fact-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
 
         .fact-kpi-card {
             background: #ffffff !important;
             border: 1px solid #cbd5e0 !important;
             border-radius: 16px !important;
-            padding: 16px 20px !important;
+            padding: 16px 14px !important;
             box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
             display: flex !important;
             flex-direction: column !important;
@@ -102,26 +109,26 @@
         .fact-kpi-top {
             display: flex !important;
             align-items: center !important;
-            gap: 14px !important;
+            gap: 10px !important;
         }
 
         .fact-kpi-icon-container {
-            width: 42px !important;
-            height: 42px !important;
-            min-width: 42px !important;
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
             border-radius: 50% !important;
             display: grid !important;
             place-items: center !important;
             box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
         }
 
-        /* Contenedor general que alinea el ancho de la parte superior con la inferior */
-    .fact-main-grid {
-        display: grid;
-        grid-template-columns: 2.15fr 1fr;
-        gap: 16px;
-        align-items: stretch;
-    }
+        /* Grilla Central / Inferior */
+        .fact-main-grid {
+            display: grid;
+            grid-template-columns: 2.15fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
 
         .fact-left-stack {
             display: flex;
@@ -267,80 +274,78 @@
                 </div>
             </header>
 
-            <!-- 4 Tarjetas KPI Superiores Proporcionales -->
-            <div class="fact-kpi-grid">
-                <!-- 1. Meta de facturación -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #0062ff;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#ffffff"/><path d="M17 7l4-4"/><path d="M17 3h4v4"/></svg>
+            <!-- Contenedor superior para alinear las 4 KPIs exactamente al ancho izquierdo -->
+            <div class="fact-top-kpi-wrapper">
+                <div class="fact-kpi-grid">
+                    <!-- 1. Meta de facturación -->
+                    <div class="fact-kpi-card">
+                        <div class="fact-kpi-top">
+                            <div class="fact-kpi-icon-container" style="background: #0062ff;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#ffffff"/><path d="M17 7l4-4"/><path d="M17 3h4v4"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta facturación</div>
+                                <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 2px;" id="kpiMeta">$ 12.M</div>
+                            </div>
                         </div>
                         <div>
-                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta de facturación</div>
-                            <div style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiMeta">$ 12.000.000</div>
+                            <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden; position: relative;">
+                                <div id="barMeta" style="background: #0062ff; width: 100%; height: 100%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #eff6ff; color: #0062ff; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 4px;" id="txtPorcMeta">100%</span></div>
                         </div>
                     </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; position: relative;">
-                            <div id="barMeta" style="background: #0062ff; width: 100%; height: 100%;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 4px;"><span style="background: #eff6ff; color: #0062ff; font-size: 0.7rem; font-weight: 800; padding: 1px 6px; border-radius: 6px;" id="txtPorcMeta">100%</span></div>
-                    </div>
-                </div>
 
-                <!-- 2. Facturado -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #00b087;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="18" height="12" rx="2"/><path d="M6 11h2"/><path d="M14 11h2"/><circle cx="11" cy="11" r="2.5"/><path d="M20 9h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1"/></svg>
+                    <!-- 2. Facturado -->
+                    <div class="fact-kpi-card">
+                        <div class="fact-kpi-top">
+                            <div class="fact-kpi-icon-container" style="background: #00b087;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="18" height="12" rx="2"/><path d="M6 11h2"/><path d="M14 11h2"/><circle cx="11" cy="11" r="2.5"/><path d="M20 9h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Facturado</div>
+                                <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 2px;" id="kpiFacturado">$ 8.4M</div>
+                            </div>
                         </div>
                         <div>
-                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Facturado</div>
-                            <div style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiFacturado">$ 8.400.000</div>
+                            <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden; position: relative;">
+                                <div id="barFact" style="background: #00b087; width: 70%; height: 100%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #f0fdf4; color: #00b087; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 4px;" id="txtPorcFact">70%</span></div>
                         </div>
                     </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; position: relative;">
-                            <div id="barFact" style="background: #00b087; width: 70%; height: 100%;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 4px;"><span style="background: #f0fdf4; color: #00b087; font-size: 0.7rem; font-weight: 800; padding: 1px 6px; border-radius: 6px;" id="txtPorcFact">70%</span></div>
-                    </div>
-                </div>
 
-                <!-- 3. Estimado a facturar -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #8b5cf6;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <!-- 3. Estimado a facturar -->
+                    <div class="fact-kpi-card">
+                        <div class="fact-kpi-top">
+                            <div class="fact-kpi-icon-container" style="background: #8b5cf6;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estimado</div>
+                                <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 2px;" id="kpiEstimado">$ 3.2M</div>
+                            </div>
                         </div>
                         <div>
-                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estimado a facturar</div>
-                            <div style="font-size: 1.35rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiEstimado">$ 3.200.000</div>
+                            <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden; position: relative;">
+                                <div id="barEst" style="background: #8b5cf6; width: 27%; height: 100%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #faf5ff; color: #8b5cf6; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 4px;" id="txtPorcEst">27%</span></div>
                         </div>
                     </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; position: relative;">
-                            <div id="barEst" style="background: #8b5cf6; width: 27%; height: 100%;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 4px;"><span style="background: #faf5ff; color: #8b5cf6; font-size: 0.7rem; font-weight: 800; padding: 1px 6px; border-radius: 6px;" id="txtPorcEst">27%</span></div>
-                    </div>
-                </div>
 
-                <!-- 4. Efectividad -->
-                <div class="fact-kpi-card" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 16px 16px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="fact-kpi-icon-container" style="background: #f59e0b; min-width: 40px; width: 40px; height: 40px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15l-3.5 2 1-4-3-2.5 4-.5L12 6l1.5 4 4 .5-3 2.5 1 4z"/><path d="M9 17l-2 5 5-2 5 2-2-5"/></svg>
-                        </div>
+                    <!-- 4. Efectividad -->
+                    <div class="fact-kpi-card" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 14px 12px;">
                         <div>
-                            <div style="font-size: 0.72rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Efectividad</div>
-                            <div style="font-size: 1.4rem; font-weight: 900; color: #0f172a; margin-top: 2px;" id="kpiEfectividad">70%</div>
+                            <div style="font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Efectividad</div>
+                            <div style="font-size: 1.25rem; font-weight: 900; color: #0f172a; margin-top: 2px;" id="kpiEfectividad">70%</div>
                         </div>
-                    </div>
-                    <div style="width: 48px; height: 48px; position: relative;">
-                        <canvas id="gaugeEfectividad"></canvas>
+                        <div style="width: 40px; height: 40px; position: relative;">
+                            <canvas id="gaugeEfectividad"></canvas>
+                        </div>
                     </div>
                 </div>
+                <div></div> <!-- Espacio vacío derecho para mantener la simetría exacta con la columna de notificaciones -->
             </div>
 
             <!-- Grilla Principal -->
@@ -462,7 +467,7 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha Stacked (Banner con imagen de fondo + Notificaciones extendidas) -->
+                <!-- Columna Derecha Stacked -->
                 <div class="fact-right-stack">
                     <div style="background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover; border-radius: 18px; padding: 22px 20px; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.25); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; height: 132px; box-sizing: border-box;">
                         <h4 style="margin: 0 0 4px 0; font-size: 1.05rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
