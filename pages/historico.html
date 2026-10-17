@@ -10,21 +10,21 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
-    /* Fuerza el zoom al 100% aislando esta vista de reglas globales heredadas */
+    /* Fuerza el zoom al 100% y fija la altura total de la pantalla */
     html, body {
         zoom: 100% !important;
         transform: none !important;
         margin: 0;
         padding: 0;
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden; /* Evita scroll general de la página, permitiéndolo solo dentro de la tabla */
     }
 
     /* Layout general */
     .layout {
         display: flex;
         width: 100%;
-        min-height: 100vh;
+        height: 100vh;
         position: relative;
     }
 
@@ -53,9 +53,28 @@
     .main-content {
         margin-left: 240px !important;
         width: calc(100% - 240px) !important;
-        min-height: 100vh;
-        padding-top: 5px !important;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px !important;
         box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Hacer que el panel y el contenedor de la tabla se expandan hacia abajo */
+    .main-content > .panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px !important;
+        overflow: hidden;
+    }
+
+    .planeacion-table-wrapper {
+        flex: 1 !important;
+        max-height: calc(100vh - 230px) !important; /* Ajuste dinámico para ocupar toda la pantalla hacia abajo */
+        overflow-y: auto !important;
+        border-bottom: 1px solid #cbd5e0;
     }
     </style>
 </head>
@@ -118,7 +137,7 @@
 
     <main class="main-content">
 
-        <header class="hero">
+        <header class="hero" style="margin-bottom: 8px !important; padding: 12px 18px !important;">
             <div class="hero-content">
                 <div class="hero-badge">
                     <span></span>
@@ -130,7 +149,7 @@
         </header>
 
         <section class="panel">
-           <div class="planeacion-header" style="margin-bottom: 10px;">
+           <div class="planeacion-header" style="margin-bottom: 8px;">
                 <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 10px;">
                     <div class="header-title-group" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%;">
                         <h2>Órdenes Completadas</h2>
@@ -168,7 +187,7 @@
                                 <div id="listaFechaHist" class="multi-filtro-lista"></div>
                             </div>
 
-                            <!-- Botón Limpiar Filtros (Ubicado exactamente al lado de Fecha de cierre) -->
+                            <!-- Botón Limpiar Filtros -->
                             <button type="button" id="btnLimpiarFiltrosHist" class="btn-limpiar-header" style="background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; position: static; transform: none;">
                                 ✖ Limpiar filtros
                             </button>
@@ -177,7 +196,7 @@
                 </div>
             </div>
 
-            <div class="planeacion-table-wrapper" style="margin-top: 15px;">
+            <div class="planeacion-table-wrapper">
                 <table class="planeacion-table">
                     <thead>
                         <tr>
