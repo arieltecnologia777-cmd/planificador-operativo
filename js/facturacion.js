@@ -24,12 +24,15 @@ async function cargarDatosDesdeAPI() {
                 renderizarEstadoRegional(registrosCrudos);
                 initChartsDinamicos(registrosCrudos);
             } else {
+                // Si la base está vacía, ponemos todo en ceros dinámicamente
                 renderTable([]);
+                actualizarKPIsGenerales([]);
             }
         }
     } catch (err) {
         console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
+        actualizarKPIsGenerales([]);
     }
 }
 
@@ -67,7 +70,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar las 5 Tarjetas KPI con datos reales
+// Actualizar Tarjetas KPI de forma 100% dinámica
 function actualizarKPIsGenerales(rows) {
     let totalMeta = rows.reduce((acc, r) => acc + Number(r.facturacion || 0), 0);
     let totalAprobado = rows.reduce((acc, r) => acc + Number(r.total_aprobado || 0), 0);
@@ -155,7 +158,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 10px;">Sin datos regionales</div>';
 }
 
-// Validación de contraseña conectada al Worker y FACT_KEY
+// Validación estricta de contraseña con VERIFICAR_KEY_URL
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
     
