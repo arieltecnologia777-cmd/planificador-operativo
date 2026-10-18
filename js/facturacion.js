@@ -347,9 +347,17 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             responsive: true,
             maintainAspectRatio: false,
             interaction: {
-                mode: 'index',
-                intersect: false,
-            },
+    mode: 'nearest',
+    axis: 'x',
+    intersect: false,
+    includeInvisible: false
+},
+hover: {
+    mode: 'nearest',
+    axis: 'x',
+    intersect: false,
+    includeInvisible: false
+},
             plugins: { 
                 legend: { 
                     display: true,
@@ -370,8 +378,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     usePointStyle: true,
                     callbacks: {
                         title: function(context) {
-                            return context[0].label;
-                        },
+    if (!context || !context.length) return '';
+
+    const chart = context[0].chart;
+    const index = context[0].dataIndex;
+
+    return chart.data.labels[index] ?? context[0].label ?? '';
+},
                         label: function(context) {
                             let label = context.dataset.label || '';
                             if (label) label += ': ';
