@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual estándar original
+// Gráfica de tendencia anual con valores fijos en cada punto (Sin tooltips desfasados)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -328,7 +328,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 4,
+                    pointRadius: 5,
                     order: 1
                 },
                 {
@@ -346,18 +346,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-    mode: 'nearest',
-    axis: 'x',
-    intersect: false,
-    includeInvisible: false
-},
-hover: {
-    mode: 'nearest',
-    axis: 'x',
-    intersect: false,
-    includeInvisible: false
-},
+            layout: {
+                padding: {
+                    top: 24, // Margen superior para que las etiquetas de arriba no se corten
+                    bottom: 10
+                }
+            },
             plugins: { 
                 legend: { 
                     display: true,
@@ -365,33 +359,9 @@ hover: {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
+                // Desactivamos por completo el tooltip flotante para evitar cualquier desfase
                 tooltip: {
-                    enabled: true,
-                    backgroundColor: '#ffffff',
-                    titleColor: '#0f172a',
-                    bodyColor: '#334155',
-                    borderColor: '#cbd5e0',
-                    borderWidth: 1,
-                    padding: 12,
-                    boxWidth: 10,
-                    boxHeight: 10,
-                    usePointStyle: true,
-                    callbacks: {
-                        title: function(context) {
-    if (!context || !context.length) return '';
-
-    const chart = context[0].chart;
-    const index = context[0].dataIndex;
-
-    return chart.data.labels[index] ?? context[0].label ?? '';
-},
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
-                            return label;
-                        }
-                    }
+                    enabled: false
                 }
             },
             scales: {
@@ -407,7 +377,49 @@ hover: {
                 },
                 x: { grid: { display: false } }
             }
-        }
+        },
+        // Plugin integrado para dibujar los valores fijos en cada punto (estilo etiquetas estáticas)
+        plugins: [{
+            id: 'valoresFijosPuntos',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    // Aplicamos las etiquetas fijas únicamente a la línea de Ejecución
+                    if (!meta.hidden && datasetIndex === 0) {
+                        meta.data.forEach((element, index) => {
+                            const value = dataset.data[index];
+                            if (value > 0) {
+                                const { x, y } = element.getProps(['x', 'y'], true);
+                                const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
+                                
+                                ctx.font = 'bold 10px Segoe UI, Tahoma, sans-serif';
+                                ctx.textAlign = 'center';
+                                
+                                // Posicionamiento dinámico para evitar que se choquen arriba del borde
+                                const yPos = y - 15 > 15 ? y - 15 : y + 22;
+                                
+                                const textWidth = ctx.measureText(text).width;
+                                
+                                // Fondo tipo pastilla blanca para las etiquetas
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+                                ctx.fillRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 16);
+                                ctx.strokeStyle = '#cbd5e0';
+                                ctx.lineWidth = 1;
+                                ctx.strokeRect(x - textWidth / 2 - 4, yPos - 10, textWidth + 8, 14);
+                                
+                                // Texto del monto fijo
+                                ctx.fillStyle = '#0f172a';
+                                ctx.fillText(text, x, yPos);
+                            }
+                        });
+                    }
+                });
+                ctx.restore();
+            }
+        }]
     });
 }
 
