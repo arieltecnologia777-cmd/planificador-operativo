@@ -298,3 +298,7 @@ table.fact-table tr:hover td { background: #f8fafc; }
     padding: 8px 16px;
     font-size: 0.85rem;
 }
+/* Ocultar el cursor por defecto sobre la gráfica para evitar sensación de desfase */
+#tendenciaChart {
+    cursor: none !important;
+}
