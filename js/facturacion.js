@@ -487,7 +487,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Función para abrir el modal ajustado con Aprobación Regional en la primera columna
+// Función para abrir el modal ajustado con la columna "ESTADO" y anchos de columnas uniformes
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -517,7 +517,7 @@ function abrirModalEnTramite() {
     if (!thead || !tbody) return;
 
     if (registrosEnTramite.length === 0) {
-        thead.innerHTML = `<tr><th>Aprobación Regional</th></tr>`;
+        thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros pendientes para los filtros seleccionados.</td></tr>`;
         document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
@@ -533,14 +533,17 @@ function abrirModalEnTramite() {
     });
     const listaRegionales = Array.from(regionalesSet).sort();
 
-    // Agrupar por Aprobación Regional (Columna V del Excel) y por Regional
+    // Calcular ancho porcentual uniforme para repartir el espacio equitativamente entre columnas
+    const totalColumnas = 1 + listaRegionales.length + 1; // Columna ESTADO + Regionales + Total General
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    // Agrupar por Aprobación Regional y por Regional
     const matrizDatos = {};
     let sumaGranTotal = 0;
     const totalesPorRegional = {};
     listaRegionales.forEach(reg => totalesPorRegional[reg] = 0);
 
     registrosEnTramite.forEach(r => {
-        // Primera columna: Aprobación Regional exacta
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         const regional = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL").trim().toUpperCase();
         const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? r.total_aprobado ?? 0);
@@ -555,41 +558,41 @@ function abrirModalEnTramite() {
         matrizDatos[aprobRegionalVal][regional] += monto;
     });
 
-    // Construir cabeceras
+    // Construir cabeceras con ancho uniforme y centradas
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px 14px; text-align: left; font-weight: 800; color: #1e293b; min-width: 200px;">APROBACIÓN REGIONAL</th>
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">ESTADO</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 10px 14px; text-align: right; font-weight: 800; color: #1e293b; min-width: 120px;">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 10px 14px; text-align: right; font-weight: 900; color: #0f172a; min-width: 140px; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
-    // Construir filas
+    // Construir filas con celdas centradas y uniformes
     let bodyHtml = '';
     for (const [aprobVal, montosRegionales] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        bodyHtml += `<tr><td style="padding: 9px 14px; font-weight: 700; color: #334155;"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
         listaRegionales.forEach(reg => {
             const valReg = montosRegionales[reg] || 0;
             totalFila += valReg;
-            bodyHtml += `<td style="padding: 9px 14px; text-align: right; color: #475569; font-weight: 600;">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
         });
 
-        bodyHtml += `<td style="padding: 9px 14px; text-align: right; font-weight: 800; color: #0f172a; background: #f8fafc;">${formatMoney(totalFila)}</td></tr>`;
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
     }
 
-    // Fila Total General
+    // Fila Total General centrada
     let footerFilaHtml = `
         <tr style="background: #f1f5f9; border-top: 2px solid #cbd5e0; font-weight: 900;">
-            <td style="padding: 10px 14px; color: #0f172a; text-transform: uppercase;">Total General</td>
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual};">TOTAL GENERAL</td>
     `;
     listaRegionales.forEach(reg => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: right; color: #0f172a;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual};">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: right; color: #2563eb; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; background: #e2e8f0; width: ${anchoPorcentual};">${formatMoney(sumaGranTotal)}</td></tr>`;
 
     tbody.innerHTML = bodyHtml + footerFilaHtml;
     document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
