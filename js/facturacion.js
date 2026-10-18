@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con etiquetas fijas en zigzag (Cero tooltips, cero desfases)
+// Gráfica de tendencia con etiquetas en zigzag obligatorias para todos los meses (incluyendo ceros) y diseño estilo píldora moderna
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -348,8 +348,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 35,    // Margen superior para las etiquetas alternadas arriba
-                    bottom: 30  // Margen inferior para las etiquetas alternadas abajo
+                    top: 38,    // Margen superior para las etiquetas en zigzag
+                    bottom: 35  // Margen inferior para las etiquetas en zigzag
                 }
             },
             plugins: { 
@@ -359,7 +359,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Tooltips completamente apagados y olvidados
                 tooltip: {
                     enabled: false
                 }
@@ -379,7 +378,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         },
         plugins: [{
-            id: 'etiquetasFijasZigZag',
+            id: 'etiquetasModernaPildora',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
@@ -389,30 +388,52 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     if (!meta.hidden && datasetIndex === 0) {
                         meta.data.forEach((element, index) => {
                             const value = dataset.data[index];
+                            const { x, y } = element.getProps(['x', 'y'], true);
+                            
+                            // Formato de texto para todos los meses (incluyendo ceros)
+                            let text = '$ 0';
                             if (value > 0) {
-                                const { x, y } = element.getProps(['x', 'y'], true);
-                                const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
-                                
-                                ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
-                                ctx.textAlign = 'center';
-                                
-                                // Alternancia en zigzag (par arriba, impar abajo) para evitar choques
-                                const esPar = index % 2 === 0;
-                                const yPos = esPar ? y - 22 : y + 28;
-                                
-                                const textWidth = ctx.measureText(text).width;
-                                
-                                // Pastilla de fondo blanca limpia con borde sutil
-                                ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
-                                ctx.strokeStyle = '#cbd5e0';
-                                ctx.lineWidth = 1;
-                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
-                                
-                                // Texto de la cifra fija
-                                ctx.fillStyle = '#0f172a';
-                                ctx.fillText(text, x, yPos + 3);
+                                text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
                             }
+                            
+                            ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
+                            ctx.textAlign = 'center';
+                            
+                            // Zigzag alternado para evitar choques visuales
+                            const esPar = index % 2 === 0;
+                            const yPos = esPar ? y - 24 : y + 30;
+                            
+                            const textWidth = ctx.measureText(text).width;
+                            const pillWidth = textWidth + 16;
+                            const pillHeight = 22;
+                            const pillX = x - pillWidth / 2;
+                            const pillY = yPos - pillHeight / 2;
+                            const radius = 11; // Radio para efecto pastilla totalmente redondeada moderna
+
+                            // Dibujar rectángulo con bordes redondeados (píldora) usando Canvas Path
+                            ctx.beginPath();
+                            ctx.roundRect(pillX, pillY, pillWidth, pillHeight, radius);
+                            
+                            // Fondo moderno translúcido con sombra sutil
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                            ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
+                            ctx.shadowBlur = 6;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 2;
+                            ctx.fill();
+                            
+                            // Borde fino elegante
+                            ctx.strokeStyle = '#e2e8f0';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+
+                            // Restaurar sombras para que el texto quede nítido
+                            ctx.shadowColor = 'transparent';
+                            ctx.shadowBlur = 0;
+
+                            // Texto de la cifra
+                            ctx.fillStyle = '#0f172a';
+                            ctx.fillText(text, x, yPos + 4);
                         });
                     }
                 });
