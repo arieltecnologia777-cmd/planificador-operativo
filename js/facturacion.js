@@ -233,7 +233,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
 
     if(document.getElementById('kpiEfectividadValor')) {
         document.getElementById('kpiEfectividadValor').innerText = efectividadGlobal + '%';
-        document.getElementById('kpiEfectividadValor').style.color = '#1e293b';
+        document.getElementById('kpiEfectividadValor').style.color = '#0f172a';
     }
 
     let porcMeta = totalMeta > 0 ? 100 : 0;
@@ -257,6 +257,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
+    // Color dinámico de rojo a verde según el avance
     let colorEfectividad = '#dc2626';
     if (efectividadGlobal >= 100) {
         colorEfectividad = '#22c55e';
@@ -298,7 +299,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia optimizada (pastillas en zigzag modernas con ceros)
+// Gráfica de tendencia optimizada
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -463,7 +464,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional compacto y ordenado
+// Renderizar Estado Regional
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -561,10 +562,8 @@ function abrirModalEnTramite() {
 
     registrosEnTramite.forEach(r => {
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
-        
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        
         const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
 
         sumaGranTotal += monto;
@@ -660,7 +659,6 @@ function abrirModalRechazados() {
         const matchMes = fMes === "TODOS" || mes === fMes;
         const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
         const matchSearch = tecnico.includes(searchVal);
-
         const esRechazado = aprobReg.includes("RECHAZADO");
 
         return matchReg && matchMes && matchPerfil && matchSearch && esRechazado;
@@ -689,10 +687,8 @@ function abrirModalRechazados() {
 
     registrosRechazados.forEach(r => {
         const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
-        
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        
         const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
 
         sumaGranTotal += monto;
@@ -770,7 +766,7 @@ function cerrarModalRechazados() {
     if (modal) modal.style.display = 'none';
 }
 
-// Funciones para la Campana de Notificaciones e Incrementos
+// Funciones para Notificaciones y Seguridad
 function verificarIncrementosAvance(nuevosRegistros) {
     const historialPrevio = JSON.parse(localStorage.getItem('fact_notif_historial') || "[]");
     let nuevosCambiosDetectados = false;
@@ -846,7 +842,6 @@ function cerrarModalNotificaciones() {
     if (modal) modal.style.display = 'none';
 }
 
-// Validación de contraseña de administrador
 async function verificarPassword() {
     const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
     try {
@@ -881,7 +876,6 @@ function cerrarModalHerramientas() {
     document.getElementById('modalHerramientas').style.display = 'none';
 }
 
-// Cargue de Excel y sincronización masiva
 async function procesarYSubirExcel(event) {
     const file = event.target.files[0];
     if (!file) return;
