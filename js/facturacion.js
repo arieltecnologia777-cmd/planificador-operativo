@@ -487,14 +487,14 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Función para abrir el modal ajustado con la columna "ESTADO" y anchos de columnas uniformes
+// Función para abrir el modal filtrando únicamente los estados cuyo total general sea mayor a $ 0
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
     const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    // Filtrar registros omitiendo únicamente los ACEPTADOS
+    // Filtrar registros omitiendo los ACEPTADOS
     const registrosEnTramite = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
@@ -533,10 +533,6 @@ function abrirModalEnTramite() {
     });
     const listaRegionales = Array.from(regionalesSet).sort();
 
-    // Calcular ancho porcentual uniforme para repartir el espacio equitativamente entre columnas
-    const totalColumnas = 1 + listaRegionales.length + 1; // Columna ESTADO + Regionales + Total General
-    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
-
     // Agrupar por Aprobación Regional y por Regional
     const matrizDatos = {};
     let sumaGranTotal = 0;
@@ -558,7 +554,20 @@ function abrirModalEnTramite() {
         matrizDatos[aprobRegionalVal][regional] += monto;
     });
 
-    // Construir cabeceras con ancho uniforme y centradas
+    // Filtrar la matriz para ELIMINAR estados cuyo total general sea 0 (como GRN/BTS/RVST)
+    const estadosFiltrados = {};
+    for (const [aprobVal, montosRegionales] of Object.entries(matrizDatos)) {
+        let totalFila = 0;
+        Object.values(montosRegionales).forEach(val => totalFila += val);
+        if (totalFila > 0) {
+            estadosFiltrados[aprobVal] = montosRegionales;
+        }
+    }
+
+    const totalColumnas = 1 + listaRegionales.length + 1;
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    // Construir cabeceras
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
             <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">ESTADO</th>
@@ -569,9 +578,9 @@ function abrirModalEnTramite() {
     headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
-    // Construir filas con celdas centradas y uniformes
+    // Construir filas solo con los estados que suman valor mayor a 0
     let bodyHtml = '';
-    for (const [aprobVal, montosRegionales] of Object.entries(matrizDatos)) {
+    for (const [aprobVal, montosRegionales] of Object.entries(estadosFiltrados)) {
         let totalFila = 0;
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
@@ -584,7 +593,7 @@ function abrirModalEnTramite() {
         bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
     }
 
-    // Fila Total General centrada
+    // Fila Total General
     let footerFilaHtml = `
         <tr style="background: #f1f5f9; border-top: 2px solid #cbd5e0; font-weight: 900;">
             <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual};">TOTAL GENERAL</td>
