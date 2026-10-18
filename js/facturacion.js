@@ -323,8 +323,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         window.miGraficaTendencia.destroy();
     }
     ctxTendencia.innerHTML = '';
-
-    const options = {
+const options = {
         series: [
             { name: 'Ejecución', data: acumuladoMeses },
             { name: 'Meta', data: metaLineData }
@@ -336,18 +335,21 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             zoom: { enabled: false },
             fontFamily: 'Segoe UI, Tahoma, sans-serif'
         },
+        // Definimos el color para cada serie en orden: [Ejecución (Azul), Meta (Gris)]
         colors: ['#2563eb', '#94a3b8'],
         stroke: {
             width: [3, 2],
             curve: 'smooth',
-            dashArray: [0, 5]
+            dashArray: [0, 5] // 0 para línea sólida en ejecución, 5 para punteada en meta
         },
         fill: {
             type: ['gradient', 'solid'],
             gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.25,
-                opacityTo: 0.02,
+                shade: 'light',
+                type: 'vertical',
+                shadeIntensity: 0.5,
+                opacityFrom: 0.35, // Intensidad del azul arriba
+                opacityTo: 0.01,   // Se desvanece hacia abajo
                 stops: [0, 100]
             }
         },
@@ -401,7 +403,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         }
     };
-
     window.miGraficaTendencia = new ApexCharts(ctxTendencia, options);
     window.miGraficaTendencia.render();
 }
