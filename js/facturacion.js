@@ -182,11 +182,14 @@ function procesarDatosParaVista(rows) {
         mapaTecnicos[nombreTecnico].subsanado += subsanadoVal;
     });
 
-    return Object.values(mapaTecnicos).map(t => {
+   const tecnicosArray = Object.values(mapaTecnicos).map(t => {
         t.efectividad = t.meta > 0 ? Math.round((t.aprobado / t.meta) * 100) : 0;
         t.estado = t.efectividad >= 100 ? "Cumple" : "No cumple";
         return t;
     });
+
+    // Ordena de mayor a menor efectividad para dejar en el TOP al que más tenga
+    return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
 // Actualizar Tarjetas KPI generales
