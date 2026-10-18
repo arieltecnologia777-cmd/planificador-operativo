@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con etiquetas inteligentes en zigzag (Anti-solape)
+// Gráfica de tendencia anual con etiquetas en zigzag y números más grandes
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -348,8 +348,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 30,    // Espacio arriba para los puntos altos
-                    bottom: 25  // Espacio abajo por si alguna etiqueta baja se acerca al eje X
+                    top: 35,    // Margen superior extendido para los números grandes
+                    bottom: 30  // Margen inferior extendido
                 }
             },
             plugins: { 
@@ -378,7 +378,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         },
         plugins: [{
-            id: 'etiquetasZigZag',
+            id: 'etiquetasZigZagGrandes',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
@@ -392,26 +392,26 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                                 const { x, y } = element.getProps(['x', 'y'], true);
                                 const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
                                 
-                                ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
+                                // Fuente ampliada a 12px en negrita para mayor visibilidad
+                                ctx.font = 'bold 12px Segoe UI, Tahoma, sans-serif';
                                 ctx.textAlign = 'center';
                                 
-                                // TRUCO CLAVE: Si el índice es par va arriba (-20), si es impar va abajo (+24)
-                                // Esto alterna las alturas automáticamente evitando que se crucen
+                                // Zigzag alternado con mayor separación para acomodar la fuente de 12px
                                 const esPar = index % 2 === 0;
-                                const yPos = esPar ? y - 20 : y + 26;
+                                const yPos = esPar ? y - 22 : y + 28;
                                 
                                 const textWidth = ctx.measureText(text).width;
                                 
-                                // Dibujar pastilla de fondo blanca con borde sutil
-                                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-                                ctx.fillRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 17);
+                                // Fondo de la pastilla proporcional al tamaño del texto grande
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
                                 ctx.strokeStyle = '#cbd5e0';
                                 ctx.lineWidth = 1;
-                                ctx.strokeRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 17);
+                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
                                 
-                                // Texto
+                                // Texto grande y claro
                                 ctx.fillStyle = '#0f172a';
-                                ctx.fillText(text, x, yPos + 2);
+                                ctx.fillText(text, x, yPos + 3);
                             }
                         });
                     }
@@ -421,6 +421,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }]
     });
 }
+
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
