@@ -270,7 +270,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Gráfica de tendencia anual sincronizada milimétricamente al eje X sin desfase
+
+// Gráfica de tendencia anual dinámica con efecto imán y cero saltos en bordes
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -313,7 +314,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea vertical láser roja sobre el punto activo exacto
+    // Plugin seguro para dibujar la línea vertical láser de color ROJO exactamente sincronizada
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -330,7 +331,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1.5;
                 ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante
-                ctx.setLineDash([3, 3]);
+                ctx.setLineDash([3, 3]); // Línea punteada de mira
                 ctx.stroke();
                 ctx.restore();
             }
@@ -351,8 +352,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
+                    pointRadius: 4,
                     order: 1
                 },
                 {
@@ -371,13 +371,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Bloqueo estricto del eje X para que el tooltip responda inmediatamente al mes correspondiente sin arrastrar el anterior
+            // Sincronización limpia por índice horizontal directo
             interaction: {
                 mode: 'index',
                 axis: 'x',
                 intersect: false,
             },
-            // Forzar que el tooltip aparezca siempre centrado en el punto seleccionado
             plugins: { 
                 legend: { 
                     display: true,
@@ -396,6 +395,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
+                    // Posicionamiento promediado para evitar saltos o fricción al llegar a los bordes
                     position: 'average',
                     callbacks: {
                         title: function(context) {
@@ -426,6 +426,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
