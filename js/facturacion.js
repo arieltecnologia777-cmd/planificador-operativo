@@ -229,7 +229,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
-    if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
 
     let porcMeta = totalMeta > 0 ? 100 : 0;
     let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
@@ -252,8 +251,44 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
-    if(document.getElementById('barEfectividad')) document.getElementById('barEfectividad').style.width = Math.min(100, efectividadGlobal) + '%';
-    if(document.getElementById('txtPorcEfectividad')) document.getElementById('txtPorcEfectividad').innerText = efectividadGlobal + '%';
+    // Renderizar gráfico de dona dinámico para la Efectividad con color de rojo a verde según el valor
+    const colorEfectividad = efectividadGlobal >= 100 ? "#22c55e" : (efectividadGlobal >= 70 ? "#0ea5e9" : (efectividadGlobal >= 40 ? "#f59e0b" : "#dc2626"));
+    const ctxGauge = document.getElementById('gaugeEfectividad');
+    if (ctxGauge) {
+        if (chartGauge) chartGauge.destroy();
+        chartGauge = new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
+                    backgroundColor: [colorEfectividad, '#f1f5f9'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            },
+            plugins: [{
+                id: 'textCenterGauge',
+                beforeDraw(chart) {
+                    const { width, height, ctx } = chart;
+                    ctx.restore();
+                    const fontSize = (height / 115).toFixed(2);
+                    ctx.font = `bold ${fontSize}rem Inter, sans-serif`;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = colorEfectividad;
+                    const text = efectividadGlobal + '%';
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    const textY = height / 2;
+                    ctx.fillText(text, textX, textY);
+                    ctx.save();
+                }
+            }]
+        });
+    }
 }
 
 // Gráfica de tendencia optimizada (pastillas en zigzag modernas con ceros)
@@ -472,7 +507,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Modal En Trámite (Con los 4 departamentos fijos como columnas)
+// Modal En Trámite
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -600,7 +635,7 @@ function cerrarModalEnTramite() {
     if (modal) modal.style.display = 'none';
 }
 
-// Modal Rechazados (Con los 4 departamentos fijos como columnas)
+// Modal Rechazados
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
