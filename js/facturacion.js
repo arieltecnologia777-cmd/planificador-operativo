@@ -487,7 +487,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Modal En Trámite (Sin Aceptados ni Rechazados, cabecera fija sticky para el scroll)
+// Modal En Trámite (Con tfoot independiente y fijo abajo)
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -506,7 +506,6 @@ function abrirModalEnTramite() {
         const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
         const matchSearch = tecnico.includes(searchVal);
 
-        // Excluye totalmente Aceptados y Rechazados
         const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
 
         return matchReg && matchMes && matchPerfil && matchSearch && esPendienteNeto;
@@ -514,11 +513,13 @@ function abrirModalEnTramite() {
 
     const thead = document.getElementById('headTablaDinamicaTramite');
     const tbody = document.getElementById('tableBodyEnTramite');
-    if (!thead || !tbody) return;
+    const tfoot = document.getElementById('footerTablaDinamicaTramite');
+    if (!thead || !tbody || !tfoot) return;
 
     if (registrosEnTramite.length === 0) {
-        thead.innerHTML = `<tr><th style="text-align: center; position: sticky; top: 0; background: #f8fafc; z-index: 2;">ESTADO</th></tr>`;
+        thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
+        tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
         document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
         if (modal) modal.style.display = 'flex';
@@ -566,38 +567,39 @@ function abrirModalEnTramite() {
 
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">ESTADO</th>
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">ESTADO</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9; position: sticky; top: 0; z-index: 2;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
     for (const [aprobVal, montosRegionales] of Object.entries(estadosFiltrados)) {
-        let totalFila = 0;
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
         listaRegionales.forEach(reg => {
             const valReg = montosRegionales[reg] || 0;
-            totalFila += valReg;
             bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
         });
 
+        let totalFila = Object.values(montosRegionales).reduce((a, b) => a + b, 0);
         bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
     }
+    tbody.innerHTML = bodyHtml;
 
+    // Fila del pie fijo inyectada en el tfoot independiente
     let footerFilaHtml = `
-        <tr style="background: #f1f5f9; border-top: 2px solid #cbd5e0; font-weight: 900;">
-            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual};">TOTAL GENERAL</td>
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
     `;
     listaRegionales.forEach(reg => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual};">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; background: #e2e8f0; width: ${anchoPorcentual};">${formatMoney(sumaGranTotal)}</td></tr>`;
-
-    tbody.innerHTML = bodyHtml + footerFilaHtml;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
     document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalEnTramiteDetalle');
@@ -609,7 +611,7 @@ function cerrarModalEnTramite() {
     if (modal) modal.style.display = 'none';
 }
 
-// Modal Rechazados agrupados por Causa de Rechazo (cabecera fija sticky para el scroll)
+// Modal Rechazados (Con tfoot independiente y fijo abajo)
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -635,11 +637,13 @@ function abrirModalRechazados() {
 
     const thead = document.getElementById('headTablaDinamicaRechazados');
     const tbody = document.getElementById('tableBodyRechazados');
-    if (!thead || !tbody) return;
+    const tfoot = document.getElementById('footerTablaDinamicaRechazados');
+    if (!thead || !tbody || !tfoot) return;
 
     if (registrosRechazados.length === 0) {
-        thead.innerHTML = `<tr><th style="text-align: center; position: sticky; top: 0; background: #f8fafc; z-index: 2;">CAUSA RECHAZO</th></tr>`;
+        thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
+        tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
         document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalRechazadosDetalle');
         if (modal) modal.style.display = 'flex';
@@ -687,38 +691,39 @@ function abrirModalRechazados() {
 
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">CAUSA RECHAZO</th>
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">CAUSA RECHAZO</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9; position: sticky; top: 0; z-index: 2;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
     for (const [causaVal, montosRegionales] of Object.entries(causasFiltradas)) {
-        let totalFila = 0;
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
         
         listaRegionales.forEach(reg => {
             const valReg = montosRegionales[reg] || 0;
-            totalFila += valReg;
             bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
         });
 
+        let totalFila = Object.values(montosRegionales).reduce((a, b) => a + b, 0);
         bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
     }
+    tbody.innerHTML = bodyHtml;
 
+    // Fila del pie fijo inyectada en el tfoot independiente de rechazados
     let footerFilaHtml = `
-        <tr style="background: #f1f5f9; border-top: 2px solid #cbd5e0; font-weight: 900;">
-            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual};">TOTAL GENERAL</td>
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
     `;
     listaRegionales.forEach(reg => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual};">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; background: #e2e8f0; width: ${anchoPorcentual};">${formatMoney(sumaGranTotal)}</td></tr>`;
-
-    tbody.innerHTML = bodyHtml + footerFilaHtml;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
     document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalRechazadosDetalle');
@@ -1021,15 +1026,3 @@ function exportExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
-// Inyección en el tfoot para En Trámite:
-    const tfoot = document.getElementById('footerTablaDinamicaTramite');
-    let footerFilaHtml = `
-        <tr style="font-weight: 900;">
-            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #f1f5f9;">TOTAL GENERAL</td>
-    `;
-    listaRegionales.forEach(reg => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #f1f5f9;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
-    });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
-    
-    tfoot.innerHTML = footerFilaHtml;
