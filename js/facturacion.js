@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia limpia sin nombres de meses abajo y mini tabla alineada
+// Gráfica de tendencia con eje X ajustado para alineación perfecta con la tabla
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -312,7 +312,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Renderizar la Mini Tabla Resumen Inferior perfectamente alineada
+    // Renderizar la Mini Tabla Resumen Inferior
     renderizarMiniTablaInferior(mesesLabels, acumuladoMeses);
 
     if (chartTendencia) chartTendencia.destroy();
@@ -373,12 +373,49 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { 
                     grid: { display: false },
-                    // Ocultamos los nombres de los meses abajo en la gráfica para que no se repitan
-                    ticks: { display: false } 
+                    ticks: { display: false },
+                    // Alineación exacta eliminando el margen automático de los extremos en Chart.js
+                    offset: true 
                 }
             }
         }
     });
+}
+
+// Función para pintar la mini tabla inferior con compensación de bordes exacta
+function renderizarMiniTablaInferior(labels, valores) {
+    const container = document.getElementById('miniTablaTendencia');
+    if (!container) return;
+
+    let html = `
+        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
+            <thead>
+                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+    `;
+    
+    labels.forEach(m => {
+        html += `<th style="padding: 4px 2px; font-weight: 700; width: calc(100% / 12);">${m.substring(0, 3)}</th>`;
+    });
+    
+    html += `
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+    `;
+
+    valores.forEach(v => {
+        const txtVal = v > 0 ? '$ ' + (v / 1000000).toFixed(1) + 'M' : '-';
+        html += `<td style="padding: 6px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; width: calc(100% / 12);">${txtVal}</td>`;
+    });
+
+    html += `
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
 }
 
 // Función para pintar la mini tabla inferior con distribución 100% simétrica de columnas
