@@ -348,14 +348,19 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Escala estricta de rojo a verde para los puntos basada en el desempeño del mes frente a la meta esperada mensual
+    // Meta mensual proporcional basada en la meta activa (Global o Regional)
+    const referenciaMensualMeta = metaRegionalTotal / 12;
+
+    // Escala estricta de rojo, amarillo y verde para los puntos
     function obtenerColorPunto(valor) {
-        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses sin ejecución
+        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses en $0
         const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
-        if (porcentaje >= 85) return '#22c55e'; // Verde (Óptimo / Cumple)
-        if (porcentaje >= 45) return '#f59e0b'; // Amarillo / Naranja (Regular)
-        return '#dc2626';                      // Rojo (Crítico / Bajo)
+        if (porcentaje >= 100) return '#22c55e'; // Verde (Cumple / >= 100%)
+        if (porcentaje >= 50) return '#f59e0b';  // Amarillo / Naranja (Regular / >= 50%)
+        return '#dc2626';                        // Rojo (Crítico / Bajo)
     }
+
+    const coloresPuntos = acumuladoMeses.map(val => obtenerColorPunto(val));
 
     const coloresPuntos = acumuladoMeses.map(val => obtenerColorPunto(val));
     const metaLineData = new Array(12).fill(metaRegionalTotal);
@@ -378,15 +383,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    // Función dinámica para colorear cada punto individualmente según su valor
-                    pointBackgroundColor: function(context) {
-                        const valor = context.raw;
-                        if (valor <= 0) return '#94a3b8'; // Gris para meses en ceros
-                        const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
-                        if (porcentaje >= 85) return '#22c55e'; // Verde
-                        if (porcentaje >= 45) return '#f59e0b'; // Amarillo / Naranja
-                        return '#dc2626'; // Rojo crítico
-                    },
+                    pointBackgroundColor: coloresPuntos, // Puntos dinámicos (Rojo -> Amarillo -> Verde)
+                    pointBorderColor: coloresPuntos,     // Puntos dinámicos
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    order: 1
+                },
                     pointBorderColor: function(context) {
                         const valor = context.raw;
                         if (valor <= 0) return '#94a3b8';
