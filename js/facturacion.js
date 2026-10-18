@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con cursor láser rojo libre de fricción y sincronización exacta de mes
+// Gráfica de tendencia anual con línea láser roja y tooltip, sin cursor de cruz forzado
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,14 +314,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea láser roja siguiendo de forma fluida el movimiento del mouse
+    // Plugin para dibujar la línea vertical láser roja sobre el punto activo
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
             if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
                 const ctx = chart.ctx;
                 const activePoint = chart.tooltip._active[0];
-                // Usamos la posición exacta del elemento activo del punto para alinear la línea roja milimétricamente
                 const x = activePoint.element.x;
                 const topY = chart.scales.y.top;
                 const bottomY = chart.scales.y.bottom;
@@ -372,15 +371,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Interacción optimizada por dataset para evitar bloqueos al cruzar la mitad de la gráfica
             interaction: {
                 mode: 'nearest',
                 axis: 'x',
                 intersect: false,
             },
-            onHover: (event, chartElement) => {
-                event.native.target.style.cursor = chartElement.length ? 'crosshair' : 'default';
-            },
+            // Sin forzar cursor de cruz para evitar sensación de desfase visual
             plugins: { 
                 legend: { 
                     display: true,
@@ -399,7 +395,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
-                    // Evitamos que el tooltip interfiera con el movimiento lateral del cursor
                     position: 'nearest',
                     callbacks: {
                         title: function(context) {
