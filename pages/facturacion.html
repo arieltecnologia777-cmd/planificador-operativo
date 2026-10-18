@@ -12,15 +12,128 @@
 </head>
 <body style="background: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px;">
 
-    <!-- Contenedor Superior (3 Columnas) -->
+    <!-- Banner Superior de Bienvenida -->
+    <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 20px 24px; border-radius: 12px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div>
+            <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">Financiero</span>
+            <h2 style="margin: 6px 0 4px 0; font-size: 1.4rem; font-weight: 900;">¡Hola, Carlos!</h2>
+            <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">Aquí tienes un resumen de tu desempeño en facturación. Sigue así, ¡vamos por más!</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button type="button" onclick="abrirModalNotificaciones()" style="position: relative; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.82rem;">
+                🔔 Notificaciones <span id="badgeNotifCount" style="display: none; background: #ef4444; color: #fff; border-radius: 50%; padding: 1px 6px; font-size: 0.7rem; margin-left: 4px;">0</span>
+            </button>
+            <button type="button" onclick="abrirModalPassword()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.82rem;">
+                ⚙️ Herramientas
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel de Filtros y Acordeón -->
+    <div style="background: #ffffff; padding: 16px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Regional</label>
+                <select id="filtroRegion" onchange="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                    <option value="TODOS">Todos</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Mes</label>
+                <select id="filtroMes" onchange="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                    <option value="TODOS">Todos</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Perfil WFM</label>
+                <select id="filtroPerfilWfm" onchange="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                    <option value="TODOS">Todos</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Aprobación Regional</label>
+                <select id="filtroAprobacion" onchange="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                    <option value="TODOS">Todos</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end; margin-left: auto;">
+                <button type="button" onclick="resetFiltros()" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e0; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">🔄 Restablecer Filtros</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de KPIs Generales (5 Columnas) -->
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px;">
+        <!-- Meta -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Meta</span>
+                <span style="background: #eff6ff; color: #2563eb; padding: 4px; border-radius: 6px; font-size: 0.8rem;">🎯</span>
+            </div>
+            <div id="kpiMeta" style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-bottom: 8px;">$ 0</div>
+            <div style="width: 100%; background: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div id="barMeta" style="width: 0%; background: #2563eb; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; font-size: 0.7rem; font-weight: bold; color: #64748b;" id="txtPorcMeta">0%</div>
+        </div>
+        <!-- Ejecutado -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Ejecutado</span>
+                <span style="background: #f0fdf4; color: #16a34a; padding: 4px; border-radius: 6px; font-size: 0.8rem;">📈</span>
+            </div>
+            <div id="kpiEjecutado" style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-bottom: 8px;">$ 0</div>
+            <div style="width: 100%; background: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div id="barEjecutado" style="width: 0%; background: #16a34a; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; font-size: 0.7rem; font-weight: bold; color: #64748b;" id="txtPorcEjecutado">0%</div>
+        </div>
+        <!-- Aprobado -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Aprobado</span>
+                <span style="background: #f0fdf4; color: #22c55e; padding: 4px; border-radius: 6px; font-size: 0.8rem;">✅</span>
+            </div>
+            <div id="kpiAprobado" style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-bottom: 8px;">$ 0</div>
+            <div style="width: 100%; background: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div id="barAprobado" style="width: 0%; background: #22c55e; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; font-size: 0.7rem; font-weight: bold; color: #64748b;" id="txtPorcAprobado">0%</div>
+        </div>
+        <!-- Rechazado -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Rechazado</span>
+                <span style="background: #fef2f2; color: #dc2626; padding: 4px; border-radius: 6px; font-size: 0.8rem;">❌</span>
+            </div>
+            <div id="kpiRechazado" style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-bottom: 8px;">$ 0</div>
+            <div style="width: 100%; background: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div id="barRechazado" style="width: 0%; background: #dc2626; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; font-size: 0.7rem; font-weight: bold; color: #64748b;" id="txtPorcRechazado">0%</div>
+        </div>
+        <!-- En Trámite -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase;">En Trámite</span>
+                <span style="background: #fefce8; color: #d97706; padding: 4px; border-radius: 6px; font-size: 0.8rem;">⏳</span>
+            </div>
+            <div id="kpiEnTramite" style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-bottom: 8px;">$ 0</div>
+            <div style="width: 100%; background: #e2e8f0; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <div id="barEnTramite" style="width: 0%; background: #d97706; height: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; font-size: 0.7rem; font-weight: bold; color: #64748b;" id="txtPorcEnTramite">0%</div>
+        </div>
+    </div>
+
+    <!-- Contenedor Central (Tendencia, Estado Regional y Banner Lateral) -->
     <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
         
-        <!-- Columna 1: Tendencia de Facturación -->
+        <!-- Columna 1: Tendencia de Facturación (ApexCharts) -->
         <div class="fact-panel" style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
             </div>
-            <!-- Contenedor donde se renderizará ApexCharts -->
             <div id="tendenciaChart" style="width: 100%; height: 260px;"></div>
         </div>
 
@@ -30,10 +143,19 @@
             <div id="estadoRegionalContainer"></div>
         </div>
 
-        <!-- Columna 3: Banner ¡Vas muy bien! -->
-        <div class="fact-panel" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 20px; border-radius: 12px; color: #ffffff; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2);">
-            <h3 style="margin: 0 0 8px 0; font-size: 1.25rem; font-weight: 900;">¡Vas muy bien!</h3>
-            <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">Mantén el ritmo operativo para cumplir las metas del período.</p>
+        <!-- Columna 3: Banner Lateral Efectividad Global -->
+        <div class="fact-panel" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 20px; border-radius: 12px; color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2);">
+            <div>
+                <h3 style="margin: 0 0 8px 0; font-size: 1.15rem; font-weight: 900;">🏆 ¡Vas muy bien!</h3>
+                <p style="margin: 0; font-size: 0.8rem; opacity: 0.9;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
+            </div>
+            <div style="text-align: center; margin: 15px 0;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; opacity: 0.8; font-weight: 700;">Efectividad Global</div>
+                <div id="kpiEfectividad" style="font-size: 2.2rem; font-weight: 900; margin-top: 4px;">0%</div>
+            </div>
+            <div style="height: 120px; position: relative;">
+                <canvas id="gaugeEfectividad"></canvas>
+            </div>
         </div>
 
     </div>
@@ -41,7 +163,7 @@
     <!-- Sección de la Tabla Técnica -->
     <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Detalle Técnico Operativo</h3>
+            <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Detalle por técnico</h3>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="searchInput" oninput="aplicarFiltrosGlobales()" placeholder="Buscar técnico..." style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.85rem;">
                 <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📊 Exportar</button>
@@ -61,7 +183,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">Cargando datos...</td></tr>
+                <tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>
             </tbody>
         </table>
     </div>
