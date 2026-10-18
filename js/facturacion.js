@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con Tooltip HTML Personalizado (Control absoluto, adiós desfases)
+// Gráfica de tendencia con etiquetas fijas en zigzag (Cero tooltips, cero desfases)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -323,13 +323,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     label: 'Ejecución',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
                     pointRadius: 5,
-                    pointHoverRadius: 8,
                     order: 1
                 },
                 {
@@ -347,44 +346,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false,
-            },
-            // Usamos un evento onHover manual para posicionar nuestro propio cuadro HTML sin depender de Chart.js
-            onHover: (event, activeElements) => {
-                const tooltipEl = document.getElementById('customTooltipHtml');
-                if (!tooltipEl) return;
-
-                if (!activeElements || activeElements.length === 0) {
-                    tooltipEl.style.display = 'none';
-                    return;
+            layout: {
+                padding: {
+                    top: 35,    // Margen superior para las etiquetas alternadas arriba
+                    bottom: 30  // Margen inferior para las etiquetas alternadas abajo
                 }
-
-                const element = activeElements[0];
-                const dataIndex = element.index;
-                const valorEjecucion = acumuladoMeses[dataIndex];
-                const mesNombre = mesesLabels[dataIndex];
-
-                // Contenido del tooltip
-                tooltipEl.innerHTML = `📅 ${mesNombre}<br>Ejecución: $ ${Number(valorEjecucion).toLocaleString('es-CO')}`;
-                tooltipEl.style.display = 'block';
-
-                // Posicionamos el div flotante siguiendo las coordenadas del mouse dentro del panel
-                const rect = ctxTendencia.getBoundingClientRect();
-                const xPos = event.native.clientX - rect.left;
-                const yPos = event.native.clientY - rect.top;
-
-                // Evitamos que se salga por la derecha en diciembre
-                const maxW = rect.width;
-                let finalX = xPos + 15;
-                if (finalX > maxW - 140) {
-                    finalX = xPos - 140; // Se pasa a la izquierda solo si llega al borde derecho
-                }
-
-                tooltipEl.style.left = finalX + 'px';
-                tooltipEl.style.top = (yPos - 45) + 'px';
             },
             plugins: { 
                 legend: { 
@@ -393,7 +359,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Apagamos totalmente el tooltip nativo conflictivo
+                // Tooltips completamente apagados y olvidados
                 tooltip: {
                     enabled: false
                 }
@@ -411,7 +377,48 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { grid: { display: false } }
             }
-        }
+        },
+        plugins: [{
+            id: 'etiquetasFijasZigZag',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    if (!meta.hidden && datasetIndex === 0) {
+                        meta.data.forEach((element, index) => {
+                            const value = dataset.data[index];
+                            if (value > 0) {
+                                const { x, y } = element.getProps(['x', 'y'], true);
+                                const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
+                                
+                                ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
+                                ctx.textAlign = 'center';
+                                
+                                // Alternancia en zigzag (par arriba, impar abajo) para evitar choques
+                                const esPar = index % 2 === 0;
+                                const yPos = esPar ? y - 22 : y + 28;
+                                
+                                const textWidth = ctx.measureText(text).width;
+                                
+                                // Pastilla de fondo blanca limpia con borde sutil
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
+                                ctx.strokeStyle = '#cbd5e0';
+                                ctx.lineWidth = 1;
+                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
+                                
+                                // Texto de la cifra fija
+                                ctx.fillStyle = '#0f172a';
+                                ctx.fillText(text, x, yPos + 3);
+                            }
+                        });
+                    }
+                });
+                ctx.restore();
+            }
+        }]
     });
 }
 // Renderizar Estado Regional compacto y ordenado
