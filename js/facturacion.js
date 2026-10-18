@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con etiquetas en zigzag y números más grandes
+// Gráfica de tendencia con Panel de Resumen Lateral al Hover (Sin solapes ni tooltips desfasados)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -323,7 +323,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     label: 'Ejecución',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
@@ -346,10 +346,21 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            layout: {
-                padding: {
-                    top: 35,    // Margen superior extendido para los números grandes
-                    bottom: 30  // Margen inferior extendido
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            // Actualiza la tarjeta lateral elegante al pasar el cursor por los meses
+            onHover: (event, activeElements) => {
+                const infoCard = document.getElementById('infoMesHover');
+                if (!infoCard) return;
+
+                if (activeElements && activeElements.length > 0) {
+                    const dataIndex = activeElements[0].index;
+                    const mesNombre = mesesLabels[dataIndex];
+                    const valorEjecutado = acumuladoMeses[dataIndex];
+                    
+                    infoCard.innerHTML = `📅 <b>${mesNombre}</b> | Ejecutado: <span style="color:#16a34a;">$ ${valorEjecutado.toLocaleString('es-CO')}</span>`;
                 }
             },
             plugins: { 
@@ -359,6 +370,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
+                // Desactivamos tooltips flotantes molestos
                 tooltip: {
                     enabled: false
                 }
@@ -376,52 +388,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { grid: { display: false } }
             }
-        },
-        plugins: [{
-            id: 'etiquetasZigZagGrandes',
-            afterDatasetsDraw(chart) {
-                const { ctx } = chart;
-                ctx.save();
-                
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (!meta.hidden && datasetIndex === 0) {
-                        meta.data.forEach((element, index) => {
-                            const value = dataset.data[index];
-                            if (value > 0) {
-                                const { x, y } = element.getProps(['x', 'y'], true);
-                                const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
-                                
-                                // Fuente ampliada a 12px en negrita para mayor visibilidad
-                                ctx.font = 'bold 12px Segoe UI, Tahoma, sans-serif';
-                                ctx.textAlign = 'center';
-                                
-                                // Zigzag alternado con mayor separación para acomodar la fuente de 12px
-                                const esPar = index % 2 === 0;
-                                const yPos = esPar ? y - 22 : y + 28;
-                                
-                                const textWidth = ctx.measureText(text).width;
-                                
-                                // Fondo de la pastilla proporcional al tamaño del texto grande
-                                ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
-                                ctx.strokeStyle = '#cbd5e0';
-                                ctx.lineWidth = 1;
-                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 12, textWidth + 12, 20);
-                                
-                                // Texto grande y claro
-                                ctx.fillStyle = '#0f172a';
-                                ctx.fillText(text, x, yPos + 3);
-                            }
-                        });
-                    }
-                });
-                ctx.restore();
-            }
-        }]
+        }
     });
 }
-
 
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
