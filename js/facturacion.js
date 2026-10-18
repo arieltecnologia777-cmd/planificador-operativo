@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia limpia con Mini Tabla Resumen Inferior (Sin desfases ni números montados)
+// Gráfica de tendencia limpia sin nombres de meses abajo y mini tabla alineada
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -312,7 +312,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Renderizar la Mini Tabla Resumen Inferior
+    // Renderizar la Mini Tabla Resumen Inferior perfectamente alineada
     renderizarMiniTablaInferior(mesesLabels, acumuladoMeses);
 
     if (chartTendencia) chartTendencia.destroy();
@@ -356,7 +356,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Desactivamos por completo los tooltips flotantes
                 tooltip: {
                     enabled: false
                 }
@@ -372,10 +371,51 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                         }
                     }
                 },
-                x: { grid: { display: false } }
+                x: { 
+                    grid: { display: false },
+                    // Ocultamos los nombres de los meses abajo en la gráfica para que no se repitan
+                    ticks: { display: false } 
+                }
             }
         }
     });
+}
+
+// Función para pintar la mini tabla inferior con distribución 100% simétrica de columnas
+function renderizarMiniTablaInferior(labels, valores) {
+    const container = document.getElementById('miniTablaTendencia');
+    if (!container) return;
+
+    let html = `
+        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
+            <thead>
+                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+    `;
+    
+    // Asignamos ancho igual (1fr / 12) a cada columna para que coincida perfectamente con los puntos de la gráfica
+    labels.forEach(m => {
+        html += `<th style="padding: 4px 2px; font-weight: 700; width: calc(100% / 12);">${m.substring(0, 3)}</th>`;
+    });
+    
+    html += `
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+    `;
+
+    valores.forEach(v => {
+        const txtVal = v > 0 ? '$ ' + (v / 1000000).toFixed(1) + 'M' : '-';
+        html += `<td style="padding: 6px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; width: calc(100% / 12);">${txtVal}</td>`;
+    });
+
+    html += `
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
 }
 
 // Función auxiliar para pintar la mini tabla inferior de forma compacta
