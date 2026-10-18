@@ -278,7 +278,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '76%',
+                cutout: '74%',
                 plugins: { 
                     tooltip: { enabled: false }, 
                     legend: { display: false } 
@@ -295,7 +295,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
                 beforeDraw(chart) {
                     const { width, height, ctx } = chart;
                     ctx.restore();
-                    const fontSize = (height / 85).toFixed(2);
+                    const fontSize = (height / 80).toFixed(2);
                     ctx.font = `900 ${fontSize}rem Inter, sans-serif`;
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = '#0f172a';
