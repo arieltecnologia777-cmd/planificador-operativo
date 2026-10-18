@@ -147,7 +147,7 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Agrupar registros por técnico
+// Agrupar registros por técnico y ordenar por mayor efectividad (Top)
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
@@ -182,13 +182,13 @@ function procesarDatosParaVista(rows) {
         mapaTecnicos[nombreTecnico].subsanado += subsanadoVal;
     });
 
-   const tecnicosArray = Object.values(mapaTecnicos).map(t => {
+    const tecnicosArray = Object.values(mapaTecnicos).map(t => {
         t.efectividad = t.meta > 0 ? Math.round((t.aprobado / t.meta) * 100) : 0;
         t.estado = t.efectividad >= 100 ? "Cumple" : "No cumple";
         return t;
     });
 
-    // Ordena de mayor a menor efectividad para dejar en el TOP al que más tenga
+    // Ordena estrictamente de mayor a menor efectividad para dejar en el TOP al que más tenga
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
@@ -772,7 +772,7 @@ function abrirModalRechazados() {
     footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
@@ -974,8 +974,9 @@ function renderTable(records) {
     }
 
     let html = '';
-   records.forEach((r, index) => {
+    records.forEach((r, index) => {
         const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+        // Estilo forzado con fondo verde claro y texto verde oscuro para el estado Cumple
         const badgeStyle = r.estado === "Cumple" 
             ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0;" 
             : "";
