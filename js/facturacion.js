@@ -487,14 +487,14 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Ventana Modal Gigante Estilo Tabla Dinámica (Análisis de Minucia por Regional y Estado)
+// Función para abrir el modal ajustado con Aprobación Regional en la primera columna
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
     const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    // 1. Filtrar registros pendientes (todos los que NO estén Aceptados)
+    // Filtrar registros omitiendo únicamente los ACEPTADOS
     const registrosEnTramite = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
@@ -507,9 +507,9 @@ function abrirModalEnTramite() {
         const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
         const matchSearch = tecnico.includes(searchVal);
 
-        const esTramite = !aprobReg.includes("ACEPTADO");
+        const esPendiente = !aprobReg.includes("ACEPTADO");
 
-        return matchReg && matchMes && matchPerfil && matchSearch && esTramite;
+        return matchReg && matchMes && matchPerfil && matchSearch && esPendiente;
     });
 
     const thead = document.getElementById('headTablaDinamicaTramite');
@@ -517,15 +517,15 @@ function abrirModalEnTramite() {
     if (!thead || !tbody) return;
 
     if (registrosEnTramite.length === 0) {
-        thead.innerHTML = `<tr><th>Estado / Causa</th></tr>`;
-        tbody.innerHTML = `<tr><td style="text-align:center; padding: 30px; color: #64748b;">No hay registros pendientes para los filtros seleccionados.</td></tr>`;
+        thead.innerHTML = `<tr><th>Aprobación Regional</th></tr>`;
+        tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros pendientes para los filtros seleccionados.</td></tr>`;
         document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
         if (modal) modal.style.display = 'flex';
         return;
     }
 
-    // 2. Extraer dinámicamente las regionales únicas para armar las columnas
+    // Extraer regionales únicas para las columnas
     const regionalesSet = new Set();
     registrosEnTramite.forEach(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL").trim().toUpperCase();
@@ -533,71 +533,70 @@ function abrirModalEnTramite() {
     });
     const listaRegionales = Array.from(regionalesSet).sort();
 
-    // 3. Agrupar la información por Causa/Estado (Filas) y por Regional (Columnas)
+    // Agrupar por Aprobación Regional (Columna V del Excel) y por Regional
     const matrizDatos = {};
     let sumaGranTotal = 0;
     const totalesPorRegional = {};
     listaRegionales.forEach(reg => totalesPorRegional[reg] = 0);
 
     registrosEnTramite.forEach(r => {
-        const estadoCausa = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r.causa_rechazo || r.CAUSA_RECHAZO || "PENDIENTE").toUpperCase().trim();
+        // Primera columna: Aprobación Regional exacta
+        const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         const regional = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL").trim().toUpperCase();
-        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? r.total_aprobado ?? 0);
 
         sumaGranTotal += monto;
         totalesPorRegional[regional] = (totalesPorRegional[regional] || 0) + monto;
 
-        if (!matrizDatos[estadoCausa]) {
-            matrizDatos[estadoCausa] = {};
-            listaRegionales.forEach(reg => matrizDatos[estadoCausa][reg] = 0);
+        if (!matrizDatos[aprobRegionalVal]) {
+            matrizDatos[aprobRegionalVal] = {};
+            listaRegionales.forEach(reg => matrizDatos[aprobRegionalVal][reg] = 0);
         }
-        matrizDatos[estadoCausa][regional] += monto;
+        matrizDatos[aprobRegionalVal][regional] += monto;
     });
 
-    // 4. Construir las cabeceras de la tabla cruzada
+    // Construir cabeceras
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 12px 16px; text-align: left; font-weight: 800; color: #1e293b; min-width: 240px;">ESTADO / CAUSA PENDIENTE</th>
+            <th style="padding: 10px 14px; text-align: left; font-weight: 800; color: #1e293b; min-width: 200px;">APROBACIÓN REGIONAL</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 12px 16px; text-align: right; font-weight: 800; color: #1e293b; min-width: 140px;">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: right; font-weight: 800; color: #1e293b; min-width: 120px;">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 12px 16px; text-align: right; font-weight: 900; color: #0f172a; min-width: 160px; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: right; font-weight: 900; color: #0f172a; min-width: 140px; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
-    // 5. Construir el cuerpo de las filas
+    // Construir filas
     let bodyHtml = '';
-    for (const [estadoCausa, montosRegionales] of Object.entries(matrizDatos)) {
+    for (const [aprobVal, montosRegionales] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        bodyHtml += `<tr><td style="padding: 10px 16px; font-weight: 700; color: #334155;"><span style="background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: bold;">${estadoCausa}</span></td>`;
+        bodyHtml += `<tr><td style="padding: 9px 14px; font-weight: 700; color: #334155;"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
         listaRegionales.forEach(reg => {
             const valReg = montosRegionales[reg] || 0;
             totalFila += valReg;
-            bodyHtml += `<td style="padding: 10px 16px; text-align: right; color: #475569; font-weight: 600;">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: right; color: #475569; font-weight: 600;">${valReg > 0 ? formatMoney(valReg) : '-'}</td>`;
         });
 
-        bodyHtml += `<td style="padding: 10px 16px; text-align: right; font-weight: 800; color: #0f172a; background: #f8fafc;">${formatMoney(totalFila)}</td></tr>`;
+        bodyHtml += `<td style="padding: 9px 14px; text-align: right; font-weight: 800; color: #0f172a; background: #f8fafc;">${formatMoney(totalFila)}</td></tr>`;
     }
 
-    // 6. Fila de Total General al pie de la tabla
+    // Fila Total General
     let footerFilaHtml = `
         <tr style="background: #f1f5f9; border-top: 2px solid #cbd5e0; font-weight: 900;">
-            <td style="padding: 12px 16px; color: #0f172a; text-transform: uppercase;">Total General</td>
+            <td style="padding: 10px 14px; color: #0f172a; text-transform: uppercase;">Total General</td>
     `;
     listaRegionales.forEach(reg => {
-        footerFilaHtml += `<td style="padding: 12px 16px; text-align: right; color: #0f172a;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: right; color: #0f172a;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 12px 16px; text-align: right; color: #2563eb; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: right; color: #2563eb; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
 
     tbody.innerHTML = bodyHtml + footerFilaHtml;
     document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
-    // Mostrar el modal gigante
     const modal = document.getElementById('modalEnTramiteDetalle');
     if (modal) modal.style.display = 'flex';
 }
-
 function cerrarModalEnTramite() {
     const modal = document.getElementById('modalEnTramiteDetalle');
     if (modal) modal.style.display = 'none';
