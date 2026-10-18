@@ -270,7 +270,28 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Gráfica de tendencia con Línea Guía Vertical (Crosshair Limpio sin Tooltips Flotantes)
+// Registramos un posicionador personalizado para que los tooltips de los extremos no se desfasen
+Chart.Tooltip.positioners.customBorderFix = function(elements, eventPosition) {
+    const pos = Chart.Tooltip.positioners.average(elements);
+    if (pos === false) {
+        return false;
+    }
+    const chart = this.chart;
+    const x = pos.x;
+    const chartWidth = chart.width;
+    
+    // Si el tooltip está muy a la izquierda (Enero), lo fijamos al borde izquierdo
+    if (x < 70) {
+        return { x: 60, y: pos.y };
+    }
+    // Si el tooltip está muy a la derecha (Diciembre), lo fijamos al borde derecho
+    if (x > chartWidth - 70) {
+        return { x: chartWidth - 60, y: pos.y };
+    }
+    return { x: x, y: pos.y };
+};
+
+// Gráfica de tendencia con Tooltip anti-desfase en los bordes
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -328,7 +349,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
                     pointRadius: 5,
-                    pointHoverRadius: 7,
                     order: 1
                 },
                 {
@@ -346,7 +366,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Interacción optimizada para seguir los puntos de forma exacta de lado a lado
             interaction: {
                 mode: 'index',
                 intersect: false,
@@ -358,21 +377,28 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Tooltip limpio y directo solo con el valor formateado, sin cajas flotantes grandes
                 tooltip: {
                     enabled: true,
-                    backgroundColor: '#0f172a',
-                    titleColor: '#ffffff',
-                    bodyColor: '#e2e8f0',
-                    padding: 10,
-                    cornerRadius: 6,
-                    displayColors: false,
+                    // AQUÍ ESTÁ EL TRUCO: Usamos nuestro posicionador anti-desfase
+                    position: 'customBorderFix',
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
                     callbacks: {
                         title: function(context) {
-                            return '📅 ' + context[0].label;
+                            return context[0].label;
                         },
                         label: function(context) {
-                            return ' Ejecución: $ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
                         }
                     }
                 }
@@ -388,18 +414,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                         }
                     }
                 },
-                x: { 
-                    grid: { display: false },
-                    ticks: {
-                        font: { weight: 'bold', size: 11 },
-                        color: '#64748b'
-                    }
-                }
+                x: { grid: { display: false } }
             }
         }
     });
 }
-
 function renderizarMiniTablaInferior(labels, valores) {
     const container = document.getElementById('miniTablaTendencia');
     if (!container) return;
