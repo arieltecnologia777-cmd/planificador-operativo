@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con valores fijos grandes en cada punto
+// Gráfica de tendencia anual con etiquetas inteligentes en zigzag (Anti-solape)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -348,8 +348,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 28, // Mayor margen superior para que los números grandes no se corten
-                    bottom: 10
+                    top: 30,    // Espacio arriba para los puntos altos
+                    bottom: 25  // Espacio abajo por si alguna etiqueta baja se acerca al eje X
                 }
             },
             plugins: { 
@@ -378,7 +378,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         },
         plugins: [{
-            id: 'valoresFijosPuntosGrandes',
+            id: 'etiquetasZigZag',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
@@ -392,23 +392,26 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                                 const { x, y } = element.getProps(['x', 'y'], true);
                                 const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
                                 
-                                // Fuente más grande (12px en negrita)
-                                ctx.font = 'bold 12px Segoe UI, Tahoma, sans-serif';
+                                ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
                                 ctx.textAlign = 'center';
                                 
-                                const yPos = y - 18 > 15 ? y - 18 : y + 24;
+                                // TRUCO CLAVE: Si el índice es par va arriba (-20), si es impar va abajo (+24)
+                                // Esto alterna las alturas automáticamente evitando que se crucen
+                                const esPar = index % 2 === 0;
+                                const yPos = esPar ? y - 20 : y + 26;
+                                
                                 const textWidth = ctx.measureText(text).width;
                                 
-                                // Fondo de la etiqueta adaptado al tamaño de la fuente
+                                // Dibujar pastilla de fondo blanca con borde sutil
                                 ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 13, textWidth + 12, 19);
+                                ctx.fillRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 17);
                                 ctx.strokeStyle = '#cbd5e0';
                                 ctx.lineWidth = 1;
-                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 13, textWidth + 12, 19);
+                                ctx.strokeRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 17);
                                 
-                                // Texto del número más grande
+                                // Texto
                                 ctx.fillStyle = '#0f172a';
-                                ctx.fillText(text, x, yPos);
+                                ctx.fillText(text, x, yPos + 2);
                             }
                         });
                     }
@@ -418,7 +421,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }]
     });
 }
-
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
