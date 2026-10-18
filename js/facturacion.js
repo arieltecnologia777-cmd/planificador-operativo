@@ -585,4 +585,457 @@ function abrirModalEnTramite() {
 
     let bodyHtml = '';
     for (const [aprobVal, montosDeps] of Object.entries(estadosFiltrados)) {
-        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 7
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
+        
+        let totalFila = 0;
+        listaDepartamentos.forEach(dep => {
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+        });
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+    }
+    tbody.innerHTML = bodyHtml;
+
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaDepartamentos.forEach(dep => {
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
+    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+
+    const modal = document.getElementById('modalEnTramiteDetalle');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalEnTramite() {
+    const modal = document.getElementById('modalEnTramiteDetalle');
+    if (modal) modal.style.display = 'none';
+}
+
+// Modal Rechazados (Con los 4 departamentos fijos como columnas)
+function abrirModalRechazados() {
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const registrosRechazados = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchSearch = tecnico.includes(searchVal);
+
+        const esRechazado = aprobReg.includes("RECHAZADO");
+
+        return matchReg && matchMes && matchPerfil && matchSearch && esRechazado;
+    });
+
+    const thead = document.getElementById('headTablaDinamicaRechazados');
+    const tbody = document.getElementById('tableBodyRechazados');
+    const tfoot = document.getElementById('footerTablaDinamicaRechazados');
+    if (!thead || !tbody || !tfoot) return;
+
+    if (registrosRechazados.length === 0) {
+        thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
+        tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
+        tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
+        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
+        const modal = document.getElementById('modalRechazadosDetalle');
+        if (modal) modal.style.display = 'flex';
+        return;
+    }
+
+    const listaDepartamentos = LISTA_DEPARTAMENTOS_FIJOS;
+    const matrizDatos = {};
+    let sumaGranTotal = 0;
+    const totalesPorDepartamento = {};
+    listaDepartamentos.forEach(dep => totalesPorDepartamento[dep] = 0);
+
+    registrosRechazados.forEach(r => {
+        const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
+        
+        // Extraer departamento de la columna Departamento o equivalente (Columna I)
+        const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
+        const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
+        
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+
+        sumaGranTotal += monto;
+        if (departamento !== "OTRO") {
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
+        }
+
+        if (!matrizDatos[causaRechazoVal]) {
+            matrizDatos[causaRechazoVal] = {};
+            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = 0);
+            matrizDatos[causaRechazoVal]["OTRO"] = 0;
+        }
+        if (departamento !== "OTRO") {
+            matrizDatos[causaRechazoVal][departamento] += monto;
+        } else {
+            matrizDatos[causaRechazoVal]["OTRO"] += monto;
+        }
+    });
+
+    const causasFiltradas = {};
+    for (const [causaVal, montosDeps] of Object.entries(matrizDatos)) {
+        let totalFila = 0;
+        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (totalFila > 0) {
+            causasFiltradas[causaVal] = montosDeps;
+        }
+    }
+
+    const totalColumnas = 1 + listaDepartamentos.length + 1; // Causa Rechazo + 4 Deptos + Total General
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    let headHtml = `
+        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">CAUSA RECHAZO</th>
+    `;
+    listaDepartamentos.forEach(dep => {
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${dep}</th>`;
+    });
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    thead.innerHTML = headHtml;
+
+    let bodyHtml = '';
+    for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
+        
+        let totalFila = 0;
+        listaDepartamentos.forEach(dep => {
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+        });
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+    }
+    tbody.innerHTML = bodyHtml;
+
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaDepartamentos.forEach(dep => {
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
+    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+
+    const modal = document.getElementById('modalRechazadosDetalle');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalRechazados() {
+    const modal = document.getElementById('modalRechazadosDetalle');
+    if (modal) modal.style.display = 'none';
+}
+
+// Funciones para la Campana de Notificaciones e Incrementos
+function verificarIncrementosAvance(nuevosRegistros) {
+    const historialPrevio = JSON.parse(localStorage.getItem('fact_notif_historial') || "[]");
+    let nuevosCambiosDetectados = false;
+    
+    nuevosRegistros.forEach(r => {
+        const aprobReg = String(r.aprobacion_regional || "").toUpperCase();
+        if (aprobReg.includes("ACEPTADO")) {
+            const idOT = r.ot || r.OT || r.id || "OT-GENERAL";
+            const tecnico = r.tecnico_programado || r.perfil_wfm || "Técnico";
+            const monto = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
+            
+            const yaRegistrado = historialPrevio.some(h => h.id === idOT && h.monto === monto);
+            if (!yaRegistrado && monto > 0) {
+                listaNotificacionesCambios.unshift({
+                    id: idOT,
+                    titulo: `¡Incremento de avance aprobado!`,
+                    detalle: `El técnico ${tecnico} registró una aprobación por ${formatMoney(monto)}.`,
+                    fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    monto: monto
+                });
+                nuevosCambiosDetectados = true;
+            }
+        }
+    });
+
+    if (nuevosCambiosDetectados || listaNotificacionesCambios.length > 0) {
+        if (listaNotificacionesCambios.length === 0) listaNotificacionesCambios = historialPrevio;
+        localStorage.setItem('fact_notif_historial', JSON.stringify(listaNotificacionesCambios));
+        actualizarBadgeCampana();
+    }
+}
+
+function actualizarBadgeCampana() {
+    const badge = document.getElementById('badgeNotifCount');
+    if (badge) {
+        if (listaNotificacionesCambios.length > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = listaNotificacionesCambios.length;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function abrirModalNotificaciones() {
+    const body = document.getElementById('modalBodyNotificaciones');
+    if (!body) return;
+
+    if (listaNotificacionesCambios.length === 0) {
+        body.innerHTML = `<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay incrementos recientes en la base de facturación.</div>`;
+    } else {
+        let html = '';
+        listaNotificacionesCambios.forEach(n => {
+            html += `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; color: #1e293b; font-size: 0.88rem;">📈 ${n.titulo}</span>
+                        <span style="font-size: 0.72rem; color: #64748b;">${n.fecha}</span>
+                    </div>
+                    <div style="font-size: 0.82rem; color: #334155;">${n.detalle}</div>
+                </div>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalNotificaciones() {
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'none';
+}
+
+// Validación de contraseña de administrador
+async function verificarPassword() {
+    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
+    try {
+        const response = await fetch(VERIFICAR_KEY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: passwordIngresada })
+        });
+        const resultado = await response.json();
+        if (response.ok && (resultado.success === true || resultado.ok === true)) {
+            cerrarModalPassword();
+            document.getElementById('modalHerramientas').style.display = 'flex';
+        } else {
+            document.getElementById('errorPasswordMsg').style.display = 'block';
+        }
+    } catch (err) {
+        document.getElementById('errorPasswordMsg').style.display = 'block';
+    }
+}
+
+function abrirModalPassword() {
+    document.getElementById('inputPasswordAdmin').value = '';
+    document.getElementById('errorPasswordMsg').style.display = 'none';
+    document.getElementById('modalPassword').style.display = 'flex';
+}
+
+function cerrarModalPassword() {
+    document.getElementById('modalPassword').style.display = 'none';
+}
+
+function cerrarModalHerramientas() {
+    document.getElementById('modalHerramientas').style.display = 'none';
+}
+
+// Cargue de Excel y sincronización masiva
+async function procesarYSubirExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    cerrarModalHerramientas();
+    const modalCarga = document.getElementById('modalCargandoExcel');
+    const barra = document.getElementById('barraProgreso');
+    const txtPorc = document.getElementById('txtPorcentajeCarga');
+    const txtEstado = document.getElementById('txtEstadoCarga');
+    
+    barra.style.width = '15%';
+    txtPorc.innerText = '15%';
+    txtEstado.innerText = 'Leyendo archivo Excel...';
+    modalCarga.style.display = 'flex';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            barra.style.width = '50%';
+            txtPorc.innerText = '50%';
+            txtEstado.innerText = 'Procesando filas...';
+
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (jsonData.length === 0) {
+                alert("El archivo Excel está vacío.");
+                modalCarga.style.display = 'none';
+                return;
+            }
+
+            barra.style.width = '75%';
+            txtPorc.innerText = '75%';
+            txtEstado.innerText = 'Guardando en Cloudflare D1...';
+
+            const response = await fetch(IMPORTAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (!response.ok) throw new Error("Error en la inserción masiva");
+
+            barra.style.width = '100%';
+            txtPorc.innerText = '100%';
+            txtEstado.innerText = '¡Cargue y éxito de confirmación!';
+
+            setTimeout(() => {
+                modalCarga.style.display = 'none';
+                alert("¡Base de facturación cargada y sincronizada con éxito!");
+                location.reload();
+            }, 1000);
+
+        } catch (error) {
+            modalCarga.style.display = 'none';
+            alert("Error al procesar el archivo: " + error.message);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function formatMoney(amount) {
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
+}
+
+function renderTable(records) {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
+    
+    if(records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    records.forEach((r, index) => {
+        const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+        const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
+
+        html += `
+            <tr>
+                <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
+                <td>${formatMoney(r.meta)}</td>
+                <td>${formatMoney(r.aprobado)}</td>
+                <td>${formatMoney(r.rechazado)}</td>
+                <td>${formatMoney(r.subsanado)}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
+                        <div style="width: 80px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${Math.min(100, r.efectividad)}%; background: ${barColor}; height: 100%;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="badge-status ${badgeClass}">${r.estado}</span></td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+function abrirDetalleTecnico(index) {
+    const r = tecnicosData[index];
+    if (!r) return;
+
+    const modalBody = document.getElementById('modalBodyContent');
+    if(!modalBody) return;
+    const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+
+    modalBody.innerHTML = `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
+                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
+                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
+                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
+            </div>
+        </div>
+    `;
+
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'none';
+}
+
+function exportExcel() {
+    const ws = XLSX.utils.json_to_sheet(tecnicosData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
+    XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
+}
