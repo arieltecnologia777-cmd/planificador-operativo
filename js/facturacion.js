@@ -257,7 +257,15 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
-    const colorEfectividad = '#00b087';
+    let colorEfectividad = '#dc2626';
+    if (efectividadGlobal >= 100) {
+        colorEfectividad = '#22c55e';
+    } else if (efectividadGlobal >= 70) {
+        colorEfectividad = '#00b087';
+    } else if (efectividadGlobal >= 40) {
+        colorEfectividad = '#f59e0b';
+    }
+
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
         if (chartGauge) chartGauge.destroy();
