@@ -114,13 +114,13 @@ aside.sidebar {
 .fact-banner-avatar {
     background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover !important;
     border-radius: 18px !important;
-    padding: 20px !important;
+    padding: 16px !important; /* Padding más limpio y controlado */
     color: #fff !important;
     box-sizing: border-box !important;
     display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 12px !important;
+    flex-direction: column !important; /* Apilado para controlar mejor la posición */
+    align-items: flex-start !important; /* Alineado totalmente a la izquierda */
+    justify-content: flex-start !important; /* Alineado totalmente arriba */
     height: 100% !important;
     box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
 }
