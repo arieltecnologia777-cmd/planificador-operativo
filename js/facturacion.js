@@ -329,7 +329,7 @@ const options = {
             { name: 'Meta', data: metaLineData }
         ],
         chart: {
-            type: 'line',
+            type: 'area', // Cambiamos a 'area' para habilitar el sombreado inferior
             height: '100%',
             toolbar: { show: false },
             zoom: { enabled: false },
@@ -337,24 +337,26 @@ const options = {
         },
         colors: ['#2563eb', '#94a3b8'],
         stroke: {
-            // Aumentamos el grosor de la línea de ejecución a 4 para que tenga mayor presencia
             width: [4, 2],
             curve: 'smooth',
             dashArray: [0, 5]
         },
+        // Aquí configuramos para que solo la ejecución tenga degradado y la meta tenga opacidad 0 (sin relleno)
         fill: {
-            type: ['gradient', 'solid'],
+            type: 'gradient',
             gradient: {
                 shade: 'light',
                 type: 'vertical',
                 shadeIntensity: 1,
-                opacityFrom: 0.65, // Subimos la opacidad para que el relleno azul sea bien visible como antes
-                opacityTo: 0.1,    // Transición suave hacia abajo
+                opacityFrom: 0.6, // Relleno azul visible arriba
+                opacityTo: 0.05,  // Se desvanece abajo
                 stops: [0, 100]
             }
         },
+        // Forzamos que la segunda serie (Meta) no tenga relleno de área
+        // (ApexCharts permite aplicar opacidad cero individual en series de tipo area)
         markers: {
-            size: [5, 0], // Puntos un poco más marcados
+            size: [5, 0],
             colors: ['#2563eb'],
             strokeColors: '#ffffff',
             strokeWidth: 2,
