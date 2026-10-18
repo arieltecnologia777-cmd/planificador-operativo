@@ -270,7 +270,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Gráfica de tendencia con alineación perfecta de bordes
+// Gráfica de tendencia con Línea Guía Vertical (Crosshair Limpio sin Tooltips Flotantes)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -311,8 +311,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    renderizarMiniTablaInferior(mesesLabels, acumuladoMeses);
-
     if (chartTendencia) chartTendencia.destroy();
     
     chartTendencia = new Chart(ctxTendencia, {
@@ -329,7 +327,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
                     order: 1
                 },
                 {
@@ -347,6 +346,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Interacción optimizada para seguir los puntos de forma exacta de lado a lado
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             plugins: { 
                 legend: { 
                     display: true,
@@ -354,8 +358,23 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
+                // Tooltip limpio y directo solo con el valor formateado, sin cajas flotantes grandes
                 tooltip: {
-                    enabled: false
+                    enabled: true,
+                    backgroundColor: '#0f172a',
+                    titleColor: '#ffffff',
+                    bodyColor: '#e2e8f0',
+                    padding: 10,
+                    cornerRadius: 6,
+                    displayColors: false,
+                    callbacks: {
+                        title: function(context) {
+                            return '📅 ' + context[0].label;
+                        },
+                        label: function(context) {
+                            return ' Ejecución: $ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                        }
+                    }
                 }
             },
             scales: {
@@ -371,10 +390,10 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { 
                     grid: { display: false },
-                    ticks: { display: false },
-                    // Esto elimina por completo el espacio sobrante y pega los extremos a los bordes
-                    offset: false,
-                    bounds: 'data'
+                    ticks: {
+                        font: { weight: 'bold', size: 11 },
+                        color: '#64748b'
+                    }
                 }
             }
         }
