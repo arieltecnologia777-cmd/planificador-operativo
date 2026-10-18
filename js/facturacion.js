@@ -270,8 +270,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-
-// Gráfica de tendencia anual con línea láser roja y tooltip, sin cursor de cruz forzado
+// Gráfica de tendencia anual con línea láser roja y cursor de selección fluido
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -371,12 +370,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Interacción optimizada por cercanía horizontal directa
             interaction: {
                 mode: 'nearest',
                 axis: 'x',
                 intersect: false,
             },
-            // Sin forzar cursor de cruz para evitar sensación de desfase visual
             plugins: { 
                 legend: { 
                     display: true,
@@ -425,6 +424,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
