@@ -329,38 +329,38 @@ const options = {
             { name: 'Meta', data: metaLineData }
         ],
         chart: {
-            type: 'area', // Cambiamos a 'area' para habilitar el sombreado inferior
+            type: 'area',
             height: '100%',
             toolbar: { show: false },
             zoom: { enabled: false },
             fontFamily: 'Segoe UI, Tahoma, sans-serif'
         },
+        // Desactivamos los números flotantes molestos en los puntos
+        dataLabels: {
+            enabled: false
+        },
         colors: ['#2563eb', '#94a3b8'],
         stroke: {
-            width: [4, 2],
+            width: [3, 2],
             curve: 'smooth',
             dashArray: [0, 5]
         },
-        // Aquí configuramos para que solo la ejecución tenga degradado y la meta tenga opacidad 0 (sin relleno)
+        // Relleno limpio, sutil y elegante abajo (estilo Chart.js)
         fill: {
             type: 'gradient',
             gradient: {
-                shade: 'light',
-                type: 'vertical',
                 shadeIntensity: 1,
-                opacityFrom: 0.6, // Relleno azul visible arriba
-                opacityTo: 0.05,  // Se desvanece abajo
+                opacityFrom: 0.18, // Muy sutil arriba para no saturar
+                opacityTo: 0.0,    // Se desvanece por completo abajo
                 stops: [0, 100]
             }
         },
-        // Forzamos que la segunda serie (Meta) no tenga relleno de área
-        // (ApexCharts permite aplicar opacidad cero individual en series de tipo area)
         markers: {
-            size: [5, 0],
+            size: [4, 0],
             colors: ['#2563eb'],
             strokeColors: '#ffffff',
             strokeWidth: 2,
-            hover: { size: 7 }
+            hover: { size: 6 }
         },
         xaxis: {
             categories: mesesLabels,
@@ -371,7 +371,7 @@ const options = {
                 width: 1,
                 position: 'back',
                 stroke: {
-                    color: '#ef4444',
+                    color: '#ef4444', // Línea láser roja vertical exacta
                     width: 1.5,
                     dashArray: 3
                 }
