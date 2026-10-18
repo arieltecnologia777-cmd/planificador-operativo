@@ -251,7 +251,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
-    // Gráfico de dona para Efectividad (con tamaño grande, destello y color dinámico)
+    // Gráfico de dona para Efectividad (con color dinámico de rojo a verde y destello sutil)
     const colorEfectividad = efectividadGlobal >= 100 ? "#22c55e" : (efectividadGlobal >= 70 ? "#0ea5e9" : (efectividadGlobal >= 40 ? "#f59e0b" : "#dc2626"));
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
@@ -276,13 +276,13 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
                 beforeDraw(chart) {
                     const { width, height, ctx } = chart;
                     ctx.restore();
-                    const fontSize = (height / 75).toFixed(2); // Número más grande y legible
+                    const fontSize = (height / 95).toFixed(2);
                     ctx.font = `bold ${fontSize}rem Inter, sans-serif`;
                     ctx.textBaseline = 'middle';
                     
-                    // Efecto de destello/sombra alrededor del texto numérico
+                    // Sombra/destello sutil y elegante
                     ctx.shadowColor = colorEfectividad;
-                    ctx.shadowBlur = 8;
+                    ctx.shadowBlur = 4;
                     ctx.shadowOffsetX = 0;
                     ctx.shadowOffsetY = 0;
 
