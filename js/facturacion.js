@@ -188,7 +188,7 @@ function procesarDatosParaVista(rows) {
         return t;
     });
 
-    // Ordena estrictamente de mayor a menor efectividad para dejar en el TOP al que más tenga
+    // Ordenamiento estricto de mayor a menor para dejar en el TOP al técnico con mayor efectividad
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
@@ -309,7 +309,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con estilo clásico en azul (línea, relleno y puntos azules)
+// Gráfica de tendencia con estilo clásico en azul
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -360,12 +360,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 {
                     label: 'Aprobado',
                     data: acumuladoMeses,
-                    borderColor: '#2563eb', // Azul clásico
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)', // Relleno azul claro
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: '#2563eb', // Puntos azules
+                    pointBackgroundColor: '#2563eb',
                     pointBorderColor: '#2563eb',
                     pointRadius: 5,
                     pointHoverRadius: 7,
@@ -772,7 +772,7 @@ function abrirModalRechazados() {
     footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
@@ -816,14 +816,18 @@ function verificarIncrementosAvance(nuevosRegistros) {
     }
 }
 
+// Activa el efecto de rebote y destello en la campana del sidebar cuando hay notificaciones
 function actualizarBadgeCampana() {
     const badge = document.getElementById('badgeNotifCount');
+    const btnCampana = document.getElementById('btnCampanaNotif');
     if (badge) {
         if (listaNotificacionesCambios.length > 0) {
             badge.style.display = 'inline-block';
             badge.innerText = listaNotificacionesCambios.length;
+            if (btnCampana) btnCampana.classList.add('notif-activa-sidebar');
         } else {
             badge.style.display = 'none';
+            if (btnCampana) btnCampana.classList.remove('notif-activa-sidebar');
         }
     }
 }
@@ -976,10 +980,10 @@ function renderTable(records) {
     let html = '';
     records.forEach((r, index) => {
         const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
-        // Estilo forzado con fondo verde claro y texto verde oscuro para el estado Cumple
         const badgeStyle = r.estado === "Cumple" 
-            ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0;" 
-            : "";
+            ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
+            : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
+            
         const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
@@ -997,7 +1001,7 @@ function renderTable(records) {
                         </div>
                     </div>
                 </td>
-                <td><span class="badge-status ${badgeClass}" style="${badgeStyle}">${r.estado}</span></td>
+                <td><span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; text-align: center; ${badgeStyle}">${r.estado}</span></td>
                 <td style="text-align: center;">
                     <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
                 </td>
@@ -1013,7 +1017,9 @@ function abrirDetalleTecnico(index) {
 
     const modalBody = document.getElementById('modalBodyContent');
     if(!modalBody) return;
-    const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+    const badgeStyleModal = r.estado === "Cumple" 
+        ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
+        : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
 
     modalBody.innerHTML = `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
@@ -1028,7 +1034,7 @@ function abrirDetalleTecnico(index) {
                 </div>
                 <div>
                     <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
-                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
+                    <div style="margin-top: 4px;"><span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; ${badgeStyleModal}">${r.estado}</span></div>
                 </div>
             </div>
 
