@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia donde el Tooltip persigue físicamente las coordenadas del mouse
+// Gráfica de tendencia con Tooltip HTML Personalizado (Control absoluto, adiós desfases)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -352,6 +352,40 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 axis: 'x',
                 intersect: false,
             },
+            // Usamos un evento onHover manual para posicionar nuestro propio cuadro HTML sin depender de Chart.js
+            onHover: (event, activeElements) => {
+                const tooltipEl = document.getElementById('customTooltipHtml');
+                if (!tooltipEl) return;
+
+                if (!activeElements || activeElements.length === 0) {
+                    tooltipEl.style.display = 'none';
+                    return;
+                }
+
+                const element = activeElements[0];
+                const dataIndex = element.index;
+                const valorEjecucion = acumuladoMeses[dataIndex];
+                const mesNombre = mesesLabels[dataIndex];
+
+                // Contenido del tooltip
+                tooltipEl.innerHTML = `📅 ${mesNombre}<br>Ejecución: $ ${Number(valorEjecucion).toLocaleString('es-CO')}`;
+                tooltipEl.style.display = 'block';
+
+                // Posicionamos el div flotante siguiendo las coordenadas del mouse dentro del panel
+                const rect = ctxTendencia.getBoundingClientRect();
+                const xPos = event.native.clientX - rect.left;
+                const yPos = event.native.clientY - rect.top;
+
+                // Evitamos que se salga por la derecha en diciembre
+                const maxW = rect.width;
+                let finalX = xPos + 15;
+                if (finalX > maxW - 140) {
+                    finalX = xPos - 140; // Se pasa a la izquierda solo si llega al borde derecho
+                }
+
+                tooltipEl.style.left = finalX + 'px';
+                tooltipEl.style.top = (yPos - 45) + 'px';
+            },
             plugins: { 
                 legend: { 
                     display: true,
@@ -359,38 +393,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
+                // Apagamos totalmente el tooltip nativo conflictivo
                 tooltip: {
-                    enabled: true,
-                    // OBLIGAMOS AL TOOLTIP A POSICIONARSE EXACTAMENTE DONDE ESTÁ EL CURSOR DEL MOUSE
-                    position: function(items, eventPosition) {
-                        if (!eventPosition) {
-                            return { x: 0, y: 0 };
-                        }
-                        return {
-                            x: eventPosition.x,
-                            y: eventPosition.y - 15 // Unos píxeles arriba del cursor para que no lo tape
-                        };
-                    },
-                    backgroundColor: '#ffffff',
-                    titleColor: '#0f172a',
-                    bodyColor: '#334155',
-                    borderColor: '#cbd5e0',
-                    borderWidth: 1,
-                    padding: 12,
-                    boxWidth: 10,
-                    boxHeight: 10,
-                    usePointStyle: true,
-                    callbacks: {
-                        title: function(context) {
-                            return context[0].label;
-                        },
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
-                            return label;
-                        }
-                    }
+                    enabled: false
                 }
             },
             scales: {
@@ -409,7 +414,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
-
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
