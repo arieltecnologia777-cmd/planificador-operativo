@@ -841,10 +841,17 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    const estadosDisp = [...new Set(datosParaEstado.map(f => {
+    // Obtenemos los estados únicos y si hay vacíos, agregamos la etiqueta "(Vacío)"
+    let estadosDispBrutos = datosParaEstado.map(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
-        return reg.estadoGestion || "";
-    }))].filter(Boolean).sort();
+        const est = reg.estadoGestion ? reg.estadoGestion.trim() : "";
+        return est === "" ? "(Vacío)" : est;
+    });
+    const estadosDisp = [...new Set(estadosDispBrutos)].sort((a, b) => {
+        if (a === "(Vacío)") return 1; // Dejamos "(Vacío)" al final o al inicio según prefieras
+        if (b === "(Vacío)") return -1;
+        return a.localeCompare(b);
+    });
     const eEl = document.getElementById("listaEstado");
     if(eEl) {
         eEl.innerHTML = `
