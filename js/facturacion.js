@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con valores fijos en cada punto (Sin tooltips desfasados)
+// Gráfica de tendencia anual con valores fijos grandes en cada punto
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -348,7 +348,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 24, // Margen superior para que las etiquetas de arriba no se corten
+                    top: 28, // Mayor margen superior para que los números grandes no se corten
                     bottom: 10
                 }
             },
@@ -359,7 +359,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Desactivamos por completo el tooltip flotante para evitar cualquier desfase
                 tooltip: {
                     enabled: false
                 }
@@ -378,16 +377,14 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 x: { grid: { display: false } }
             }
         },
-        // Plugin integrado para dibujar los valores fijos en cada punto (estilo etiquetas estáticas)
         plugins: [{
-            id: 'valoresFijosPuntos',
+            id: 'valoresFijosPuntosGrandes',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
                 
                 chart.data.datasets.forEach((dataset, datasetIndex) => {
                     const meta = chart.getDatasetMeta(datasetIndex);
-                    // Aplicamos las etiquetas fijas únicamente a la línea de Ejecución
                     if (!meta.hidden && datasetIndex === 0) {
                         meta.data.forEach((element, index) => {
                             const value = dataset.data[index];
@@ -395,22 +392,21 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                                 const { x, y } = element.getProps(['x', 'y'], true);
                                 const text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
                                 
-                                ctx.font = 'bold 10px Segoe UI, Tahoma, sans-serif';
+                                // Fuente más grande (12px en negrita)
+                                ctx.font = 'bold 12px Segoe UI, Tahoma, sans-serif';
                                 ctx.textAlign = 'center';
                                 
-                                // Posicionamiento dinámico para evitar que se choquen arriba del borde
-                                const yPos = y - 15 > 15 ? y - 15 : y + 22;
-                                
+                                const yPos = y - 18 > 15 ? y - 18 : y + 24;
                                 const textWidth = ctx.measureText(text).width;
                                 
-                                // Fondo tipo pastilla blanca para las etiquetas
-                                ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-                                ctx.fillRect(x - textWidth / 2 - 5, yPos - 11, textWidth + 10, 16);
+                                // Fondo de la etiqueta adaptado al tamaño de la fuente
+                                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                                ctx.fillRect(x - textWidth / 2 - 6, yPos - 13, textWidth + 12, 19);
                                 ctx.strokeStyle = '#cbd5e0';
                                 ctx.lineWidth = 1;
-                                ctx.strokeRect(x - textWidth / 2 - 4, yPos - 10, textWidth + 8, 14);
+                                ctx.strokeRect(x - textWidth / 2 - 6, yPos - 13, textWidth + 12, 19);
                                 
-                                // Texto del monto fijo
+                                // Texto del número más grande
                                 ctx.fillStyle = '#0f172a';
                                 ctx.fillText(text, x, yPos);
                             }
