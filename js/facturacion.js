@@ -318,7 +318,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Destruimos la instancia anterior de ApexCharts si existe para limpiar la vista al filtrar
+    // Limpiamos la instancia previa de ApexCharts
     if (window.miGraficaTendencia && typeof window.miGraficaTendencia.destroy === 'function') {
         window.miGraficaTendencia.destroy();
     }
@@ -326,14 +326,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     const options = {
         series: [
-            {
-                name: 'Ejecución',
-                data: acumuladoMeses
-            },
-            {
-                name: 'Meta',
-                data: metaLineData
-            }
+            { name: 'Ejecución', data: acumuladoMeses },
+            { name: 'Meta', data: metaLineData }
         ],
         chart: {
             type: 'line',
