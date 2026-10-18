@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con Panel de Resumen Lateral al Hover (Sin solapes ni tooltips desfasados)
+// Gráfica de tendencia limpia con Mini Tabla Resumen Inferior (Sin desfases ni números montados)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -312,6 +312,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
+    // Renderizar la Mini Tabla Resumen Inferior
+    renderizarMiniTablaInferior(mesesLabels, acumuladoMeses);
+
     if (chartTendencia) chartTendencia.destroy();
     
     chartTendencia = new Chart(ctxTendencia, {
@@ -328,7 +331,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 5,
+                    pointRadius: 4,
                     order: 1
                 },
                 {
@@ -346,23 +349,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
-            },
-            // Actualiza la tarjeta lateral elegante al pasar el cursor por los meses
-            onHover: (event, activeElements) => {
-                const infoCard = document.getElementById('infoMesHover');
-                if (!infoCard) return;
-
-                if (activeElements && activeElements.length > 0) {
-                    const dataIndex = activeElements[0].index;
-                    const mesNombre = mesesLabels[dataIndex];
-                    const valorEjecutado = acumuladoMeses[dataIndex];
-                    
-                    infoCard.innerHTML = `📅 <b>${mesNombre}</b> | Ejecutado: <span style="color:#16a34a;">$ ${valorEjecutado.toLocaleString('es-CO')}</span>`;
-                }
-            },
             plugins: { 
                 legend: { 
                     display: true,
@@ -370,7 +356,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                // Desactivamos tooltips flotantes molestos
+                // Desactivamos por completo los tooltips flotantes
                 tooltip: {
                     enabled: false
                 }
@@ -390,6 +376,44 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         }
     });
+}
+
+// Función auxiliar para pintar la mini tabla inferior de forma compacta
+function renderizarMiniTablaInferior(labels, valores) {
+    const container = document.getElementById('miniTablaTendencia');
+    if (!container) return;
+
+    let html = `
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
+            <thead>
+                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+    `;
+    
+    // Cabeceras con las iniciales de los meses para ahorrar espacio
+    labels.forEach(m => {
+        html += `<th style="padding: 3px 2px; font-weight: 700;">${m.substring(0, 3)}</th>`;
+    });
+    
+    html += `
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+    `;
+
+    // Valores en millones directos debajo de cada mes
+    valores.forEach(v => {
+        const txtVal = v > 0 ? (v / 1000000).toFixed(1) + 'M' : '-';
+        html += `<td style="padding: 4px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${txtVal}</td>`;
+    });
+
+    html += `
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
 }
 
 // Renderizar Estado Regional compacto y ordenado
