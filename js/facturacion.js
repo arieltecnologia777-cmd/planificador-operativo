@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual estándar original (con Chart.js pulido)
+// Gráfica de tendencia anual estándar original
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -323,7 +323,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     label: 'Ejecución',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
@@ -347,8 +347,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             responsive: true,
             maintainAspectRatio: false,
             interaction: {
-                mode: 'nearest', // Evita saltos bruscos en los extremos de los meses
-                axis: 'x',
+                mode: 'index',
                 intersect: false,
             },
             plugins: { 
