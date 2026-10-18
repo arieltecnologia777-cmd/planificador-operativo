@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con etiquetas en zigzag obligatorias para todos los meses (incluyendo ceros) y diseño estilo píldora moderna
+// Gráfica de tendencia optimizada para que suba y quede pegada al título
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -346,10 +346,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Reducimos el padding superior para que la gráfica suba y se acerque al título
             layout: {
                 padding: {
-                    top: 38,    // Margen superior para las etiquetas en zigzag
-                    bottom: 35  // Margen inferior para las etiquetas en zigzag
+                    top: 18, 
+                    bottom: 25
                 }
             },
             plugins: { 
@@ -378,7 +379,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             }
         },
         plugins: [{
-            id: 'etiquetasModernaPildora',
+            id: 'etiquetasModernaPildoraCeros',
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
@@ -390,7 +391,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                             const value = dataset.data[index];
                             const { x, y } = element.getProps(['x', 'y'], true);
                             
-                            // Formato de texto para todos los meses (incluyendo ceros)
                             let text = '$ 0';
                             if (value > 0) {
                                 text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
@@ -399,22 +399,19 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                             ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
                             ctx.textAlign = 'center';
                             
-                            // Zigzag alternado para evitar choques visuales
                             const esPar = index % 2 === 0;
-                            const yPos = esPar ? y - 24 : y + 30;
+                            const yPos = esPar ? y - 22 : y + 28;
                             
                             const textWidth = ctx.measureText(text).width;
                             const pillWidth = textWidth + 16;
                             const pillHeight = 22;
                             const pillX = x - pillWidth / 2;
                             const pillY = yPos - pillHeight / 2;
-                            const radius = 11; // Radio para efecto pastilla totalmente redondeada moderna
+                            const radius = 11;
 
-                            // Dibujar rectángulo con bordes redondeados (píldora) usando Canvas Path
                             ctx.beginPath();
                             ctx.roundRect(pillX, pillY, pillWidth, pillHeight, radius);
                             
-                            // Fondo moderno translúcido con sombra sutil
                             ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
                             ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
                             ctx.shadowBlur = 6;
@@ -422,16 +419,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                             ctx.shadowOffsetY = 2;
                             ctx.fill();
                             
-                            // Borde fino elegante
                             ctx.strokeStyle = '#e2e8f0';
                             ctx.lineWidth = 1;
                             ctx.stroke();
 
-                            // Restaurar sombras para que el texto quede nítido
                             ctx.shadowColor = 'transparent';
                             ctx.shadowBlur = 0;
 
-                            // Texto de la cifra
                             ctx.fillStyle = '#0f172a';
                             ctx.fillText(text, x, yPos + 4);
                         });
@@ -442,6 +436,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }]
     });
 }
+
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
