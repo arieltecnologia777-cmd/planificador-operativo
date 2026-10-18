@@ -1097,7 +1097,20 @@ function aplicarFiltros(){
         const cumpleBacklog = backlogFiltro.length === 0 || backlogFiltro.includes(incumplidor);
         const cumpleEstadoOT = estadoOTFiltro.length === 0 || estadoOTFiltro.includes(estadoOTVal);
         const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
-        const cumpleEstGestion = estGestionFiltro.length === 0 || estGestionFiltro.includes(estG);
+        // Verificamos si el estado está vacío de verdad
+        const estGFormateado = estG ? estG.trim() : "";
+        const esVacioReal = estGFormateado === "";
+
+        // Evaluamos si cumple con el filtro de estados seleccionados (incluyendo la opción "(Vacío)")
+        let cumpleEstGestion = true;
+        if (estGestionFiltro.length > 0) {
+            cumpleEstGestion = estGestionFiltro.some(filtroSeleccionado => {
+                if (filtroSeleccionado === "(Vacío)") {
+                    return esVacioReal;
+                }
+                return filtroSeleccionado === estGFormateado;
+            });
+        }
 
         let cumpleKpi = true;
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
