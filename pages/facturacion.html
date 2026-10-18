@@ -209,13 +209,17 @@
             <div class="fact-top-row">
                <!-- Columna 1: Tendencia de Facturación -->
                 <div class="fact-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
-                        <!-- Tarjeta dinámica del mes al hacer hover -->
-                        <div id="infoMesHover" style="background: #f8fafc; border: 1px solid #cbd5e0; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; color: #2563eb;">
-                            Pasa el cursor por la gráfica 👆
-                        </div>
                     </div>
+                    <div style="position: relative; height: 185px;">
+                        <canvas id="tendenciaChart"></canvas>
+                    </div>
+                    <!-- Mini tabla inferior sincronizada con los meses -->
+                    <div id="miniTablaTendencia" style="margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 6px; overflow-x: auto;">
+                        <!-- Dinámico por JS -->
+                    </div>
+                </div>
                     <div style="position: relative; height: 235px;">
                         <canvas id="tendenciaChart"></canvas>
                     </div>
