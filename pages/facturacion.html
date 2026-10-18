@@ -208,15 +208,13 @@
             <!-- Fila Superior: 3 Columnas Proporcionales (Tendencia, Estado Regional y Banner con Avatar) -->
             <div class="fact-top-row">
                 <!-- Columna 1: Tendencia de Facturación -->
-                <div class="fact-panel" style="position: relative;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="fact-panel" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 350px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
                     </div>
-                    <div style="position: relative; height: 270px;">
+                    <div style="position: relative; flex-grow: 1; min-height: 280px;">
                         <canvas id="tendenciaChart"></canvas>
                     </div>
-                    <!-- Tooltip HTML propio que NUNCA falla ni se desfasa -->
-                    <div id="customTooltipHtml" style="position: absolute; display: none; background: #0f172a; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: bold; pointer-events: none; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.15); transition: transform 0.05s ease;"></div>
                 </div>
 
                 <!-- Columna 2: Estado Regional -->
