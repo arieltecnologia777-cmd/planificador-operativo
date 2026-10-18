@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual dinámica con tooltip fijo arriba y al centro sin rebotes en los bordes
+// Gráfica de tendencia anual con línea láser roja y tooltip activo estable
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -395,8 +395,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
-                    // Fijamos la posición del tooltip arriba y al centro del nodo para que jamás salte en los bordes
-                    position: 'top',
+                    // Restauramos el posicionamiento estándar y fluido por cercanía
+                    position: 'nearest',
                     callbacks: {
                         title: function(context) {
                             return context[0].label;
