@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/facturacion.css">
 
-    <!-- ApexCharts CDN (Reemplaza Chart.js para eliminar el desfase) -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Librerías Chart.js y SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -205,14 +205,16 @@
                 </div>
             </div>
 
-            <!-- Fila Superior: 3 Columnas Proporcionales (Tendencia con ApexCharts, Estado Regional y Banner con Avatar) -->
+            <!-- Fila Superior: 3 Columnas Proporcionales (Tendencia, Estado Regional y Banner con Avatar) -->
             <div class="fact-top-row">
-                <!-- Columna 1: Tendencia de Facturación (ApexCharts listo) -->
+                <!-- Columna 1: Tendencia de Facturación -->
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
                     </div>
-                    <div style="position: relative; height: 260px;" id="tendenciaChart"></div>
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="tendenciaChart"></canvas>
+                    </div>
                 </div>
 
                 <!-- Columna 2: Estado Regional -->
@@ -231,6 +233,7 @@
                         <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
                         <p style="margin: 0; font-size: 0.8rem; opacity: 0.95; line-height: 1.3;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
                     </div>
+                    <!-- Contenedor para tu Avatar en PNG (reemplaza 'tu-avatar.png' con el nombre de tu archivo) -->
                     <div style="width: 70px; height: 70px; min-width: 70px; display: flex; align-items: center; justify-content: center;">
                         <img src="../assets/tu-avatar.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
                     </div>
@@ -280,7 +283,7 @@
             <button type="button" onclick="cerrarModalPassword()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
         </div>
         <div class="modal-body">
-            <p style="margin: 0; font-size: 0.85rem; color: #475569;">Ingresa la contraseña de administrador para acceder al panel de herramientas:</p>
+            <p style="margin: 0; font-size: 0.85rem; color: #475569;">Ingresa la contraseña de administrador para acceder a las herramientas avanzadas:</p>
             <input type="password" id="inputPasswordAdmin" placeholder="Contraseña..." style="padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.9rem; outline: none; width: 100%; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') verificarPassword();">
             <div id="errorPasswordMsg" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;">Contraseña incorrecta. Intenta nuevamente.</div>
         </div>
