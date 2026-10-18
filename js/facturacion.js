@@ -487,7 +487,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Funciones para el Modal de Detalle "En Trámite"
+// Función actualizada para abrir y poblar el modal de "En Trámite" con el detalle real de cada registro
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -506,7 +506,8 @@ function abrirModalEnTramite() {
         const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
         const matchSearch = tecnico.includes(searchVal);
 
-        const esTramite = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
+        // Todos los estados EXCEPTO los que incluyan ACEPTADO
+        const esTramite = !aprobReg.includes("ACEPTADO");
 
         return matchReg && matchMes && matchPerfil && matchSearch && esTramite;
     });
@@ -515,7 +516,7 @@ function abrirModalEnTramite() {
     if (!tbody) return;
 
     if (registrosEnTramite.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #64748b;">No hay registros pendientes para los filtros seleccionados.</td></tr>`;
         document.getElementById('txtTotalEnTramiteModal').innerText = 'Total: $ 0';
     } else {
         let html = '';
@@ -525,7 +526,13 @@ function abrirModalEnTramite() {
             const tecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
             const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || "GENERAL";
             const mes = r.mes || r.MES || "-";
-            const aprobReg = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE";
+            
+            // Capturamos el ID o la OT real del registro
+            const idOt = r.id || r.ID || r.ot || r.OT || "N/A";
+            
+            // Capturamos el estado real o la causa específica (evitando el texto genérico)
+            const estadoDetalle = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r.causa_rechazo || r.CAUSA_RECHAZO || "PENDIENTE";
+            
             const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
 
             sumaTotal += monto;
@@ -533,16 +540,17 @@ function abrirModalEnTramite() {
             html += `
                 <tr>
                     <td style="font-weight: 700; color: #1e293b;">${tecnico}</td>
+                    <td style="text-align: center; font-weight: bold; color: #2563eb;">${idOt}</td>
                     <td>${regional}</td>
                     <td>${mes}</td>
-                    <td><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobReg}</span></td>
+                    <td><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${estadoDetalle}</span></td>
                     <td style="text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(monto)}</td>
                 </tr>
             `;
         });
 
         tbody.innerHTML = html;
-        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total en trámite: ' + formatMoney(sumaTotal);
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total pendiente: ' + formatMoney(sumaTotal);
     }
 
     const modal = document.getElementById('modalEnTramiteDetalle');
