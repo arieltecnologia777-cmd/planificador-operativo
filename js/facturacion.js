@@ -355,7 +355,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             labels: mesesLabels,
             datasets: [
                 {
-                    label: 'Ejecución',
+                    label: 'Aprobado',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.08)',
@@ -496,9 +496,11 @@ function renderizarEstadoRegional(rows) {
             </div>
     `;
 
-    for (const [reg, val] of Object.entries(mapaRegiones)) {
-        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
-        const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
+   const regionesArray = Object.entries(mapaRegiones).map(([reg, val]) => {
+    const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
+    const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
+    return { reg, val, ef };
+}).sort((a, b) => b.efectiv - a.efectiv); // Orden descendente (mayor porcentaje arriba)
         
         const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
         const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
