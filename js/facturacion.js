@@ -471,7 +471,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional
+// Renderizar Estado Regional (Ordenado de mayor a menor porcentaje)
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -496,12 +496,14 @@ function renderizarEstadoRegional(rows) {
             </div>
     `;
 
-   const regionesArray = Object.entries(mapaRegiones).map(([reg, val]) => {
-    const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
-    const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
-    return { reg, val, ef };
-}).sort((a, b) => b.efectiv - a.efectiv); // Orden descendente (mayor porcentaje arriba)
-        
+    const regionesArray = Object.entries(mapaRegiones).map(([reg, val]) => {
+        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
+        const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
+        return { reg, val, ef };
+    }).sort((a, b) => b.ef - a.ef);
+
+    regionesArray.forEach(item => {
+        const { reg, val, ef } = item;
         const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
         const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
 
@@ -519,7 +521,8 @@ function renderizarEstadoRegional(rows) {
                 </div>
             </div>
         `;
-    }
+    });
+
     html += `</div>`;
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
