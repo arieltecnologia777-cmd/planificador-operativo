@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con visor superior en tiempo real (Cero desfases en los tooltips)
+// Gráfica de tendencia anual estándar original
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -323,13 +323,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     label: 'Ejecución',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
+                    pointRadius: 4,
                     order: 1
                 },
                 {
@@ -348,11 +347,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
             responsive: true,
             maintainAspectRatio: false,
             interaction: {
-                mode: 'nearest',
-                axis: 'x',
+                mode: 'index',
                 intersect: false,
             },
-            // Desactivamos por completo el motor de tooltips flotantes que causa saltos
             plugins: { 
                 legend: { 
                     display: true,
@@ -361,7 +358,27 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
                 tooltip: {
-                    enabled: false
+                    enabled: true,
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
+                        }
+                    }
                 }
             },
             scales: {
@@ -377,44 +394,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { grid: { display: false } }
             }
-        },
-        // Plugin en línea para dibujar el valor seleccionado exactamente sobre el punto al pasar el mouse
-        plugins: [{
-            id: 'visorPuntoHover',
-            afterDatasetsDraw(chart) {
-                const activeElements = chart.getActiveElements();
-                if (activeElements.length > 0) {
-                    const { ctx } = chart;
-                    const activePoint = activeElements[0];
-                    const datasetIndex = activePoint.datasetIndex;
-                    const index = activePoint.index;
-                    
-                    if (datasetIndex === 0) {
-                        const value = chart.data.datasets[datasetIndex].data[index];
-                        const mesLabel = chart.data.labels[index];
-                        const { x, y } = activePoint.element.getProps(['x', 'y'], true);
-                        
-                        const text = `${mesLabel}: $ ${Number(value || 0).toLocaleString('es-CO')}`;
-                        
-                        ctx.save();
-                        ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
-                        const textWidth = ctx.measureText(text).width;
-                        
-                        // Dibujar una burbuja limpia justo sobre el punto activo del mouse (sin importar si es julio, enero o diciembre)
-                        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-                        ctx.fillRect(x - textWidth / 2 - 8, y - 36, textWidth + 16, 24);
-                        ctx.strokeStyle = '#3b82f6';
-                        ctx.lineWidth = 1.5;
-                        ctx.strokeRect(x - textWidth / 2 - 8, y - 36, textWidth + 16, 24);
-                        
-                        ctx.fillStyle = '#ffffff';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(text, x, y - 21);
-                        ctx.restore();
-                    }
-                }
-            }
-        }]
+        }
     });
 }
 
