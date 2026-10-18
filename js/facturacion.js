@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual con línea láser roja y tooltip activo estable
+// Gráfica de tendencia anual con tooltip anclado estáticamente arriba y al centro como un imán
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,7 +314,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin seguro para dibujar la línea vertical láser de color ROJO exactamente sincronizada
+    // Plugin para dibujar la línea vertical láser de color ROJO exactamente sincronizada
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -395,8 +395,15 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
-                    // Restauramos el posicionamiento estándar y fluido por cercanía
-                    position: 'nearest',
+                    // Posicionador personalizado que actúa como imán: fija el tooltip exactamente centrado arriba de la línea roja
+                    position: function(items) {
+                        if (!items.length) return { x: 0, y: 0 };
+                        const pos = Chart.Tooltip.positioners.average(items);
+                        return {
+                            x: pos.x,
+                            y: pos.y - 15 // Posición fija superior centrada en el nodo
+                        };
+                    },
                     callbacks: {
                         title: function(context) {
                             return context[0].label;
@@ -426,7 +433,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
-
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
