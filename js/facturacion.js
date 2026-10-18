@@ -349,14 +349,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-   // Función auxiliar para asignar color dinámico según el porcentaje alcanzado frente a la meta
+   // Escala de colores estricta de rojo a verde según el cumplimiento de la meta mensual
     function obtenerColorPorCumplimiento(valor) {
-        if (valor <= 0) return '#94a3b8'; // Color gris neutro para meses sin ejecución ($0)
-        const porcentaje = metaRegionalTotal > 0 ? (valor / metaRegionalTotal) * 100 : 0;
-        if (porcentaje >= 80) return '#00b087'; // Verde si el mes por sí solo o su avance es alto
-        if (porcentaje >= 40) return '#0ea5e9';  // Azul intermedio
-        if (porcentaje >= 20) return '#f59e0b';  // Amarillo / Naranja alerta
-        return '#dc2626';                        // Rojo crítico
+        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses en $0
+        const porcentaje = metaMensualReferencia > 0 ? (valor / metaMensualReferencia) * 100 : 0;
+        if (porcentaje >= 90) return '#22c55e'; // Verde óptimo
+        if (porcentaje >= 60) return '#f59e0b'; // Amarillo / Naranja intermedio
+        return '#dc2626';                      // Rojo crítico
     }
 
     const coloresPuntosYLineas = acumuladoMeses.map(val => obtenerColorPorCumplimiento(val));
@@ -373,18 +372,15 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 {
                     label: 'Aprobado',
                     data: acumuladoMeses,
-                    borderColor: '#00b087', // Color base de la línea
+                    borderColor: '#22c55e', // Línea verde fija
                     segment: {
-                        borderColor: ctx => {
-                            // Cambia dinámicamente el color del segmento de la línea según el punto de origen
-                            return obtenerColorPorCumplimiento(ctx.p0.parsed.y);
-                        }
+                        borderColor: '#22c55e' // Mantiene toda la línea del mismo color verde
                     },
-                    backgroundColor: 'rgba(0, 176, 135, 0.06)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.06)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: coloresPuntosYLineas,
+                    pointBackgroundColor: coloresPuntosYLineas, // Puntos dinámicos (Rojo -> Amarillo -> Verde)
                     pointBorderColor: coloresPuntosYLineas,
                     pointRadius: 5,
                     pointHoverRadius: 7,
