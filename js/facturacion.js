@@ -270,28 +270,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Registramos un posicionador personalizado para que los tooltips de los extremos no se desfasen
-Chart.Tooltip.positioners.customBorderFix = function(elements, eventPosition) {
-    const pos = Chart.Tooltip.positioners.average(elements);
-    if (pos === false) {
-        return false;
-    }
-    const chart = this.chart;
-    const x = pos.x;
-    const chartWidth = chart.width;
-    
-    // Si el tooltip está muy a la izquierda (Enero), lo fijamos al borde izquierdo
-    if (x < 70) {
-        return { x: 60, y: pos.y };
-    }
-    // Si el tooltip está muy a la derecha (Diciembre), lo fijamos al borde derecho
-    if (x > chartWidth - 70) {
-        return { x: chartWidth - 60, y: pos.y };
-    }
-    return { x: x, y: pos.y };
-};
 
-// Gráfica de tendencia con modo 'nearest' (Tooltip 100% sincronizado al punto del mouse sin saltos)
+// Gráfica de tendencia con visor superior en tiempo real (Cero desfases en los tooltips)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -367,12 +347,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Solución definitiva: 'nearest' evita que el tooltip salte de un lado a otro por cálculos de índice globales
             interaction: {
                 mode: 'nearest',
                 axis: 'x',
                 intersect: false,
             },
+            // Desactivamos por completo el motor de tooltips flotantes que causa saltos
             plugins: { 
                 legend: { 
                     display: true,
@@ -381,27 +361,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
                 tooltip: {
-                    enabled: true,
-                    backgroundColor: '#ffffff',
-                    titleColor: '#0f172a',
-                    bodyColor: '#334155',
-                    borderColor: '#cbd5e0',
-                    borderWidth: 1,
-                    padding: 12,
-                    boxWidth: 10,
-                    boxHeight: 10,
-                    usePointStyle: true,
-                    callbacks: {
-                        title: function(context) {
-                            return context[0].label;
-                        },
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
-                            return label;
-                        }
-                    }
+                    enabled: false
                 }
             },
             scales: {
@@ -417,153 +377,45 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 x: { grid: { display: false } }
             }
-        }
+        },
+        // Plugin en línea para dibujar el valor seleccionado exactamente sobre el punto al pasar el mouse
+        plugins: [{
+            id: 'visorPuntoHover',
+            afterDatasetsDraw(chart) {
+                const activeElements = chart.getActiveElements();
+                if (activeElements.length > 0) {
+                    const { ctx } = chart;
+                    const activePoint = activeElements[0];
+                    const datasetIndex = activePoint.datasetIndex;
+                    const index = activePoint.index;
+                    
+                    if (datasetIndex === 0) {
+                        const value = chart.data.datasets[datasetIndex].data[index];
+                        const mesLabel = chart.data.labels[index];
+                        const { x, y } = activePoint.element.getProps(['x', 'y'], true);
+                        
+                        const text = `${mesLabel}: $ ${Number(value || 0).toLocaleString('es-CO')}`;
+                        
+                        ctx.save();
+                        ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
+                        const textWidth = ctx.measureText(text).width;
+                        
+                        // Dibujar una burbuja limpia justo sobre el punto activo del mouse (sin importar si es julio, enero o diciembre)
+                        ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+                        ctx.fillRect(x - textWidth / 2 - 8, y - 36, textWidth + 16, 24);
+                        ctx.strokeStyle = '#3b82f6';
+                        ctx.lineWidth = 1.5;
+                        ctx.strokeRect(x - textWidth / 2 - 8, y - 36, textWidth + 16, 24);
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(text, x, y - 21);
+                        ctx.restore();
+                    }
+                }
+            }
+        }]
     });
-}
-function renderizarMiniTablaInferior(labels, valores) {
-    const container = document.getElementById('miniTablaTendencia');
-    if (!container) return;
-
-    let html = `
-        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
-            <thead>
-                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-    `;
-    
-    labels.forEach(m => {
-        html += `<th style="padding: 4px 2px; font-weight: 700; width: calc(100% / 12);">${m.substring(0, 3)}</th>`;
-    });
-    
-    html += `
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-    `;
-
-    valores.forEach(v => {
-        const txtVal = v > 0 ? '$ ' + (v / 1000000).toFixed(1) + 'M' : '-';
-        html += `<td style="padding: 6px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; width: calc(100% / 12);">${txtVal}</td>`;
-    });
-
-    html += `
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-}
-
-// Función para pintar la mini tabla inferior con compensación de bordes exacta
-function renderizarMiniTablaInferior(labels, valores) {
-    const container = document.getElementById('miniTablaTendencia');
-    if (!container) return;
-
-    let html = `
-        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
-            <thead>
-                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-    `;
-    
-    labels.forEach(m => {
-        html += `<th style="padding: 4px 2px; font-weight: 700; width: calc(100% / 12);">${m.substring(0, 3)}</th>`;
-    });
-    
-    html += `
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-    `;
-
-    valores.forEach(v => {
-        const txtVal = v > 0 ? '$ ' + (v / 1000000).toFixed(1) + 'M' : '-';
-        html += `<td style="padding: 6px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; width: calc(100% / 12);">${txtVal}</td>`;
-    });
-
-    html += `
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-}
-
-// Función para pintar la mini tabla inferior con distribución 100% simétrica de columnas
-function renderizarMiniTablaInferior(labels, valores) {
-    const container = document.getElementById('miniTablaTendencia');
-    if (!container) return;
-
-    let html = `
-        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
-            <thead>
-                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-    `;
-    
-    // Asignamos ancho igual (1fr / 12) a cada columna para que coincida perfectamente con los puntos de la gráfica
-    labels.forEach(m => {
-        html += `<th style="padding: 4px 2px; font-weight: 700; width: calc(100% / 12);">${m.substring(0, 3)}</th>`;
-    });
-    
-    html += `
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-    `;
-
-    valores.forEach(v => {
-        const txtVal = v > 0 ? '$ ' + (v / 1000000).toFixed(1) + 'M' : '-';
-        html += `<td style="padding: 6px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; width: calc(100% / 12);">${txtVal}</td>`;
-    });
-
-    html += `
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
-}
-
-// Función auxiliar para pintar la mini tabla inferior de forma compacta
-function renderizarMiniTablaInferior(labels, valores) {
-    const container = document.getElementById('miniTablaTendencia');
-    if (!container) return;
-
-    let html = `
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: center;">
-            <thead>
-                <tr style="color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-    `;
-    
-    // Cabeceras con las iniciales de los meses para ahorrar espacio
-    labels.forEach(m => {
-        html += `<th style="padding: 3px 2px; font-weight: 700;">${m.substring(0, 3)}</th>`;
-    });
-    
-    html += `
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-    `;
-
-    // Valores en millones directos debajo de cada mes
-    valores.forEach(v => {
-        const txtVal = v > 0 ? (v / 1000000).toFixed(1) + 'M' : '-';
-        html += `<td style="padding: 4px 2px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${txtVal}</td>`;
-    });
-
-    html += `
-                </tr>
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = html;
 }
 
 // Renderizar Estado Regional compacto y ordenado
