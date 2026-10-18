@@ -9,10 +9,8 @@ let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
 
-// --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
 
-// Metas fijas exactas por regional y la suma total global
 const METAS_REGIONALES = {
     "R1": 381140000,
     "R2": 133000000
@@ -23,33 +21,26 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
 });
 
-// GET: Cargar registros desde Cloudflare D1
 async function cargarDatosDesdeAPI() {
     try {
-        console.log("Consultando API en:", FACTURACION_API_URL);
         const response = await fetch(FACTURACION_API_URL);
         if (response.ok) {
             registrosCrudos = await response.json();
-            console.log("Registros crudos recibidos de D1:", registrosCrudos);
-            
             if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
                 poblarSelectsFiltros(registrosCrudos);
                 aplicarFiltrosGlobales();
                 verificarIncrementosAvance(registrosCrudos);
             } else {
-                console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
                 actualizarKPIsGenerales([], [], "TODOS");
             }
         }
     } catch (err) {
-        console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
         actualizarKPIsGenerales([], [], "TODOS");
     }
 }
 
-// Poblar los selects del acordeón de filtros dinámicamente
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const meses = new Set();
@@ -84,7 +75,6 @@ function llenarSelectHTML(elementId, setValues) {
     select.innerHTML = html;
 }
 
-// Filtrar registros crudos según los filtros
 function aplicarFiltrosGlobales() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -94,8 +84,7 @@ function aplicarFiltrosGlobales() {
 
     const registrosParaMeta = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        return matchReg;
+        return fRegion === "TODOS" || reg === fRegion;
     });
 
     const registrosParaGrafica = registrosCrudos.filter(r => {
@@ -104,12 +93,10 @@ function aplicarFiltrosGlobales() {
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnico = perfil.toLowerCase();
 
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
-        const matchSearch = tecnico.includes(searchVal);
-
-        return matchReg && matchPerfil && matchAprob && matchSearch;
+        return (fRegion === "TODOS" || reg === fRegion) &&
+               (fPerfil === "TODOS" || perfil === fPerfil) &&
+               (fAprob === "TODOS" || aprob === fAprob) &&
+               tecnico.includes(searchVal);
     });
 
     const filtradosCompletos = registrosCrudos.filter(r => {
@@ -119,13 +106,11 @@ function aplicarFiltrosGlobales() {
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnico = perfil.toLowerCase();
 
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
-        const matchSearch = tecnico.includes(searchVal);
-
-        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
+        return (fRegion === "TODOS" || reg === fRegion) &&
+               (fMes === "TODOS" || mes === fMes) &&
+               (fPerfil === "TODOS" || perfil === fPerfil) &&
+               (fAprob === "TODOS" || aprob === fAprob) &&
+               tecnico.includes(searchVal);
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos);
@@ -144,7 +129,6 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Agrupar registros por técnico
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
@@ -186,7 +170,6 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -227,51 +210,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
-
-    let porcMeta = totalMeta > 0 ? 100 : 0;
-    let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
-    let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
-    let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
-    let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
-
-    if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
-    if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
-
-    if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
-    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
-
-    if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
-    if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
-
-    if(document.getElementById('barRechazado')) document.getElementById('barRechazado').style.width = porcRechazado + '%';
-    if(document.getElementById('txtPorcRechazado')) document.getElementById('txtPorcRechazado').innerText = porcRechazado + '%';
-
-    if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
-    if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
-
-    const ctxGauge = document.getElementById('gaugeEfectividad');
-    if (ctxGauge) {
-        if (chartGauge) chartGauge.destroy();
-        chartGauge = new Chart(ctxGauge, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
-                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: { tooltip: { enabled: false }, legend: { display: false } }
-            }
-        });
-    }
 }
 
-// Gráfica de tendencia anual estándar original
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -398,7 +338,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
