@@ -186,7 +186,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales (Separando En Trámite de Rechazados)
+// Actualizar Tarjetas KPI generales (Excluyendo Rechazados de En Trámite)
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -487,7 +487,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Modal En Trámite (Sin Aceptados ni Rechazados, formato uniforme centrado)
+// Modal En Trámite (Sin Aceptados ni Rechazados, cabecera fija sticky para el scroll)
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -506,6 +506,7 @@ function abrirModalEnTramite() {
         const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
         const matchSearch = tecnico.includes(searchVal);
 
+        // Excluye totalmente Aceptados y Rechazados
         const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
 
         return matchReg && matchMes && matchPerfil && matchSearch && esPendienteNeto;
@@ -516,7 +517,7 @@ function abrirModalEnTramite() {
     if (!thead || !tbody) return;
 
     if (registrosEnTramite.length === 0) {
-        thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
+        thead.innerHTML = `<tr><th style="text-align: center; position: sticky; top: 0; background: #f8fafc; z-index: 2;">ESTADO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
         document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
@@ -565,12 +566,12 @@ function abrirModalEnTramite() {
 
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">ESTADO</th>
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">ESTADO</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9; position: sticky; top: 0; z-index: 2;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
@@ -608,7 +609,7 @@ function cerrarModalEnTramite() {
     if (modal) modal.style.display = 'none';
 }
 
-// Modal Rechazados agrupados por Causa de Rechazo (Columna AI)
+// Modal Rechazados agrupados por Causa de Rechazo (cabecera fija sticky para el scroll)
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -637,7 +638,7 @@ function abrirModalRechazados() {
     if (!thead || !tbody) return;
 
     if (registrosRechazados.length === 0) {
-        thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
+        thead.innerHTML = `<tr><th style="text-align: center; position: sticky; top: 0; background: #f8fafc; z-index: 2;">CAUSA RECHAZO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
         document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalRechazadosDetalle');
@@ -686,12 +687,12 @@ function abrirModalRechazados() {
 
     let headHtml = `
         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">CAUSA RECHAZO</th>
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">CAUSA RECHAZO</th>
     `;
     listaRegionales.forEach(reg => {
-        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${reg}</th>`;
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual}; position: sticky; top: 0; background: #f8fafc; z-index: 2;">${reg}</th>`;
     });
-    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9; position: sticky; top: 0; z-index: 2;">TOTAL GENERAL</th></tr>`;
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
