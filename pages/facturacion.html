@@ -171,14 +171,14 @@
                     </div>
                 </div>
 
-                <!-- 5. En Trámite (Interactiva para ver detalles) -->
+                <!-- 5. En Trámite (Interactiva para ver detalles tipo matriz regional) -->
                 <div class="fact-kpi-card" onclick="abrirModalEnTramite()" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     <div class="fact-kpi-top">
                         <div class="fact-kpi-icon-container" style="background: #f59e0b;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
                         <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase;">En Trámite <span style="font-size: 0.6rem; color: #2563eb;">(Ver 🔍)</span></div>
+                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase;">En Trámite <span style="font-size: 0.6rem; color: #2563eb;">(Ver Minucia 🔍)</span></div>
                             <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiEnTramite">$ 0</div>
                         </div>
                     </div>
@@ -233,14 +233,14 @@
                         <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 800;">🏆 ¡Vas muy bien!</h4>
                         <p style="margin: 0; font-size: 0.8rem; opacity: 0.95; line-height: 1.3;">Ya llevas gran avance de tu meta. Sigue adelante.</p>
                     </div>
-                    <!-- Contenedor para tu Avatar en PNG (reemplaza 'tu-avatar.png' con el nombre de tu archivo) -->
+                    <!-- Contenedor para tu Avatar en PNG -->
                     <div style="width: 70px; height: 70px; min-width: 70px; display: flex; align-items: center; justify-content: center;">
                         <img src="../assets/tu-avatar.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
                     </div>
                 </div>
             </div>
 
-            <!-- Grilla Principal Inferior: Detalle por Técnico (Abajo seguido) -->
+            <!-- Grilla Principal Inferior: Detalle por Técnico -->
             <div class="fact-main-grid" style="display: block; margin-top: 16px;">
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -369,27 +369,20 @@
     </div>
 </div>
 
-<!-- Modal Detalle En Trámite / Pendientes -->
+<!-- Ventana Modal Gigante Estilo Tabla Dinámica (Análisis de Minucia por Regional y Estado) -->
 <div id="modalEnTramiteDetalle" class="modal-overlay">
-    <div class="modal-container" style="max-width: 750px;">
+    <div class="modal-container" style="max-width: 92% !important; width: 92% !important; height: 88vh; display: flex; flex-direction: column;">
         <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                ⏳ Detalle de registros en trámite y pendientes
+            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                📊 Análisis Detallado por Regional y Estado Pendiente (Minucia Ejecutiva)
             </h3>
-            <button type="button" onclick="cerrarModalEnTramite()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
+            <button type="button" onclick="cerrarModalEnTramite()" style="background: transparent; border: none; font-size: 1.35rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
         </div>
-        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-            <div class="table-wrapper-fact">
-                <table class="fact-table">
-                    <thead>
-                        <tr>
-                            <th>Técnico / Perfil</th>
-                            <th style="text-align: center;">ID / OT</th>
-                            <th>Regional</th>
-                            <th>Mes</th>
-                            <th>Estado / Detalle</th>
-                            <th style="text-align: right;">Monto</th>
-                        </tr>
+        <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 16px;">
+            <div class="table-wrapper-fact" style="max-height: calc(88vh - 160px);">
+                <table class="fact-table" style="white-space: nowrap;">
+                    <thead id="headTablaDinamicaTramite">
+                        <!-- Dinámico por JS (Estructura de columnas cruzadas por Regional) -->
                     </thead>
                     <tbody id="tableBodyEnTramite">
                         <!-- Dinámico por JS -->
@@ -397,9 +390,9 @@
                 </table>
             </div>
         </div>
-        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
-            <span id="txtTotalEnTramiteModal" style="font-size: 0.82rem; font-weight: 800; color: #475569;">Total: $ 0</span>
-            <button type="button" onclick="cerrarModalEnTramite()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Cerrar</button>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <span id="txtTotalEnTramiteModal" style="font-size: 0.9rem; font-weight: 800; color: #0f172a;">Total general: $ 0</span>
+            <button type="button" onclick="cerrarModalEnTramite()" style="background: #2563eb; color: #fff; border: none; padding: 9px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.88rem;">Cerrar Ventana</button>
         </div>
     </div>
 </div>
