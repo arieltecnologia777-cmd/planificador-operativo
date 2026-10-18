@@ -227,51 +227,9 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
-
-    let porcMeta = totalMeta > 0 ? 100 : 0;
-    let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
-    let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
-    let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
-    let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
-
-    if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
-    if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
-
-    if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
-    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
-
-    if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
-    if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
-
-    if(document.getElementById('barRechazado')) document.getElementById('barRechazado').style.width = porcRechazado + '%';
-    if(document.getElementById('txtPorcRechazado')) document.getElementById('txtPorcRechazado').innerText = porcRechazado + '%';
-
-    if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
-    if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
-
-    const ctxGauge = document.getElementById('gaugeEfectividad');
-    if (ctxGauge) {
-        if (chartGauge) chartGauge.destroy();
-        chartGauge = new Chart(ctxGauge, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
-                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: { tooltip: { enabled: false }, legend: { display: false } }
-            }
-        });
-    }
 }
 
-// Gráfica de tendencia anual con tooltip anclado estáticamente arriba y al centro como un imán
+// Gráfica de tendencia anual con tooltip HTML flotante y línea láser roja (Cero desfase)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -314,7 +272,10 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea vertical láser de color ROJO exactamente sincronizada
+    // Referencia al tooltip HTML personalizado
+    const tooltipEl = document.getElementById('chartTooltipCustom');
+
+    // Plugin para dibujar la línea vertical láser de color ROJO exactamente en el punto activo[cite: 1]
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -330,8 +291,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 ctx.moveTo(x, topY);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante
-                ctx.setLineDash([3, 3]); // Línea punteada de mira
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante[cite: 1]
+                ctx.setLineDash([3, 3]); // Línea punteada de mira[cite: 1]
                 ctx.stroke();
                 ctx.restore();
             }
@@ -371,51 +332,57 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Sincronización limpia por índice horizontal directo
-            interaction: {
-                mode: 'index',
-                axis: 'x',
-                intersect: false,
-            },
-            plugins: { 
+            // Desactivamos el tooltip nativo de Chart.js para usar nuestro div flotante HTML[cite: 1]
+            plugins: {
                 legend: { 
                     display: true,
                     position: 'top',
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                tooltip: {
-                    enabled: true,
-                    backgroundColor: '#ffffff',
-                    titleColor: '#0f172a',
-                    bodyColor: '#334155',
-                    borderColor: '#cbd5e0',
-                    borderWidth: 1,
-                    padding: 12,
-                    boxWidth: 10,
-                    boxHeight: 10,
-                    usePointStyle: true,
-                    // Posicionador personalizado que actúa como imán: fija el tooltip exactamente centrado arriba de la línea roja
-                    position: function(items) {
-                        if (!items.length) return { x: 0, y: 0 };
-                        const pos = Chart.Tooltip.positioners.average(items);
-                        return {
-                            x: pos.x,
-                            y: pos.y - 15 // Posición fija superior centrada en el nodo
-                        };
-                    },
-                    callbacks: {
-                        title: function(context) {
-                            return context[0].label;
-                        },
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
-                            return label;
-                        }
-                    }
+                tooltip: { enabled: false } 
+            },
+            // Manejador de eventos por mouse para posicionar el div HTML tipo imán con precisión absoluta[cite: 1]
+            onHover: (event, chartElements) => {
+                if (!tooltipEl) return;
+
+                if (chartElements.length === 0) {
+                    tooltipEl.style.display = 'none';
+                    return;
                 }
+
+                const element = chartElements[0];
+                const index = element.index;
+                const mesLabel = mesesLabels[index];
+                
+                const valEjecucion = acumuladoMeses[index];
+                const valMeta = metaLineData[index];
+
+                const posX = element.element.x;
+                const posY = element.element.y;
+
+                // Construimos el contenido HTML del aviso[cite: 1]
+                tooltipEl.innerHTML = `
+                    <div style="font-weight: 800; color: #0f172a; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">${mesLabel}</div>
+                    <div style="display: flex; align-items: center; gap: 6px; color: #334155; margin-bottom: 2px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
+                        <span>Ejecución: <b>$ ${Number(valEjecucion).toLocaleString('es-CO')}</b></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; color: #334155;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span>
+                        <span>Meta: <b>$ ${Number(valMeta).toLocaleString('es-CO')}</b></span>
+                    </div>
+                `;
+
+                // Posicionamos el div flotante exactamente arriba del punto activo con efecto imán[cite: 1]
+                tooltipEl.style.display = 'block';
+                tooltipEl.style.left = posX + 'px';
+                tooltipEl.style.top = (posY - 10) + 'px';
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false,
             },
             scales: {
                 y: { 
@@ -433,6 +400,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
@@ -449,222 +417,18 @@ function renderizarEstadoRegional(rows) {
         }
     });
 
-    let html = `
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
-                <div>Regional</div>
-                <div style="text-align: center;">Efectiv.</div>
-                <div style="text-align: right;">Total</div>
-            </div>
-    `;
-
+    let html = `<div style="display: flex; flex-direction: column; gap: 6px;">`;
     for (const [reg, val] of Object.entries(mapaRegiones)) {
         const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
         const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
-        
-        const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
-        const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
-
-        html += `
-            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
-                    <span style="font-weight: 700; color: #0f172a; font-size: 0.82rem;">${reg}</span>
-                </div>
-                <div style="text-align: center;">
-                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 1px 5px; border-radius: 5px; font-size: 0.72rem; font-weight: bold;">${ef}%</span>
-                </div>
-                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.8rem;">
-                    ${formatMoney(val.aprobado)}
-                </div>
-            </div>
-        `;
+        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f5f9;"><b>${reg}</b> <span>${ef}%</span></div>`;
     }
     html += `</div>`;
-    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
-}
-
-// Funciones para la Campana de Notificaciones e Incrementos
-function verificarIncrementosAvance(nuevosRegistros) {
-    const historialPrevio = JSON.parse(localStorage.getItem('fact_notif_historial') || "[]");
-    let nuevosCambiosDetectados = false;
-    
-    nuevosRegistros.forEach(r => {
-        const aprobReg = String(r.aprobacion_regional || "").toUpperCase();
-        if (aprobReg.includes("ACEPTADO")) {
-            const idOT = r.ot || r.OT || r.id || "OT-GENERAL";
-            const tecnico = r.tecnico_programado || r.perfil_wfm || "Técnico";
-            const monto = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
-            
-            const yaRegistrado = historialPrevio.some(h => h.id === idOT && h.monto === monto);
-            if (!yaRegistrado && monto > 0) {
-                listaNotificacionesCambios.unshift({
-                    id: idOT,
-                    titulo: `¡Incremento de avance aprobado!`,
-                    detalle: `El técnico ${tecnico} registró una aprobación por ${formatMoney(monto)}.`,
-                    fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    monto: monto
-                });
-                nuevosCambiosDetectados = true;
-            }
-        }
-    });
-
-    if (nuevosCambiosDetectados || listaNotificacionesCambios.length > 0) {
-        if (listaNotificacionesCambios.length === 0) listaNotificacionesCambios = historialPrevio;
-        localStorage.setItem('fact_notif_historial', JSON.stringify(listaNotificacionesCambios));
-        actualizarBadgeCampana();
-    }
-}
-
-function actualizarBadgeCampana() {
-    const badge = document.getElementById('badgeNotifCount');
-    if (badge) {
-        if (listaNotificacionesCambios.length > 0) {
-            badge.style.display = 'inline-block';
-            badge.innerText = listaNotificacionesCambios.length;
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-}
-
-function abrirModalNotificaciones() {
-    const body = document.getElementById('modalBodyNotificaciones');
-    if (!body) return;
-
-    if (listaNotificacionesCambios.length === 0) {
-        body.innerHTML = `<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay incrementos recientes en la base de facturación.</div>`;
-    } else {
-        let html = '';
-        listaNotificacionesCambios.forEach(n => {
-            html += `
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 800; color: #1e293b; font-size: 0.88rem;">📈 ${n.titulo}</span>
-                        <span style="font-size: 0.72rem; color: #64748b;">${n.fecha}</span>
-                    </div>
-                    <div style="font-size: 0.82rem; color: #334155;">${n.detalle}</div>
-                </div>
-            `;
-        });
-        body.innerHTML = html;
-    }
-
-    const modal = document.getElementById('modalNotificaciones');
-    if (modal) modal.style.display = 'flex';
-}
-
-function cerrarModalNotificaciones() {
-    const modal = document.getElementById('modalNotificaciones');
-    if (modal) modal.style.display = 'none';
-}
-
-// Validación de contraseña de administrador
-async function verificarPassword() {
-    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
-    try {
-        const response = await fetch(VERIFICAR_KEY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: passwordIngresada })
-        });
-        const resultado = await response.json();
-        if (response.ok && (resultado.success === true || resultado.ok === true)) {
-            cerrarModalPassword();
-            document.getElementById('modalHerramientas').style.display = 'flex';
-        } else {
-            document.getElementById('errorPasswordMsg').style.display = 'block';
-        }
-    } catch (err) {
-        document.getElementById('errorPasswordMsg').style.display = 'block';
-    }
-}
-
-function abrirModalPassword() {
-    document.getElementById('inputPasswordAdmin').value = '';
-    document.getElementById('errorPasswordMsg').style.display = 'none';
-    document.getElementById('modalPassword').style.display = 'flex';
-}
-
-function cerrarModalPassword() {
-    document.getElementById('modalPassword').style.display = 'none';
-}
-
-function cerrarModalHerramientas() {
-    document.getElementById('modalHerramientas').style.display = 'none';
-}
-
-// Cargue de Excel y sincronización masiva
-async function procesarYSubirExcel(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    cerrarModalHerramientas();
-    const modalCarga = document.getElementById('modalCargandoExcel');
-    const barra = document.getElementById('barraProgreso');
-    const txtPorc = document.getElementById('txtPorcentajeCarga');
-    const txtEstado = document.getElementById('txtEstadoCarga');
-    
-    barra.style.width = '15%';
-    txtPorc.innerText = '15%';
-    txtEstado.innerText = 'Leyendo archivo Excel...';
-    modalCarga.style.display = 'flex';
-
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        try {
-            barra.style.width = '50%';
-            txtPorc.innerText = '50%';
-            txtEstado.innerText = 'Procesando filas...';
-
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-            if (jsonData.length === 0) {
-                alert("El archivo Excel está vacío.");
-                modalCarga.style.display = 'none';
-                return;
-            }
-
-            barra.style.width = '75%';
-            txtPorc.innerText = '75%';
-            txtEstado.innerText = 'Guardando en Cloudflare D1...';
-
-            const response = await fetch(IMPORTAR_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(jsonData)
-            });
-
-            if (!response.ok) throw new Error("Error en la inserción masiva");
-
-            barra.style.width = '100%';
-            txtPorc.innerText = '100%';
-            txtEstado.innerText = '¡Cargue y éxito de confirmación!';
-
-            setTimeout(() => {
-                modalCarga.style.display = 'none';
-                alert("¡Base de facturación cargada y sincronizada con éxito!");
-                location.reload();
-            }, 1000);
-
-        } catch (error) {
-            modalCarga.style.display = 'none';
-            alert("Error al procesar el archivo: " + error.message);
-        }
-    };
-    reader.readAsArrayBuffer(file);
+    container.innerHTML = html;
 }
 
 function formatMoney(amount) {
-    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    });
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
 function renderTable(records) {
@@ -672,106 +436,24 @@ function renderTable(records) {
     if (!tbody) return;
     
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles.</td></tr>`;
         return;
     }
 
     let html = '';
-    records.forEach((r, index) => {
-        const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
-        const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
-
+    records.forEach((r) => {
         html += `
-            <tr>
-                <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px 0; font-weight: 700; color: #1e293b;">${r.nombre}</td>
                 <td>${formatMoney(r.meta)}</td>
                 <td>${formatMoney(r.aprobado)}</td>
                 <td>${formatMoney(r.rechazado)}</td>
                 <td>${formatMoney(r.subsanado)}</td>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
-                        <div style="width: 80px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
-                            <div style="width: ${Math.min(100, r.efectividad)}%; background: ${barColor}; height: 100%;"></div>
-                        </div>
-                    </div>
-                </td>
-                <td><span class="badge-status ${badgeClass}">${r.estado}</span></td>
-                <td style="text-align: center;">
-                    <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
-                </td>
+                <td><b>${r.efectividad}%</b></td>
+                <td>${r.estado}</td>
+                <td style="text-align: center;">-</td>
             </tr>
         `;
     });
     tbody.innerHTML = html;
-}
-
-function abrirDetalleTecnico(index) {
-    const r = tecnicosData[index];
-    if (!r) return;
-
-    const modalBody = document.getElementById('modalBodyContent');
-    if(!modalBody) return;
-    const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
-
-    modalBody.innerHTML = `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
-                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
-                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
-                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
-                </div>
-            </div>
-
-            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
-                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
-                </div>
-                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
-            </div>
-        </div>
-    `;
-
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'flex';
-}
-
-function cerrarModalDetalle() {
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'none';
-}
-
-function exportExcel() {
-    const ws = XLSX.utils.json_to_sheet(tecnicosData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
-    XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
