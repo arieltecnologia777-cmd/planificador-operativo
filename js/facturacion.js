@@ -270,7 +270,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Gráfica de tendencia anual con precisión estricta (cero desfase al tocar los puntos)
+// Gráfica de tendencia anual sincronizada milimétricamente al eje X sin desfase
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -313,7 +313,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea vertical láser roja exactamente sobre el punto activo
+    // Plugin para dibujar la línea vertical láser roja sobre el punto activo exacto
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -351,7 +351,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    // Aumentamos ligeramente el radio táctil del punto para facilitar la interacción al pasar el mouse
                     pointRadius: 5,
                     pointHoverRadius: 7,
                     order: 1
@@ -372,11 +371,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Precisión estricta: 'intersect: true' obliga a que el tooltip aparezca únicamente al posarse sobre el punto exacto
+            // Bloqueo estricto del eje X para que el tooltip responda inmediatamente al mes correspondiente sin arrastrar el anterior
             interaction: {
-                mode: 'point',
-                intersect: true,
+                mode: 'index',
+                axis: 'x',
+                intersect: false,
             },
+            // Forzar que el tooltip aparezca siempre centrado en el punto seleccionado
             plugins: { 
                 legend: { 
                     display: true,
@@ -395,6 +396,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
+                    position: 'average',
                     callbacks: {
                         title: function(context) {
                             return context[0].label;
@@ -424,7 +426,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 }
-
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
