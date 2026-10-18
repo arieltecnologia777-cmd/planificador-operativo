@@ -306,7 +306,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia optimizada
+// Gráfica de tendencia con línea y puntos de colores dinámicos según cumplimiento mensual
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -319,7 +319,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         metaRegionalTotal = METAS_REGIONALES[fRegion];
     }
     
-    const metaLineData = new Array(12).fill(metaRegionalTotal);
+    // Meta mensual estimada dividida equitativamente para la comparación visual por punto (o usando la meta global)
+    // Usaremos la meta global o proporcional mensual para evaluar el color de cada punto
+    const metaMensualReferencia = metaRegionalTotal / 12;
 
     records.forEach(r => {
         const mesStr = String(r.mes || r.MES || "").trim();
@@ -347,6 +349,19 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
+    // Función auxiliar para asignar color dinámico según el porcentaje alcanzado frente a la meta mensual
+    function obtenerColorPorCumplimiento(valor) {
+        const porcentaje = metaMensualReferencia > 0 ? (valor / metaMensualReferencia) * 100 : 0;
+        if (porcentaje >= 100) return '#00b087'; // Verde Aprobado
+        if (porcentaje >= 70) return '#0ea5e9';  // Azul medio
+        if (porcentaje >= 40) return '#f59e0b';  // Amarillo / Naranja
+        return '#dc2626';                        // Rojo
+    }
+
+    const coloresPuntosYLineas = acumuladoMeses.map(val => obtenerColorPorCumplimiento(val));
+
+    const metaLineData = new Array(12).fill(metaRegionalTotal);
+
     if (chartTendencia) chartTendencia.destroy();
     
     chartTendencia = new Chart(ctxTendencia, {
@@ -357,13 +372,21 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 {
                     label: 'Aprobado',
                     data: acumuladoMeses,
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderColor: '#00b087', // Color base de la línea
+                    segment: {
+                        borderColor: ctx => {
+                            // Cambia dinámicamente el color del segmento de la línea según el punto de origen
+                            return obtenerColorPorCumplimiento(ctx.p0.parsed.y);
+                        }
+                    },
+                    backgroundColor: 'rgba(0, 176, 135, 0.06)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: '#2563eb',
+                    pointBackgroundColor: coloresPuntosYLineas,
+                    pointBorderColor: coloresPuntosYLineas,
                     pointRadius: 5,
+                    pointHoverRadius: 7,
                     order: 1
                 },
                 {
