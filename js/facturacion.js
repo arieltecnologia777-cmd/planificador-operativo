@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia anual estándar original
+// Gráfica de tendencia con la "mentirita" en el eje X para que Chart.js crea que hay espacio de sobra
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -323,12 +323,12 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     label: 'Ejecución',
                     data: acumuladoMeses,
                     borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 4,
+                    pointRadius: 5,
                     order: 1
                 },
                 {
@@ -346,6 +346,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Layout con "colchón" a los lados para que Chart.js respire y no salte en julio
+            layout: {
+                padding: {
+                    left: 15,
+                    right: 25
+                }
+            },
             interaction: {
                 mode: 'index',
                 intersect: false,
@@ -392,7 +399,11 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                         }
                     }
                 },
-                x: { grid: { display: false } }
+                x: { 
+                    grid: { display: false },
+                    // LA MENTIRITA: Le decimos que hay un espacio extra de "gracia" simulando un lienzo más amplio
+                    grace: '5%' 
+                }
             }
         }
     });
