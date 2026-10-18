@@ -9,8 +9,10 @@ let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
 
+// --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
 
+// Metas fijas exactas por regional y la suma total global
 const METAS_REGIONALES = {
     "R1": 381140000,
     "R2": 133000000
@@ -21,26 +23,33 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarDatosDesdeAPI();
 });
 
+// GET: Cargar registros desde Cloudflare D1
 async function cargarDatosDesdeAPI() {
     try {
+        console.log("Consultando API en:", FACTURACION_API_URL);
         const response = await fetch(FACTURACION_API_URL);
         if (response.ok) {
             registrosCrudos = await response.json();
+            console.log("Registros crudos recibidos de D1:", registrosCrudos);
+            
             if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
                 poblarSelectsFiltros(registrosCrudos);
                 aplicarFiltrosGlobales();
                 verificarIncrementosAvance(registrosCrudos);
             } else {
+                console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
                 actualizarKPIsGenerales([], [], "TODOS");
             }
         }
     } catch (err) {
+        console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
         actualizarKPIsGenerales([], [], "TODOS");
     }
 }
 
+// Poblar los selects del acordeón de filtros dinámicamente
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const meses = new Set();
@@ -75,6 +84,7 @@ function llenarSelectHTML(elementId, setValues) {
     select.innerHTML = html;
 }
 
+// Filtrar registros crudos según los filtros
 function aplicarFiltrosGlobales() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -84,7 +94,8 @@ function aplicarFiltrosGlobales() {
 
     const registrosParaMeta = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        return fRegion === "TODOS" || reg === fRegion;
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        return matchReg;
     });
 
     const registrosParaGrafica = registrosCrudos.filter(r => {
@@ -93,10 +104,12 @@ function aplicarFiltrosGlobales() {
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnico = perfil.toLowerCase();
 
-        return (fRegion === "TODOS" || reg === fRegion) &&
-               (fPerfil === "TODOS" || perfil === fPerfil) &&
-               (fAprob === "TODOS" || aprob === fAprob) &&
-               tecnico.includes(searchVal);
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchSearch = tecnico.includes(searchVal);
+
+        return matchReg && matchPerfil && matchAprob && matchSearch;
     });
 
     const filtradosCompletos = registrosCrudos.filter(r => {
@@ -106,11 +119,13 @@ function aplicarFiltrosGlobales() {
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnico = perfil.toLowerCase();
 
-        return (fRegion === "TODOS" || reg === fRegion) &&
-               (fMes === "TODOS" || mes === fMes) &&
-               (fPerfil === "TODOS" || perfil === fPerfil) &&
-               (fAprob === "TODOS" || aprob === fAprob) &&
-               tecnico.includes(searchVal);
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchSearch = tecnico.includes(searchVal);
+
+        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos);
@@ -129,6 +144,7 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
+// Agrupar registros por técnico
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
@@ -170,6 +186,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
+// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -210,12 +227,54 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
+
+    let porcMeta = totalMeta > 0 ? 100 : 0;
+    let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
+    let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
+    let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
+    let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
+
+    if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
+    if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
+
+    if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
+    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
+
+    if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
+    if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
+
+    if(document.getElementById('barRechazado')) document.getElementById('barRechazado').style.width = porcRechazado + '%';
+    if(document.getElementById('txtPorcRechazado')) document.getElementById('txtPorcRechazado').innerText = porcRechazado + '%';
+
+    if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
+    if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
+
+    const ctxGauge = document.getElementById('gaugeEfectividad');
+    if (ctxGauge) {
+        if (chartGauge) chartGauge.destroy();
+        chartGauge = new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
+                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            }
+        });
+    }
 }
 
-// Gráfica de tendencia anual con ApexCharts (Efecto imán y cero desfase)
+// Gráfica de tendencia anual estándar original
 function initChartsDinamicos(records, fRegion = "TODOS") {
-    const contenedor = document.getElementById('tendenciaChart');
-    if (!contenedor) return;
+    const ctxTendencia = document.getElementById('tendenciaChart');
+    if (!ctxTendencia) return;
 
     const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const acumuladoMeses = new Array(12).fill(0);
@@ -253,99 +312,93 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    if (chartTendencia && typeof chartTendencia.destroy === 'function') {
-        chartTendencia.destroy();
-    }
-    contenedor.innerHTML = '';
-
-    const options = {
-        series: [
-            {
-                name: 'Ejecución',
-                data: acumuladoMeses
+    if (chartTendencia) chartTendencia.destroy();
+    
+    chartTendencia = new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [
+                {
+                    label: 'Ejecución',
+                    data: acumuladoMeses,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 4,
+                    order: 1
+                },
+                {
+                    label: 'Meta',
+                    data: metaLineData,
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    order: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
             },
-            {
-                name: 'Meta',
-                data: metaLineData
-            }
-        ],
-        chart: {
-            type: 'line',
-            height: 260,
-            toolbar: { show: false },
-            zoom: { enabled: false },
-            fontFamily: 'Segoe UI, Tahoma, sans-serif'
-        },
-        colors: ['#2563eb', '#94a3b8'],
-        stroke: {
-            width: [3, 2],
-            curve: 'smooth',
-            dashArray: [0, 5]
-        },
-        fill: {
-            type: ['gradient', 'solid'],
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.25,
-                opacityTo: 0.02,
-                stops: [0, 100]
-            }
-        },
-        markers: {
-            size: [4, 0],
-            colors: ['#2563eb'],
-            strokeColors: '#ffffff',
-            strokeWidth: 2,
-            hover: { size: 6 }
-        },
-        xaxis: {
-            categories: mesesLabels,
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-            crosshairs: {
-                show: true,
-                width: 1,
-                position: 'back',
-                stroke: {
-                    color: '#ef4444', // Línea láser roja vertical exacta[cite: 1]
-                    width: 1.5,
-                    dashArray: 3
+            plugins: { 
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
+                        }
+                    }
                 }
-            }
-        },
-        yaxis: {
-            min: 0,
-            labels: {
-                formatter: function (value) {
-                    if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
-                    return '$ ' + value;
-                }
-            }
-        },
-        legend: {
-            position: 'top',
-            horizontalAlign: 'right',
-            fontWeight: 'bold',
-            fontSize: '11px'
-        },
-        grid: {
-            borderColor: '#f1f5f9'
-        },
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (value) {
-                    return '$ ' + Number(value || 0).toLocaleString('es-CO');
-                }
+            },
+            scales: {
+                y: { 
+                    min: 0, 
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
+                            return '$ ' + value;
+                        }
+                    }
+                },
+                x: { grid: { display: false } }
             }
         }
-    };
-
-    chartTendencia = new ApexCharts(contenedor, options);
-    chartTendencia.render();
+    });
 }
 
+// Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -396,6 +449,182 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
+// Funciones para la Campana de Notificaciones e Incrementos
+function verificarIncrementosAvance(nuevosRegistros) {
+    const historialPrevio = JSON.parse(localStorage.getItem('fact_notif_historial') || "[]");
+    let nuevosCambiosDetectados = false;
+    
+    nuevosRegistros.forEach(r => {
+        const aprobReg = String(r.aprobacion_regional || "").toUpperCase();
+        if (aprobReg.includes("ACEPTADO")) {
+            const idOT = r.ot || r.OT || r.id || "OT-GENERAL";
+            const tecnico = r.tecnico_programado || r.perfil_wfm || "Técnico";
+            const monto = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
+            
+            const yaRegistrado = historialPrevio.some(h => h.id === idOT && h.monto === monto);
+            if (!yaRegistrado && monto > 0) {
+                listaNotificacionesCambios.unshift({
+                    id: idOT,
+                    titulo: `¡Incremento de avance aprobado!`,
+                    detalle: `El técnico ${tecnico} registró una aprobación por ${formatMoney(monto)}.`,
+                    fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    monto: monto
+                });
+                nuevosCambiosDetectados = true;
+            }
+        }
+    });
+
+    if (nuevosCambiosDetectados || listaNotificacionesCambios.length > 0) {
+        if (listaNotificacionesCambios.length === 0) listaNotificacionesCambios = historialPrevio;
+        localStorage.setItem('fact_notif_historial', JSON.stringify(listaNotificacionesCambios));
+        actualizarBadgeCampana();
+    }
+}
+
+function actualizarBadgeCampana() {
+    const badge = document.getElementById('badgeNotifCount');
+    if (badge) {
+        if (listaNotificacionesCambios.length > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = listaNotificacionesCambios.length;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+function abrirModalNotificaciones() {
+    const body = document.getElementById('modalBodyNotificaciones');
+    if (!body) return;
+
+    if (listaNotificacionesCambios.length === 0) {
+        body.innerHTML = `<div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay incrementos recientes en la base de facturación.</div>`;
+    } else {
+        let html = '';
+        listaNotificacionesCambios.forEach(n => {
+            html += `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; color: #1e293b; font-size: 0.88rem;">📈 ${n.titulo}</span>
+                        <span style="font-size: 0.72rem; color: #64748b;">${n.fecha}</span>
+                    </div>
+                    <div style="font-size: 0.82rem; color: #334155;">${n.detalle}</div>
+                </div>
+            `;
+        });
+        body.innerHTML = html;
+    }
+
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalNotificaciones() {
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'none';
+}
+
+// Validación de contraseña de administrador
+async function verificarPassword() {
+    const passwordIngresada = document.getElementById('inputPasswordAdmin').value;
+    try {
+        const response = await fetch(VERIFICAR_KEY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: passwordIngresada })
+        });
+        const resultado = await response.json();
+        if (response.ok && (resultado.success === true || resultado.ok === true)) {
+            cerrarModalPassword();
+            document.getElementById('modalHerramientas').style.display = 'flex';
+        } else {
+            document.getElementById('errorPasswordMsg').style.display = 'block';
+        }
+    } catch (err) {
+        document.getElementById('errorPasswordMsg').style.display = 'block';
+    }
+}
+
+function abrirModalPassword() {
+    document.getElementById('inputPasswordAdmin').value = '';
+    document.getElementById('errorPasswordMsg').style.display = 'none';
+    document.getElementById('modalPassword').style.display = 'flex';
+}
+
+function cerrarModalPassword() {
+    document.getElementById('modalPassword').style.display = 'none';
+}
+
+function cerrarModalHerramientas() {
+    document.getElementById('modalHerramientas').style.display = 'none';
+}
+
+// Cargue de Excel y sincronización masiva
+async function procesarYSubirExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    cerrarModalHerramientas();
+    const modalCarga = document.getElementById('modalCargandoExcel');
+    const barra = document.getElementById('barraProgreso');
+    const txtPorc = document.getElementById('txtPorcentajeCarga');
+    const txtEstado = document.getElementById('txtEstadoCarga');
+    
+    barra.style.width = '15%';
+    txtPorc.innerText = '15%';
+    txtEstado.innerText = 'Leyendo archivo Excel...';
+    modalCarga.style.display = 'flex';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            barra.style.width = '50%';
+            txtPorc.innerText = '50%';
+            txtEstado.innerText = 'Procesando filas...';
+
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (jsonData.length === 0) {
+                alert("El archivo Excel está vacío.");
+                modalCarga.style.display = 'none';
+                return;
+            }
+
+            barra.style.width = '75%';
+            txtPorc.innerText = '75%';
+            txtEstado.innerText = 'Guardando en Cloudflare D1...';
+
+            const response = await fetch(IMPORTAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (!response.ok) throw new Error("Error en la inserción masiva");
+
+            barra.style.width = '100%';
+            txtPorc.innerText = '100%';
+            txtEstado.innerText = '¡Cargue y éxito de confirmación!';
+
+            setTimeout(() => {
+                modalCarga.style.display = 'none';
+                alert("¡Base de facturación cargada y sincronizada con éxito!");
+                location.reload();
+            }, 1000);
+
+        } catch (error) {
+            modalCarga.style.display = 'none';
+            alert("Error al procesar el archivo: " + error.message);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 function formatMoney(amount) {
     return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
         minimumFractionDigits: 0,
@@ -440,4 +669,74 @@ function renderTable(records) {
         `;
     });
     tbody.innerHTML = html;
+}
+
+function abrirDetalleTecnico(index) {
+    const r = tecnicosData[index];
+    if (!r) return;
+
+    const modalBody = document.getElementById('modalBodyContent');
+    if(!modalBody) return;
+    const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+
+    modalBody.innerHTML = `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
+                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
+                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
+                    <div style="margin-top: 4px;"><span class="badge-status ${badgeClass}">${r.estado}</span></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
+            </div>
+        </div>
+    `;
+
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'none';
+}
+
+function exportExcel() {
+    const ws = XLSX.utils.json_to_sheet(tecnicosData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
+    XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
