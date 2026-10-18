@@ -349,13 +349,14 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Función auxiliar para asignar color dinámico según el porcentaje alcanzado frente a la meta mensual
+   // Función auxiliar para asignar color dinámico según el porcentaje alcanzado frente a la meta
     function obtenerColorPorCumplimiento(valor) {
-        const porcentaje = metaMensualReferencia > 0 ? (valor / metaMensualReferencia) * 100 : 0;
-        if (porcentaje >= 100) return '#00b087'; // Verde Aprobado
-        if (porcentaje >= 70) return '#0ea5e9';  // Azul medio
-        if (porcentaje >= 40) return '#f59e0b';  // Amarillo / Naranja
-        return '#dc2626';                        // Rojo
+        if (valor <= 0) return '#94a3b8'; // Color gris neutro para meses sin ejecución ($0)
+        const porcentaje = metaRegionalTotal > 0 ? (valor / metaRegionalTotal) * 100 : 0;
+        if (porcentaje >= 80) return '#00b087'; // Verde si el mes por sí solo o su avance es alto
+        if (porcentaje >= 40) return '#0ea5e9';  // Azul intermedio
+        if (porcentaje >= 20) return '#f59e0b';  // Amarillo / Naranja alerta
+        return '#dc2626';                        // Rojo crítico
     }
 
     const coloresPuntosYLineas = acumuladoMeses.map(val => obtenerColorPorCumplimiento(val));
