@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con la "mentirita" en el eje X para que Chart.js crea que hay espacio de sobra
+// Gráfica de tendencia donde el Tooltip persigue físicamente las coordenadas del mouse
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -329,6 +329,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
                     pointRadius: 5,
+                    pointHoverRadius: 8,
                     order: 1
                 },
                 {
@@ -346,15 +347,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Layout con "colchón" a los lados para que Chart.js respire y no salte en julio
-            layout: {
-                padding: {
-                    left: 15,
-                    right: 25
-                }
-            },
             interaction: {
-                mode: 'index',
+                mode: 'nearest',
+                axis: 'x',
                 intersect: false,
             },
             plugins: { 
@@ -366,6 +361,16 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 tooltip: {
                     enabled: true,
+                    // OBLIGAMOS AL TOOLTIP A POSICIONARSE EXACTAMENTE DONDE ESTÁ EL CURSOR DEL MOUSE
+                    position: function(items, eventPosition) {
+                        if (!eventPosition) {
+                            return { x: 0, y: 0 };
+                        }
+                        return {
+                            x: eventPosition.x,
+                            y: eventPosition.y - 15 // Unos píxeles arriba del cursor para que no lo tape
+                        };
+                    },
                     backgroundColor: '#ffffff',
                     titleColor: '#0f172a',
                     bodyColor: '#334155',
@@ -399,11 +404,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                         }
                     }
                 },
-                x: { 
-                    grid: { display: false },
-                    // LA MENTIRITA: Le decimos que hay un espacio extra de "gracia" simulando un lienzo más amplio
-                    grace: '5%' 
-                }
+                x: { grid: { display: false } }
             }
         }
     });
