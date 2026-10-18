@@ -2026,6 +2026,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         return n === "OBSERVACION" || n === "OBSERVACIONES";
                     });
 
+                    const idxEstadoGestion = encabezadosExcel.findIndex(h => {
+    const n = normalizar(h);
+    return n.includes("ESTADO") && (n.includes("GESTION") || n.includes("GESTIÓN"));
+});
+                    
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
                         return n.includes("FECHA") && (n.includes("PROGRAMACION") || n.includes("PROG")) && !n.includes("FM");
@@ -2127,7 +2132,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                 estadoProgramacion: estadoProgVal,
                                 fechaProgramacion: fechaVal,
                                 observacion: obsVal,
-                                estadoGestion: regD1Actual.estadoGestion || "",
+                                estadoGestion: idxEstadoGestion !== -1 && filter[idxEstadoGestion] !== undefined 
+        ? String(filter[idxEstadoGestion]).trim() 
+        : (regD1Actual.estadoGestion || ""),
                                 tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
                                 acompanamiento: regD1Actual.acompanamiento || "",
                                 idOriginal: idxID !== -1 ? String(filter[idxID] || "").trim() : (regD1Actual.idOriginal || ""),
