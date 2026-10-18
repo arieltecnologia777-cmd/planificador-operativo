@@ -1021,3 +1021,15 @@ function exportExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
+// Inyección en el tfoot para En Trámite:
+    const tfoot = document.getElementById('footerTablaDinamicaTramite');
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaRegionales.forEach(reg => {
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #f1f5f9;">${formatMoney(totalesPorRegional[reg] || 0)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; border-top: 2px solid #cbd5e0; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
