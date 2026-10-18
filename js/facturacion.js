@@ -306,7 +306,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con línea y puntos de colores dinámicos según cumplimiento mensual
+// Gráfica de tendencia con línea verde fija y puntos de colores dinámicos (Rojo -> Amarillo -> Verde)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -319,9 +319,8 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         metaRegionalTotal = METAS_REGIONALES[fRegion];
     }
     
-    // Meta mensual estimada dividida equitativamente para la comparación visual por punto (o usando la meta global)
-    // Usaremos la meta global o proporcional mensual para evaluar el color de cada punto
-    const metaMensualReferencia = metaRegionalTotal / 12;
+    // Meta de referencia mensual razonable para evaluar el punto (Meta total / 12 meses aprox, o ajustada a escala realista de ~350M anuales / 12)
+    const referenciaMensualMeta = metaRegionalTotal / 12;
 
     records.forEach(r => {
         const mesStr = String(r.mes || r.MES || "").trim();
@@ -349,17 +348,16 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-   // Escala de colores estricta de rojo a verde según el cumplimiento de la meta mensual
-    function obtenerColorPorCumplimiento(valor) {
-        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses en $0
-        const porcentaje = metaMensualReferencia > 0 ? (valor / metaMensualReferencia) * 100 : 0;
-        if (porcentaje >= 90) return '#22c55e'; // Verde óptimo
-        if (porcentaje >= 60) return '#f59e0b'; // Amarillo / Naranja intermedio
-        return '#dc2626';                      // Rojo crítico
+    // Escala estricta de rojo a verde para los puntos basada en el desempeño del mes frente a la meta esperada mensual
+    function obtenerColorPunto(valor) {
+        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses sin ejecución
+        const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
+        if (porcentaje >= 85) return '#22c55e'; // Verde (Óptimo / Cumple)
+        if (porcentaje >= 45) return '#f59e0b'; // Amarillo / Naranja (Regular)
+        return '#dc2626';                      // Rojo (Crítico / Bajo)
     }
 
-    const coloresPuntosYLineas = acumuladoMeses.map(val => obtenerColorPorCumplimiento(val));
-
+    const coloresPuntos = acumuladoMeses.map(val => obtenerColorPunto(val));
     const metaLineData = new Array(12).fill(metaRegionalTotal);
 
     if (chartTendencia) chartTendencia.destroy();
@@ -374,14 +372,14 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     data: acumuladoMeses,
                     borderColor: '#22c55e', // Línea verde fija
                     segment: {
-                        borderColor: '#22c55e' // Mantiene toda la línea del mismo color verde
+                        borderColor: '#22c55e'
                     },
                     backgroundColor: 'rgba(34, 197, 94, 0.06)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: coloresPuntosYLineas, // Puntos dinámicos (Rojo -> Amarillo -> Verde)
-                    pointBorderColor: coloresPuntosYLineas,
+                    pointBackgroundColor: coloresPuntos, // Puntos dinámicos (Rojo, Amarillo, Verde, Gris)
+                    pointBorderColor: coloresPuntos,
                     pointRadius: 5,
                     pointHoverRadius: 7,
                     order: 1
