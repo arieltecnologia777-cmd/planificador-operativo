@@ -189,7 +189,7 @@ function procesarDatosParaVista(rows) {
     });
 }
 
-// Actualizar Tarjetas KPI generales (Excluyendo Rechazados de En Trámite)
+// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -252,26 +252,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
-    const ctxGauge = document.getElementById('gaugeEfectividad');
-    if (ctxGauge) {
-        if (chartGauge) chartGauge.destroy();
-        chartGauge = new Chart(ctxGauge, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
-                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: { tooltip: { enabled: false }, legend: { display: false } }
-            }
-        });
-    }
+    if(document.getElementById('barEfectividad')) document.getElementById('barEfectividad').style.width = Math.min(100, efectividadGlobal) + '%';
+    if(document.getElementById('txtPorcEfectividad')) document.getElementById('txtPorcEfectividad').innerText = efectividadGlobal + '%';
 }
 
 // Gráfica de tendencia optimizada (pastillas en zigzag modernas con ceros)
@@ -538,7 +520,6 @@ function abrirModalEnTramite() {
     registrosEnTramite.forEach(r => {
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         
-        // Extraer departamento de la columna Departamento o equivalente (Columna I)
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
         
@@ -570,7 +551,7 @@ function abrirModalEnTramite() {
         }
     }
 
-    const totalColumnas = 1 + listaDepartamentos.length + 1; // Estado + 4 Deptos + Total General
+    const totalColumnas = 1 + listaDepartamentos.length + 1;
     const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
 
     let headHtml = `
@@ -667,7 +648,6 @@ function abrirModalRechazados() {
     registrosRechazados.forEach(r => {
         const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
         
-        // Extraer departamento de la columna Departamento o equivalente (Columna I)
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
         
@@ -699,7 +679,7 @@ function abrirModalRechazados() {
         }
     }
 
-    const totalColumnas = 1 + listaDepartamentos.length + 1; // Causa Rechazo + 4 Deptos + Total General
+    const totalColumnas = 1 + listaDepartamentos.length + 1;
     const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
 
     let headHtml = `
