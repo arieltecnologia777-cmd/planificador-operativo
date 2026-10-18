@@ -187,7 +187,6 @@ function procesarDatosParaVista(rows) {
 }
 
 // Actualizar Tarjetas KPI generales
-// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -252,32 +251,27 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
 
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
-        ctxGauge.innerHTML = '';
-        const gaugeOptions = {
-            series: [efectividadGlobal],
-            chart: {
-                type: 'radialBar',
-                height: '100%',
-                sparkline: { enabled: true }
+        if (chartGauge) chartGauge.destroy();
+        chartGauge = new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
+                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
+                    borderWidth: 0
+                }]
             },
-            plotOptions: {
-                radialBar: {
-                    hollow: { size: '68%' },
-                    track: { background: '#e2e8f0' },
-                    dataLabels: { show: false }
-                }
-            },
-            colors: ['#8b5cf6']
-        };
-        if (window.miGaugeEfectividad && typeof window.miGaugeEfectividad.destroy === 'function') {
-            window.miGaugeEfectividad.destroy();
-        }
-        window.miGaugeEfectividad = new ApexCharts(ctxGauge, gaugeOptions);
-        window.miGaugeEfectividad.render();
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            }
+        });
     }
 }
 
-// Gráfica de tendencia anual migrada a ApexCharts (Cero desfase y efecto imán)
+// Gráfica de tendencia anual estándar original (con Chart.js pulido)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -318,96 +312,93 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Limpiamos la instancia previa de ApexCharts
-    if (window.miGraficaTendencia && typeof window.miGraficaTendencia.destroy === 'function') {
-        window.miGraficaTendencia.destroy();
-    }
-    ctxTendencia.innerHTML = '';
-const options = {
-        series: [
-            { name: 'Ejecución', data: acumuladoMeses },
-            { name: 'Meta', data: metaLineData }
-        ],
-        chart: {
-            type: 'area',
-            height: '100%',
-            toolbar: { show: false },
-            zoom: { enabled: false },
-            fontFamily: 'Segoe UI, Tahoma, sans-serif'
-        },
-        // Desactivamos los números flotantes molestos en los puntos
-        dataLabels: {
-            enabled: false
-        },
-        colors: ['#2563eb', '#94a3b8'],
-        stroke: {
-            width: [3, 2],
-            curve: 'smooth',
-            dashArray: [0, 5]
-        },
-        // Relleno limpio, sutil y elegante abajo (estilo Chart.js)
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.18, // Muy sutil arriba para no saturar
-                opacityTo: 0.0,    // Se desvanece por completo abajo
-                stops: [0, 100]
-            }
-        },
-        markers: {
-            size: [4, 0],
-            colors: ['#2563eb'],
-            strokeColors: '#ffffff',
-            strokeWidth: 2,
-            hover: { size: 6 }
-        },
-        xaxis: {
-            categories: mesesLabels,
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-            crosshairs: {
-                show: true,
-                width: 1,
-                position: 'back',
-                stroke: {
-                    color: '#ef4444', // Línea láser roja vertical exacta
-                    width: 1.5,
-                    dashArray: 3
+    if (chartTendencia) chartTendencia.destroy();
+    
+    chartTendencia = new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [
+                {
+                    label: 'Ejecución',
+                    data: acumuladoMeses,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 4,
+                    order: 1
+                },
+                {
+                    label: 'Meta',
+                    data: metaLineData,
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    order: 2
                 }
-            }
+            ]
         },
-        yaxis: {
-            min: 0,
-            labels: {
-                formatter: function (value) {
-                    if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
-                    return '$ ' + value;
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'nearest', // Evita saltos bruscos en los extremos de los meses
+                axis: 'x',
+                intersect: false,
+            },
+            plugins: { 
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
+                        }
+                    }
                 }
-            }
-        },
-        legend: {
-            position: 'top',
-            horizontalAlign: 'right',
-            fontWeight: 'bold',
-            fontSize: '11px'
-        },
-        grid: {
-            borderColor: '#f1f5f9'
-        },
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (value) {
-                    return '$ ' + Number(value || 0).toLocaleString('es-CO');
-                }
+            },
+            scales: {
+                y: { 
+                    min: 0, 
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) return '$ ' + (value / 1000000).toFixed(0) + 'M';
+                            return '$ ' + value;
+                        }
+                    }
+                },
+                x: { grid: { display: false } }
             }
         }
-    };
-    window.miGraficaTendencia = new ApexCharts(ctxTendencia, options);
-    window.miGraficaTendencia.render();
+    });
 }
+
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
