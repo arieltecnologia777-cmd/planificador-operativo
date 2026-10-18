@@ -306,7 +306,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con línea verde fija y puntos dinámicos adaptados a la meta activa (Global o Regional)
+// Gráfica de tendencia con estilo clásico en azul (línea, relleno y puntos azules)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -318,9 +318,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
         metaRegionalTotal = METAS_REGIONALES[fRegion];
     }
-    
-    // Referencia mensual dinámica basada exactamente en la meta activa (Global o Regional seleccionada)
-    const referenciaMensualMeta = metaRegionalTotal / 12;
 
     records.forEach(r => {
         const mesStr = String(r.mes || r.MES || "").trim();
@@ -348,16 +345,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }
     });
 
-    // Escala estricta de rojo, amarillo y verde para los puntos basada en la meta activa
-    function obtenerColorPunto(valor) {
-        if (valor <= 0) return '#94a3b8'; // Gris neutro para meses sin ejecución
-        const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
-        if (porcentaje >= 85) return '#22c55e'; // Verde
-        if (porcentaje >= 45) return '#f59e0b'; // Amarillo / Naranja
-        return '#dc2626';                      // Rojo
-    }
-
-    const coloresPuntos = acumuladoMeses.map(val => obtenerColorPunto(val));
     const metaLineData = new Array(12).fill(metaRegionalTotal);
 
     if (chartTendencia) chartTendencia.destroy();
@@ -370,16 +357,13 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 {
                     label: 'Aprobado',
                     data: acumuladoMeses,
-                    borderColor: '#22c55e', // Línea verde fija
-                    segment: {
-                        borderColor: '#22c55e'
-                    },
-                    backgroundColor: 'rgba(34, 197, 94, 0.06)',
+                    borderColor: '#2563eb', // Azul clásico
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)', // Relleno azul claro
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: coloresPuntos, // Puntos dinámicos (Rojo -> Amarillo -> Verde)
-                    pointBorderColor: coloresPuntos,
+                    pointBackgroundColor: '#2563eb', // Puntos azules
+                    pointBorderColor: '#2563eb',
                     pointRadius: 5,
                     pointHoverRadius: 7,
                     order: 1
