@@ -291,7 +291,7 @@ Chart.Tooltip.positioners.customBorderFix = function(elements, eventPosition) {
     return { x: x, y: pos.y };
 };
 
-// Gráfica de tendencia con Tooltip anti-desfase en los bordes
+// Gráfica de tendencia con modo 'nearest' (Tooltip 100% sincronizado al punto del mouse sin saltos)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -349,6 +349,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
                     pointRadius: 5,
+                    pointHoverRadius: 7,
                     order: 1
                 },
                 {
@@ -366,8 +367,10 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            // Solución definitiva: 'nearest' evita que el tooltip salte de un lado a otro por cálculos de índice globales
             interaction: {
-                mode: 'index',
+                mode: 'nearest',
+                axis: 'x',
                 intersect: false,
             },
             plugins: { 
@@ -379,8 +382,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 },
                 tooltip: {
                     enabled: true,
-                    // AQUÍ ESTÁ EL TRUCO: Usamos nuestro posicionador anti-desfase
-                    position: 'customBorderFix',
                     backgroundColor: '#ffffff',
                     titleColor: '#0f172a',
                     bodyColor: '#334155',
