@@ -335,30 +335,30 @@ const options = {
             zoom: { enabled: false },
             fontFamily: 'Segoe UI, Tahoma, sans-serif'
         },
-        // Definimos el color para cada serie en orden: [Ejecución (Azul), Meta (Gris)]
         colors: ['#2563eb', '#94a3b8'],
         stroke: {
-            width: [3, 2],
+            // Aumentamos el grosor de la línea de ejecución a 4 para que tenga mayor presencia
+            width: [4, 2],
             curve: 'smooth',
-            dashArray: [0, 5] // 0 para línea sólida en ejecución, 5 para punteada en meta
+            dashArray: [0, 5]
         },
         fill: {
             type: ['gradient', 'solid'],
             gradient: {
                 shade: 'light',
                 type: 'vertical',
-                shadeIntensity: 0.5,
-                opacityFrom: 0.35, // Intensidad del azul arriba
-                opacityTo: 0.01,   // Se desvanece hacia abajo
+                shadeIntensity: 1,
+                opacityFrom: 0.65, // Subimos la opacidad para que el relleno azul sea bien visible como antes
+                opacityTo: 0.1,    // Transición suave hacia abajo
                 stops: [0, 100]
             }
         },
         markers: {
-            size: [4, 0],
+            size: [5, 0], // Puntos un poco más marcados
             colors: ['#2563eb'],
             strokeColors: '#ffffff',
             strokeWidth: 2,
-            hover: { size: 6 }
+            hover: { size: 7 }
         },
         xaxis: {
             categories: mesesLabels,
@@ -369,7 +369,7 @@ const options = {
                 width: 1,
                 position: 'back',
                 stroke: {
-                    color: '#ef4444', // Línea láser roja vertical exacta
+                    color: '#ef4444',
                     width: 1.5,
                     dashArray: 3
                 }
