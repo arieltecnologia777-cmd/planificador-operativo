@@ -187,6 +187,7 @@ function procesarDatosParaVista(rows) {
 }
 
 // Actualizar Tarjetas KPI generales
+// Actualizar Tarjetas KPI generales
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -251,23 +252,28 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
 
     const ctxGauge = document.getElementById('gaugeEfectividad');
     if (ctxGauge) {
-        if (chartGauge) chartGauge.destroy();
-        chartGauge = new Chart(ctxGauge, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
-                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
-                    borderWidth: 0
-                }]
+        ctxGauge.innerHTML = '';
+        const gaugeOptions = {
+            series: [efectividadGlobal],
+            chart: {
+                type: 'radialBar',
+                height: '100%',
+                sparkline: { enabled: true }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: { tooltip: { enabled: false }, legend: { display: false } }
-            }
-        });
+            plotOptions: {
+                radialBar: {
+                    hollow: { size: '68%' },
+                    track: { background: '#e2e8f0' },
+                    dataLabels: { show: false }
+                }
+            },
+            colors: ['#8b5cf6']
+        };
+        if (window.miGaugeEfectividad && typeof window.miGaugeEfectividad.destroy === 'function') {
+            window.miGaugeEfectividad.destroy();
+        }
+        window.miGaugeEfectividad = new ApexCharts(ctxGauge, gaugeOptions);
+        window.miGaugeEfectividad.render();
     }
 }
 
