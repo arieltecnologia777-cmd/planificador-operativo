@@ -227,9 +227,51 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
     if(document.getElementById('kpiEfectividad')) document.getElementById('kpiEfectividad').innerText = efectividadGlobal + '%';
+
+    let porcMeta = totalMeta > 0 ? 100 : 0;
+    let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
+    let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
+    let porcRechazado = totalMeta > 0 ? Math.min(100, Math.round((totalRechazado / totalMeta) * 100)) : 0;
+    let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
+
+    if(document.getElementById('barMeta')) document.getElementById('barMeta').style.width = porcMeta + '%';
+    if(document.getElementById('txtPorcMeta')) document.getElementById('txtPorcMeta').innerText = porcMeta + '%';
+
+    if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
+    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
+
+    if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
+    if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
+
+    if(document.getElementById('barRechazado')) document.getElementById('barRechazado').style.width = porcRechazado + '%';
+    if(document.getElementById('txtPorcRechazado')) document.getElementById('txtPorcRechazado').innerText = porcRechazado + '%';
+
+    if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
+    if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
+
+    const ctxGauge = document.getElementById('gaugeEfectividad');
+    if (ctxGauge) {
+        if (chartGauge) chartGauge.destroy();
+        chartGauge = new Chart(ctxGauge, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [efectividadGlobal, Math.max(0, 100 - efectividadGlobal)],
+                    backgroundColor: ['#8b5cf6', '#e2e8f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { tooltip: { enabled: false }, legend: { display: false } }
+            }
+        });
+    }
 }
 
-// Gráfica de tendencia anual con tooltip HTML flotante y línea láser roja (Cero desfase)
+// Gráfica de tendencia anual estándar original
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -271,33 +313,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     });
 
     if (chartTendencia) chartTendencia.destroy();
-
-    // Referencia al tooltip HTML personalizado
-    const tooltipEl = document.getElementById('chartTooltipCustom');
-
-    // Plugin para dibujar la línea vertical láser de color ROJO exactamente en el punto activo[cite: 1]
-    const laserCrosshairPlugin = {
-        id: 'laserCrosshair',
-        afterDraw: (chart) => {
-            if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
-                const ctx = chart.ctx;
-                const activePoint = chart.tooltip._active[0];
-                const x = activePoint.element.x;
-                const topY = chart.scales.y.top;
-                const bottomY = chart.scales.y.bottom;
-
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(x, topY);
-                ctx.lineTo(x, bottomY);
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; // Rojo láser brillante[cite: 1]
-                ctx.setLineDash([3, 3]); // Línea punteada de mira[cite: 1]
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-    };
     
     chartTendencia = new Chart(ctxTendencia, {
         type: 'line',
@@ -328,61 +343,43 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                 }
             ]
         },
-        plugins: [laserCrosshairPlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Desactivamos el tooltip nativo de Chart.js para usar nuestro div flotante HTML[cite: 1]
-            plugins: {
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: { 
                 legend: { 
                     display: true,
                     position: 'top',
                     align: 'end',
                     labels: { boxWidth: 12, font: { weight: 'bold', size: 11 } }
                 },
-                tooltip: { enabled: false } 
-            },
-            // Manejador de eventos por mouse para posicionar el div HTML tipo imán con precisión absoluta[cite: 1]
-            onHover: (event, chartElements) => {
-                if (!tooltipEl) return;
-
-                if (chartElements.length === 0) {
-                    tooltipEl.style.display = 'none';
-                    return;
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: '#ffffff',
+                    titleColor: '#0f172a',
+                    bodyColor: '#334155',
+                    borderColor: '#cbd5e0',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += '$ ' + Number(context.raw || 0).toLocaleString('es-CO');
+                            return label;
+                        }
+                    }
                 }
-
-                const element = chartElements[0];
-                const index = element.index;
-                const mesLabel = mesesLabels[index];
-                
-                const valEjecucion = acumuladoMeses[index];
-                const valMeta = metaLineData[index];
-
-                const posX = element.element.x;
-                const posY = element.element.y;
-
-                // Construimos el contenido HTML del aviso[cite: 1]
-                tooltipEl.innerHTML = `
-                    <div style="font-weight: 800; color: #0f172a; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">${mesLabel}</div>
-                    <div style="display: flex; align-items: center; gap: 6px; color: #334155; margin-bottom: 2px;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #2563eb; display: inline-block;"></span>
-                        <span>Ejecución: <b>$ ${Number(valEjecucion).toLocaleString('es-CO')}</b></span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px; color: #334155;">
-                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block;"></span>
-                        <span>Meta: <b>$ ${Number(valMeta).toLocaleString('es-CO')}</b></span>
-                    </div>
-                `;
-
-                // Posicionamos el div flotante exactamente arriba del punto activo con efecto imán[cite: 1]
-                tooltipEl.style.display = 'block';
-                tooltipEl.style.left = posX + 'px';
-                tooltipEl.style.top = (posY - 10) + 'px';
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false,
             },
             scales: {
                 y: { 
@@ -417,18 +414,46 @@ function renderizarEstadoRegional(rows) {
         }
     });
 
-    let html = `<div style="display: flex; flex-direction: column; gap: 6px;">`;
+    let html = `
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
+                <div>Regional</div>
+                <div style="text-align: center;">Efectiv.</div>
+                <div style="text-align: right;">Total</div>
+            </div>
+    `;
+
     for (const [reg, val] of Object.entries(mapaRegiones)) {
         const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
         const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
-        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f5f9;"><b>${reg}</b> <span>${ef}%</span></div>`;
+        
+        const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
+        const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
+
+        html += `
+            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
+                    <span style="font-weight: 700; color: #0f172a; font-size: 0.82rem;">${reg}</span>
+                </div>
+                <div style="text-align: center;">
+                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 1px 5px; border-radius: 5px; font-size: 0.72rem; font-weight: bold;">${ef}%</span>
+                </div>
+                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.8rem;">
+                    ${formatMoney(val.aprobado)}
+                </div>
+            </div>
+        `;
     }
     html += `</div>`;
-    container.innerHTML = html;
+    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
 function formatMoney(amount) {
-    return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
 }
 
 function renderTable(records) {
@@ -436,22 +461,34 @@ function renderTable(records) {
     if (!tbody) return;
     
     if(records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>`;
         return;
     }
 
     let html = '';
-    records.forEach((r) => {
+    records.forEach((r, index) => {
+        const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+        const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
+
         html += `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 10px 0; font-weight: 700; color: #1e293b;">${r.nombre}</td>
+            <tr>
+                <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
                 <td>${formatMoney(r.meta)}</td>
                 <td>${formatMoney(r.aprobado)}</td>
                 <td>${formatMoney(r.rechazado)}</td>
                 <td>${formatMoney(r.subsanado)}</td>
-                <td><b>${r.efectividad}%</b></td>
-                <td>${r.estado}</td>
-                <td style="text-align: center;">-</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
+                        <div style="width: 80px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${Math.min(100, r.efectividad)}%; background: ${barColor}; height: 100%;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="badge-status ${badgeClass}">${r.estado}</span></td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
+                </td>
             </tr>
         `;
     });
