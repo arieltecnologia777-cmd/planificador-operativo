@@ -231,11 +231,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
 
-    if(document.getElementById('kpiEfectividadValor')) {
-        document.getElementById('kpiEfectividadValor').innerText = efectividadGlobal + '%';
-        document.getElementById('kpiEfectividadValor').style.color = '#0f172a';
-    }
-
     let porcMeta = totalMeta > 0 ? 100 : 0;
     let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
     let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
@@ -283,7 +278,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '80%',
+                cutout: '76%',
                 plugins: { 
                     tooltip: { enabled: false }, 
                     legend: { display: false } 
@@ -294,7 +289,23 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
                         borderRadius: 0
                     }
                 }
-            }
+            },
+            plugins: [{
+                id: 'textCenterGauge',
+                beforeDraw(chart) {
+                    const { width, height, ctx } = chart;
+                    ctx.restore();
+                    const fontSize = (height / 85).toFixed(2);
+                    ctx.font = `900 ${fontSize}rem Inter, sans-serif`;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#0f172a';
+                    const text = efectividadGlobal + '%';
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    const textY = height / 2;
+                    ctx.fillText(text, textX, textY);
+                    ctx.save();
+                }
+            }]
         });
     }
 }
