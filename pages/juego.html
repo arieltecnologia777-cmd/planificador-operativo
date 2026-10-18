@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>¡A Jugar con Camila! 🐱✨</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header {
+            margin-top: 15px;
+            text-align: center;
+            z-index: 10;
+        }
+        h1 {
+            color: #ff477e;
+            font-size: 2rem;
+            margin: 0;
+            text-shadow: 2px 2px 0px #fff;
+        }
+        #puntuacion {
+            font-size: 1.5rem;
+            color: #2b9348;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #area-juego {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        /* Estilos de los elementos interactivos (animales/estrellas) */
+        .elemento {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            animation: flotar 3s infinite alternate ease-in-out;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .elemento:active {
+            transform: scale(0.8);
+        }
+        @keyframes flotar {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-15px) rotate(5deg); }
+        }
+        /* Mensaje de estímulo */
+        #mensaje-centro {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 3.5rem;
+            color: #ffb703;
+            text-shadow: 3px 3px 0px #000;
+            z-index: 100;
+            pointer-events: none;
+            transition: transform 0.3s ease-in-out;
+        }
+        #mensaje-centro.mostrar {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        footer {
+            margin-bottom: 15px;
+            z-index: 10;
+        }
+        .btn-reiniciar {
+            background-color: #ffb703;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌟 ¡Toca los Amiguitos! 🌟</h1>
+        <div id="puntuacion">Puntos: 0</div>
+    </header>
+
+    <div id="area-juego">
+        <div id="mensaje-centro">¡Muy bien! 🎉</div>
+    </div>
+
+    <footer>
+        <button class="btn-reiniciar" onclick="reiniciarJuego()">🔄 Volver a empezar</button>
+    </footer>
+
+    <script>
+        const areaJuego = document.getElementById('area-juego');
+        const marcador = document.getElementById('puntuacion');
+        const mensajeCentro = document.getElementById('mensaje-centro');
+        
+        let puntos = 0;
+        const iconos = ['🐱', '🐶', '🐰', '🐼', '🐨', '🦊', '🦄', '⭐', '🎈', '🍎'];
+        const coloresFondo = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'];
+
+        // Síntesis de voz web para hablarle a la niña de forma amigable (opcional, si el navegador lo soporta)
+        function decir(texto) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function crearElemento() {
+            // Evitar acumular demasiados en pantalla
+            if (areaJuego.children.length > 6) return;
+
+            const el = document.createElement('div');
+            el.classList.add('elemento');
+            
+            // Elegir icono y color aleatorio
+            const iconoAleatorio = iconos[Math.floor(Math.random() * iconos.length)];
+            const colorAleatorio = coloresFondo[Math.floor(Math.random() * coloresFondo.length)];
+            
+            el.innerHTML = iconoAleatorio;
+            el.style.backgroundColor = colorAleatorio;
+
+            // Posición aleatoria dentro del área segura (evitando bordes)
+            const maxX = areaJuego.clientWidth - 100;
+            const maxY = areaJuego.clientHeight - 100;
+            const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+
+            el.style.left = randomX + 'px';
+            el.style.top = randomY + 'px';
+
+            // Evento al tocar o hacer clic
+            el.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                puntos++;
+                marcador.textContent = "Puntos: " + puntos;
+                
+                // Efecto de acierto visual
+                mostrarEstmuloVisual();
+                
+                // Sonido alegre sintético o voz aleatoria
+                if (puntos % 5 === 0) {
+                    decir("¡Excelente campeona!");
+                }
+
+                // Desvanecer y eliminar elemento
+                el.style.transform = "scale(1.5)";
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 200);
+            });
+
+            areaJuego.appendChild(el);
+
+            // Auto-eliminar después de 4 segundos si no lo toca
+            setTimeout(() => {
+                if (el.parentElement) {
+                    el.remove();
+                }
+            }, 4000);
+        }
+
+        function mostrarEstmuloVisual() {
+            mensajeCentro.classList.add('mostrar');
+            setTimeout(() => {
+                mensajeCentro.classList.remove('mostrar');
+            }, 600);
+        }
+
+        function reiniciarJuego() {
+            puntos = 0;
+            marcador.textContent = "Puntos: 0";
+            areaJuego.innerHTML = '<div id="mensaje-centro">¡Muy bien! 🎉</div>';
+            decir("¡A jugar!");
+        }
+
+        // Lanzar nuevos amiguitos cada 1.2 segundos
+        setInterval(crearElemento, 1200);
+        
+        // Saludo inicial al cargar
+        window.onload = () => {
+            setTimeout(() => decir("¡Toca los animalitos!"), 1000);
+        };
+    </script>
+</body>
+</html>
