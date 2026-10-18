@@ -271,7 +271,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia optimizada para que suba y quede pegada al título
+// Gráfica de tendencia optimizada (pegada arriba, pastillas en zigzag modernas con ceros)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -346,7 +346,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Reducimos el padding superior para que la gráfica suba y se acerque al título
             layout: {
                 padding: {
                     top: 18, 
@@ -393,7 +392,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                             
                             let text = '$ 0';
                             if (value > 0) {
-                                text = value >= 1000000 ? '$ ' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
+                                text = value >= 1000000 ? '$' + (value / 1000000).toFixed(1) + 'M' : '$ ' + value;
                             }
                             
                             ctx.font = 'bold 11px Segoe UI, Tahoma, sans-serif';
@@ -436,7 +435,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         }]
     });
 }
-
 
 // Renderizar Estado Regional compacto y ordenado
 function renderizarEstadoRegional(rows) {
@@ -487,6 +485,73 @@ function renderizarEstadoRegional(rows) {
     }
     html += `</div>`;
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
+}
+
+// Funciones para el Modal de Detalle "En Trámite"
+function abrirModalEnTramite() {
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const registrosEnTramite = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchSearch = tecnico.includes(searchVal);
+
+        const esTramite = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
+
+        return matchReg && matchMes && matchPerfil && matchSearch && esTramite;
+    });
+
+    const tbody = document.getElementById('tableBodyEnTramite');
+    if (!tbody) return;
+
+    if (registrosEnTramite.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total: $ 0';
+    } else {
+        let html = '';
+        let sumaTotal = 0;
+
+        registrosEnTramite.forEach(r => {
+            const tecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
+            const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || "GENERAL";
+            const mes = r.mes || r.MES || "-";
+            const aprobReg = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE";
+            const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+
+            sumaTotal += monto;
+
+            html += `
+                <tr>
+                    <td style="font-weight: 700; color: #1e293b;">${tecnico}</td>
+                    <td>${regional}</td>
+                    <td>${mes}</td>
+                    <td><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobReg}</span></td>
+                    <td style="text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(monto)}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total en trámite: ' + formatMoney(sumaTotal);
+    }
+
+    const modal = document.getElementById('modalEnTramiteDetalle');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalEnTramite() {
+    const modal = document.getElementById('modalEnTramiteDetalle');
+    if (modal) modal.style.display = 'none';
 }
 
 // Funciones para la Campana de Notificaciones e Incrementos
