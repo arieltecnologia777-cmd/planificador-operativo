@@ -270,7 +270,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         });
     }
 }
-// Gráfica de tendencia anual con línea láser roja y cursor de selección fluido
+// Gráfica de tendencia anual con precisión estricta (cero desfase al tocar los puntos)
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -313,7 +313,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
 
     if (chartTendencia) chartTendencia.destroy();
 
-    // Plugin para dibujar la línea vertical láser roja sobre el punto activo
+    // Plugin para dibujar la línea vertical láser roja exactamente sobre el punto activo
     const laserCrosshairPlugin = {
         id: 'laserCrosshair',
         afterDraw: (chart) => {
@@ -351,7 +351,9 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#2563eb',
-                    pointRadius: 4,
+                    // Aumentamos ligeramente el radio táctil del punto para facilitar la interacción al pasar el mouse
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
                     order: 1
                 },
                 {
@@ -370,11 +372,10 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            // Interacción optimizada por cercanía horizontal directa
+            // Precisión estricta: 'intersect: true' obliga a que el tooltip aparezca únicamente al posarse sobre el punto exacto
             interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false,
+                mode: 'point',
+                intersect: true,
             },
             plugins: { 
                 legend: { 
@@ -394,7 +395,6 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     boxWidth: 10,
                     boxHeight: 10,
                     usePointStyle: true,
-                    position: 'nearest',
                     callbacks: {
                         title: function(context) {
                             return context[0].label;
