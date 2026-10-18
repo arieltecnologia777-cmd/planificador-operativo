@@ -208,11 +208,11 @@
             <!-- Fila Superior: 3 Columnas Proporcionales (Tendencia, Estado Regional y Banner con Avatar) -->
             <div class="fact-top-row">
                 <!-- Columna 1: Tendencia de Facturación -->
-                <div class="fact-panel" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 350px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div class="fact-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
                     </div>
-                    <div style="position: relative; flex-grow: 1; min-height: 280px;">
+                    <div style="position: relative; height: 230px;">
                         <canvas id="tendenciaChart"></canvas>
                     </div>
                 </div>
@@ -384,9 +384,10 @@
                     <thead>
                         <tr>
                             <th>Técnico / Perfil</th>
+                            <th style="text-align: center;">ID / OT</th>
                             <th>Regional</th>
                             <th>Mes</th>
-                            <th>Estado Aprobación</th>
+                            <th>Estado / Detalle</th>
                             <th style="text-align: right;">Monto</th>
                         </tr>
                     </thead>
