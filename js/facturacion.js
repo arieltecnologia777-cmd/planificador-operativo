@@ -974,8 +974,11 @@ function renderTable(records) {
     }
 
     let html = '';
-    records.forEach((r, index) => {
+   records.forEach((r, index) => {
         const badgeClass = r.estado === "Cumple" ? "badge-progreso" : "badge-riesgo";
+        const badgeStyle = r.estado === "Cumple" 
+            ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0;" 
+            : "";
         const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
@@ -993,7 +996,7 @@ function renderTable(records) {
                         </div>
                     </div>
                 </td>
-                <td><span class="badge-status ${badgeClass}">${r.estado}</span></td>
+                <td><span class="badge-status ${badgeClass}" style="${badgeStyle}">${r.estado}</span></td>
                 <td style="text-align: center;">
                     <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
                 </td>
