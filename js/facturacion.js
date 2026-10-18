@@ -378,8 +378,23 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: coloresPuntos, // Puntos dinámicos (Rojo, Amarillo, Verde, Gris)
-                    pointBorderColor: coloresPuntos,
+                    // Función dinámica para colorear cada punto individualmente según su valor
+                    pointBackgroundColor: function(context) {
+                        const valor = context.raw;
+                        if (valor <= 0) return '#94a3b8'; // Gris para meses en ceros
+                        const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
+                        if (porcentaje >= 85) return '#22c55e'; // Verde
+                        if (porcentaje >= 45) return '#f59e0b'; // Amarillo / Naranja
+                        return '#dc2626'; // Rojo crítico
+                    },
+                    pointBorderColor: function(context) {
+                        const valor = context.raw;
+                        if (valor <= 0) return '#94a3b8';
+                        const porcentaje = referenciaMensualMeta > 0 ? (valor / referenciaMensualMeta) * 100 : 0;
+                        if (porcentaje >= 85) return '#22c55e';
+                        if (porcentaje >= 45) return '#f59e0b';
+                        return '#dc2626';
+                    },
                     pointRadius: 5,
                     pointHoverRadius: 7,
                     order: 1
