@@ -34,7 +34,10 @@
             </div>
             
             <nav class="sidebar-nav">
-                <!-- Acordeón Planeación -->
+                <!-- 1. Facturación arriba -->
+                <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
+
+                <!-- 2. Planeación -->
                 <div class="nav-accordion-group">
                     <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuPlaneacion', 'accordionArrowPlaneacion')">
                         <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">📅</span> Planeación</span>
@@ -48,9 +51,7 @@
                     </div>
                 </div>
 
-                <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
-
-                <!-- Botón de Notificaciones reubicado en el Sidebar con efecto de aviso -->
+                <!-- 3. Notificaciones -->
                 <div style="padding: 10px 14px; margin-top: 6px;">
                     <button type="button" onclick="abrirModalNotificaciones()" id="btnCampanaNotif" style="width: 100%; background: #2563eb; border: none; padding: 8px 12px; border-radius: 6px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; font-size: 0.82rem;">
                         🔔 Notificaciones
@@ -58,8 +59,15 @@
                     </button>
                 </div>
 
-                <!-- Acordeón Filtros Funcionales -->
+                <!-- 4. Línea que separa filtros, 5. Borrar filtros, 6. Filtros -->
                 <div class="nav-accordion-group" style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px;">
+                    <!-- Botón Borrar / Limpiar filtros -->
+                    <div style="padding: 0 14px 8px 14px;">
+                        <button type="button" onclick="resetFiltros()" style="width: 100%; background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
+                            ✖ Limpiar filtros
+                        </button>
+                    </div>
+
                     <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
                         <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
                         <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
@@ -104,15 +112,12 @@
 
     <main class="main-content">
         <div class="fact-container">
-            <!-- Hero Personalizado con texto genérico de facturación y seguimiento -->
+            <!-- Hero Personalizado con texto genérico y sin botón de limpiar filtros -->
             <header class="hero" style="display: flex; justify-content: space-between; align-items: center; padding: 22px 30px; margin-bottom: 0; border-radius: 18px;">
                 <div class="hero-content">
                     <div class="hero-badge"><span></span> FINANCIERO</div>
                     <h1 style="font-size: 1.65rem; margin-bottom: 4px;">Módulo de Facturación y Seguimiento</h1>
                     <p style="font-size: 0.9rem; margin: 0;">Panel general de control financiero, metas y cumplimiento por técnico y regional.</p>
-                </div>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <button type="button" onclick="resetFiltros()" style="padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); color: #fff; font-weight: bold; outline: none; cursor: pointer; font-size: 0.85rem;">Limpiar Filtros</button>
                 </div>
             </header>
 
