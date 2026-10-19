@@ -10,12 +10,12 @@ window.registrosD1 = {};
 let datosFiltradosGlobal = [];
 let nuevosSeleccionados = [];
 let departamentosSeleccionados = [];
+let municipiosSeleccionados = []; // 👉 NUEVA VARIABLE
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
 let diasOtSeleccionados = [];
 let fechasProgSeleccionadas = [];
-let backlogSeleccionados = [];
 let estadoOTSeleccionados = [];
 let estadosGestionSeleccionados = [];
 let kpiFiltroActivo = null;
@@ -734,6 +734,9 @@ function actualizarOpcionesFiltros(datos) {
     const txtDepto = document.getElementById("textoDepartamento");
     if (txtDepto) txtDepto.textContent = departamentosSeleccionados.length ? `Departamento (${departamentosSeleccionados.length})` : "Departamento";
 
+    const txtMuni = document.getElementById("textoMunicipio");
+    if (txtMuni) txtMuni.textContent = municipiosSeleccionados.length ? `Municipio (${municipiosSeleccionados.length})` : "Municipio";
+
     const txtEstado = document.getElementById("textoEstado");
     if (txtEstado) txtEstado.textContent = estadosGestionSeleccionados.length ? `Estado (${estadosGestionSeleccionados.length})` : "Estado";
 
@@ -748,9 +751,6 @@ function actualizarOpcionesFiltros(datos) {
 
     const txtRang = document.getElementById("textoRango");
     if (txtRang) txtRang.textContent = rangosSeleccionados.length === 0 ? "Rango de afectación" : `Rango (${rangosSeleccionados.length})`;
-
-    const txtBacklog = document.getElementById("textoBacklog");
-    if (txtBacklog) txtBacklog.textContent = backlogSeleccionados.length === 0 ? "Incumple Backlog" : `Backlog (${backlogSeleccionados.length})`;
 
     const txtEstadoOT = document.getElementById("textoEstadoOT");
     if (txtEstadoOT) txtEstadoOT.textContent = estadoOTSeleccionados.length === 0 ? "Estado OT" : `Estado OT (${estadoOTSeleccionados.length})`;
@@ -767,24 +767,23 @@ function actualizarOpcionesFiltros(datos) {
             const regD1 = (window.registrosD1 || {})[otVal] || {};
             const estG = regD1.estadoGestion || "";
             const fechaProgVal = regD1.fechaProgramacion || "";
-            const valorBacklogCol = idxBacklog !== -1 ? (fila[idxBacklog] || "").trim().toUpperCase() : "";
-            const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
             const esN = esCasoNuevo(otVal) ? "Sí" : "No";
             const estadoOTVal = idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : "";
             const diasVal = idxDiasOT !== -1 ? (fila[idxDiasOT] || "") : "";
             const rangoVal = idxRango !== -1 ? (fila[idxRango] || "") : "";
             const deptoVal = idxDepto !== -1 ? fila[idxDepto] : "";
+            const muniVal = idxMunicipio !== -1 ? fila[idxMunicipio] : "";
             const afecVal = idxAfectacion !== -1 ? fila[idxAfectacion] : "";
             const stopVal = idxStoppers !== -1 ? fila[idxStoppers] : "";
 
             if (excluirFiltro !== 'nuevo' && nuevosSeleccionados.length > 0 && !nuevosSeleccionados.includes(esN)) return false;
             if (excluirFiltro !== 'depto' && departamentosSeleccionados.length > 0 && !departamentosSeleccionados.includes(deptoVal)) return false;
+            if (excluirFiltro !== 'muni' && municipiosSeleccionados.length > 0 && !municipiosSeleccionados.includes(muniVal)) return false;
             if (excluirFiltro !== 'estado' && estadosGestionSeleccionados.length > 0 && !estadosGestionSeleccionados.includes(estG)) return false;
             if (excluirFiltro !== 'afectacion' && afectacionesSeleccionadas.length > 0 && !afectacionesSeleccionadas.includes(afecVal)) return false;
             if (excluirFiltro !== 'stoppers' && stoppersSeleccionados.length > 0 && !stoppersSeleccionados.includes(stopVal)) return false;
             if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(diasVal)) return false;
             if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(rangoVal)) return false;
-            if (excluirFiltro !== 'backlog' && backlogSeleccionados.length > 0 && !backlogSeleccionados.includes(incumplidor)) return false;
             if (excluirFiltro !== 'estadoOT' && estadoOTSeleccionados.length > 0 && !estadoOTSeleccionados.includes(estadoOTVal)) return false;
             if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
 
@@ -794,12 +793,12 @@ function actualizarOpcionesFiltros(datos) {
 
     const datosParaNuevo = filtrarParaLista('nuevo');
     const datosParaDepto = filtrarParaLista('depto');
+    const datosParaMuni = filtrarParaLista('muni');
     const datosParaEstado = filtrarParaLista('estado');
     const datosParaAfec = filtrarParaLista('afectacion');
     const datosParaStoppers = filtrarParaLista('stoppers');
     const datosParaDias = filtrarParaLista('dias');
     const datosParaRango = filtrarParaLista('rango');
-    const datosParaBacklog = filtrarParaLista('backlog');
     const datosParaEstadoOT = filtrarParaLista('estadoOT');
     const datosParaFecha = filtrarParaLista('fecha');
 
@@ -841,17 +840,36 @@ function actualizarOpcionesFiltros(datos) {
         `).join("");
     }
 
-    // Obtenemos los estados únicos y si hay vacíos, agregamos la etiqueta "(Vacío)"
-    let estadosDispBrutos = datosParaEstado.map(f => {
+    const municipiosDisp = [...new Set(datosParaMuni.map(f => idxMunicipio !== -1 ? f[idxMunicipio] : ""))].filter(Boolean).sort();
+    const mEl = document.getElementById("listaMunicipio");
+    if(mEl) {
+        mEl.innerHTML = `
+            <div class="filtro-sort-container">
+                <div class="filtro-sort-title">⇅ Ordenar</div>
+                <div class="filtro-sort-header">
+                    <span onclick="ordenarDesdeFiltro('Municipio', true)">A-Z</span>
+                    <span onclick="ordenarDesdeFiltro('Municipio', false)">Z-A</span>
+                </div>
+            </div>
+            <input type="text" id="buscarMunicipio" class="buscar-multifiltro" placeholder="Buscar...">
+            <div class="multi-filtro-reset" id="btnLimpiarMunicipio">✖ Borrar filtro</div>
+            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosMunicipios"> (Seleccionar todo)</label>
+        ` + municipiosDisp.map(m => `
+            <label class="multi-filtro-item"><input type="checkbox" value="${m}" class="chkMunicipio" ${municipiosSeleccionados.includes(m) ? "checked" : ""}> ${m}</label>
+        `).join("");
+    }
+
+    const estadosDispBrutos = datosParaEstado.map(f => {
         const reg = (window.registrosD1 || {})[f[idxOT]] || {};
         const est = reg.estadoGestion ? reg.estadoGestion.trim() : "";
         return est === "" ? "(Vacío)" : est;
     });
     const estadosDisp = [...new Set(estadosDispBrutos)].sort((a, b) => {
-        if (a === "(Vacío)") return 1; // Dejamos "(Vacío)" al final o al inicio según prefieras
+        if (a === "(Vacío)") return 1;
         if (b === "(Vacío)") return -1;
         return a.localeCompare(b);
     });
+
     const eEl = document.getElementById("listaEstado");
     if(eEl) {
         eEl.innerHTML = `
@@ -1044,11 +1062,11 @@ function aplicarFiltros(){
 
     const nuevosFiltro = nuevosSeleccionados;
     const deptos = departamentosSeleccionados;
+    const municipiosFiltro = municipiosSeleccionados;
     const afectacionesFiltro = afectacionesSeleccionadas;
     const stoppersFiltro = stoppersSeleccionados;
     const rangosFiltro = rangosSeleccionados;
     const diasOtFiltro = diasOtSeleccionados;
-    const backlogFiltro = backlogSeleccionados;
     const estadoOTFiltro = estadoOTSeleccionados;
     const fechasFiltro = fechasProgSeleccionadas;
     const estGestionFiltro = estadosGestionSeleccionados;
@@ -1063,25 +1081,22 @@ function aplicarFiltros(){
     const idxStoppers = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
     const idxRango = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
     const idxDiasOT = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
 
     let resultado = datosGlobal.filter(fila => {
         const otVal = idxOT !== -1 ? fila[idxOT] : "";
         const regD1 = (window.registrosD1 || {})[otVal] || {};
-        const estG = regD1.estadoGestion || "";
+        const estG = regD1.estadoGestion ? regD1.estadoGestion.trim() : "";
         const fechaProgVal = regD1.fechaProgramacion || "";
         const prioridadVal = (idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : "").trim().toUpperCase();
-        const valorBacklogCol = (idxBacklog !== -1 ? (fila[idxBacklog] || "") : "").trim().toUpperCase();
-        const incumplidor = valorBacklogCol === "NO CUMPLE" ? "Sí" : "No";
         const esN = esCasoNuevo(otVal) ? "Sí" : "No";
         const estadoOTVal = idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : "";
         const diasVal = idxDiasOT !== -1 ? (fila[idxDiasOT] || "") : "";
         const rangoVal = idxRango !== -1 ? (fila[idxRango] || "") : "";
         const deptoVal = idxDepto !== -1 ? fila[idxDepto] : "";
+        const muniVal = idxMunicipio !== -1 ? fila[idxMunicipio] : "";
         const afecVal = idxAfectacion !== -1 ? fila[idxAfectacion] : "";
         const stopVal = idxStoppers !== -1 ? fila[idxStoppers] : "";
-
 
         const cumpleTexto = !texto || 
             String(idxID !== -1 ? fila[idxID] : "").toLowerCase().includes(texto) ||
@@ -1090,25 +1105,21 @@ function aplicarFiltros(){
 
         const cumpleNuevo = nuevosFiltro.length === 0 || nuevosFiltro.includes(esN);
         const cumpleDepto = deptos.length === 0 || deptos.includes(deptoVal);
+        const cumpleMunicipio = municipiosFiltro.length === 0 || municipiosFiltro.includes(muniVal);
         const cumpleAfectacion = afectacionesFiltro.length === 0 || afectacionesFiltro.includes(afecVal);
         const cumpleStoppers = stoppersFiltro.length === 0 || stoppersFiltro.includes(stopVal);
         const cumpleRango = rangosFiltro.length === 0 || rangosFiltro.includes(rangoVal);
         const cumpleDiasOT = diasOtFiltro.length === 0 || diasOtFiltro.includes(diasVal);
-        const cumpleBacklog = backlogFiltro.length === 0 || backlogFiltro.includes(incumplidor);
         const cumpleEstadoOT = estadoOTFiltro.length === 0 || estadoOTFiltro.includes(estadoOTVal);
         const cumpleFechaProg = fechasFiltro.length === 0 || fechasFiltro.includes(fechaProgVal);
-        // Verificamos si el estado está vacío de verdad
-        const estGFormateado = estG ? estG.trim() : "";
-        const esVacioReal = estGFormateado === "";
-
-        // Evaluamos si cumple con el filtro de estados seleccionados (incluyendo la opción "(Vacío)")
+        
         let cumpleEstGestion = true;
         if (estGestionFiltro.length > 0) {
             cumpleEstGestion = estGestionFiltro.some(filtroSeleccionado => {
                 if (filtroSeleccionado === "(Vacío)") {
-                    return esVacioReal;
+                    return estG === "";
                 }
-                return filtroSeleccionado === estGFormateado;
+                return filtroSeleccionado === estG;
             });
         }
 
@@ -1116,11 +1127,11 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
-        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
-        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
+        if (kpiFiltroActivo === "cumple") cumpleKpi = false; // Ya no hay backlog en filtros directos
+        if (kpiFiltroActivo === "nocumple") cumpleKpi = false;
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
-        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleBacklog && cumpleEstadoOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
+        return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleMunicipio && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleEstadoOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
     });
 
     if (ordenActualColumna !== null) {
