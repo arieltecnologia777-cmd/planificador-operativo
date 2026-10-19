@@ -1056,30 +1056,38 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal filtrando de forma segura por el técnico y sus rechazos reales
+// Función que despliega el sub-modal respetando los filtros activos de manera flexible
 function verDetalleRechazosIdTecnico(nombreTecnico) {
-    // 1. Filtramos directamente de registrosCrudos por el nombre exacto del técnico y estado rechazado
+    // Capturamos los filtros actuales del DOM
+    const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
+    const fRegion = String(document.getElementById('filtroRegion')?.value || "TODOS").trim().toUpperCase();
+
+    // Filtramos los registros crudos de forma flexible y segura
     const itemsRechazados = registrosCrudos.filter(r => {
         const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        const mesRegistro = String(r.mes || r.MES || "").trim().toUpperCase();
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         
+        // Validaciones flexibles
         const matchTecnico = perfil === String(nombreTecnico).trim().toUpperCase();
         const esRechazado = aprob.includes("RECHAZADO");
+        const matchMes = fMes === "TODOS" || mesRegistro.includes(fMes) || fMes.includes(mesRegistro);
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
 
-        return matchTecnico && esRechazado;
+        return matchTecnico && esRechazado && matchMes && matchReg;
     });
 
-    // 2. Si no hay registros, avisa mediante una alerta
     if (itemsRechazados.length === 0) {
-        alert("No se encontraron registros de rechazo para este técnico.");
+        alert(`No se encontraron registros de rechazo para ${nombreTecnico} con los filtros actuales (Mes: ${fMes}).`);
         return;
     }
 
     let filasHtml = '';
     let sumaRechazosModal = 0;
 
-    // 3. Recorremos cada registro encontrado para armar las filas de la tabla
     itemsRechazados.forEach(item => {
+        // Leyendo el ID real desde 'id_id'
         const idReal = item.id_id || item.ID_ID || item.id || item.ID || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
@@ -1094,7 +1102,6 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
         `;
     });
 
-    // 4. Creamos o reutilizamos el contenedor visual del submodal flotante
     let subModal = document.getElementById('modalSubDetalleRechazos');
     if (!subModal) {
         subModal = document.createElement('div');
@@ -1103,13 +1110,12 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
         document.body.appendChild(subModal);
     }
 
-    // 5. Inyectamos el diseño HTML con los datos calculados
     subModal.innerHTML = `
         <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
-                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico}</div>
+                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico} | Mes: ${fMes}</div>
                 </div>
                 <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
