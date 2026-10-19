@@ -231,7 +231,7 @@
                 </div>
             </div>
 
-            <div class="planeacion-filtros-sticky">
+           <div class="planeacion-filtros-sticky">
                 <div class="planeacion-filtros">
                     <div class="multi-filtro" id="multiNuevo">
                         <button type="button" id="btnNuevo" class="multi-filtro-btn">
@@ -247,6 +247,14 @@
                             <span class="multi-filtro-arrow">⌄</span>
                         </button>
                         <div id="listaDepartamento" class="multi-filtro-lista"></div>
+                    </div>
+
+                    <div class="multi-filtro" id="multiMunicipio">
+                        <button type="button" id="btnMunicipio" class="multi-filtro-btn">
+                            <span id="textoMunicipio">Municipio</span>
+                            <span class="multi-filtro-arrow">⌄</span>
+                        </button>
+                        <div id="listaMunicipio" class="multi-filtro-lista"></div>
                     </div>
 
                     <div class="multi-filtro" id="multiEstado">
@@ -289,14 +297,6 @@
                         <div id="listaRango" class="multi-filtro-lista"></div>
                     </div>
 
-                    <div class="multi-filtro" id="multiBacklog">
-                        <button type="button" id="btnBacklog" class="multi-filtro-btn">
-                            <span id="textoBacklog">Incumple Backlog</span>
-                            <span class="multi-filtro-arrow">⌄</span>
-                        </button>
-                        <div id="listaBacklog" class="multi-filtro-lista"></div>
-                    </div>
-
                     <div class="multi-filtro" id="multiFechaProg">
                         <button type="button" id="btnFechaProg" class="multi-filtro-btn">
                             <span id="textoFechaProg">Fecha programación</span>
@@ -305,7 +305,6 @@
                         <div id="listaFechaProg" class="multi-filtro-lista"></div>
                     </div>
 
-                    <!-- Filtro Estado OT ubicado al lado de Fecha Programación -->
                     <div class="multi-filtro" id="multiEstadoOT">
                         <button type="button" id="btnEstadoOT" class="multi-filtro-btn">
                             <span id="textoEstadoOT">Estado OT</span>
@@ -315,7 +314,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="planeacion-table-wrapper">
                 <table class="planeacion-table">
                     <thead>
