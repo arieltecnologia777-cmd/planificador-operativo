@@ -347,11 +347,11 @@ function calcularYPintarFilaTabla(zona, d) {
         pesoGenSla = pSla;
         pesoGenMpr = pMpr;
     } else {
-        // 2. En modo normal, toma los pesos reales de tu Excel
-        pBacklog = Number(d.peso_backlog) || 0.43; 
-        pOper = Number(d.peso_operatividad) || 0.37; 
-        pSla = Number(d.peso_sla) || 0.10;
-        pMpr = Number(d.peso_mpr) || 0.10;
+        // 2. En modo normal, toma los pesos reales de tu Excel respetando el 0 si así viene
+        pBacklog = (d.peso_backlog !== undefined && d.peso_backlog !== null) ? Number(d.peso_backlog) : 0.43; 
+        pOper = (d.peso_operatividad !== undefined && d.peso_operatividad !== null) ? Number(d.peso_operatividad) : 0.37; 
+        pSla = (d.peso_sla !== undefined && d.peso_sla !== null) ? Number(d.peso_sla) : 0.10;
+        pMpr = (d.peso_mpr !== undefined && d.peso_mpr !== null) ? Number(d.peso_mpr) : 0.10;
 
         // El peso visual en la tabla muestra el valor real configurado
         pesoGenBacklog = pBacklog;
