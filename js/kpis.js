@@ -74,37 +74,45 @@ function initModalesAdmin() {
 
     if (btnVerificarPassword) {
         btnVerificarPassword.addEventListener("click", async () => {
-            const pass = inputAdminPassword ? inputAdminPassword.value.trim() : "";
+            const inputPass = document.getElementById("inputAdminPassword");
+            const pass = inputPass ? inputPass.value.trim() : "";
 
             if (!pass) {
-                alert("Por favor ingrese la contraseña.");
+                alert("Por favor ingresa la contraseña.");
                 return;
             }
 
             try {
-                const authUrl = WORKER_URL.replace('/api/kpis', '/api/verify-admin');
-                const resp = await fetch(authUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const resp = await fetch(`https://planeacion-api.modulo-de-exclusiones.workers.dev/api/planeacion/verificar`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ password: pass })
                 });
-                
                 const resultado = await resp.json();
 
-                if (resultado.ok) {
-                    cerrarPw();
-                    if (modalAdminTools) {
-                        modalAdminTools.style.display = "flex";
-                        if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
-                        if (inputExcelMasivo) inputExcelMasivo.value = "";
+                if (resp.ok && resultado.ok) {
+                    if (modalPassword) modalPassword.style.display = "none";
+                    if (modalAdminTools) modalAdminTools.style.display = "flex";
+                    if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
+                    if (inputExcelMasivo) inputExcelMasivo.value = "";
+                    if (typeof cargarNotasEnEditorAdmin === "function") {
                         cargarNotasEnEditorAdmin();
                     }
+                    if (inputPass) inputPass.value = "";
                 } else {
                     alert("Contraseña incorrecta.");
+                    if (inputPass) {
+                        inputPass.value = "";
+                        inputPass.focus();
+                    }
                 }
             } catch (err) {
-                console.error("Error al verificar la contraseña:", err);
-                alert("Error de conexión al validar la contraseña.");
+                console.error("Error:", err);
+                alert("Error de red al verificar la contraseña con el servidor.");
+                if (inputPass) {
+                    inputPass.value = "";
+                    inputPass.focus();
+                }
             }
         });
     }
