@@ -10,7 +10,7 @@ window.registrosD1 = {};
 let datosFiltradosGlobal = [];
 let nuevosSeleccionados = [];
 let departamentosSeleccionados = [];
-let municipiosSeleccionados = []; // 👉 NUEVA VARIABLE
+let municipiosSeleccionados = [];
 let afectacionesSeleccionadas = [];
 let stoppersSeleccionados = [];
 let rangosSeleccionados = [];
@@ -100,7 +100,6 @@ styleGrupoExcel.innerHTML = `
         text-decoration: underline;
     }
     
-    /* --- FIJACIÓN GENERAL Y UNIFICADA PARA TODOS LOS TH --- */
     .planeacion-table tr th {
         position: sticky !important;
         top: 0px !important;
@@ -109,7 +108,6 @@ styleGrupoExcel.innerHTML = `
         user-select: none;
     }
 
-    /* --- PRIORIDAD ABSOLUTA PARA LAS COLUMNAS FIJAS IZQUIERDAS (INCLUYENDO ID) --- */
     .planeacion-table tr th:nth-child(1),
     .planeacion-table tr th:nth-child(2),
     .planeacion-table tr th:nth-child(3) {
@@ -134,7 +132,6 @@ styleGrupoExcel.innerHTML = `
     }
 `;
 document.head.appendChild(styleGrupoExcel);
-
 
 const TECNICOS = [
     "ABNER ALBERTO ARIAS PEREZ",
@@ -358,7 +355,6 @@ function pintarTabla(datos){
     const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
     const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
     const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
     const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
     const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
@@ -459,7 +455,6 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
-            <td>${idxBacklog !== -1 ? (fila[idxBacklog] || "") : ""}</td>
             <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
             <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
             <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
@@ -475,7 +470,6 @@ function pintarTabla(datos){
 
 async function cargarPlaneacion(){
     try {
-        // 1. Cargamos el backlog base y las completadas en paralelo para filtrar de entrada
         const [respBacklog, respD1, respCompletadas] = await Promise.all([
             fetch(WORKER_DATA_URL),
             fetch(API_URL),
@@ -490,7 +484,6 @@ async function cargarPlaneacion(){
             console.error(e);
         }
 
-        // Poblar el Set de OTs completadas para excluirlas de la vista principal
         otsCompletadasSet.clear();
         try {
             const dataCompletadas = await respCompletadas.json();
@@ -531,7 +524,6 @@ async function cargarPlaneacion(){
             return `${d}/${m}/${y}`;
         };
 
-        // Mapeamos y EXCLUIMOS automáticamente las que ya estén en la tabla de completadas
         datosGlobal = listaRegistros.map(reg => {
             if (Array.isArray(reg)) return reg;
             
@@ -567,7 +559,6 @@ async function cargarPlaneacion(){
         }).filter(fila => {
             const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
             const otVal = String(fila[idxOT] || "").trim();
-            // FILTRO CLAVE: Si la OT ya está en completadas, la eliminamos de la vista activa
             return otVal && !otsCompletadasSet.has(otVal);
         });
         
@@ -581,7 +572,6 @@ async function cargarPlaneacion(){
 
         Object.values(registrosD1).forEach(reg => {
             const otReg = String(reg.ot || "").trim();
-            // Tampoco rescatamos registros que ya pertenezcan a completadas
             if (otReg && !otsCompletadasSet.has(otReg) && !otsConfiguesSet.has(otReg)) {
                 if ((reg.estadoGestion && reg.estadoGestion !== "") || (reg.estadoProgramacion && reg.estadoProgramacion !== "")) {
                     
@@ -687,13 +677,11 @@ function obtenerDatosBaseParaFiltros() {
     const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
     const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
     const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
 
     return datosGlobal.filter(fila => {
         const otVal = fila[idxOT];
         const regD1 = (window.registrosD1 || {})[otVal] || {};
         const prioridadVal = (idxPrioridad !== -1 ? (fila[idxPrioridad] || "") : "").trim().toUpperCase();
-        const valorBacklogCol = (idxBacklog !== -1 ? (fila[idxBacklog] || "") : "").trim().toUpperCase();
 
         const cumpleTexto = !texto || 
             String(idxID !== -1 ? fila[idxID] : "").toLowerCase().includes(texto) ||
@@ -704,8 +692,6 @@ function obtenerDatosBaseParaFiltros() {
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
-        if (kpiFiltroActivo === "cumple") cumpleKpi = (valorBacklogCol === "CUMPLE");
-        if (kpiFiltroActivo === "nocumple") cumpleKpi = (valorBacklogCol === "NO CUMPLE");
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
         return cumpleTexto && cumpleKpi;
@@ -716,7 +702,7 @@ function actualizarOpcionesFiltros(datos) {
     const encabezados = encabezadosGlobal;
     const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
-    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]); // 👉 AQUÍ ESTABA LA VARIABLE FALTANTE
+    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]);
     const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
     const idxStoppers = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
     const idxRango = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
@@ -758,7 +744,6 @@ function actualizarOpcionesFiltros(datos) {
     const txtFP = document.getElementById("textoFechaProg");
     if (txtFP) txtFP.textContent = fechasProgSeleccionadas.length === 0 ? "Fecha programación" : (fechasProgSeleccionadas.length === 1 ? fechasProgSeleccionadas[0] : `Fecha (${fechasProgSeleccionadas.length})`);
 
-    // --- FILTRADO EN CASCADA COMPLETO ---
     const datosBaseKpi = obtenerDatosBaseParaFiltros();
 
     const filtrarParaLista = (excluirFiltro) => {
@@ -766,7 +751,6 @@ function actualizarOpcionesFiltros(datos) {
             const otVal = idxOT !== -1 ? fila[idxOT] : "";
             const regD1 = (window.registrosD1 || {})[otVal] || {};
             const estG = regD1.estadoGestion || "";
-            const fechaProgVal = regD1.fechaProgramacion || "";
             const esN = esCasoNuevo(otVal) ? "Sí" : "No";
             const estadoOTVal = idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : "";
             const diasVal = idxDiasOT !== -1 ? (fila[idxDiasOT] || "") : "";
@@ -785,7 +769,7 @@ function actualizarOpcionesFiltros(datos) {
             if (excluirFiltro !== 'dias' && diasOtSeleccionados.length > 0 && !diasOtSeleccionados.includes(diasVal)) return false;
             if (excluirFiltro !== 'rango' && rangosSeleccionados.length > 0 && !rangosSeleccionados.includes(rangoVal)) return false;
             if (excluirFiltro !== 'estadoOT' && estadoOTSeleccionados.length > 0 && !estadoOTSeleccionados.includes(estadoOTVal)) return false;
-            if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(fechaProgVal)) return false;
+            if (excluirFiltro !== 'fecha' && fechasProgSeleccionadas.length > 0 && !fechasProgSeleccionadas.includes(regD1.fechaProgramacion || "")) return false;
 
             return true;
         });
@@ -887,7 +871,7 @@ function actualizarOpcionesFiltros(datos) {
             <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkEstadoGestion" ${estadosGestionSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
         `).join("");
     }
-}
+
     const afecDisp = [...new Set(datosParaAfec.map(f => idxAfectacion !== -1 ? f[idxAfectacion] : ""))].filter(Boolean).sort();
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
@@ -954,23 +938,6 @@ function actualizarOpcionesFiltros(datos) {
             <div class="multi-filtro-reset" id="btnLimpiarRango">✖ Borrar filtro</div>
             <label class="multi-filtro-item"><input type="checkbox" id="chkTodosRangos"> (Seleccionar todo)</label>
         ` + rangDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkRango" ${rangosSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
-    }
-
-    const bEl = document.getElementById("listaBacklog");
-    if(bEl) {
-        const backlogDisp = [...new Set(datosParaBacklog.map(f => (idxBacklog !== -1 ? f[idxBacklog] : "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No"))].filter(Boolean).sort();
-        bEl.innerHTML = `
-            <div class="filtro-sort-container">
-                <div class="filtro-sort-title">⇅ Ordenar</div>
-                <div class="filtro-sort-header">
-                    <span onclick="ordenarDesdeFiltro('Indicador backlog', true)">A-Z</span>
-                    <span onclick="ordenarDesdeFiltro('Indicador backlog', false)">Z-A</span>
-                </div>
-            </div>
-            <input type="text" id="buscarBacklog" class="buscar-multifiltro" placeholder="Buscar...">
-            <div class="multi-filtro-reset" id="btnLimpiarBacklog">✖ Borrar filtro</div>
-            <label class="multi-filtro-item"><input type="checkbox" id="chkTodosBacklog"> (Seleccionar todo)</label>
-        ` + backlogDisp.map(v => `<label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkBacklog" ${backlogSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>`).join("");
     }
 
     const estadoOTEl = document.getElementById("listaEstadoOT");
@@ -1127,8 +1094,6 @@ function aplicarFiltros(){
         if (kpiFiltroActivo === "alta") cumpleKpi = (prioridadVal === "ALTA");
         if (kpiFiltroActivo === "media") cumpleKpi = (prioridadVal === "MEDIA");
         if (kpiFiltroActivo === "baja") cumpleKpi = (prioridadVal === "BAJA");
-        if (kpiFiltroActivo === "cumple") cumpleKpi = false; // Ya no hay backlog en filtros directos
-        if (kpiFiltroActivo === "nocumple") cumpleKpi = false;
         if (kpiFiltroActivo === "programados") cumpleKpi = (regD1.estadoProgramacion === "Programada");
 
         return cumpleTexto && cumpleNuevo && cumpleDepto && cumpleMunicipio && cumpleAfectacion && cumpleStoppers && cumpleRango && cumpleDiasOT && cumpleEstadoOT && cumpleFechaProg && cumpleEstGestion && cumpleKpi;
@@ -1142,9 +1107,6 @@ function aplicarFiltros(){
             if (ordenActualColumna === "Nuevo") {
                 valA = esCasoNuevo(a[idxOT]) ? "Sí" : "No";
                 valB = esCasoNuevo(b[idxOT]) ? "Sí" : "No";
-            } else if (ordenActualColumna === "Indicador backlog") {
-                valA = idxBacklog !== -1 ? (a[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No" : "";
-                valB = idxBacklog !== -1 ? (b[idxBacklog] || "").trim().toUpperCase() === "NO CUMPLE" ? "Sí" : "No" : "";
             } else if (ordenActualColumna === "Estado OT") {
                 valA = idxEstadoOT !== -1 ? String(a[idxEstadoOT] || "").trim() : "";
                 valB = idxEstadoOT !== -1 ? String(b[idxEstadoOT] || "").trim() : "";
@@ -1184,11 +1146,11 @@ function aplicarFiltros(){
 function resetearTodosLosFiltros() {
     nuevosSeleccionados = [];
     departamentosSeleccionados = [];
+    municipiosSeleccionados = [];
     afectacionesSeleccionadas = [];
     stoppersSeleccionados = [];
     rangosSeleccionados = [];
     diasOtSeleccionados = [];
-    backlogSeleccionados = [];
     estadoOTSeleccionados = [];
     fechasProgSeleccionadas = [];
     estadosGestionSeleccionados = [];
@@ -1263,6 +1225,18 @@ document.addEventListener("change", (e) => {
         return;
     }
 
+    if (target.classList.contains("chkMunicipio")) {
+        municipiosSeleccionados = Array.from(document.querySelectorAll(".chkMunicipio:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+    if (target.id === "chkTodosMunicipios") {
+        document.querySelectorAll(".chkMunicipio").forEach(chk => chk.checked = target.checked);
+        municipiosSeleccionados = Array.from(document.querySelectorAll(".chkMunicipio:checked")).map(i => i.value);
+        aplicarFiltros();
+        return;
+    }
+
     if (target.classList.contains("chkEstadoGestion")) {
         estadosGestionSeleccionados = Array.from(document.querySelectorAll(".chkEstadoGestion:checked")).map(i => i.value);
         aplicarFiltros();
@@ -1323,18 +1297,6 @@ document.addEventListener("change", (e) => {
         return;
     }
 
-    if (target.classList.contains("chkBacklog")) {
-        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
-        aplicarFiltros();
-        return;
-    }
-    if (target.id === "chkTodosBacklog") {
-        document.querySelectorAll(".chkBacklog").forEach(chk => chk.checked = target.checked);
-        backlogSeleccionados = Array.from(document.querySelectorAll(".chkBacklog:checked")).map(i => i.value);
-        aplicarFiltros();
-        return;
-    }
-
     if (target.classList.contains("chkEstadoOT")) {
         estadoOTSeleccionados = Array.from(document.querySelectorAll(".chkEstadoOT:checked")).map(i => i.value);
         aplicarFiltros();
@@ -1384,7 +1346,6 @@ document.addEventListener("change", (e) => {
             fecha.value = "⟵ Definir estado";
         }
     }
-
     
     if(filaTabla && !target.closest(".multi-filtro-item")) {
         const otMod = filaTabla.children[4].textContent.trim();
@@ -1479,6 +1440,13 @@ document.addEventListener("click", (e) => {
         departamentosSeleccionados = [];
         aplicarFiltros();
     }
+    if(target.id === "btnLimpiarMunicipio") {
+        document.querySelectorAll(".chkMunicipio").forEach(c => c.checked = false);
+        const chkAll = document.getElementById("chkTodosMunicipios");
+        if(chkAll) chkAll.checked = false;
+        municipiosSeleccionados = [];
+        aplicarFiltros();
+    }
     if(target.id === "btnLimpiarEstado") {
         document.querySelectorAll(".chkEstadoGestion").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodosEstados");
@@ -1514,13 +1482,6 @@ document.addEventListener("click", (e) => {
         diasOtSeleccionados = [];
         aplicarFiltros();
     }
-    if(target.id === "btnLimpiarBacklog") {
-        document.querySelectorAll(".chkBacklog").forEach(c => c.checked = false);
-        const chkAll = document.getElementById("chkTodosBacklog");
-        if(chkAll) chkAll.checked = false;
-        backlogSeleccionados = [];
-        aplicarFiltros();
-    }
     if(target.id === "btnLimpiarEstadoOT") {
         document.querySelectorAll(".chkEstadoOT").forEach(c => c.checked = false);
         const chkAll = document.getElementById("chkTodosEstadoOT");
@@ -1539,11 +1500,11 @@ document.addEventListener("click", (e) => {
     const dropdowns = [
         { btn: "btnNuevo", lista: "listaNuevo" },
         { btn: "btnDepartamento", lista: "listaDepartamento" },
+        { btn: "btnMunicipio", lista: "listaMunicipio" },
         { btn: "btnAfectacion", lista: "listaAfectacion" },
         { btn: "btnStoppers", lista: "listaStoppers" },
         { btn: "btnRango", lista: "listaRango" },
         { btn: "btnDiasOT", lista: "listaDiasOT" },
-        { btn: "btnBacklog", lista: "listaBacklog" },
         { btn: "btnEstadoOT", lista: "listaEstadoOT" },
         { btn: "btnFechaProg", lista: "listaFechaProg" },
         { btn: "btnEstado", lista: "listaEstado" }
@@ -1653,7 +1614,6 @@ if(wrapper) {
         }, 80);
     });
 }
-
 
 function actualizarStickyTabla() {
     const header = document.querySelector('.planeacion-header');
@@ -1842,10 +1802,10 @@ window.exportarPlaneacion = function() {
         XLSX.utils.book_append_sheet(wb, ws, "Planeacion");
 
         const ahora = new Date();
-const dia = String(ahora.getDate()).padStart(2, '0');
-const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-const anio = ahora.getFullYear();
-const timestamp = `${dia}-${mes}-${anio}`;
+        const dia = String(ahora.getDate()).padStart(2, '0');
+        const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+        const anio = ahora.getFullYear();
+        const timestamp = `${dia}-${mes}-${anio}`;
         XLSX.writeFile(wb, `Planeacion_${region}_${timestamp}.xlsx`);
 
     } catch (error) {
@@ -2058,9 +2018,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
 
                     const idxEstadoGestion = encabezadosExcel.findIndex(h => {
-    const n = normalizar(h);
-    return n.includes("ESTADO") && (n.includes("GESTION") || n.includes("GESTIÓN"));
-});
+                        const n = normalizar(h);
+                        return n.includes("ESTADO") && (n.includes("GESTION") || n.includes("GESTIÓN"));
+                    });
                     
                     const idxFechaProg = encabezadosExcel.findIndex(h => {
                         const n = normalizar(h);
@@ -2164,8 +2124,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 fechaProgramacion: fechaVal,
                                 observacion: obsVal,
                                 estadoGestion: idxEstadoGestion !== -1 && filter[idxEstadoGestion] !== undefined 
-        ? String(filter[idxEstadoGestion]).trim() 
-        : (regD1Actual.estadoGestion || ""),
+                                    ? String(filter[idxEstadoGestion]).trim() 
+                                    : (regD1Actual.estadoGestion || ""),
                                 tecnicoAsignado: regD1Actual.tecnicoAsignado || "",
                                 acompanamiento: regD1Actual.acompanamiento || "",
                                 idOriginal: idxID !== -1 ? String(filter[idxID] || "").trim() : (regD1Actual.idOriginal || ""),
@@ -2214,7 +2174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
-// Variable global para almacenar los temporizadores activos de las OTs en cuenta regresiva
+
 window.temporizadoresOperativa = window.temporizadoresOperativa || {};
 
 function manejarCambioEstadoOperativa(fila, selectEstado) {
@@ -2222,10 +2182,7 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
     const estadoAnterior = selectEstado.dataset.valorAnterior || "";
     const nuevoEstado = selectEstado.value;
 
-    // Si selecciona "Operativa" y antes no lo estaba
     if (nuevoEstado === "Operativa" && estadoAnterior !== "Operativa") {
-        
-        // 1. Creamos y mostramos el Toast flotante con cuenta regresiva de 5 segundos
         const toastId = `toast_${ot}_${Date.now()}`;
         const toastEl = document.createElement('div');
         toastEl.className = 'toast-operativa-container';
@@ -2241,30 +2198,24 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
         `;
         document.body.appendChild(toastEl);
 
-        // Activamos la animación de la barra de progreso de derecha a izquierda (de 1 a 0)
         setTimeout(() => {
             const fill = document.getElementById(`fill_${toastId}`);
             if (fill) fill.style.transform = 'scaleX(1)';
         }, 50);
 
-        // 2. Definimos la acción que se ejecuta al expirar los 5 segundos (Mover a completadas)
         const timerId = setTimeout(async () => {
-            // Eliminamos el Toast de la pantalla
             const tEl = document.getElementById(toastId);
             if (tEl) tEl.remove();
 
-            // Ocultamos visualmente la fila del backlog activo
             fila.style.transition = "opacity 0.4s ease";
             fila.style.opacity = "0";
             setTimeout(() => fila.remove(), 400);
 
-            // Enviamos la petición al Worker para moverla a la tabla ots_completadas
             await enviarOTCompletadaD1(fila, ot);
 
             delete window.temporizadoresOperativa[ot];
         }, 5000);
 
-        // Guardamos el timer para poder cancelarlo si hacen clic en "Deshacer"
         window.temporizadoresOperativa[ot] = {
             timerId: timerId,
             toastId: toastId,
@@ -2274,12 +2225,10 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
         };
 
     } else if (estadoAnterior === "Operativa" && nuevoEstado !== "Operativa") {
-        // Si el usuario cambia de Operativa a otro estado antes de que se procese, actualizamos el valor anterior
         selectEstado.dataset.valorAnterior = nuevoEstado;
     }
 }
 
-// Función para enviar la OT a la tabla de completadas en el backend
 async function enviarOTCompletadaD1(fila, ot) {
     const valId = fila.children[0]?.textContent.trim() || "";
     const valDepto = fila.children[1]?.textContent.trim() || "";
@@ -2313,7 +2262,6 @@ async function enviarOTCompletadaD1(fila, ot) {
     }
 }
 
-// Listener global para capturar el clic en el botón "Deshacer" del Toast
 document.addEventListener("click", (e) => {
     const btnDeshacer = e.target.closest(".toast-btn-deshacer");
     if (btnDeshacer) {
@@ -2323,21 +2271,16 @@ document.addEventListener("click", (e) => {
         if (window.temporizadoresOperativa[ot]) {
             const info = window.temporizadoresOperativa[ot];
             
-            // Cancelamos el temporizador de los 5 segundos
             clearTimeout(info.timerId);
 
-            // Revertimos el select de Estado de Gestión a su valor anterior
             info.selectEstado.value = info.estadoAnterior;
             info.selectEstado.dataset.valorAnterior = info.estadoAnterior;
 
-            // Eliminamos el Toast flotante
             const tEl = document.getElementById(toastId);
             if (tEl) tEl.remove();
 
-            // Limpiamos del registro de temporizadores
             delete window.temporizadoresOperativa[ot];
 
-            // Guardamos el estado original devuelto mediante la función existente
             if (typeof guardarOT === "function") {
                 guardarOT(info.fila);
             }
