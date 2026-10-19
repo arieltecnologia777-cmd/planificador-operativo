@@ -73,20 +73,38 @@ function initModalesAdmin() {
     if (btnCancelarPassword) btnCancelarPassword.addEventListener("click", cerrarPw);
 
     if (btnVerificarPassword) {
-        btnVerificarPassword.addEventListener("click", () => {
+        btnVerificarPassword.addEventListener("click", async () => {
             const pass = inputAdminPassword ? inputAdminPassword.value.trim() : "";
-            const claveSistema = (typeof CLAVE_ADMIN !== 'undefined') ? CLAVE_ADMIN : "admin123";
 
-            if (pass === claveSistema || pass === "admin123" || pass.length > 0) {
-                cerrarPw();
-                if (modalAdminTools) {
-                    modalAdminTools.style.display = "flex";
-                    if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
-                    if (inputExcelMasivo) inputExcelMasivo.value = "";
-                    cargarNotasEnEditorAdmin();
-                }
-            } else {
+            if (!pass) {
                 alert("Por favor ingrese la contraseña.");
+                return;
+            }
+
+            try {
+                const authUrl = WORKER_URL.replace('/api/kpis', '/api/verify-admin');
+                const resp = await fetch(authUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+                
+                const resultado = await resp.json();
+
+                if (resultado.ok) {
+                    cerrarPw();
+                    if (modalAdminTools) {
+                        modalAdminTools.style.display = "flex";
+                        if (spanNombreArchivo) spanNombreArchivo.innerText = "Ningún archivo seleccionado";
+                        if (inputExcelMasivo) inputExcelMasivo.value = "";
+                        cargarNotasEnEditorAdmin();
+                    }
+                } else {
+                    alert("Contraseña incorrecta.");
+                }
+            } catch (err) {
+                console.error("Error al verificar la contraseña:", err);
+                alert("Error de conexión al validar la contraseña.");
             }
         });
     }
