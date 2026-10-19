@@ -1056,30 +1056,37 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal respetando los filtros activos de manera flexible
+// Función que despliega el sub-modal replicando exactamente los filtros de la interfaz
 function verDetalleRechazosIdTecnico(nombreTecnico) {
-    // Capturamos los filtros actuales del DOM
-    const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
-    const fRegion = String(document.getElementById('filtroRegion')?.value || "TODOS").trim().toUpperCase();
+    // Capturamos los valores exactos tal como están seleccionados en los selects del DOM
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    // Filtramos los registros crudos de forma flexible y segura
+    // Filtramos los registros crudos utilizando la misma lógica exacta de la tabla principal
     const itemsRechazados = registrosCrudos.filter(r => {
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "").trim().toUpperCase();
-        const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
-        const mesRegistro = String(r.mes || r.MES || "").trim().toUpperCase();
-        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
-        
-        // Validaciones flexibles
-        const matchTecnico = perfil === String(nombreTecnico).trim().toUpperCase();
-        const esRechazado = aprob.includes("RECHAZADO");
-        const matchMes = fMes === "TODOS" || mesRegistro.includes(fMes) || fMes.includes(mesRegistro);
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const tecnico = perfil.toLowerCase();
 
-        return matchTecnico && esRechazado && matchMes && matchReg;
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchAprob = fAprob === "TODOS" || aprobReg === fAprob || aprobReg.toUpperCase().includes("RECHAZADO");
+        const matchSearch = tecnico.includes(searchVal);
+        
+        // Coincidencia estricta con el técnico del modal
+        const matchTecnico = perfil.toLowerCase() === nombreTecnico.toLowerCase();
+
+        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch && matchTecnico;
     });
 
     if (itemsRechazados.length === 0) {
-        alert(`No se encontraron registros de rechazo para ${nombreTecnico} con los filtros actuales (Mes: ${fMes}).`);
+        alert("No se encontraron registros para este técnico con los filtros seleccionados.");
         return;
     }
 
