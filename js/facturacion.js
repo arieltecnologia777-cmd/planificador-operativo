@@ -970,12 +970,15 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal leyendo el ID directamente de la columna F (id)
+// Función que despliega el sub-modal listando TODOS los registros rechazados del técnico con su ID real de la columna F
 function verDetalleRechazosIdTecnico(nombreTecnico) {
+    // Filtramos todos los registros que pertenezcan a este técnico y estén rechazados
     const itemsRechazados = registrosCrudos.filter(r => {
         const tecnicoReg = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        return tecnicoReg === nombreTecnico && aprobReg.includes("RECHAZADO");
+        
+        // Coincidencia exacta de nombre y estado rechazado
+        return tecnicoReg.toLowerCase() === nombreTecnico.toLowerCase() && aprobReg.includes("RECHAZADO");
     });
 
     if (itemsRechazados.length === 0) {
@@ -986,8 +989,10 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     let filasHtml = '';
     let sumaRechazosModal = 0;
 
+    // Recorremos cada registro individual para que salgan todos (ej. 55108, etc.)
     itemsRechazados.forEach(item => {
-        const idColumnaF = item.id || item.ID || item.Id || item.ot || item.OT || 'N/A';
+        // Intentamos capturar la columna F (id) buscando sus variantes comunes en la base de datos
+        const idColumnaF = item.id || item.ID || item.Id || item['id'] || item['ID'] || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
         sumaRechazosModal += monto;
@@ -1010,7 +1015,7 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     }
 
     subModal.innerHTML = `
-        <div style="background:white; color:#333; padding:25px; border-radius:14px; width:580px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
+        <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
@@ -1044,7 +1049,6 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     `;
     subModal.style.display = 'flex';
 }
-
 function cerrarModalDetalle() {
     const modal = document.getElementById('modalDetalleTecnico');
     if (modal) modal.style.display = 'none';
