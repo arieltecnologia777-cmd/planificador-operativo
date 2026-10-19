@@ -842,7 +842,93 @@ function cerrarModalHerramientas() {
 }
 
 async function procesarYSubirExcel(event) {
-    // ... (Se mantiene intacto)
+    const file = event.target.files[0];
+    if (!file) {
+        console.warn("No se seleccionó ningún archivo.");
+        return;
+    }
+
+    console.log("Archivo Excel seleccionado:", file.name);
+
+    // Cerramos el modal de herramientas avanzadas
+    cerrarModalHerramientas();
+
+    // Referencias al modal de carga
+    const modalCarga = document.getElementById('modalCargandoExcel');
+    const barra = document.getElementById('barraProgreso');
+    const txtPorc = document.getElementById('txtPorcentajeCarga');
+    const txtEstado = document.getElementById('txtEstadoCarga');
+    
+    if (modalCarga) modalCarga.style.display = 'flex';
+    if (barra) barra.style.width = '15%';
+    if (txtPorc) txtPorc.innerText = '15%';
+    if (txtEstado) txtEstado.innerText = 'Leyendo archivo Excel...';
+
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        try {
+            if (barra) barra.style.width = '40%';
+            if (txtPorc) txtPorc.innerText = '40%';
+            if (txtEstado) txtEstado.innerText = 'Procesando filas del Excel...';
+
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (!jsonData || jsonData.length === 0) {
+                alert("El archivo Excel está vacío o no tiene un formato válido.");
+                if (modalCarga) modalCarga.style.display = 'none';
+                event.target.value = '';
+                return;
+            }
+
+            if (barra) barra.style.width = '70%';
+            if (txtPorc) txtPorc.innerText = '70%';
+            if (txtEstado) txtEstado.innerText = 'Sincronizando con Cloudflare D1...';
+
+            console.log("Enviando lote de datos a la API:", IMPORTAR_API_URL);
+
+            const response = await fetch(IMPORTAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error en el servidor (${response.status}): ${errorText}`);
+            }
+
+            if (barra) barra.style.width = '100%';
+            if (txtPorc) txtPorc.innerText = '100%';
+            if (txtEstado) txtEstado.innerText = '¡Cargue y sincronización exitosa!';
+
+            setTimeout(() => {
+                if (modalCarga) modalCarga.style.display = 'none';
+                alert("¡Base de facturación cargada y sincronizada con éxito!");
+                location.reload();
+            }, 800);
+
+        } catch (error) {
+            console.error("Error al procesar o subir el archivo:", error);
+            if (modalCarga) modalCarga.style.display = 'none';
+            alert("Error al procesar el archivo: " + error.message);
+        } finally {
+            event.target.value = ''; // Limpiamos el input para permitir reintentos
+        }
+    };
+
+    reader.onerror = function(error) {
+        console.error("Error de lectura con FileReader:", error);
+        if (modalCarga) modalCarga.style.display = 'none';
+        alert("No se pudo leer el archivo seleccionado desde el equipo.");
+        event.target.value = '';
+    };
+
+    reader.readAsArrayBuffer(file);
 }
 
 function formatMoney(amount) {
