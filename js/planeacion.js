@@ -716,11 +716,11 @@ function actualizarOpcionesFiltros(datos) {
     const encabezados = encabezadosGlobal;
     const idxOT = buscarIndiceColumnaFlexible(encabezados, ["OT"]);
     const idxDepto = buscarIndiceColumnaFlexible(encabezados, ["Departamento"]);
+    const idxMunicipio = buscarIndiceColumnaFlexible(encabezados, ["Municipio"]); // 👉 AQUÍ ESTABA LA VARIABLE FALTANTE
     const idxAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo de afectación", "Afectación"]);
     const idxStoppers = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
     const idxRango = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
     const idxDiasOT = buscarIndiceColumnaFlexible(encabezados, ["Días vigencia OT", "Días OT", "Dias OT"]);
-    const idxBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]);
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
 
     const txtNuevo = document.getElementById("textoNuevo");
@@ -887,7 +887,7 @@ function actualizarOpcionesFiltros(datos) {
             <label class="multi-filtro-item"><input type="checkbox" value="${v}" class="chkEstadoGestion" ${estadosGestionSeleccionados.includes(v) ? "checked" : ""}> ${v}</label>
         `).join("");
     }
-
+}
     const afecDisp = [...new Set(datosParaAfec.map(f => idxAfectacion !== -1 ? f[idxAfectacion] : ""))].filter(Boolean).sort();
     const aEl = document.getElementById("listaAfectacion");
     if(aEl) {
