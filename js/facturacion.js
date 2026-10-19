@@ -1056,45 +1056,30 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal respetando rigurosamente los filtros activos del tablero
+// Función que despliega el sub-modal filtrando de forma segura por el técnico y sus rechazos reales
 function verDetalleRechazosIdTecnico(nombreTecnico) {
-    // Capturamos los valores actuales de los filtros en la interfaz
-    const fRegion = String(document.getElementById('filtroRegion')?.value || "TODOS").trim().toUpperCase();
-    const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
-    const fPerfil = String(document.getElementById('filtroPerfilWfm')?.value || "TODOS").trim().toUpperCase();
-    const fAprob = String(document.getElementById('filtroAprobacion')?.value || "TODOS").trim().toUpperCase();
-    const searchVal = String(document.getElementById('searchInput')?.value || "").trim().toLowerCase();
-
-    // Filtramos los registros crudos aplicando las mismas reglas de validación del tablero principal
+    // 1. Filtramos directamente de registrosCrudos por el nombre exacto del técnico y estado rechazado
     const itemsRechazados = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
         
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchMes = fMes === "TODOS" || mes.includes(fMes) || fMes.includes(mes);
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprob.includes(fAprob);
-        const matchSearch = searchVal === "" || perfil.toLowerCase().includes(searchVal);
-        
-        // Coincidencia con el técnico específico del modal y que esté rechazado
         const matchTecnico = perfil === String(nombreTecnico).trim().toUpperCase();
         const esRechazado = aprob.includes("RECHAZADO");
 
-        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch && matchTecnico && esRechazado;
+        return matchTecnico && esRechazado;
     });
 
+    // 2. Si no hay registros, avisa mediante una alerta
     if (itemsRechazados.length === 0) {
-        alert("No se encontraron registros de rechazo para este técnico con los filtros seleccionados actualmente.");
+        alert("No se encontraron registros de rechazo para este técnico.");
         return;
     }
 
     let filasHtml = '';
     let sumaRechazosModal = 0;
 
+    // 3. Recorremos cada registro encontrado para armar las filas de la tabla
     itemsRechazados.forEach(item => {
-        // Leyendo el ID real desde 'id_id'
         const idReal = item.id_id || item.ID_ID || item.id || item.ID || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
@@ -1109,6 +1094,7 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
         `;
     });
 
+    // 4. Creamos o reutilizamos el contenedor visual del submodal flotante
     let subModal = document.getElementById('modalSubDetalleRechazos');
     if (!subModal) {
         subModal = document.createElement('div');
@@ -1117,12 +1103,13 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
         document.body.appendChild(subModal);
     }
 
+    // 5. Inyectamos el diseño HTML con los datos calculados
     subModal.innerHTML = `
         <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
-                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico} | Mes filtro: ${fMes}</div>
+                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico}</div>
                 </div>
                 <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
