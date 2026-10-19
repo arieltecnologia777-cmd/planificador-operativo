@@ -1056,37 +1056,41 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal replicando exactamente los filtros de la interfaz
+// Función definitiva que busca por coincidencias de palabras clave para tolerar nombres invertidos
 function verDetalleRechazosIdTecnico(nombreTecnico) {
-    // Capturamos los valores exactos tal como están seleccionados en los selects del DOM
-    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
-    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
-    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
-    const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
-    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+    const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
+    
+    // Limpiamos el nombre del técnico del modal y lo separamos en sus palabras clave principales
+    const tecnicoLimpio = String(nombreTecnico || "").trim().toUpperCase();
+    const palabrasClave = tecnicoLimpio.split(/\s+/).filter(p => p.length > 2); // Ignoramos palabras muy cortas (de, la, etc.)
 
-    // Filtramos los registros crudos utilizando la misma lógica exacta de la tabla principal
+    // Filtramos los registros crudos de forma flexible
     const itemsRechazados = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        const mes = String(r.mes || r.MES || "").trim();
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "").trim();
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
-        const tecnico = perfil.toLowerCase();
-
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprobReg === fAprob || aprobReg.toUpperCase().includes("RECHAZADO");
-        const matchSearch = tecnico.includes(searchVal);
+        const rawPerfil = r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "";
+        const perfilReg = String(rawPerfil).trim().toUpperCase();
         
-        // Coincidencia estricta con el técnico del modal
-        const matchTecnico = perfil.toLowerCase() === nombreTecnico.toLowerCase();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        const mesReg = String(r.mes || r.MES || "").trim().toUpperCase();
+        
+        // Verificamos si el registro contiene al menos las palabras clave principales del técnico
+        // (Esto soluciona el problema de nombres invertidos como SALAZAR BARBOSA CAMILO ANDRES)
+        let coincideTecnico = perfilReg === tecnicoLimpio;
+        if (!coincideTecnico && palabrasClave.length > 0) {
+            // Comprobamos si todas o la gran mayoría de las palabras clave están en el texto del registro
+            const palabrasEncontradas = palabrasClave.filter(palabra => perfilReg.includes(palabra));
+            if (palabrasEncontradas.length >= Math.min(2, palabrasClave.length)) {
+                coincideTecnico = true;
+            }
+        }
 
-        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch && matchTecnico;
+        const esRechazado = aprobReg.includes("RECHAZADO");
+        const matchMes = fMes === "TODOS" || mesReg.includes(fMes) || fMes.includes(mesReg);
+
+        return coincideTecnico && esRechazado && matchMes;
     });
 
     if (itemsRechazados.length === 0) {
-        alert("No se encontraron registros para este técnico con los filtros seleccionados.");
+        alert(`No se encontraron registros de rechazo para "${nombreTecnico}" con el filtro actual.`);
         return;
     }
 
@@ -1094,7 +1098,6 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     let sumaRechazosModal = 0;
 
     itemsRechazados.forEach(item => {
-        // Leyendo el ID real desde 'id_id'
         const idReal = item.id_id || item.ID_ID || item.id || item.ID || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
