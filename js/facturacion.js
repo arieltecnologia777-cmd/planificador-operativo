@@ -503,9 +503,127 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Modal En Trámite
+// ==========================================
+// MODAL EN TRÁMITE (COMPLETO)
+// ==========================================
 function abrirModalEnTramite() {
-    // ... (Se mantiene intacto según tu lógica actual)
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const registrosEnTramite = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchSearch = tecnico.includes(searchVal);
+
+        const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
+
+        return matchReg && matchMes && matchPerfil && matchSearch && esPendienteNeto;
+    });
+
+    const thead = document.getElementById('headTablaDinamicaTramite');
+    const tbody = document.getElementById('tableBodyEnTramite');
+    const tfoot = document.getElementById('footerTablaDinamicaTramite');
+    if (!thead || !tbody || !tfoot) return;
+
+    if (registrosEnTramite.length === 0) {
+        thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
+        tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
+        tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
+        const modal = document.getElementById('modalEnTramiteDetalle');
+        if (modal) modal.style.display = 'flex';
+        return;
+    }
+
+    const listaDepartamentos = LISTA_DEPARTAMENTOS_FIJOS;
+    const matrizDatos = {};
+    let sumaGranTotal = 0;
+    const totalesPorDepartamento = {};
+    listaDepartamentos.forEach(dep => totalesPorDepartamento[dep] = 0);
+
+    registrosEnTramite.forEach(r => {
+        const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
+        const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
+        const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+
+        sumaGranTotal += monto;
+        if (departamento !== "OTRO") {
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
+        }
+
+        if (!matrizDatos[aprobRegionalVal]) {
+            matrizDatos[aprobRegionalVal] = {};
+            listaDepartamentos.forEach(dep => matrizDatos[aprobRegionalVal][dep] = 0);
+            matrizDatos[aprobRegionalVal]["OTRO"] = 0;
+        }
+        if (departamento !== "OTRO") {
+            matrizDatos[aprobRegionalVal][departamento] += monto;
+        } else {
+            matrizDatos[aprobRegionalVal]["OTRO"] += monto;
+        }
+    });
+
+    const estadosFiltrados = {};
+    for (const [aprobVal, montosDeps] of Object.entries(matrizDatos)) {
+        let totalFila = 0;
+        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (totalFila > 0) {
+            estadosFiltrados[aprobVal] = montosDeps;
+        }
+    }
+
+    const totalColumnas = 1 + listaDepartamentos.length + 1;
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    let headHtml = `
+        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">ESTADO</th>
+    `;
+    listaDepartamentos.forEach(dep => {
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${dep}</th>`;
+    });
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    thead.innerHTML = headHtml;
+
+    let bodyHtml = '';
+    for (const [aprobVal, montosDeps] of Object.entries(estadosFiltrados)) {
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
+        
+        let totalFila = 0;
+        listaDepartamentos.forEach(dep => {
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+        });
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+    }
+    tbody.innerHTML = bodyHtml;
+
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaDepartamentos.forEach(dep => {
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
+    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+
+    const modal = document.getElementById('modalEnTramiteDetalle');
+    if (modal) modal.style.display = 'flex';
 }
 
 function cerrarModalEnTramite() {
@@ -513,9 +631,126 @@ function cerrarModalEnTramite() {
     if (modal) modal.style.display = 'none';
 }
 
-// Modal Rechazados
+// ==========================================
+// MODAL RECHAZADOS (COMPLETO)
+// ==========================================
 function abrirModalRechazados() {
-    // ... (Se mantiene intacto según tu lógica actual)
+    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
+    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
+    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
+    const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const registrosRechazados = registrosCrudos.filter(r => {
+        const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
+        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const tecnico = perfil.toLowerCase();
+
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchSearch = tecnico.includes(searchVal);
+        const esRechazado = aprobReg.includes("RECHAZADO");
+
+        return matchReg && matchMes && matchPerfil && matchSearch && esRechazado;
+    });
+
+    const thead = document.getElementById('headTablaDinamicaRechazados');
+    const tbody = document.getElementById('tableBodyRechazados');
+    const tfoot = document.getElementById('footerTablaDinamicaRechazados');
+    if (!thead || !tbody || !tfoot) return;
+
+    if (registrosRechazados.length === 0) {
+        thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
+        tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
+        tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
+        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
+        const modal = document.getElementById('modalRechazadosDetalle');
+        if (modal) modal.style.display = 'flex';
+        return;
+    }
+
+    const listaDepartamentos = LISTA_DEPARTAMENTOS_FIJOS;
+    const matrizDatos = {};
+    let sumaGranTotal = 0;
+    const totalesPorDepartamento = {};
+    listaDepartamentos.forEach(dep => totalesPorDepartamento[dep] = 0);
+
+    registrosRechazados.forEach(r => {
+        const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
+        const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
+        const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+
+        sumaGranTotal += monto;
+        if (departamento !== "OTRO") {
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
+        }
+
+        if (!matrizDatos[causaRechazoVal]) {
+            matrizDatos[causaRechazoVal] = {};
+            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = 0);
+            matrizDatos[causaRechazoVal]["OTRO"] = 0;
+        }
+        if (departamento !== "OTRO") {
+            matrizDatos[causaRechazoVal][departamento] += monto;
+        } else {
+            matrizDatos[causaRechazoVal]["OTRO"] += monto;
+        }
+    });
+
+    const causasFiltradas = {};
+    for (const [causaVal, montosDeps] of Object.entries(matrizDatos)) {
+        let totalFila = 0;
+        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (totalFila > 0) {
+            causasFiltradas[causaVal] = montosDeps;
+        }
+    }
+
+    const totalColumnas = 1 + listaDepartamentos.length + 1;
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    let headHtml = `
+        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">CAUSA RECHAZO</th>
+    `;
+    listaDepartamentos.forEach(dep => {
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${dep}</th>`;
+    });
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    thead.innerHTML = headHtml;
+
+    let bodyHtml = '';
+    for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
+        
+        let totalFila = 0;
+        listaDepartamentos.forEach(dep => {
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+        });
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+    }
+    tbody.innerHTML = bodyHtml;
+
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaDepartamentos.forEach(dep => {
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
+    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+
+    const modal = document.getElementById('modalRechazadosDetalle');
+    if (modal) modal.style.display = 'flex';
 }
 
 function cerrarModalRechazados() {
@@ -752,7 +987,6 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     let sumaRechazosModal = 0;
 
     itemsRechazados.forEach(item => {
-        // Leyendo explícitamente el ID de la columna F (id, ID, etc.) en lugar de OT
         const idColumnaF = item.id || item.ID || item.Id || item.ot || item.OT || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
