@@ -97,8 +97,7 @@ function aplicarFiltrosGlobales() {
 
     const registrosParaMeta = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        return matchReg;
+        return fRegion === "TODOS" || reg === fRegion;
     });
 
     const registrosParaGrafica = registrosCrudos.filter(r => {
@@ -302,7 +301,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     }
 }
 
-// Gráfica de tendencia con estilo clásico en azul
+// Gráfica de tendencia
 function initChartsDinamicos(records, fRegion = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -541,20 +540,70 @@ function cerrarModalNotificaciones() {
     if (modal) modal.style.display = 'none';
 }
 
-async function verificarPassword() {
-    // ... (Se mantiene intacto)
-}
-
+// --- HERRAMIENTAS AVANZADAS Y CONTRASEÑA ---
 function abrirModalPassword() {
-    // ... (Se mantiene intacto)
+    const inputPass = document.getElementById('inputPasswordAdmin');
+    const errorMsg = document.getElementById('errorPasswordMsg');
+    const modalPass = document.getElementById('modalPassword');
+
+    if (inputPass) inputPass.value = '';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (modalPass) modalPass.style.display = 'flex';
+    if (inputPass) inputPass.focus();
 }
 
 function cerrarModalPassword() {
-    document.getElementById('modalPassword').style.display = 'none';
+    const modalPass = document.getElementById('modalPassword');
+    if (modalPass) modalPass.style.display = 'none';
+}
+
+async function verificarPassword() {
+    const inputPass = document.getElementById('inputPasswordAdmin');
+    const passwordIngresada = inputPass ? inputPass.value.trim() : '';
+    const errorMsg = document.getElementById('errorPasswordMsg');
+
+    if (!passwordIngresada) {
+        if (errorMsg) {
+            errorMsg.innerText = "Por favor ingresa la contraseña.";
+            errorMsg.style.display = 'block';
+        }
+        return;
+    }
+
+    try {
+        const response = await fetch(VERIFICAR_KEY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: passwordIngresada })
+        });
+        const resultado = await response.json();
+
+        if (response.ok && (resultado.success === true || resultado.ok === true)) {
+            cerrarModalPassword();
+            const modalHerramientas = document.getElementById('modalHerramientas');
+            if (modalHerramientas) modalHerramientas.style.display = 'flex';
+        } else {
+            if (errorMsg) {
+                errorMsg.innerText = "Contraseña incorrecta.";
+                errorMsg.style.display = 'block';
+            }
+            if (inputPass) {
+                inputPass.value = '';
+                inputPass.focus();
+            }
+        }
+    } catch (err) {
+        console.error("Error al verificar clave:", err);
+        if (errorMsg) {
+            errorMsg.innerText = "Error de red al verificar con el servidor.";
+            errorMsg.style.display = 'block';
+        }
+    }
 }
 
 function cerrarModalHerramientas() {
-    document.getElementById('modalHerramientas').style.display = 'none';
+    const modalHerramientas = document.getElementById('modalHerramientas');
+    if (modalHerramientas) modalHerramientas.style.display = 'none';
 }
 
 async function procesarYSubirExcel(event) {
@@ -611,7 +660,7 @@ function renderTable(records) {
 }
 
 // ==========================================
-// MODAL DETALLE TÉCNICO CON DESGLOSE DE RECHAZOS POR ID
+// MODAL DETALLE TÉCNICO CON DESGLOSE DE RECHAZOS POR ID (COLUMNA F)
 // ==========================================
 function abrirDetalleTecnico(index) {
     const r = tecnicosData[index];
@@ -624,7 +673,6 @@ function abrirDetalleTecnico(index) {
         ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
         : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
 
-    // Hacemos que el bloque de Monto Rechazado sea interactivo si tiene rechazos > 0
     const tieneRechazos = r.rechazado > 0;
     const estilosRechazadoBox = tieneRechazos 
         ? "background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; cursor: pointer; transition: background 0.2s;" 
@@ -687,9 +735,8 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función que despliega el sub-modal con los IDs y causas de rechazo individuales
+// Función que despliega el sub-modal leyendo el ID directamente de la columna F (id)
 function verDetalleRechazosIdTecnico(nombreTecnico) {
-    // Filtramos de registrosCrudos los ítems de este técnico con aprobación regional "RECHAZADO"
     const itemsRechazados = registrosCrudos.filter(r => {
         const tecnicoReg = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
@@ -705,21 +752,21 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     let sumaRechazosModal = 0;
 
     itemsRechazados.forEach(item => {
-        const idOt = item.ot || item.OT || item.id || item.ID || 'N/A';
+        // Leyendo explícitamente el ID de la columna F (id, ID, etc.) en lugar de OT
+        const idColumnaF = item.id || item.ID || item.Id || item.ot || item.OT || 'N/A';
         const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
         const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
         sumaRechazosModal += monto;
 
         filasHtml += `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${idOt}</td>
+                <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${idColumnaF}</td>
                 <td style="padding: 10px; color: #dc2626; font-weight: 700; text-transform: uppercase;">${causa}</td>
                 <td style="padding: 10px; text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(monto)}</td>
             </tr>
         `;
     });
 
-    // Creamos o reutilizamos un sub-modal emergente en el DOM
     let subModal = document.getElementById('modalSubDetalleRechazos');
     if (!subModal) {
         subModal = document.createElement('div');
@@ -741,7 +788,7 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
             <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
                 <thead>
                     <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
-                        <th style="padding:10px; text-align:center;">ID / OT</th>
+                        <th style="padding:10px; text-align:center;">ID</th>
                         <th style="padding:10px;">Causa Rechazo</th>
                         <th style="padding:10px; text-align:right;">Monto Estimado</th>
                     </tr>
