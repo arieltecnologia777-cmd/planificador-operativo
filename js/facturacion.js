@@ -146,12 +146,21 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Agrupar registros por técnico y ordenar por mayor efectividad (Top)
 function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
     rows.forEach(r => {
-        const nombreTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "SIN PROGRAMACION";
+        // REGLA NUEVA: Prioridad absoluta a la columna TECNICO PROGRAMADO (Columna BM del Excel)
+        const nombreTecnico = String(
+            r.tecnico_programado || 
+            r.TECNICO_PROGRAMADO || 
+            r['TECNICO PROGRAMADO'] || 
+            r['Técnico Programado'] || 
+            r.perfil_wfm || 
+            r.PERFIL_WFM || 
+            "SIN PROGRAMACION"
+        ).trim();
+
         const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         
         if (!mapaTecnicos[nombreTecnico]) {
@@ -1059,38 +1068,25 @@ function abrirDetalleTecnico(index) {
 // Función definitiva que busca por coincidencias de palabras clave para tolerar nombres invertidos
 function verDetalleRechazosIdTecnico(nombreTecnico) {
     const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
-    
-    // Limpiamos el nombre del técnico del modal y lo separamos en sus palabras clave principales
-    const tecnicoLimpio = String(nombreTecnico || "").trim().toUpperCase();
-    const palabrasClave = tecnicoLimpio.split(/\s+/).filter(p => p.length > 2); // Ignoramos palabras muy cortas (de, la, etc.)
+    const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
 
-    // Filtramos los registros crudos de forma flexible
+    // Filtramos usando la misma regla estricta de la columna TECNICO PROGRAMADO
     const itemsRechazados = registrosCrudos.filter(r => {
-        const rawPerfil = r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || "";
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "";
         const perfilReg = String(rawPerfil).trim().toUpperCase();
         
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim().toUpperCase();
         
-        // Verificamos si el registro contiene al menos las palabras clave principales del técnico
-        // (Esto soluciona el problema de nombres invertidos como SALAZAR BARBOSA CAMILO ANDRES)
-        let coincideTecnico = perfilReg === tecnicoLimpio;
-        if (!coincideTecnico && palabrasClave.length > 0) {
-            // Comprobamos si todas o la gran mayoría de las palabras clave están en el texto del registro
-            const palabrasEncontradas = palabrasClave.filter(palabra => perfilReg.includes(palabra));
-            if (palabrasEncontradas.length >= Math.min(2, palabrasClave.length)) {
-                coincideTecnico = true;
-            }
-        }
-
+        const matchTecnico = perfilReg === tecnicoBuscado;
         const esRechazado = aprobReg.includes("RECHAZADO");
         const matchMes = fMes === "TODOS" || mesReg.includes(fMes) || fMes.includes(mesReg);
 
-        return coincideTecnico && esRechazado && matchMes;
+        return matchTecnico && esRechazado && matchMes;
     });
 
     if (itemsRechazados.length === 0) {
-        alert(`No se encontraron registros de rechazo para "${nombreTecnico}" con el filtro actual.`);
+        alert(`No se encontraron registros de rechazo para "${nombreTecnico}" con el filtro de mes actual (${fMes}).`);
         return;
     }
 
