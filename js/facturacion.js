@@ -127,18 +127,37 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
-    
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    checkboxes.forEach(cb => {
-        cb.checked = marcar;
-        if (cb.parentElement) {
-            cb.parentElement.style.display = 'flex';
-        }
+
+    // Recopilamos todos los valores únicos posibles para este filtro desde los registros crudos originales
+    const valoresCompletos = new Set();
+    registrosCrudos.forEach(r => {
+        let val = "";
+        if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
+        else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
+        else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
+        else if (nombreFiltro === 'PerfilWfm') val = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "").replace(/["']/g, "").trim();
+        else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
+
+        if (val) valoresCompletos.add(String(val).trim().toUpperCase());
     });
-    
+
+    // Volvemos a pintar el HTML de esta cajita con todos sus elementos disponibles y marcados
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        let html = '';
+        Array.from(valoresCompletos).sort().forEach(val => {
+            html += `
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcar ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                    ${val}
+                </label>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
     aplicarFiltrosGlobales();
 }
-
 function obtenerValoresSeleccionados(nombreFiltro) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
