@@ -163,13 +163,16 @@ function filtrarListaCheck(nombreFiltro, texto) {
 }
 
 function resetFiltros() {
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        marcarTodosDropdown(nombre, true);
-    });
     if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    poblarSelectsFiltros(registrosCrudos);
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        const chkTodo = document.getElementById('chkTodo' + nombre);
+        if (chkTodo) chkTodo.checked = true;
+        const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
+        checkboxes.forEach(cb => cb.checked = true);
+    });
     aplicarFiltrosGlobales();
 }
-
 function aplicarFiltrosGlobales() {
     // --- ACTUALIZA TODOS LOS FILTROS EN CASCADA ---
     actualizarSelectsEnCascada();
@@ -1556,8 +1559,7 @@ function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
     const sortedValues = Array.from(setValues).sort();
     
     sortedValues.forEach(val => {
-        // Si no había selección previa o el valor sigue estando disponible, lo marcamos chequeado por defecto
-        const marcado = valoresAnteriores.length === 0 || valoresAnteriores.includes(val) ? 'checked' : '';
+        const marcado = (valoresAnteriores.length === 0 || valoresAnteriores.includes(val)) ? 'checked' : '';
         html += `
             <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
                 <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcado} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
