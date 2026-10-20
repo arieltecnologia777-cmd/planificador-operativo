@@ -1541,3 +1541,24 @@ function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
     container.innerHTML = html;
     actualizarLabelBotonFiltro(nombreFiltro);
 }
+function actualizarLabelBotonFiltro(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    const total = checkboxes.length;
+    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) {
+        chkTodo.checked = (total > 0 && seleccionados.length === total);
+    }
+
+    const lbl = document.getElementById('lbl' + nombreFiltro);
+    if (!lbl) return;
+
+    if (seleccionados.length === total || seleccionados.length === 0) {
+        lbl.innerText = "Todos";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = seleccionados.length + " seleccionados";
+    }
+}
