@@ -12,24 +12,24 @@ let listaNotificacionesCambios = [];
 // --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
 
-// Metas mensuales exactas por departamento (según la imagen oficial)
+// Metas mensuales exactas por departamento (redondeadas sin decimales)
 const METAS_DEPARTAMENTOS = {
-    "MEDELLIN": 129711538.46,
-    "ANTIOQUIA": 129711538.46,
-    "VALLEDUPAR": 123500000.00,
-    "CESAR": 123500000.00,
-    "RIOHACHA": 199500000.00,
-    "LA GUAJIRA": 199500000.00,
-    "SAN ANDRES": 9500000.00,
-    "SAI": 9500000.00
+    "MEDELLIN": 129711538,
+    "ANTIOQUIA": 129711538,
+    "VALLEDUPAR": 123500000,
+    "CESAR": 123500000,
+    "RIOHACHA": 199500000,
+    "LA GUAJIRA": 199500000,
+    "SAN ANDRES": 9500000,
+    "SAI": 9500000
 };
 
-// Metas fijas exactas por regional y la suma total global mensual
+// Metas fijas exactas por regional y la suma total global mensual (redondeadas sin decimales)
 const METAS_REGIONALES = {
-    "R1": 332500000.00, // Cesar + La Guajira + SAI
-    "R2": 129711538.46  // Medellin / Antioquia
+    "R1": 332500000, // Cesar + La Guajira + SAI
+    "R2": 129711538  // Medellin / Antioquia
 };
-const META_GLOBAL_TOTAL_MENSUAL = 462211538.46;
+const META_GLOBAL_TOTAL_MENSUAL = 462211538;
 
 // Lista fija de los 4 departamentos requeridos
 const LISTA_DEPARTAMENTOS_FIJOS = ["ANTIOQUIA", "CESAR", "LA GUAJIRA", "SAI"];
