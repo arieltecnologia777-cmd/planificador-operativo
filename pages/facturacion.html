@@ -321,7 +321,9 @@
             <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">⚙️ Panel de Herramientas Avanzadas</h3>
             <button type="button" onclick="cerrarModalHerramientas()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <!-- Opción 1: Cargue Excel -->
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <div style="font-weight: 800; color: #0f172a; font-size: 0.95rem;">📊 Cargue base facturación (Excel)</div>
@@ -332,6 +334,18 @@
                     <input type="file" id="excelFileExcel" accept=".xlsx, .xls" style="display: none;" onchange="procesarYSubirExcel(event)">
                 </label>
             </div>
+
+            <!-- Opción 2: Nuevo Botón Borrar Datos D1 -->
+            <div style="background: #fff5f5; border: 1px solid #feb2b2; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 800; color: #c53030; font-size: 0.95rem;">🗑️ Vaciar Base de Datos (D1)</div>
+                    <div style="color: #742a2a; font-size: 0.8rem; margin-top: 2px;">Elimina todos los registros sin borrar la estructura de la tabla.</div>
+                </div>
+                <button type="button" onclick="confirmarBorrarBaseD1()" style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">
+                    Borrar Datos
+                </button>
+            </div>
+
         </div>
         <div class="modal-footer">
             <button type="button" onclick="cerrarModalHerramientas()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
