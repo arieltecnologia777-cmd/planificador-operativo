@@ -1008,3 +1008,20 @@ function renderTable(records) {
     });
     tbody.innerHTML = html;
 }
+function seleccionarTodoGeneral(nombreFiltro, marcar) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    checkboxes.forEach(cb => {
+        if (cb.parentElement.style.display !== 'none') {
+            cb.checked = marcar;
+        }
+    });
+    aplicarFiltrosGlobales();
+}
+
+function marcarTodosDropdown(nombreFiltro, marcar) {
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) chkTodo.checked = marcar;
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    checkboxes.forEach(cb => cb.checked = marcar);
+    aplicarFiltrosGlobales();
+}
