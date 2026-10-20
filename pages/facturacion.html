@@ -67,7 +67,7 @@
                     </button>
                 </div>
 
-                <!-- 4. Línea que separa filtros, 5. Borrar filtros, 6. Filtros Múltiples (Checkboxes) -->
+                <!-- 4. Línea que separa filtros, 5. Borrar filtros, 6. Filtros Múltiples Limpios -->
                 <div class="nav-accordion-group" style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px;">
                     <!-- Botón Borrar / Limpiar filtros -->
                     <div style="padding: 0 14px 8px 14px;">
@@ -77,65 +77,50 @@
                     </div>
 
                     <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
-                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
+                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros (Múltiples)</span>
                         <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
                     </button>
                     
-                    <div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 12px; display: flex; flex-direction: column;">
+                    <div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 10px;">
                         
-                        <!-- 1. Filtro Región (Múltiple) -->
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región</label>
-                                <button type="button" onclick="seleccionarTodosFiltro('Region', true)" style="background: none; border: none; color: #2563eb; font-size: 0.65rem; font-weight: bold; cursor: pointer; padding: 0;">Todo</button>
-                            </div>
-                            <div id="contenedorFiltroRegion" style="max-height: 110px; overflow-y: auto; background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- 1. Región -->
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región (Ctrl+Click múltiple)</label>
+                            <select id="filtroRegion" multiple onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none; height: 65px;">
                                 <!-- Dinámico JS -->
-                            </div>
+                            </select>
                         </div>
 
-                        <!-- 2. Filtro Departamento (Múltiple) -->
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
-                                <button type="button" onclick="seleccionarTodosFiltro('Departamento', true)" style="background: none; border: none; color: #2563eb; font-size: 0.65rem; font-weight: bold; cursor: pointer; padding: 0;">Todo</button>
-                            </div>
-                            <div id="contenedorFiltroDepartamento" style="max-height: 110px; overflow-y: auto; background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- 2. Departamento -->
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
+                            <select id="filtroDepartamento" multiple onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none; height: 65px;">
                                 <!-- Dinámico JS -->
-                            </div>
+                            </select>
                         </div>
 
-                        <!-- 3. Filtro Mes (Múltiple) -->
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
-                                <button type="button" onclick="seleccionarTodosFiltro('Mes', true)" style="background: none; border: none; color: #2563eb; font-size: 0.65rem; font-weight: bold; cursor: pointer; padding: 0;">Todo</button>
-                            </div>
-                            <div id="contenedorFiltroMes" style="max-height: 110px; overflow-y: auto; background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- 3. Mes -->
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
+                            <select id="filtroMes" multiple onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none; height: 65px;">
                                 <!-- Dinámico JS -->
-                            </div>
+                            </select>
                         </div>
 
-                        <!-- 4. Filtro Perfil WFM (Múltiple) -->
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
-                                <button type="button" onclick="seleccionarTodosFiltro('PerfilWfm', true)" style="background: none; border: none; color: #2563eb; font-size: 0.65rem; font-weight: bold; cursor: pointer; padding: 0;">Todo</button>
-                            </div>
-                            <div id="contenedorFiltroPerfilWfm" style="max-height: 110px; overflow-y: auto; background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- 4. Perfil WFM -->
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
+                            <select id="filtroPerfilWfm" multiple onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none; height: 65px;">
                                 <!-- Dinámico JS -->
-                            </div>
+                            </select>
                         </div>
 
-                        <!-- 5. Filtro Aprobación Regional (Múltiple) -->
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
-                                <button type="button" onclick="seleccionarTodosFiltro('Aprobacion', true)" style="background: none; border: none; color: #2563eb; font-size: 0.65rem; font-weight: bold; cursor: pointer; padding: 0;">Todo</button>
-                            </div>
-                            <div id="contenedorFiltroAprobacion" style="max-height: 110px; overflow-y: auto; background: #fff; border: 1px solid #cbd5e0; border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px;">
+                        <!-- 5. Aprobación Regional -->
+                        <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
+                            <select id="filtroAprobacion" multiple onchange="aplicarFiltrosGlobales()" style="padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.8rem; background: #fff; outline: none; height: 65px;">
                                 <!-- Dinámico JS -->
-                            </div>
+                            </select>
                         </div>
 
                     </div>
