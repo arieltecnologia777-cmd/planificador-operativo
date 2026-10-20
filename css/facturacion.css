@@ -276,23 +276,23 @@ table.fact-table tr:hover td { background: #f8fafc; }
     border-color: #2563eb;
 }
 
-/* Posición fija absoluta fuera del flujo del sidebar para evitar desbordamientos y scrolls */
+/* Menú flotante absoluto con position: fixed para que flote sobre la pantalla sin ensanchar el sidebar */
 .dropdown-filtro-menu {
     display: none;
-    position: fixed;
-    width: 240px;
-    background: #ffffff;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    z-index: 999999;
-    padding: 12px;
-    box-sizing: border-box;
-    font-family: inherit;
+    position: fixed !important;
+    width: 240px !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
+    z-index: 999999 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
 }
 
 .dropdown-filtro-menu.activo {
-    display: block;
+    display: block !important;
 }
 
 .excel-input-buscar {
