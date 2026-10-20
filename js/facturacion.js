@@ -64,7 +64,7 @@ async function cargarDatosDesdeAPI() {
     }
 }
 
-// Poblar los selects del acordeón de filtros incluyendo Departamento (Columna I)
+// 1. Función para poblar dinámicamente los contenedores con checkboxes en lugar de selects
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const departamentos = new Set();
@@ -78,7 +78,7 @@ function poblarSelectsFiltros(rows) {
         const mes = r.mes || r.MES;
         
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
-        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
+        const perfil = String(rawTecnico).replace(/["']/g, "").trim();
 
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
 
@@ -89,30 +89,58 @@ function poblarSelectsFiltros(rows) {
         if (aprob) aprobaciones.add(String(aprob).trim());
     });
 
-    llenarSelectHTML('filtroRegion', regiones);
-    llenarSelectHTML('filtroDepartamento', departamentos); // Nuevo select de Departamento
-    llenarSelectHTML('filtroMes', meses);
-    llenarSelectHTML('filtroPerfilWfm', perfiles);
-    llenarSelectHTML('filtroAprobacion', aprobaciones);
+    llenarCheckboxesHTML('Region', regiones);
+    llenarCheckboxesHTML('Departamento', departamentos);
+    llenarCheckboxesHTML('Mes', meses);
+    llenarCheckboxesHTML('PerfilWfm', perfiles);
+    llenarCheckboxesHTML('Aprobacion', aprobaciones);
 }
 
-function llenarSelectHTML(elementId, setValues) {
-    const select = document.getElementById(elementId);
-    if (!select) return;
-    let html = `<option value="TODOS">Todos</option>`;
+function llenarCheckboxesHTML(nombreFiltro, setValues) {
+    const container = document.getElementById('contenedorFiltro' + nombreFiltro);
+    if (!container) return;
+    
+    let html = '';
     Array.from(setValues).sort().forEach(val => {
-        html += `<option value="${val}">${val}</option>`;
+        html += `
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600;">
+                <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                ${val}
+            </label>
+        `;
     });
-    select.innerHTML = html;
+    container.innerHTML = html;
 }
 
-// Filtrar registros crudos según los filtros (incluyendo Departamento)
+// Función auxiliar para seleccionar o deseleccionar todos los checkboxes de un grupo
+function seleccionarTodosFiltro(nombreFiltro, marcar) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    checkboxes.forEach(cb => cb.checked = marcar);
+    aplicarFiltrosGlobales();
+}
+
+// 2. Función auxiliar para obtener un arreglo con los valores marcados en cada filtro
+function obtenerValoresSeleccionados(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+// 3. Modificación en resetFiltros para marcar todos por defecto al limpiar
+function resetFiltros() {
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        seleccionarTodosFiltro(nombre, true);
+    });
+    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    aplicarFiltrosGlobales();
+}
+
+// 4. Actualización dentro de aplicarFiltrosGlobales para validar múltiples selecciones
 function aplicarFiltrosGlobales() {
-    const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
-    const fDepto = document.getElementById('filtroDepartamento')?.value || "TODOS";
-    const fMes = document.getElementById('filtroMes')?.value || "TODOS";
-    const fPerfil = document.getElementById('filtroPerfilWfm')?.value || "TODOS";
-    const fAprob = document.getElementById('filtroAprobacion')?.value || "TODOS";
+    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
+    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
+    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
+    const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
+    const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const registrosParaMeta = registrosCrudos.filter(r => {
@@ -120,9 +148,9 @@ function aplicarFiltrosGlobales() {
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchDepto = fDepto === "TODOS" || depto === fDepto;
-        const matchMes = fMes === "TODOS" || mes === fMes;
+        const matchReg = regionesSeleccionadas.includes(reg);
+        const matchDepto = deptosSeleccionados.includes(depto);
+        const matchMes = mesesSeleccionados.includes(mes);
         return matchReg && matchDepto && matchMes;
     });
 
@@ -131,17 +159,16 @@ function aplicarFiltrosGlobales() {
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         
-        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
-        
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnicoLower = perfil.toLowerCase();
 
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchDepto = fDepto === "TODOS" || depto === fDepto;
-        const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchReg = regionesSeleccionadas.includes(reg);
+        const matchDepto = deptosSeleccionados.includes(depto);
+        const matchMes = mesesSeleccionados.includes(mes);
+        const matchPerfil = perfilesSeleccionados.includes(perfil);
+        const matchAprob = aprobSeleccionadas.includes(aprob);
         const matchSearch = tecnicoLower.includes(searchVal);
 
         return matchReg && matchDepto && matchMes && matchPerfil && matchAprob && matchSearch;
@@ -152,17 +179,16 @@ function aplicarFiltrosGlobales() {
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         
-        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
-        
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnicoLower = perfil.toLowerCase();
 
-        const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchDepto = fDepto === "TODOS" || depto === fDepto;
-        const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil;
-        const matchAprob = fAprob === "TODOS" || aprob === fAprob;
+        const matchReg = regionesSeleccionadas.includes(reg);
+        const matchDepto = deptosSeleccionados.includes(depto);
+        const matchMes = mesesSeleccionados.includes(mes);
+        const matchPerfil = perfilesSeleccionados.includes(perfil);
+        const matchAprob = aprobSeleccionadas.includes(aprob);
         const matchSearch = tecnicoLower.includes(searchVal);
 
         return matchReg && matchDepto && matchMes && matchPerfil && matchAprob && matchSearch;
@@ -170,11 +196,14 @@ function aplicarFiltrosGlobales() {
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos);
     renderTable(tecnicosData);
-    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion, fDepto, fMes);
+    
+    // Pasamos un identificador para saber si hay múltiples meses marcados y calcular la meta proporcional correctamente
+    const primerMesFiltro = mesesSeleccionados.length === 1 ? mesesSeleccionados[0] : "TODOS";
+    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regionesSeleccionadas, deptosSeleccionados, primerMesFiltro, mesesSeleccionados.length);
+    
     renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(registrosParaGrafica, fRegion, fDepto);
+    initChartsDinamicos(registrosParaGrafica, regionesSeleccionadas, deptosSeleccionados);
 }
-
 function resetFiltros() {
     if (document.getElementById('filtroRegion')) document.getElementById('filtroRegion').value = "TODOS";
     if (document.getElementById('filtroDepartamento')) document.getElementById('filtroDepartamento').value = "TODOS";
@@ -230,26 +259,17 @@ function procesarDatosParaVista(rows) {
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
-// Actualizar Tarjetas KPI con cálculo de meta por Departamento y meses proporcionales
-function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion, fDepto, fMes) {
-    const mesesUnicosSet = new Set();
-    rowsMeta.forEach(r => {
-        const m = String(r.mes || r.MES || "").trim();
-        if (m) mesesUnicosSet.add(m);
-    });
-    
-    let cantidadMeses = mesesUnicosSet.size;
-    if (fMes && fMes !== "TODOS") {
-        cantidadMeses = 1;
-    }
+function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel, fMes, totalMesesSeleccionados) {
+    let cantidadMeses = totalMesesSeleccionados || 1;
     if (cantidadMeses < 1) cantidadMeses = 1;
 
-    // Cálculo dinámico de la meta mensual base según los filtros de Departamento o Regional
     let baseMetaMensual = META_GLOBAL_TOTAL_MENSUAL;
-    if (fDepto && fDepto !== "TODOS" && METAS_DEPARTAMENTOS[fDepto]) {
-        baseMetaMensual = METAS_DEPARTAMENTOS[fDepto];
-    } else if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
-        baseMetaMensual = METAS_REGIONALES[fRegion];
+    
+    // Si se selecciona un único departamento de forma exclusiva
+    if (deptosSel.length === 1 && METAS_DEPARTAMENTOS[deptosSel[0]]) {
+        baseMetaMensual = METAS_DEPARTAMENTOS[deptosSel[0]];
+    } else if (regionesSel.length === 1 && METAS_REGIONALES[regionesSel[0]]) {
+        baseMetaMensual = METAS_REGIONALES[regionesSel[0]];
     }
 
     let totalMeta = baseMetaMensual * cantidadMeses;
@@ -289,8 +309,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion, fDepto, fMes)
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
 
-    // Subtítulo dinámico para mostrar el mes y filtro aplicado
-    let subTextoFiltros = fMes && fMes !== "TODOS" ? `Mes: ${fMes}` : `Meses: Todos (${cantidadMeses} mes${cantidadMeses > 1 ? 'es' : ''})`;
+    let subTextoFiltros = cantidadMeses === 1 && fMes !== "TODOS" ? `Mes: ${fMes}` : `Meses seleccionados: ${cantidadMeses}`;
     let contenedorMetaCard = document.getElementById('kpiMeta')?.closest('.fact-kpi-card, div');
     if (contenedorMetaCard) {
         let subLabelMeta = contenedorMetaCard.querySelector('.sub-mes-filtrado');
@@ -309,7 +328,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion, fDepto, fMes)
     let porcEnTramite = totalMeta > 0 ? Math.min(100, Math.round((totalEnTramite / totalMeta) * 100)) : 0;
 
     if(document.getElementById('barEjecutado')) document.getElementById('barEjecutado').style.width = porcEjecutado + '%';
-    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado').innerText = porcEjecutado + '%';
+    if(document.getElementById('txtPorcEjecutado')) document.getElementById('txtPorcEjecutado'].innerText = porcEjecutado + '%';
 
     if(document.getElementById('barAprobado')) document.getElementById('barAprobado').style.width = porcAprobado + '%';
     if(document.getElementById('txtPorcAprobado')) document.getElementById('txtPorcAprobado').innerText = porcAprobado + '%';
