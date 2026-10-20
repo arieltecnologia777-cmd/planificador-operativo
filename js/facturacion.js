@@ -62,18 +62,22 @@ function poblarSelectsFiltros(rows) {
     rows.forEach(r => {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '];
         const mes = r.mes || r.MES;
-        const perfil = r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'];
+        
+        // ÚNICA FUENTE OFICIAL: Columna TECNICO PROGRAMADO (Columna BM)
+        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
+        const perfil = String(tecnicoRaw).trim();
+
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
 
         if (reg) regiones.add(String(reg).trim());
         if (mes) meses.add(String(mes).trim());
-        if (perfil) perfiles.add(String(perfil).trim());
+        if (perfil) perfiles.add(perfil.toUpperCase());
         if (aprob) aprobaciones.add(String(aprob).trim());
     });
 
     llenarSelectHTML('filtroRegion', regiones);
     llenarSelectHTML('filtroMes', meses);
-    llenarSelectHTML('filtroPerfilWfm', perfiles);
+    llenarSelectHTML('filtroPerfilWfm', perfiles); // Mantiene el ID del select del HTML pero lee la fuente correcta
     llenarSelectHTML('filtroAprobacion', aprobaciones);
 }
 
@@ -102,14 +106,17 @@ function aplicarFiltrosGlobales() {
 
     const registrosParaGrafica = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        
+        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(tecnicoRaw).trim();
+        
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
-        const tecnico = perfil.toLowerCase();
+        const tecnicoLower = perfil.toLowerCase();
 
         const matchReg = fRegion === "TODOS" || reg === fRegion;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil;
         const matchAprob = fAprob === "TODOS" || aprob === fAprob;
-        const matchSearch = tecnico.includes(searchVal);
+        const matchSearch = tecnicoLower.includes(searchVal);
 
         return matchReg && matchPerfil && matchAprob && matchSearch;
     });
@@ -117,15 +124,18 @@ function aplicarFiltrosGlobales() {
     const filtradosCompletos = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        
+        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(tecnicoRaw).trim();
+        
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
-        const tecnico = perfil.toLowerCase();
+        const tecnicoLower = perfil.toLowerCase();
 
         const matchReg = fRegion === "TODOS" || reg === fRegion;
         const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil;
         const matchAprob = fAprob === "TODOS" || aprob === fAprob;
-        const matchSearch = tecnico.includes(searchVal);
+        const matchSearch = tecnicoLower.includes(searchVal);
 
         return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
     });
@@ -136,7 +146,6 @@ function aplicarFiltrosGlobales() {
     renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(registrosParaGrafica, fRegion);
 }
-
 function resetFiltros() {
     if (document.getElementById('filtroRegion')) document.getElementById('filtroRegion').value = "TODOS";
     if (document.getElementById('filtroMes')) document.getElementById('filtroMes').value = "TODOS";
