@@ -17,7 +17,7 @@ html, body {
     position: relative !important;
 }
 
-/* Sidebar fijo que cubre todo el alto */
+/* Permitir que los menús flotantes sobresalgan del sidebar sin cortarse */
 aside.sidebar {
     position: fixed !important;
     top: 0 !important;
@@ -33,7 +33,7 @@ aside.sidebar {
     background: rgba(255, 255, 255, 0.96) !important;
     border-right: 1px solid #e2e8f0 !important;
     overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow-x: visible !important; /* CAMBIADO de hidden a visible para dejar salir el menú */
 }
 
 .sidebar-nav {
@@ -250,7 +250,7 @@ table.fact-table tr:hover td { background: #f8fafc; }
 }
 .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
 
-/* --- Corrección definitiva para los menús desplegables flotantes tipo Excel --- */
+/* Contenedor relativo para que el menú flote justo al lado */
 .dropdown-filtro-container {
     position: relative !important;
     width: 100% !important;
@@ -276,10 +276,12 @@ table.fact-table tr:hover td { background: #f8fafc; }
     border-color: #2563eb !important;
 }
 
-/* Menú flotante absoluto que se posiciona fuera del flujo del sidebar para que no genere scrolls */
+/* Menú flotante absoluto alineado perfectamente al sidebar */
 .dropdown-filtro-menu {
     display: none;
-    position: fixed !important;
+    position: absolute !important;
+    left: 100% !important; /* Se coloca exactamente a la derecha del botón del sidebar */
+    top: 0 !important;
     width: 240px !important;
     background: #ffffff !important;
     border: 1px solid #cbd5e0 !important;
@@ -290,7 +292,6 @@ table.fact-table tr:hover td { background: #f8fafc; }
     box-sizing: border-box !important;
     font-family: inherit !important;
 }
-
 .dropdown-filtro-menu.activo {
     display: block !important;
 }
