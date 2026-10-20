@@ -8,7 +8,7 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
-let modoVisualizacionModal = 'COP'; // Controla si los modales muestran Valores en COP ($) o Conteo de IDs
+let modoVisualizacionModal = 'COP'; // 'COP' o 'IDS'
 
 // --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
@@ -64,7 +64,6 @@ function poblarSelectsFiltros(rows) {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '];
         const mes = r.mes || r.MES;
         
-        // FUENTE OFICIAL: Columna TECNICO PROGRAMADO (Celda BM) limpia de comillas
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
         const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
 
@@ -161,7 +160,6 @@ function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
     rows.forEach(r => {
-        // FUENTE OFICIAL ABSOLUTA: Columna TECNICO PROGRAMADO (Celda BM) limpia
         const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
         const nombreTecnico = String(rawTecnico).replace(/["']/g, "").trim();
 
@@ -517,7 +515,7 @@ function renderizarEstadoRegional(rows) {
 }
 
 // ==========================================
-// MODAL EN TRÁMITE (CON BOTÓN ALTERNADOR COP / IDs)
+// MODAL EN TRÁMITE (CON BOTÓN MINIMALISTA Y LISTADO DE IDs)
 // ==========================================
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -570,33 +568,55 @@ function abrirModalEnTramite() {
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
+        const idReal = String(r.id_id || r.ID_ID || r.id || r.ID || 'N/A').trim();
         
-        // Métrica según modo: COP o conteo estricto basado en id_id
         const valorMetrica = modoVisualizacionModal === 'COP' 
             ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
             : 1;
 
         sumaGranTotal += valorMetrica;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + valorMetrica;
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + (modoVisualizacionModal === 'COP' ? valorMetrica : 1);
         }
 
         if (!matrizDatos[aprobRegionalVal]) {
             matrizDatos[aprobRegionalVal] = {};
-            listaDepartamentos.forEach(dep => matrizDatos[aprobRegionalVal][dep] = 0);
-            matrizDatos[aprobRegionalVal]["OTRO"] = 0;
+            listaDepartamentos.forEach(dep => matrizDatos[aprobRegionalVal][dep] = modoVisualizacionModal === 'COP' ? 0 : []);
+            matrizDatos[aprobRegionalVal]["OTRO"] = modoVisualizacionModal === 'COP' ? 0 : [];
         }
-        if (departamento !== "OTRO") {
-            matrizDatos[aprobRegionalVal][departamento] += valorMetrica;
+
+        if (modoVisualizacionModal === 'COP') {
+            if (departamento !== "OTRO") {
+                matrizDatos[aprobRegionalVal][departamento] += valorMetrica;
+            } else {
+                matrizDatos[aprobRegionalVal]["OTRO"] += valorMetrica;
+            }
         } else {
-            matrizDatos[aprobRegionalVal]["OTRO"] += valorMetrica;
+            // Guardamos los IDs reales en un arreglo para mostrarlos desglosados
+            if (departamento !== "OTRO") {
+                if (!matrizDatos[aprobRegionalVal][departamento].includes(idReal)) {
+                    matrizDatos[aprobRegionalVal][departamento].push(idReal);
+                }
+            } else {
+                if (!matrizDatos[aprobRegionalVal]["OTRO"].includes(idReal)) {
+                    matrizDatos[aprobRegionalVal]["OTRO"].push(idReal);
+                }
+            }
         }
     });
 
     const estadosFiltrados = {};
     for (const [aprobVal, montosDeps] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (modoVisualizacionModal === 'COP') {
+            Object.values(montosDeps).forEach(val => totalFila += val);
+        } else {
+            let idsUnicosFila = [];
+            Object.values(montosDeps).forEach(arr => {
+                arr.forEach(id => { if(!idsUnicosFila.includes(id)) idsUnicosFila.push(id); });
+            });
+            totalFila = idsUnicosFila.length;
+        }
         if (totalFila > 0) {
             estadosFiltrados[aprobVal] = montosDeps;
         }
@@ -619,16 +639,39 @@ function abrirModalEnTramite() {
     for (const [aprobVal, montosDeps] of Object.entries(estadosFiltrados)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
-        let totalFila = 0;
+        let totalFilaCOP = 0;
+        let idsFilaSet = new Set();
+
         listaDepartamentos.forEach(dep => {
-            const valDep = montosDeps[dep] || 0;
-            totalFila += valDep;
-            const textoCelda = modoVisualizacionModal === 'COP' ? (valDep > 0 ? formatMoney(valDep) : '-') : (valDep > 0 ? valDep.toLocaleString('es-CO') : '-');
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            const valDep = montosDeps[dep];
+            if (modoVisualizacionModal === 'COP') {
+                const monto = valDep || 0;
+                totalFilaCOP += monto;
+                const textoCelda = monto > 0 ? formatMoney(monto) : '-';
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            } else {
+                const arrIds = valDep || [];
+                arrIds.forEach(id => idsFilaSet.add(id));
+                // Desglose limpio tipo píldoras para los IDs con scroll interno si son varios
+                let idsHtml = '-';
+                if (arrIds.length > 0) {
+                    idsHtml = `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-height: 70px; overflow-y: auto;">` + 
+                              arrIds.map(id => `<span style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold;">ID:${id}</span>`).join('') + 
+                              `</div>`;
+                }
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
+            }
         });
 
-        const textoTotalFila = modoVisualizacionModal === 'COP' ? formatMoney(totalFila) : totalFila.toLocaleString('es-CO');
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${textoTotalFila}</td></tr>`;
+        if (modoVisualizacionModal === 'COP') {
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
+        } else {
+            const arrTotalFila = Array.from(idsFilaSet);
+            let idsTotalHtml = arrTotalFila.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-height: 70px; overflow-y: auto;">` + 
+                              arrTotalFila.map(id => `<span style="background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold;">ID:${id}</span>`).join('') + 
+                              `</div>` : '-';
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
+        }
     }
     tbody.innerHTML = bodyHtml;
 
@@ -638,7 +681,7 @@ function abrirModalEnTramite() {
     `;
     listaDepartamentos.forEach(dep => {
         const valDepTotal = totalesPorDepartamento[dep] || 0;
-        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO');
+        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO') + ' IDs';
         footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
     });
     
@@ -646,7 +689,7 @@ function abrirModalEnTramite() {
     footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalEnTramiteModal').innerText = `Total general acumulado (${modoVisualizacionModal}): ${textoGranTotal}`;
+    document.getElementById('txtTotalEnTramiteModal').innerText = `Total general acumulado (${modoVisualizacionModal === 'COP' ? 'COP' : 'IDs'}): ${textoGranTotal}`;
 
     const modal = document.getElementById('modalEnTramiteDetalle');
     if (modal) modal.style.display = 'flex';
@@ -665,8 +708,8 @@ function actualizarCabeceraModalTramite() {
         headerDiv.innerHTML = `
             <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Detalle de Casos en Trámite</div>
             <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" onclick="alternarModoVisualizacionModal()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                    💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}
+                <button type="button" onclick="alternarModoVisualizacionModal()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">
+                    ${modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP'}
                 </button>
             </div>
         `;
@@ -678,7 +721,7 @@ function actualizarCabeceraModalTramite() {
         const btn = headerDiv.querySelector('button');
         if (btn) {
             btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
-            btn.innerText = `💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}`;
+            btn.innerText = modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP';
         }
     }
 }
@@ -694,7 +737,7 @@ function cerrarModalEnTramite() {
 }
 
 // ==========================================
-// MODAL RECHAZADOS (CON BOTÓN ALTERNADOR COP / IDs)
+// MODAL RECHAZADOS (CON BOTÓN MINIMALISTA Y LISTADO DE IDs)
 // ==========================================
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -746,6 +789,7 @@ function abrirModalRechazados() {
         const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
+        const idReal = String(r.id_id || r.ID_ID || r.id || r.ID || 'N/A').trim();
         
         const valorMetrica = modoVisualizacionModal === 'COP' 
             ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
@@ -753,25 +797,46 @@ function abrirModalRechazados() {
 
         sumaGranTotal += valorMetrica;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + valorMetrica;
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + (modoVisualizacionModal === 'COP' ? valorMetrica : 1);
         }
 
         if (!matrizDatos[causaRechazoVal]) {
             matrizDatos[causaRechazoVal] = {};
-            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = 0);
-            matrizDatos[causaRechazoVal]["OTRO"] = 0;
+            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = modoVisualizacionModal === 'COP' ? 0 : []);
+            matrizDatos[causaRechazoVal]["OTRO"] = modoVisualizacionModal === 'COP' ? 0 : [];
         }
-        if (departamento !== "OTRO") {
-            matrizDatos[causaRechazoVal][departamento] += valorMetrica;
+
+        if (modoVisualizacionModal === 'COP') {
+            if (departamento !== "OTRO") {
+                matrizDatos[causaRechazoVal][departamento] += valorMetrica;
+            } else {
+                matrizDatos[causaRechazoVal]["OTRO"] += valorMetrica;
+            }
         } else {
-            matrizDatos[causaRechazoVal]["OTRO"] += valorMetrica;
+            if (departamento !== "OTRO") {
+                if (!matrizDatos[causaRechazoVal][departamento].includes(idReal)) {
+                    matrizDatos[causaRechazoVal][departamento].push(idReal);
+                }
+            } else {
+                if (!matrizDatos[causaRechazoVal]["OTRO"].includes(idReal)) {
+                    matrizDatos[causaRechazoVal]["OTRO"].push(idReal);
+                }
+            }
         }
     });
 
     const causasFiltradas = {};
     for (const [causaVal, montosDeps] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (modoVisualizacionModal === 'COP') {
+            Object.values(montosDeps).forEach(val => totalFila += val);
+        } else {
+            let idsUnicosFila = [];
+            Object.values(montosDeps).forEach(arr => {
+                arr.forEach(id => { if(!idsUnicosFila.includes(id)) idsUnicosFila.push(id); });
+            });
+            totalFila = idsUnicosFila.length;
+        }
         if (totalFila > 0) {
             causasFiltradas[causaVal] = montosDeps;
         }
@@ -794,16 +859,38 @@ function abrirModalRechazados() {
     for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
         
-        let totalFila = 0;
+        let totalFilaCOP = 0;
+        let idsFilaSet = new Set();
+
         listaDepartamentos.forEach(dep => {
-            const valDep = montosDeps[dep] || 0;
-            totalFila += valDep;
-            const textoCelda = modoVisualizacionModal === 'COP' ? (valDep > 0 ? formatMoney(valDep) : '-') : (valDep > 0 ? valDep.toLocaleString('es-CO') : '-');
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            const valDep = montosDeps[dep];
+            if (modoVisualizacionModal === 'COP') {
+                const monto = valDep || 0;
+                totalFilaCOP += monto;
+                const textoCelda = monto > 0 ? formatMoney(monto) : '-';
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            } else {
+                const arrIds = valDep || [];
+                arrIds.forEach(id => idsFilaSet.add(id));
+                let idsHtml = '-';
+                if (arrIds.length > 0) {
+                    idsHtml = `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-height: 70px; overflow-y: auto;">` + 
+                              arrIds.map(id => `<span style="background: #fee2e2; color: #b91c1c; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold;">ID:${id}</span>`).join('') + 
+                              `</div>`;
+                }
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
+            }
         });
 
-        const textoTotalFila = modoVisualizacionModal === 'COP' ? formatMoney(totalFila) : totalFila.toLocaleString('es-CO');
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${textoTotalFila}</td></tr>`;
+        if (modoVisualizacionModal === 'COP') {
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
+        } else {
+            const arrTotalFila = Array.from(idsFilaSet);
+            let idsTotalHtml = arrTotalFila.length > 0 ? `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-height: 70px; overflow-y: auto;">` + 
+                              arrTotalFila.map(id => `<span style="background: #fecaca; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold;">ID:${id}</span>`).join('') + 
+                              `</div>` : '-';
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
+        }
     }
     tbody.innerHTML = bodyHtml;
 
@@ -813,7 +900,7 @@ function abrirModalRechazados() {
     `;
     listaDepartamentos.forEach(dep => {
         const valDepTotal = totalesPorDepartamento[dep] || 0;
-        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO');
+        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO') + ' IDs';
         footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
     });
     
@@ -821,7 +908,7 @@ function abrirModalRechazados() {
     footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalRechazadosModal').innerText = `Total general acumulado (${modoVisualizacionModal}): ${textoGranTotal}`;
+    document.getElementById('txtTotalRechazadosModal').innerText = `Total general acumulado (${modoVisualizacionModal === 'COP' ? 'COP' : 'IDs'}): ${textoGranTotal}`;
 
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
@@ -840,8 +927,8 @@ function actualizarCabeceraModalRechazados() {
         headerDiv.innerHTML = `
             <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Desglose de Casos Rechazados</div>
             <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" onclick="alternarModoVisualizacionRechazados()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
-                    💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}
+                <button type="button" onclick="alternarModoVisualizacionRechazados()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">
+                    ${modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP'}
                 </button>
             </div>
         `;
@@ -853,7 +940,7 @@ function actualizarCabeceraModalRechazados() {
         const btn = headerDiv.querySelector('button');
         if (btn) {
             btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
-            btn.innerText = `💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}`;
+            btn.innerText = modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP';
         }
     }
 }
