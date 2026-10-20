@@ -127,7 +127,6 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    // Extraemos TODOS los valores únicos posibles desde los registros originales sin importar la cascada
     const setValores = new Set();
     registrosCrudos.forEach(r => {
         let val = "";
@@ -155,11 +154,68 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     }
 
     actualizarLabelBotonFiltro(nombreFiltro);
+    aplicarFiltrosGlobales();
+}
 
-    // Si borramos el filtro de esta cajita, también reseteamos el filtro superior cruzado para este campo específico 
-    // y aplicamos para que la tabla muestre los datos correspondientes sin restricciones cruzadas agresivas
-    const regionesSeleccionadas = nombreFiltro === 'Region' && !marcar ? [] : obtenerValoresSeleccionados('Region');
-    const deptosSeleccionados = nombreFiltro === 'Departamento' && marcar ? Array.from(setValores) : obtenerValoresSeleccionados('Departamento');
+function obtenerValoresSeleccionados(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function actualizarLabelBotonFiltro(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    const total = checkboxes.length;
+    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) {
+        chkTodo.checked = (total > 0 && seleccionados.length === total);
+    }
+
+    const lbl = document.getElementById('lbl' + nombreFiltro);
+    if (!lbl) return;
+
+    if (seleccionados.length === total || seleccionados.length === 0) {
+        lbl.innerText = "Todos";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = seleccionados.length + " seleccionados";
+    }
+}
+
+function filtrarListaCheck(nombreFiltro, texto) {
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+    const labels = container.querySelectorAll('label');
+    const query = texto.toLowerCase();
+    labels.forEach(lbl => {
+        const txt = lbl.innerText.toLowerCase();
+        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
+    });
+}
+
+function resetFiltros() {
+    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    poblarSelectsFiltros(registrosCrudos);
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        const chkTodo = document.getElementById('chkTodo' + nombre);
+        if (chkTodo) chkTodo.checked = true;
+        const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
+        checkboxes.forEach(cb => cb.checked = true);
+    });
+    aplicarFiltrosGlobales();
+}
+
+function aplicarFiltrosGlobales() {
+    actualizarSelectsEnCascada();
+
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        actualizarLabelBotonFiltro(nombre);
+    });
+
+    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
+    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
     const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
     const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
@@ -175,6 +231,7 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
+        
         return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
@@ -182,16 +239,18 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
+        
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const tecnicoLower = perfil.toLowerCase();
 
         return regCheck.includes(reg) && 
                depCheck.includes(depto) && 
                mesCheck.includes(mes) && 
                perfCheck.includes(perfil) && 
                aprobCheck.includes(aprob) && 
-               perfil.toLowerCase().includes(searchVal);
+               tecnicoLower.includes(searchVal);
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos, mesCheck.length);
@@ -199,8 +258,11 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
+    
     renderizarEstadoRegional(filtradosCompletos);
+    initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
 }
+
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const mapaTecnicos = {};
     let mesesMultiplicador = cantidadMeses < 1 ? 1 : cantidadMeses;
@@ -1498,25 +1560,4 @@ function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
     });
     container.innerHTML = html;
     actualizarLabelBotonFiltro(nombreFiltro);
-}
-function actualizarLabelBotonFiltro(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    const total = checkboxes.length;
-    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
-    
-    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) {
-        chkTodo.checked = (total > 0 && seleccionados.length === total);
-    }
-
-    const lbl = document.getElementById('lbl' + nombreFiltro);
-    if (!lbl) return;
-
-    if (seleccionados.length === total || seleccionados.length === 0) {
-        lbl.innerText = "Todos";
-    } else if (seleccionados.length === 1) {
-        lbl.innerText = seleccionados[0];
-    } else {
-        lbl.innerText = seleccionados.length + " seleccionados";
-    }
 }
