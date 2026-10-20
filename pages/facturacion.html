@@ -124,119 +124,119 @@
                         </button>
                     </div>
 
-                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
-                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
-                        <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
-                    </button>
-                    
-                    <div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 10px; display: flex; flex-direction: column;">
-                        
-                        <!-- 1. Región -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownRegion', event)">
-                                    <span id="lblRegion">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownRegion" class="dropdown-filtro-menu">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Region', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Region', false)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoRegion" onchange="seleccionarTodoGeneral('Region', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckRegion" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Acordeón principal de filtros (Cerrado por defecto) -->
+<button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
+    <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
+    <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease; transform: rotate(0deg);">▼</span>
+</button>
+<div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 10px; display: none; flex-direction: column;">
+    
+    <!-- 1. Región -->
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+        <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región</label>
+        <div class="dropdown-filtro-container">
+            <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownRegion', event)">
+                <span id="lblRegion">Todos</span> <span>▼</span>
+            </button>
+            <div id="dropdownRegion" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
+                <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Region', this.value)">
+                <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Region', false)">❌ Borrar filtro</span>
+                <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="checkbox" id="chkTodoRegion" onchange="seleccionarTodoGeneral('Region', this.checked)" style="cursor: pointer;" checked>
+                        (Seleccionar todo)
+                    </label>
+                    <div id="listaCheckRegion" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <!-- 2. Departamento -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownDepartamento', event)">
-                                    <span id="lblDepartamento">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownDepartamento" class="dropdown-filtro-menu">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Departamento', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', false)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoDepartamento" onchange="seleccionarTodoGeneral('Departamento', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckDepartamento" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- 2. Departamento -->
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+        <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
+        <div class="dropdown-filtro-container">
+            <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownDepartamento', event)">
+                <span id="lblDepartamento">Todos</span> <span>▼</span>
+            </button>
+            <div id="dropdownDepartamento" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
+                <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Departamento', this.value)">
+                <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', false)">❌ Borrar filtro</span>
+                <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="checkbox" id="chkTodoDepartamento" onchange="seleccionarTodoGeneral('Departamento', this.checked)" style="cursor: pointer;" checked>
+                        (Seleccionar todo)
+                    </label>
+                    <div id="listaCheckDepartamento" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <!-- 3. Mes -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownMes', event)">
-                                    <span id="lblMes">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownMes" class="dropdown-filtro-menu">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Mes', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', false)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoMes" onchange="seleccionarTodoGeneral('Mes', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckMes" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- 3. Mes -->
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+        <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
+        <div class="dropdown-filtro-container">
+            <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownMes', event)">
+                <span id="lblMes">Todos</span> <span>▼</span>
+            </button>
+            <div id="dropdownMes" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
+                <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Mes', this.value)">
+                <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', false)">❌ Borrar filtro</span>
+                <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="checkbox" id="chkTodoMes" onchange="seleccionarTodoGeneral('Mes', this.checked)" style="cursor: pointer;" checked>
+                        (Seleccionar todo)
+                    </label>
+                    <div id="listaCheckMes" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <!-- 4. Perfil WFM -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownPerfilWfm', event)">
-                                    <span id="lblPerfilWfm">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownPerfilWfm" class="dropdown-filtro-menu">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('PerfilWfm', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('PerfilWfm', false)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoPerfilWfm" onchange="seleccionarTodoGeneral('PerfilWfm', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckPerfilWfm" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- 4. Perfil WFM -->
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+        <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
+        <div class="dropdown-filtro-container">
+            <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownPerfilWfm', event)">
+                <span id="lblPerfilWfm">Todos</span> <span>▼</span>
+            </button>
+            <div id="dropdownPerfilWfm" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
+                <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('PerfilWfm', this.value)">
+                <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('PerfilWfm', false)">❌ Borrar filtro</span>
+                <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="checkbox" id="chkTodoPerfilWfm" onchange="seleccionarTodoGeneral('PerfilWfm', this.checked)" style="cursor: pointer;" checked>
+                        (Seleccionar todo)
+                    </label>
+                    <div id="listaCheckPerfilWfm" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <!-- 5. Aprobación Regional -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownAprobacion', event)">
-                                    <span id="lblAprobacion">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownAprobacion" class="dropdown-filtro-menu">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Aprobacion', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', false)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoAprobacion" onchange="seleccionarTodoGeneral('Aprobacion', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckAprobacion" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- 5. Aprobación Regional -->
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+        <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
+        <div class="dropdown-filtro-container">
+            <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownAprobacion', event)">
+                <span id="lblAprobacion">Todos</span> <span>▼</span>
+            </button>
+            <div id="dropdownAprobacion" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
+                <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Aprobacion', this.value)">
+                <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', false)">❌ Borrar filtro</span>
+                <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="checkbox" id="chkTodoAprobacion" onchange="seleccionarTodoGeneral('Aprobacion', this.checked)" style="cursor: pointer;" checked>
+                        (Seleccionar todo)
+                    </label>
+                    <div id="listaCheckAprobacion" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    </div>
+</div>
                 </div>
             </nav>
         </div>
