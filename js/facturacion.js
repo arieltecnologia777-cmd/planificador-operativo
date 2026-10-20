@@ -128,19 +128,23 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
     
-    // Si se activa (marcar = true), volvemos a poblar ese menú con todos sus valores originales para que no desaparezca nada
-    if (marcar) {
-        const rowsExcluyendo = registrosCrudos.filter(r => {
-            return true; // Restauramos la visibilidad completa para este grupo
+    // Obtenemos el contenedor de las opciones de esta cajita
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        // Mostramos nuevamente todas las etiquetas ocultas por el buscador o filtros previos
+        const labels = container.querySelectorAll('label');
+        labels.forEach(lbl => {
+            lbl.style.display = 'flex';
         });
     }
-
+    
+    // Marcamos o desmarcamos todos los checkboxes de este menú
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
         cb.checked = marcar;
-        cb.parentElement.style.display = 'flex'; // Asegura que ningún elemento se oculte de la lista
     });
     
+    // Actualizamos la vista global
     aplicarFiltrosGlobales();
 }
 
