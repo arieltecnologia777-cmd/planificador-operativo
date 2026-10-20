@@ -91,7 +91,7 @@ function llenarSelectHTML(elementId, setValues) {
     select.innerHTML = html;
 }
 
-// Filtrar registros crudos según los filtros
+// Filtrar registros crudos usando estrictamente TECNICO PROGRAMADO (Celda BM)
 function aplicarFiltrosGlobales() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -107,6 +107,7 @@ function aplicarFiltrosGlobales() {
     const registrosParaGrafica = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         
+        // ÚNICA FUENTE: TECNICO PROGRAMADO
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(tecnicoRaw).trim();
         
@@ -125,6 +126,7 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
         
+        // ÚNICA FUENTE: TECNICO PROGRAMADO
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(tecnicoRaw).trim();
         
@@ -145,8 +147,7 @@ function aplicarFiltrosGlobales() {
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion);
     renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(registrosParaGrafica, fRegion);
-}
-function resetFiltros() {
+}function resetFiltros() {
     if (document.getElementById('filtroRegion')) document.getElementById('filtroRegion').value = "TODOS";
     if (document.getElementById('filtroMes')) document.getElementById('filtroMes').value = "TODOS";
     if (document.getElementById('filtroPerfilWfm')) document.getElementById('filtroPerfilWfm').value = "TODOS";
@@ -1074,14 +1075,14 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función definitiva que busca por coincidencias de palabras clave para tolerar nombres invertidos
+// Función del submodal usando estrictamente TECNICO PROGRAMADO (Celda BM)
 function verDetalleRechazosIdTecnico(nombreTecnico) {
     const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
 
-    // Filtramos usando la misma regla estricta de la columna TECNICO PROGRAMADO
     const itemsRechazados = registrosCrudos.filter(r => {
-        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || r.perfil_wfm || r.PERFIL_WFM || "";
+        // ÚNICA FUENTE: TECNICO PROGRAMADO
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfilReg = String(rawPerfil).trim().toUpperCase();
         
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
