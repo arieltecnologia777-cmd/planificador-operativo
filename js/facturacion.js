@@ -120,7 +120,6 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
             cb.checked = marcar;
         }
     });
-    // Aplica los filtros normalmente para que actúe como selección rápida en cascada
     aplicarFiltrosGlobales();
 }
 
@@ -155,6 +154,65 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     }
 
     actualizarLabelBotonFiltro(nombreFiltro);
+    aplicarFiltrosGlobales();
+}
+
+function obtenerValoresSeleccionados(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function actualizarLabelBotonFiltro(nombreFiltro) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    const total = checkboxes.length;
+    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) {
+        chkTodo.checked = (total > 0 && seleccionados.length === total);
+    }
+
+    const lbl = document.getElementById('lbl' + nombreFiltro);
+    if (!lbl) return;
+
+    if (seleccionados.length === total || seleccionados.length === 0) {
+        lbl.innerText = "Todos";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = seleccionados.length + " seleccionados";
+    }
+}
+
+function filtrarListaCheck(nombreFiltro, texto) {
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+    const labels = container.querySelectorAll('label');
+    const query = texto.toLowerCase();
+    labels.forEach(lbl => {
+        const txt = lbl.innerText.toLowerCase();
+        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
+    });
+}
+
+function resetFiltros() {
+    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    poblarSelectsFiltros(registrosCrudos);
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        const chkTodo = document.getElementById('chkTodo' + nombre);
+        if (chkTodo) chkTodo.checked = true;
+        const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
+        checkboxes.forEach(cb => cb.checked = true);
+    });
+    aplicarFiltrosGlobales();
+}
+
+function aplicarFiltrosGlobales() {
+    actualizarSelectsEnCascada();
+
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        actualizarLabelBotonFiltro(nombre);
+    });
 
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
@@ -173,6 +231,7 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
+        
         return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
@@ -180,16 +239,18 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
+        
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const tecnicoLower = perfil.toLowerCase();
 
         return regCheck.includes(reg) && 
                depCheck.includes(depto) && 
                mesCheck.includes(mes) && 
                perfCheck.includes(perfil) && 
                aprobCheck.includes(aprob) && 
-               perfil.toLowerCase().includes(searchVal);
+               tecnicoLower.includes(searchVal);
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos, mesCheck.length);
@@ -197,11 +258,11 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
-    renderizarEstadoRegional(filtradosCompletos);
-}
     
-    // --- TENDENCIA ESTÁTICA ---
+    renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
+}
+
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const mapaTecnicos = {};
     let mesesMultiplicador = cantidadMeses < 1 ? 1 : cantidadMeses;
@@ -217,7 +278,7 @@ function procesarDatosParaVista(rows, cantidadMeses = 1) {
             mapaTecnicos[nombreTecnico] = {
                 nombre: nombreTecnico,
                 regional: regional,
-                meta: metaDinamicaTecnico, // <-- Meta multiplicada por los meses seleccionados
+                meta: metaDinamicaTecnico,
                 aprobado: 0,
                 rechazado: 0,
                 subsanado: 0,
@@ -248,7 +309,7 @@ function procesarDatosParaVista(rows, cantidadMeses = 1) {
 
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
-// Actualizar Tarjetas KPI generales con meta proporcional a los meses filtrados
+
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel, fMes, totalMesesSeleccionados) {
     let cantidadMeses = totalMesesSeleccionados || 1;
     if (cantidadMeses < 1) cantidadMeses = 1;
@@ -262,7 +323,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel
     }
 
     let totalMeta = baseMetaMensual * cantidadMeses;
-
     let totalEjecutado = rowsCompletos.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0), 0);
 
     let totalAprobado = rowsCompletos.reduce((acc, r) => {
@@ -305,7 +365,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel
         if (!subLabelMeta) {
             subLabelMeta = document.createElement('div');
             subLabelMeta.className = 'sub-mes-filtrado';
-            // Aumentamos el tamaño de 0.7rem a 0.8rem y mejoramos el espaciado
             subLabelMeta.style = "font-size: 0.8rem; color: #475569; font-weight: 700; margin-top: 4px;";
             contenedorMetaCard.appendChild(subLabelMeta);
         }
@@ -381,7 +440,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel
     }
 }
 
-// Gráfica de tendencia con meta adaptativa por departamento
 function initChartsDinamicos(records, fRegion = "TODOS", fDepto = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -529,7 +587,6 @@ function initChartsDinamicos(records, fRegion = "TODOS", fDepto = "TODOS") {
     });
 }
 
-// Renderizar Estado Regional
 function renderizarEstadoRegional(rows) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
@@ -585,7 +642,6 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Submodal con cabecera fija y soporte de departamento
 function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose) {
     let subModal = document.getElementById('modalSubDesgloseMatriz');
     if (!subModal) {
@@ -655,9 +711,6 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
     subModal.style.display = 'flex';
 }
 
-// ==========================================
-// MODAL EN TRÁMITE (MATRIZ LIMPIA Y CLICABLE)
-// ==========================================
 function abrirModalEnTramite() {
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
@@ -838,9 +891,6 @@ function cerrarModalEnTramite() {
     if (modal) modal.style.display = 'none';
 }
 
-// ==========================================
-// MODAL RECHAZADOS (MATRIZ LIMPIA Y CLICABLE)
-// ==========================================
 function abrirModalRechazados() {
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
@@ -998,6 +1048,7 @@ function abrirModalRechazados() {
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
 }
+
 function actualizarCabeceraModalRechazados() {
     const modalContainer = document.querySelector('#modalRechazadosDetalle .modal-container, #modalRechazadosDetalle > div');
     if (!modalContainer) return;
@@ -1020,24 +1071,14 @@ function cerrarModalRechazados() {
     if (modal) modal.style.display = 'none';
 }
 
-function verificarIncrementosAvance(nuevosRegistros) {
-    // Intacto
-}
-
-function actualizarBadgeCampana() {
-    // Intacto
-}
-
-function abrirModalNotificaciones() {
-    // Intacto
-}
-
+function verificarIncrementosAvance(nuevosRegistros) {}
+function actualizarBadgeCampana() {}
+function abrirModalNotificaciones() {}
 function cerrarModalNotificaciones() {
     const modal = document.getElementById('modalNotificaciones');
     if (modal) modal.style.display = 'none';
 }
 
-// --- HERRAMIENTAS AVANZADAS Y CONTRASEÑA ---
 function abrirModalPassword() {
     const inputPass = document.getElementById('inputPasswordAdmin');
     const errorMsg = document.getElementById('errorPasswordMsg');
@@ -1103,7 +1144,6 @@ function cerrarModalHerramientas() {
     if (modalHerramientas) modalHerramientas.style.display = 'none';
 }
 
-// Función para confirmar y vaciar la base D1 desde herramientas avanzadas
 async function confirmarBorrarBaseD1() {
     const seguro = confirm("⚠️ ¿Estás completamente seguro de borrar todos los registros de la base de datos D1? Esta acción eliminará el contenido pero mantendrá la estructura de la tabla intacta.");
     if (!seguro) return;
@@ -1111,8 +1151,6 @@ async function confirmarBorrarBaseD1() {
     cerrarModalHerramientas();
 
     try {
-        console.log("Enviando solicitud DELETE para vaciar facturacion_detallada...");
-        
         const response = await fetch(`${API_BASE_URL}/facturacion/vaciar`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
@@ -1135,12 +1173,7 @@ async function confirmarBorrarBaseD1() {
 
 async function procesarYSubirExcel(event) {
     const file = event.target.files[0];
-    if (!file) {
-        console.warn("No se seleccionó ningún archivo.");
-        return;
-    }
-
-    console.log("Archivo Excel seleccionado:", file.name);
+    if (!file) return;
 
     cerrarModalHerramientas();
 
@@ -1179,8 +1212,6 @@ async function procesarYSubirExcel(event) {
             if (txtPorc) txtPorc.innerText = '70%';
             if (txtEstado) txtEstado.innerText = 'Sincronizando con Cloudflare D1...';
 
-            console.log("Enviando lote de datos a la API:", IMPORTAR_API_URL);
-
             const response = await fetch(IMPORTAR_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1211,8 +1242,7 @@ async function procesarYSubirExcel(event) {
         }
     };
 
-    reader.onerror = function(error) {
-        console.error("Error de lectura con FileReader:", error);
+    reader.onerror = function() {
         if (modalCarga) modalCarga.style.display = 'none';
         alert("No se pudo leer el archivo seleccionado desde el equipo.");
         event.target.value = '';
@@ -1270,9 +1300,6 @@ function renderTable(records) {
     tbody.innerHTML = html;
 }
 
-// ==========================================
-// MODAL DETALLE TÉCNICO CON DESGLOSE DE RECHAZOS POR ID (COLUMNA F)
-// ==========================================
 function abrirDetalleTecnico(index) {
     const r = tecnicosData[index];
     if (!r) return;
@@ -1319,7 +1346,6 @@ function abrirDetalleTecnico(index) {
                     <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
                 </div>
                 
-                <!-- MONTO RECHAZADO INTERACTIVO -->
                 <div style="${estilosRechazadoBox}" ${eventoClickRechazado} title="${tieneRechazos ? 'Haz clic para ver el detalle por ID' : ''}">
                     <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
                     <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
@@ -1447,7 +1473,7 @@ function exportExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
-// Poblador maestro en cascada para todos los filtros
+
 function actualizarSelectsEnCascada() {
     const regionesSel = obtenerValoresSeleccionados('Region');
     const deptosSel = obtenerValoresSeleccionados('Departamento');
@@ -1455,7 +1481,6 @@ function actualizarSelectsEnCascada() {
     const perfilesSel = obtenerValoresSeleccionados('PerfilWfm');
     const aprobSel = obtenerValoresSeleccionados('Aprobacion');
 
-    // Función auxiliar para filtrar registros excluyendo un filtro específico (para que su propio menú no se auto-restrinja al abrirse)
     const filtrarExcluyendo = (campoExcluir) => {
         return registrosCrudos.filter(r => {
             const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
@@ -1475,7 +1500,6 @@ function actualizarSelectsEnCascada() {
         });
     };
 
-    // 1. Llenar Región
     const rowsReg = filtrarExcluyendo('Region');
     const setReg = new Set();
     rowsReg.forEach(r => {
@@ -1484,7 +1508,6 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Region', setReg, regionesSel);
 
-    // 2. Llenar Departamento
     const rowsDepto = filtrarExcluyendo('Departamento');
     const setDepto = new Set();
     rowsDepto.forEach(r => {
@@ -1493,7 +1516,6 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Departamento', setDepto, deptosSel);
 
-    // 3. Llenar Mes
     const rowsMes = filtrarExcluyendo('Mes');
     const setMes = new Set();
     rowsMes.forEach(r => {
@@ -1502,7 +1524,6 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Mes', setMes, mesesSel);
 
-    // 4. Llenar Perfil WFM
     const rowsPerfil = filtrarExcluyendo('PerfilWfm');
     const setPerfil = new Set();
     rowsPerfil.forEach(r => {
@@ -1512,7 +1533,6 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('PerfilWfm', setPerfil, perfilesSel);
 
-    // 5. Llenar Aprobación
     const rowsAprob = filtrarExcluyendo('Aprobacion');
     const setAprob = new Set();
     rowsAprob.forEach(r => {
@@ -1540,25 +1560,4 @@ function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
     });
     container.innerHTML = html;
     actualizarLabelBotonFiltro(nombreFiltro);
-}
-function actualizarLabelBotonFiltro(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    const total = checkboxes.length;
-    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
-    
-    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) {
-        chkTodo.checked = (total > 0 && seleccionados.length === total);
-    }
-
-    const lbl = document.getElementById('lbl' + nombreFiltro);
-    if (!lbl) return;
-
-    if (seleccionados.length === total || seleccionados.length === 0) {
-        lbl.innerText = "Todos";
-    } else if (seleccionados.length === 1) {
-        lbl.innerText = seleccionados[0];
-    } else {
-        lbl.innerText = seleccionados.length + " seleccionados";
-    }
 }
