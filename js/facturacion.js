@@ -64,7 +64,7 @@ async function cargarDatosDesdeAPI() {
     }
 }
 
-// 1. Función para poblar dinámicamente los contenedores con checkboxes en el panel lateral
+// Poblar dinámicamente los menús desplegables estilo Excel
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const departamentos = new Set();
@@ -89,53 +89,92 @@ function poblarSelectsFiltros(rows) {
         if (aprob) aprobaciones.add(String(aprob).trim());
     });
 
-    llenarCheckboxesHTML('Region', regiones);
-    llenarCheckboxesHTML('Departamento', departamentos);
-    llenarCheckboxesHTML('Mes', meses);
-    llenarCheckboxesHTML('PerfilWfm', perfiles);
-    llenarCheckboxesHTML('Aprobacion', aprobaciones);
+    llenarDropdownHTML('Region', regiones);
+    llenarDropdownHTML('Departamento', departamentos);
+    llenarDropdownHTML('Mes', meses);
+    llenarDropdownHTML('PerfilWfm', perfiles);
+    llenarDropdownHTML('Aprobacion', aprobaciones);
 }
 
-function llenarCheckboxesHTML(nombreFiltro, setValues) {
-    const container = document.getElementById('contenedorFiltro' + nombreFiltro);
+function llenarDropdownHTML(nombreFiltro, setValues) {
+    const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
     
     let html = '';
     Array.from(setValues).sort().forEach(val => {
         html += `
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
                 <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
                 ${val}
             </label>
         `;
     });
     container.innerHTML = html;
+    actualizarLabelBotonFiltro(nombreFiltro);
 }
 
-// Función auxiliar para seleccionar o deseleccionar todos los checkboxes de un grupo
-function seleccionarTodosFiltro(nombreFiltro, marcar) {
+function seleccionarTodoGeneral(nombreFiltro, marcar) {
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    checkboxes.forEach(cb => {
+        if (cb.parentElement.style.display !== 'none') {
+            cb.checked = marcar;
+        }
+    });
+    aplicarFiltrosGlobales();
+}
+
+function marcarTodosDropdown(nombreFiltro, marcar) {
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) chkTodo.checked = marcar;
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => cb.checked = marcar);
     aplicarFiltrosGlobales();
 }
 
-// 2. Función auxiliar para obtener un arreglo con los valores marcados en cada filtro
 function obtenerValoresSeleccionados(nombreFiltro) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
-// 3. Modificación en resetFiltros para marcar todos los checkboxes por defecto al limpiar
+function actualizarLabelBotonFiltro(nombreFiltro) {
+    const total = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`).length;
+    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    const lbl = document.getElementById('lbl' + nombreFiltro);
+    if (!lbl) return;
+
+    if (seleccionados.length === total || seleccionados.length === 0) {
+        lbl.innerText = "Todos";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = seleccionados.length + " seleccionados";
+    }
+}
+
+function filtrarListaCheck(nombreFiltro, texto) {
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+    const labels = container.querySelectorAll('label');
+    const query = texto.toLowerCase();
+    labels.forEach(lbl => {
+        const txt = lbl.innerText.toLowerCase();
+        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
+    });
+}
+
 function resetFiltros() {
     ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        seleccionarTodosFiltro(nombre, true);
+        marcarTodosDropdown(nombre, true);
     });
     if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
     aplicarFiltrosGlobales();
 }
 
-// 4. Actualización dentro de aplicarFiltrosGlobales para validar múltiples selecciones
 function aplicarFiltrosGlobales() {
+    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+        actualizarLabelBotonFiltro(nombre);
+    });
+
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
@@ -670,14 +709,14 @@ function abrirModalEnTramite() {
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         const tecnico = perfil.toLowerCase();
 
         const matchReg = regionesSeleccionadas.includes(reg);
         const matchDepto = deptosSeleccionados.includes(depto);
         const matchMes = mesesSeleccionados.includes(mes);
-        const matchPerfil = perfilesSeleccionados.includes(perfil);
+        const matchPerfil = perfilesSeleccionados.includes(perfil.toUpperCase());
         const matchSearch = tecnico.includes(searchVal);
 
         const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
@@ -853,14 +892,14 @@ function abrirModalRechazados() {
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         const tecnico = perfil.toLowerCase();
 
         const matchReg = regionesSeleccionadas.includes(reg);
         const matchDepto = deptosSeleccionados.includes(depto);
         const matchMes = mesesSeleccionados.includes(mes);
-        const matchPerfil = perfilesSeleccionados.includes(perfil);
+        const matchPerfil = perfilesSeleccionados.includes(perfil.toUpperCase());
         const matchSearch = tecnico.includes(searchVal);
         const esRechazado = aprobReg.includes("RECHAZADO");
 
@@ -1268,182 +1307,4 @@ function renderTable(records) {
         `;
     });
     tbody.innerHTML = html;
-}
-
-// ==========================================
-// MODAL DETALLE TÉCNICO CON DESGLOSE DE RECHAZOS POR ID (COLUMNA F)
-// ==========================================
-function abrirDetalleTecnico(index) {
-    const r = tecnicosData[index];
-    if (!r) return;
-
-    const modalBody = document.getElementById('modalBodyContent');
-    if(!modalBody) return;
-    
-    const badgeStyleModal = r.estado === "Cumple" 
-        ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
-        : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
-
-    const tieneRechazos = r.rechazado > 0;
-    const estilosRechazadoBox = tieneRechazos 
-        ? "background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; cursor: pointer; transition: background 0.2s;" 
-        : "background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;";
-    
-    const eventoClickRechazado = tieneRechazos ? `onclick="verDetalleRechazosIdTecnico('${r.nombre.replace(/'/g, "\\'")}')"` : "";
-    const tooltipRechazado = tieneRechazos ? `<div style="font-size:0.68rem; color:#dc2626; font-weight:700; margin-top:2px;">👆 Clic para ver causas por ID</div>` : "";
-
-    modalBody.innerHTML = `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
-                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
-                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
-                </div>
-                <div>
-                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
-                    <div style="margin-top: 4px;"><span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; ${badgeStyleModal}">${r.estado}</span></div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
-                </div>
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
-                </div>
-                
-                <!-- MONTO RECHAZADO INTERACTIVO -->
-                <div style="${estilosRechazadoBox}" ${eventoClickRechazado} title="${tieneRechazos ? 'Haz clic para ver el detalle por ID' : ''}">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
-                    ${tooltipRechazado}
-                </div>
-
-                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
-                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
-                </div>
-            </div>
-
-            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
-                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
-                </div>
-                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
-            </div>
-        </div>
-    `;
-
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'flex';
-}
-
-function verDetalleRechazosIdTecnico(nombreTecnico) {
-    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
-    const fMes = mesesSeleccionados.length === 1 ? mesesSeleccionados[0] : "TODOS";
-    const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
-
-    const itemsRechazados = registrosCrudos.filter(r => {
-        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfilReg = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
-        
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
-        const mesReg = String(r.mes || r.MES || "").trim().toUpperCase();
-        
-        const matchTecnico = perfilReg === tecnicoBuscado;
-        const esRechazado = aprobReg.includes("RECHAZADO");
-        const matchMes = fMes === "TODOS" || mesesSeleccionados.includes(mesReg);
-
-        return matchTecnico && esRechazado && matchMes;
-    });
-
-    if (itemsRechazados.length === 0) {
-        alert(`No se encontraron registros de rechazo para "${nombreTecnico}".`);
-        return;
-    }
-
-    let filasHtml = '';
-    let sumaRechazosModal = 0;
-
-    itemsRechazados.forEach(item => {
-        const idReal = item.id_id || item.ID_ID || item.id || item.ID || 'N/A';
-        const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
-        const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
-        sumaRechazosModal += monto;
-
-        filasHtml += `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${idReal}</td>
-                <td style="padding: 10px; color: #dc2626; font-weight: 700; text-transform: uppercase;">${causa}</td>
-                <td style="padding: 10px; text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(monto)}</td>
-            </tr>
-        `;
-    });
-
-    let subModal = document.getElementById('modalSubDetalleRechazos');
-    if (!subModal) {
-        subModal = document.createElement('div');
-        subModal.id = 'modalSubDetalleRechazos';
-        subModal.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:inherit;";
-        document.body.appendChild(subModal);
-    }
-
-    subModal.innerHTML = `
-        <div style="background:white; color:#333; border-radius:14px; width:620px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 35px rgba(0,0,0,0.35); overflow:hidden;">
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 25px 15px 25px; border-bottom:2px solid #e2e8f0; background:white; position:sticky; top:0; z-index:10;">
-                <div>
-                    <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
-                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico}</div>
-                </div>
-                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
-            </div>
-            
-            <div style="padding:20px 25px; overflow-y:auto; flex:1;">
-                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
-                    <thead>
-                        <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
-                            <th style="padding:10px; text-align:center;">ID</th>
-                            <th style="padding:10px;">Causa Rechazo</th>
-                            <th style="padding:10px; text-align:right;">Monto Estimado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filasHtml}
-                    </tbody>
-                </table>
-
-                <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
-                    <span>Total Rechazado:</span>
-                    <span style="color:#0f172a; font-size:1.05rem;">${formatMoney(sumaRechazosModal)}</span>
-                </div>
-            </div>
-
-            <div style="padding:15px 25px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:right;">
-                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
-            </div>
-
-        </div>
-    `;
-    subModal.style.display = 'flex';
-}
-
-function cerrarModalDetalle() {
-    const modal = document.getElementById('modalDetalleTecnico');
-    if (modal) modal.style.display = 'none';
-}
-
-function exportExcel() {
-    const ws = XLSX.utils.json_to_sheet(tecnicosData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
-    XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
