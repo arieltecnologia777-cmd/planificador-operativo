@@ -685,27 +685,27 @@ function abrirModalEnTramite() {
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
-    const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
+    const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
+    const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
 
     const registrosEnTramite = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        const tecnico = perfil.toLowerCase();
 
-        const matchReg = regionesSeleccionadas.includes(reg);
-        const matchDepto = deptosSeleccionados.includes(depto);
-        const matchMes = mesesSeleccionados.includes(mes);
-        const matchPerfil = perfilesSeleccionados.includes(perfil.toUpperCase());
-        const matchSearch = tecnico.includes(searchVal);
-
+        const matchReg = regCheck.includes(reg);
+        const matchDepto = depCheck.includes(depto);
+        const matchMes = mesCheck.includes(mes);
+        const matchSearch = perfil.includes(searchVal);
         const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
 
-        return matchReg && matchDepto && matchMes && matchPerfil && matchSearch && esPendienteNeto;
+        return matchReg && matchDepto && matchMes && matchSearch && esPendienteNeto;
     });
 
     const thead = document.getElementById('headTablaDinamicaTramite');
@@ -868,26 +868,27 @@ function abrirModalRechazados() {
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
-    const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
+
+    const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
+    const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
+    const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
 
     const registrosRechazados = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        const tecnico = perfil.toLowerCase();
 
-        const matchReg = regionesSeleccionadas.includes(reg);
-        const matchDepto = deptosSeleccionados.includes(depto);
-        const matchMes = mesesSeleccionados.includes(mes);
-        const matchPerfil = perfilesSeleccionados.includes(perfil.toUpperCase());
-        const matchSearch = tecnico.includes(searchVal);
+        const matchReg = regCheck.includes(reg);
+        const matchDepto = depCheck.includes(depto);
+        const matchMes = mesCheck.includes(mes);
+        const matchSearch = perfil.includes(searchVal);
         const esRechazado = aprobReg.includes("RECHAZADO");
 
-        return matchReg && matchDepto && matchMes && matchPerfil && matchSearch && esRechazado;
+        return matchReg && matchDepto && matchMes && matchSearch && esRechazado;
     });
 
     const thead = document.getElementById('headTablaDinamicaRechazados');
@@ -914,7 +915,7 @@ function abrirModalRechazados() {
     listaDepartamentos.forEach(dep => totalesPorDepartamento[dep] = 0);
 
     registrosRechazados.forEach(r => {
-        const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
+        const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
         const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
@@ -1020,7 +1021,6 @@ function abrirModalRechazados() {
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
 }
-
 function actualizarCabeceraModalRechazados() {
     const modalContainer = document.querySelector('#modalRechazadosDetalle .modal-container, #modalRechazadosDetalle > div');
     if (!modalContainer) return;
