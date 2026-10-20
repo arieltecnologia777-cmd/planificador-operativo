@@ -328,7 +328,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel
         if (!subLabelMeta) {
             subLabelMeta = document.createElement('div');
             subLabelMeta.className = 'sub-mes-filtrado';
-            subLabelMeta.style = "font-size: 0.7rem; color: #64748b; font-weight: 700; margin-top: 2px;";
+            // Aumentamos el tamaño de 0.7rem a 0.8rem y mejoramos el espaciado
+            subLabelMeta.style = "font-size: 0.8rem; color: #475569; font-weight: 700; margin-top: 4px;";
             contenedorMetaCard.appendChild(subLabelMeta);
         }
         subLabelMeta.innerText = subTextoFiltros;
