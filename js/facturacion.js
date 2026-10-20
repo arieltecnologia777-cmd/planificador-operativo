@@ -137,8 +137,15 @@ function obtenerValoresSeleccionados(nombreFiltro) {
 }
 
 function actualizarLabelBotonFiltro(nombreFiltro) {
-    const total = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`).length;
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    const total = checkboxes.length;
     const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) {
+        chkTodo.checked = (total > 0 && seleccionados.length === total);
+    }
+
     const lbl = document.getElementById('lbl' + nombreFiltro);
     if (!lbl) return;
 
