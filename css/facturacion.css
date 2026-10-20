@@ -382,3 +382,78 @@ table.fact-table tr:hover td { background: #f8fafc; }
         border-bottom: 1px solid #e2e8f0;
     }
     .excel-borrar-filtro:hover { text-decoration: underline; }
+
+/* --- Corrección definitiva para los menús desplegables flotantes tipo Excel --- */
+.dropdown-filtro-container {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-filtro-btn {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-filtro-btn:hover {
+    border-color: #2563eb;
+}
+
+/* Usamos position: fixed para que salga completamente del sidebar y flote limpio sobre la pantalla */
+.dropdown-filtro-menu {
+    display: none;
+    position: fixed;
+    width: 240px;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    z-index: 999999;
+    padding: 12px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.dropdown-filtro-menu.activo {
+    display: block;
+}
+
+.excel-input-buscar {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+.excel-input-buscar:focus {
+    border-color: #2563eb;
+}
+
+.excel-borrar-filtro {
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.excel-borrar-filtro:hover {
+    text-decoration: underline;
+}
