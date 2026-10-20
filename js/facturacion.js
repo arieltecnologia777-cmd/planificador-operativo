@@ -128,15 +128,19 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
     
-    // Desmarca únicamente los checkboxes de esta cajita específica sin afectar el resto de filtros
+    // Si se activa (marcar = true), volvemos a poblar ese menú con todos sus valores originales para que no desaparezca nada
+    if (marcar) {
+        const rowsExcluyendo = registrosCrudos.filter(r => {
+            return true; // Restauramos la visibilidad completa para este grupo
+        });
+    }
+
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
-        if (cb.parentElement.style.display !== 'none') {
-            cb.checked = marcar;
-        }
+        cb.checked = marcar;
+        cb.parentElement.style.display = 'flex'; // Asegura que ningún elemento se oculte de la lista
     });
     
-    // Actualiza la vista aplicando los cambios globales
     aplicarFiltrosGlobales();
 }
 
