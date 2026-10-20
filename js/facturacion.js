@@ -200,7 +200,7 @@ function procesarDatosParaVista(rows) {
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
-// Actualizar Tarjetas KPI generales
+// Actualizar Tarjetas KPI generales (% Aprobación)
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     let totalMeta = META_GLOBAL_TOTAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
@@ -233,8 +233,9 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         return acc;
     }, 0);
     
-    let efectividadGlobal = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
-    let efectividadVisual = Math.min(100, efectividadGlobal);
+    // Cálculo para % Aprobación (sobre la meta global o regional)
+    let porcentajeAprobacion = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
+    let porcentajeVisual = Math.min(100, porcentajeAprobacion);
 
     if(document.getElementById('kpiMeta')) document.getElementById('kpiMeta').innerText = formatMoney(totalMeta);
     if(document.getElementById('kpiEjecutado')) document.getElementById('kpiEjecutado').innerText = formatMoney(totalEjecutado);
@@ -259,13 +260,13 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('barEnTramite')) document.getElementById('barEnTramite').style.width = porcEnTramite + '%';
     if(document.getElementById('txtPorcEnTramite')) document.getElementById('txtPorcEnTramite').innerText = porcEnTramite + '%';
 
-    let colorEfectividad = '#dc2626';
-    if (efectividadGlobal >= 100) {
-        colorEfectividad = '#22c55e';
-    } else if (efectividadGlobal >= 70) {
-        colorEfectividad = '#00b087';
-    } else if (efectividadGlobal >= 40) {
-        colorEfectividad = '#f59e0b';
+    let colorAprobacion = '#dc2626';
+    if (porcentajeAprobacion >= 100) {
+        colorAprobacion = '#16a34a';
+    } else if (porcentajeAprobacion >= 70) {
+        colorAprobacion = '#059669';
+    } else if (porcentajeAprobacion >= 40) {
+        colorAprobacion = '#f59e0b';
     }
 
     const ctxGauge = document.getElementById('gaugeEfectividad');
@@ -275,8 +276,8 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [efectividadVisual, Math.max(0, 100 - efectividadVisual)],
-                    backgroundColor: [colorEfectividad, '#e2e8f0'],
+                    data: [porcentajeVisual, Math.max(0, 100 - porcentajeVisual)],
+                    backgroundColor: [colorAprobacion, '#e2e8f0'],
                     borderWidth: 0,
                     borderRadius: 0
                 }]
@@ -300,7 +301,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
                     ctx.font = `900 ${fontSize}rem Inter, sans-serif`;
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = '#0f172a';
-                    const text = efectividadGlobal + '%';
+                    const text = porcentajeAprobacion + '%';
                     const textX = Math.round((width - ctx.measureText(text).width) / 2);
                     const textY = height / 2;
                     ctx.fillText(text, textX, textY);
@@ -513,7 +514,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Submodal actualizado para incluir el departamento en cada fila del desglose
+// Submodal con cabecera fija y soporte de departamento
 function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose) {
     let subModal = document.getElementById('modalSubDesgloseMatriz');
     if (!subModal) {
@@ -545,7 +546,6 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
     subModal.innerHTML = `
         <div style="background:white; color:#333; border-radius:14px; width:680px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 35px rgba(0,0,0,0.35); overflow:hidden;">
             
-            <!-- CABECERA FIJA (STICKY HEADER) -->
             <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 25px 15px 25px; border-bottom:2px solid #e2e8f0; background:white; position:sticky; top:0; z-index:10;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 ${tituloSubmodal}</h3>
@@ -554,7 +554,6 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
                 <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
             
-            <!-- CONTENIDO CON SCROLL -->
             <div style="padding:20px 25px; overflow-y:auto; flex:1;">
                 <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
                     <thead>
@@ -576,7 +575,6 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
                 </div>
             </div>
 
-            <!-- PIE DE PAGINA CON BOTÓN DE CIERRE -->
             <div style="padding:15px 25px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:right;">
                 <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
             </div>
@@ -705,14 +703,12 @@ function abrirModalEnTramite() {
                 }));
 
                 const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
-                // Color negro estándar, sin colores forzados
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #0f172a; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
-        // Columna Total General de la Fila (agrupa todos los deptos para este estado)
         const subsetRowFila = registrosEnTramite.filter(item => {
             const itemAprob = String(item.aprobacion_regional || item.APROBACION_REGIONAL || item['APROBACION REGIONAL'] || "").toUpperCase().trim();
             return itemAprob === aprobVal;
@@ -886,14 +882,12 @@ function abrirModalRechazados() {
                 }));
 
                 const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
-                // Color negro estándar, sin colores forzados
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #0f172a; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
-        // Columna Total General de la Fila (agrupa todos los deptos para esta causa)
         const subsetRowFila = registrosRechazados.filter(item => {
             const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
             return itemCausa === causaVal;
