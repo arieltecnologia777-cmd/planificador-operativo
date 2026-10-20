@@ -127,8 +127,7 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    // Si están borrando el filtro de esta cajita, extraemos TODOS los valores posibles 
-    // directamente de los registros originales sin restricciones en cascada
+    // Extraemos TODOS los valores únicos posibles desde los registros originales sin importar la cascada
     const setValores = new Set();
     registrosCrudos.forEach(r => {
         let val = "";
@@ -156,71 +155,11 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     }
 
     actualizarLabelBotonFiltro(nombreFiltro);
-    
-    // Si se están marcando todos (borrar filtro), limpiamos también la restricción superior opuesta 
-    // para que la cascada no vuelva a ocultarlos inmediatamente en el próximo ciclo
-    aplicarFiltrosGlobales();
-}
 
-function obtenerValoresSeleccionados(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
-}
-
-function actualizarLabelBotonFiltro(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    const total = checkboxes.length;
-    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
-    
-    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) {
-        chkTodo.checked = (total > 0 && seleccionados.length === total);
-    }
-
-    const lbl = document.getElementById('lbl' + nombreFiltro);
-    if (!lbl) return;
-
-    if (seleccionados.length === total || seleccionados.length === 0) {
-        lbl.innerText = "Todos";
-    } else if (seleccionados.length === 1) {
-        lbl.innerText = seleccionados[0];
-    } else {
-        lbl.innerText = seleccionados.length + " seleccionados";
-    }
-}
-
-function filtrarListaCheck(nombreFiltro, texto) {
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (!container) return;
-    const labels = container.querySelectorAll('label');
-    const query = texto.toLowerCase();
-    labels.forEach(lbl => {
-        const txt = lbl.innerText.toLowerCase();
-        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
-    });
-}
-
-function resetFiltros() {
-    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
-    poblarSelectsFiltros(registrosCrudos);
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        const chkTodo = document.getElementById('chkTodo' + nombre);
-        if (chkTodo) chkTodo.checked = true;
-        const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
-        checkboxes.forEach(cb => cb.checked = true);
-    });
-    aplicarFiltrosGlobales();
-}
-
-function aplicarFiltrosGlobales() {
-    actualizarSelectsEnCascada();
-
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        actualizarLabelBotonFiltro(nombre);
-    });
-
-    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
-    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
+    // Si borramos el filtro de esta cajita, también reseteamos el filtro superior cruzado para este campo específico 
+    // y aplicamos para que la tabla muestre los datos correspondientes sin restricciones cruzadas agresivas
+    const regionesSeleccionadas = nombreFiltro === 'Region' && !marcar ? [] : obtenerValoresSeleccionados('Region');
+    const deptosSeleccionados = nombreFiltro === 'Departamento' && marcar ? Array.from(setValores) : obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
     const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
     const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
@@ -236,7 +175,6 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
-        
         return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
@@ -244,18 +182,16 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
-        
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
-        const tecnicoLower = perfil.toLowerCase();
 
         return regCheck.includes(reg) && 
                depCheck.includes(depto) && 
                mesCheck.includes(mes) && 
                perfCheck.includes(perfil) && 
                aprobCheck.includes(aprob) && 
-               tecnicoLower.includes(searchVal);
+               perfil.toLowerCase().includes(searchVal);
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos, mesCheck.length);
@@ -263,11 +199,8 @@ function aplicarFiltrosGlobales() {
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
-    
     renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
 }
-
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const mapaTecnicos = {};
     let mesesMultiplicador = cantidadMeses < 1 ? 1 : cantidadMeses;
