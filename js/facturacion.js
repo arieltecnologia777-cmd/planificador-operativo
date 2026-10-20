@@ -8,7 +8,6 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
-let modoVisualizacionModal = 'COP'; // 'COP' o 'IDS'
 
 // --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
@@ -514,28 +513,64 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Función global que abre un mini-submodal limpio flotante al hacer clic en un contador de IDs
-function abrirMiniSubmodalIDs(tituloInfo, arrIds) {
-    let subModal = document.getElementById('miniSubModalIDs');
+// Función global que abre un submodal idéntico al de la imagen con el desglose de IDs y montos al hacer clic en una celda
+function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose) {
+    let subModal = document.getElementById('modalSubDesgloseMatriz');
     if (!subModal) {
         subModal = document.createElement('div');
-        subModal.id = 'miniSubModalIDs';
-        subModal.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:inherit;";
+        subModal.id = 'modalSubDesgloseMatriz';
+        subModal.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.75);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:inherit;";
         document.body.appendChild(subModal);
     }
 
+    let filasHtml = '';
+    let sumaTotalSub = 0;
+
+    itemsDesglose.forEach(item => {
+        sumaTotalSub += item.monto;
+        filasHtml += `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${item.id}</td>
+                <td style="padding: 10px; color: #dc2626; font-weight: 700; text-transform: uppercase;">${item.causa}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(item.monto)}</td>
+            </tr>
+        `;
+    });
+
+    if (itemsDesglose.length === 0) {
+        filasHtml = `<tr><td colspan="3" style="text-align:center; padding: 20px; color: #64748b;">No hay registros para esta selección.</td></tr>`;
+    }
+
     subModal.innerHTML = `
-        <div style="background:white; color:#333; padding:22px; border-radius:12px; width:450px; max-height:75vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.3);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
-                <h3 style="margin:0; color:#1e3a8a; font-size:1rem; font-weight:900;">📋 Listado de IDs</h3>
-                <button type="button" onclick="document.getElementById('miniSubModalIDs').style.display='none'" style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
+        <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
+                <div>
+                    <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 ${tituloSubmodal}</h3>
+                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">${subtitleInfo}</div>
+                </div>
+                <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
-            <div style="font-size:0.85rem; color:#475569; font-weight:700; margin-bottom:10px;">${tituloInfo} (${arrIds.length} IDs en total)</div>
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; max-height:280px; overflow-y:auto; padding:4px;">
-                ${arrIds.map(id => `<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:6px; text-align:center; font-family:monospace; font-weight:800; font-size:0.82rem; color:#0f172a;">${id}</div>`).join('')}
+            
+            <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                <thead>
+                    <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
+                        <th style="padding:10px; text-align:center;">ID</th>
+                        <th style="padding:10px;">Causa / Estado</th>
+                        <th style="padding:10px; text-align:right;">Monto Estimado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasHtml}
+                </tbody>
+            </table>
+
+            <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
+                <span>Total General:</span>
+                <span style="color:#dc2626; font-size:1.05rem;">${formatMoney(sumaTotalSub)}</span>
             </div>
-            <div style="margin-top:18px; text-align:right;">
-                <button type="button" onclick="document.getElementById('miniSubModalIDs').style.display='none'" style="background:#2563eb; color:white; border:none; padding:6px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.85rem;">Cerrar</button>
+
+            <div style="margin-top:20px; text-align:right;">
+                <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 18px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
             </div>
         </div>
     `;
@@ -543,7 +578,7 @@ function abrirMiniSubmodalIDs(tituloInfo, arrIds) {
 }
 
 // ==========================================
-// MODAL EN TRÁMITE (TABLA LIMPIA Y CLICABLE PARA IDs)
+// MODAL EN TRÁMITE (MATRIZ LIMPIA Y CLICABLE)
 // ==========================================
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -580,7 +615,7 @@ function abrirModalEnTramite() {
         thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
         tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
-        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: 0';
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
         if (modal) modal.style.display = 'flex';
         return;
@@ -596,54 +631,29 @@ function abrirModalEnTramite() {
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        const idReal = String(r.id_id || r.ID_ID || r.id || r.ID || 'N/A').trim();
-        
-        const valorMetrica = modoVisualizacionModal === 'COP' 
-            ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
-            : 1;
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
 
-        sumaGranTotal += valorMetrica;
+        sumaGranTotal += monto;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + (modoVisualizacionModal === 'COP' ? valorMetrica : 1);
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
         }
 
         if (!matrizDatos[aprobRegionalVal]) {
             matrizDatos[aprobRegionalVal] = {};
-            listaDepartamentos.forEach(dep => matrizDatos[aprobRegionalVal][dep] = modoVisualizacionModal === 'COP' ? 0 : []);
-            matrizDatos[aprobRegionalVal]["OTRO"] = modoVisualizacionModal === 'COP' ? 0 : [];
+            listaDepartamentos.forEach(dep => matrizDatos[aprobRegionalVal][dep] = 0);
+            matrizDatos[aprobRegionalVal]["OTRO"] = 0;
         }
-
-        if (modoVisualizacionModal === 'COP') {
-            if (departamento !== "OTRO") {
-                matrizDatos[aprobRegionalVal][departamento] += valorMetrica;
-            } else {
-                matrizDatos[aprobRegionalVal]["OTRO"] += valorMetrica;
-            }
+        if (departamento !== "OTRO") {
+            matrizDatos[aprobRegionalVal][departamento] += monto;
         } else {
-            if (departamento !== "OTRO") {
-                if (!matrizDatos[aprobRegionalVal][departamento].includes(idReal)) {
-                    matrizDatos[aprobRegionalVal][departamento].push(idReal);
-                }
-            } else {
-                if (!matrizDatos[aprobRegionalVal]["OTRO"].includes(idReal)) {
-                    matrizDatos[aprobRegionalVal]["OTRO"].push(idReal);
-                }
-            }
+            matrizDatos[aprobRegionalVal]["OTRO"] += monto;
         }
     });
 
     const estadosFiltrados = {};
     for (const [aprobVal, montosDeps] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        if (modoVisualizacionModal === 'COP') {
-            Object.values(montosDeps).forEach(val => totalFila += val);
-        } else {
-            let idsUnicosFila = [];
-            Object.values(montosDeps).forEach(arr => {
-                arr.forEach(id => { if(!idsUnicosFila.includes(id)) idsUnicosFila.push(id); });
-            });
-            totalFila = idsUnicosFila.length;
-        }
+        Object.values(montosDeps).forEach(val => totalFila += val);
         if (totalFila > 0) {
             estadosFiltrados[aprobVal] = montosDeps;
         }
@@ -663,46 +673,48 @@ function abrirModalEnTramite() {
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
-
     for (const [aprobVal, montosDeps] of Object.entries(estadosFiltrados)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
         
-        let totalFilaCOP = 0;
-        let idsFilaSet = new Set();
-
+        let totalFila = 0;
         listaDepartamentos.forEach(dep => {
-            const valDep = montosDeps[dep];
-            if (modoVisualizacionModal === 'COP') {
-                const monto = valDep || 0;
-                totalFilaCOP += monto;
-                const textoCelda = monto > 0 ? formatMoney(monto) : '-';
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+
+            if (valDep > 0) {
+                // Filtramos los registros que pertenecen a esta celda específica para enviarlos al submodal al hacer clic
+                const subsetRows = registrosEnTramite.filter(item => {
+                    const itemAprob = String(item.aprobacion_regional || item.APROBACION_REGIONAL || item['APROBACION REGIONAL'] || "").toUpperCase().trim();
+                    const itemDep = String(item.departamento || item.DEPARTAMENTO || "").toUpperCase().trim();
+                    return itemAprob === aprobVal && itemDep === dep;
+                });
+
+                const itemsDesglose = subsetRows.map(i => ({
+                    id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+                    causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'EN TRÁMITE',
+                    monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+                }));
+
+                const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #2563eb; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
-                const arrIds = valDep || [];
-                arrIds.forEach(id => idsFilaSet.add(id));
-                
-                let idsHtml = '-';
-                if (arrIds.length > 0) {
-                    const safeTitle = `${aprobVal} - ${dep}`;
-                    const idsJsonStr = JSON.stringify(arrIds).replace(/"/g, '&quot;');
-                    idsHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitle}', ${idsJsonStr})" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #bae6fd;" title="Clic para ver IDs">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''} 👁️</span>`;
-                }
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
-        if (modoVisualizacionModal === 'COP') {
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
-        } else {
-            const arrTotalFila = Array.from(idsFilaSet);
-            let idsTotalHtml = '-';
-            if (arrTotalFila.length > 0) {
-                const safeTitleTotal = `${aprobVal} - Total General`;
-                const idsTotalJsonStr = JSON.stringify(arrTotalFila).replace(/"/g, '&quot;');
-                idsTotalHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitleTotal}', ${idsTotalJsonStr})" style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #bfdbfe;" title="Clic para ver IDs">${arrTotalFila.length} IDs 👁️</span>`;
-            }
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
-        }
+        // Total Fila Fila Fila
+        const subsetRowFila = registrosEnTramite.filter(item => {
+            const itemAprob = String(item.aprobacion_regional || item.APROBACION_REGIONAL || item['APROBACION REGIONAL'] || "").toUpperCase().trim();
+            return itemAprob === aprobVal;
+        });
+        const itemsDesgloseFila = subsetRowFila.map(i => ({
+            id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+            causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'EN TRÁMITE',
+            monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+        }));
+        const jsonFilaStr = JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;');
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #2563eb; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -712,15 +724,12 @@ function abrirModalEnTramite() {
     `;
     listaDepartamentos.forEach(dep => {
         const valDepTotal = totalesPorDepartamento[dep] || 0;
-        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO') + ' IDs';
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(valDepTotal)}</td>`;
     });
-    
-    const textoGranTotal = modoVisualizacionModal === 'COP' ? formatMoney(sumaGranTotal) : sumaGranTotal.toLocaleString('es-CO') + ' IDs';
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalEnTramiteModal').innerText = `Total general acumulado (${modoVisualizacionModal === 'COP' ? 'COP' : 'IDs'}): ${textoGranTotal}`;
+    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalEnTramiteDetalle');
     if (modal) modal.style.display = 'flex';
@@ -734,32 +743,13 @@ function actualizarCabeceraModalTramite() {
     if (!headerDiv) {
         headerDiv = document.createElement('div');
         headerDiv.className = 'modal-header-custom-toggle';
-        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;";
-        
-        headerDiv.innerHTML = `
-            <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Detalle de Casos en Trámite</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" onclick="alternarModoVisualizacionModal()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">
-                    ${modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP'}
-                </button>
-            </div>
-        `;
+        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 800; color: #1e3a8a; font-size: 0.9rem;";
+        headerDiv.innerHTML = `<span>💡 Haz clic en cualquier monto de la matriz para ver el desglose detallado por ID.</span>`;
         const tablaElem = modalContainer.querySelector('table');
         if (tablaElem && tablaElem.parentNode) {
             tablaElem.parentNode.insertBefore(headerDiv, tablaElem);
         }
-    } else {
-        const btn = headerDiv.querySelector('button');
-        if (btn) {
-            btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
-            btn.innerText = modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP';
-        }
     }
-}
-
-function alternarModoVisualizacionModal() {
-    modoVisualizacionModal = modoVisualizacionModal === 'COP' ? 'IDS' : 'COP';
-    abrirModalEnTramite();
 }
 
 function cerrarModalEnTramite() {
@@ -768,7 +758,7 @@ function cerrarModalEnTramite() {
 }
 
 // ==========================================
-// MODAL RECHAZADOS (TABLA LIMPIA Y CLICABLE PARA IDs)
+// MODAL RECHAZADOS (MATRIZ LIMPIA Y CLICABLE)
 // ==========================================
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -804,7 +794,7 @@ function abrirModalRechazados() {
         thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
         tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
-        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: 0';
+        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
         const modal = document.getElementById('modalRechazadosDetalle');
         if (modal) modal.style.display = 'flex';
         return;
@@ -820,54 +810,29 @@ function abrirModalRechazados() {
         const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        const idReal = String(r.id_id || r.ID_ID || r.id || r.ID || 'N/A').trim();
-        
-        const valorMetrica = modoVisualizacionModal === 'COP' 
-            ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
-            : 1;
+        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
 
-        sumaGranTotal += valorMetrica;
+        sumaGranTotal += monto;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + (modoVisualizacionModal === 'COP' ? valorMetrica : 1);
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
         }
 
         if (!matrizDatos[causaRechazoVal]) {
             matrizDatos[causaRechazoVal] = {};
-            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = modoVisualizacionModal === 'COP' ? 0 : []);
-            matrizDatos[causaRechazoVal]["OTRO"] = modoVisualizacionModal === 'COP' ? 0 : [];
+            listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = 0);
+            matrizDatos[causaRechazoVal]["OTRO"] = 0;
         }
-
-        if (modoVisualizacionModal === 'COP') {
-            if (departamento !== "OTRO") {
-                matrizDatos[causaRechazoVal][departamento] += valorMetrica;
-            } else {
-                matrizDatos[causaRechazoVal]["OTRO"] += valorMetrica;
-            }
+        if (departamento !== "OTRO") {
+            matrizDatos[causaRechazoVal][departamento] += monto;
         } else {
-            if (departamento !== "OTRO") {
-                if (!matrizDatos[causaRechazoVal][departamento].includes(idReal)) {
-                    matrizDatos[causaRechazoVal][departamento].push(idReal);
-                }
-            } else {
-                if (!matrizDatos[causaRechazoVal]["OTRO"].includes(idReal)) {
-                    matrizDatos[causaRechazoVal]["OTRO"].push(idReal);
-                }
-            }
+            matrizDatos[causaRechazoVal]["OTRO"] += monto;
         }
     });
 
     const causasFiltradas = {};
     for (const [causaVal, montosDeps] of Object.entries(matrizDatos)) {
         let totalFila = 0;
-        if (modoVisualizacionModal === 'COP') {
-            Object.values(montosDeps).forEach(val => totalFila += val);
-        } else {
-            let idsUnicosFila = [];
-            Object.values(montosDeps).forEach(arr => {
-                arr.forEach(id => { if(!idsUnicosFila.includes(id)) idsUnicosFila.push(id); });
-            });
-            totalFila = idsUnicosFila.length;
-        }
+        Object.values(montosDeps).forEach(val => totalFila += val);
         if (totalFila > 0) {
             causasFiltradas[causaVal] = montosDeps;
         }
@@ -887,46 +852,46 @@ function abrirModalRechazados() {
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
-
     for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
         
-        let totalFilaCOP = 0;
-        let idsFilaSet = new Set();
-
+        let totalFila = 0;
         listaDepartamentos.forEach(dep => {
-            const valDep = montosDeps[dep];
-            if (modoVisualizacionModal === 'COP') {
-                const monto = valDep || 0;
-                totalFilaCOP += monto;
-                const textoCelda = monto > 0 ? formatMoney(monto) : '-';
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+
+            if (valDep > 0) {
+                const subsetRows = registrosRechazados.filter(item => {
+                    const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
+                    const itemDep = String(item.departamento || item.DEPARTAMENTO || "").toUpperCase().trim();
+                    return itemCausa === causaVal && itemDep === dep;
+                });
+
+                const itemsDesglose = subsetRows.map(i => ({
+                    id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+                    causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
+                    monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+                }));
+
+                const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #dc2626; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
-                const arrIds = valDep || [];
-                arrIds.forEach(id => idsFilaSet.add(id));
-                
-                let idsHtml = '-';
-                if (arrIds.length > 0) {
-                    const safeTitle = `${causaVal} - ${dep}`;
-                    const idsJsonStr = JSON.stringify(arrIds).replace(/"/g, '&quot;');
-                    idsHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitle}', ${idsJsonStr})" style="background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #fecaca;" title="Clic para ver IDs">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''} 👁️</span>`;
-                }
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
-        if (modoVisualizacionModal === 'COP') {
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
-        } else {
-            const arrTotalFila = Array.from(idsFilaSet);
-            let idsTotalHtml = '-';
-            if (arrTotalFila.length > 0) {
-                const safeTitleTotal = `${causaVal} - Total General`;
-                const idsTotalJsonStr = JSON.stringify(arrTotalFila).replace(/"/g, '&quot;');
-                idsTotalHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitleTotal}', ${idsTotalJsonStr})" style="background: #fecaca; color: #991b1b; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #fca5a5;" title="Clic para ver IDs">${arrTotalFila.length} IDs 👁️</span>`;
-            }
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
-        }
+        const subsetRowFila = registrosRechazados.filter(item => {
+            const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
+            return itemCausa === causaVal;
+        });
+        const itemsDesgloseFila = subsetRowFila.map(i => ({
+            id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+            causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
+            monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+        }));
+        const jsonFilaStr = JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;');
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #dc2626; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -936,15 +901,12 @@ function abrirModalRechazados() {
     `;
     listaDepartamentos.forEach(dep => {
         const valDepTotal = totalesPorDepartamento[dep] || 0;
-        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO') + ' IDs';
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(valDepTotal)}</td>`;
     });
-    
-    const textoGranTotal = modoVisualizacionModal === 'COP' ? formatMoney(sumaGranTotal) : sumaGranTotal.toLocaleString('es-CO') + ' IDs';
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalRechazadosModal').innerText = `Total general acumulado (${modoVisualizacionModal === 'COP' ? 'COP' : 'IDs'}): ${textoGranTotal}`;
+    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
 
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
@@ -958,32 +920,13 @@ function actualizarCabeceraModalRechazados() {
     if (!headerDiv) {
         headerDiv = document.createElement('div');
         headerDiv.className = 'modal-header-custom-toggle-rech';
-        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;";
-        
-        headerDiv.innerHTML = `
-            <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Desglose de Casos Rechazados</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" onclick="alternarModoVisualizacionRechazados()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer;">
-                    ${modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP'}
-                </button>
-            </div>
-        `;
+        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 800; color: #1e3a8a; font-size: 0.9rem;";
+        headerDiv.innerHTML = `<span>💡 Haz clic en cualquier monto de la matriz para ver el desglose detallado por ID.</span>`;
         const tablaElem = modalContainer.querySelector('table');
         if (tablaElem && tablaElem.parentNode) {
             tablaElem.parentNode.insertBefore(headerDiv, tablaElem);
         }
-    } else {
-        const btn = headerDiv.querySelector('button');
-        if (btn) {
-            btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
-            btn.innerText = modoVisualizacionModal === 'COP' ? '🔁 Cambiar a IDs' : '💱 Cambiar a COP';
-        }
     }
-}
-
-function alternarModoVisualizacionRechazados() {
-    modoVisualizacionModal = modoVisualizacionModal === 'COP' ? 'IDS' : 'COP';
-    abrirModalRechazados();
 }
 
 function cerrarModalRechazados() {
