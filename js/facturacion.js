@@ -8,6 +8,7 @@ let registrosCrudos = [];
 let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
+let modoVisualizacionModal = 'COP'; // Controla si los modales muestran Valores en COP ($) o Conteo de IDs
 
 // --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
@@ -52,7 +53,7 @@ async function cargarDatosDesdeAPI() {
     }
 }
 
-// Poblar los selects del acordeón de filtros dinámicamente
+// Poblar los selects del acordeón de filtros dinámicamente usando la celda BM (TECNICO PROGRAMADO)
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const meses = new Set();
@@ -63,9 +64,9 @@ function poblarSelectsFiltros(rows) {
         const reg = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '];
         const mes = r.mes || r.MES;
         
-        // ÚNICA FUENTE OFICIAL: Columna TECNICO PROGRAMADO (Columna BM)
+        // FUENTE OFICIAL: Columna TECNICO PROGRAMADO (Celda BM) limpia de comillas
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
-        const perfil = String(tecnicoRaw).trim();
+        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
 
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
 
@@ -77,7 +78,7 @@ function poblarSelectsFiltros(rows) {
 
     llenarSelectHTML('filtroRegion', regiones);
     llenarSelectHTML('filtroMes', meses);
-    llenarSelectHTML('filtroPerfilWfm', perfiles); // Mantiene el ID del select del HTML pero lee la fuente correcta
+    llenarSelectHTML('filtroPerfilWfm', perfiles);
     llenarSelectHTML('filtroAprobacion', aprobaciones);
 }
 
@@ -91,7 +92,7 @@ function llenarSelectHTML(elementId, setValues) {
     select.innerHTML = html;
 }
 
-// Filtrar registros crudos usando estrictamente TECNICO PROGRAMADO (Celda BM)
+// Filtrar registros crudos según los filtros usando estrictamente TECNICO PROGRAMADO
 function aplicarFiltrosGlobales() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
     const fMes = document.getElementById('filtroMes')?.value || "TODOS";
@@ -107,9 +108,8 @@ function aplicarFiltrosGlobales() {
     const registrosParaGrafica = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         
-        // ÚNICA FUENTE: TECNICO PROGRAMADO
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(tecnicoRaw).trim();
+        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
         
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnicoLower = perfil.toLowerCase();
@@ -126,9 +126,8 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
         
-        // ÚNICA FUENTE: TECNICO PROGRAMADO
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(tecnicoRaw).trim();
+        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
         
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnicoLower = perfil.toLowerCase();
@@ -147,7 +146,9 @@ function aplicarFiltrosGlobales() {
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion);
     renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(registrosParaGrafica, fRegion);
-}function resetFiltros() {
+}
+
+function resetFiltros() {
     if (document.getElementById('filtroRegion')) document.getElementById('filtroRegion').value = "TODOS";
     if (document.getElementById('filtroMes')) document.getElementById('filtroMes').value = "TODOS";
     if (document.getElementById('filtroPerfilWfm')) document.getElementById('filtroPerfilWfm').value = "TODOS";
@@ -160,16 +161,9 @@ function procesarDatosParaVista(rows) {
     const mapaTecnicos = {};
 
     rows.forEach(r => {
-        // REGLA NUEVA: Prioridad absoluta a la columna TECNICO PROGRAMADO (Columna BM del Excel)
-        const nombreTecnico = String(
-            r.tecnico_programado || 
-            r.TECNICO_PROGRAMADO || 
-            r['TECNICO PROGRAMADO'] || 
-            r['Técnico Programado'] || 
-            r.perfil_wfm || 
-            r.PERFIL_WFM || 
-            "SIN PROGRAMACION"
-        ).trim();
+        // FUENTE OFICIAL ABSOLUTA: Columna TECNICO PROGRAMADO (Celda BM) limpia
+        const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
+        const nombreTecnico = String(rawTecnico).replace(/["']/g, "").trim();
 
         const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
         
@@ -523,7 +517,7 @@ function renderizarEstadoRegional(rows) {
 }
 
 // ==========================================
-// MODAL EN TRÁMITE (COMPLETO)
+// MODAL EN TRÁMITE (CON BOTÓN ALTERNADOR COP / IDs)
 // ==========================================
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -534,13 +528,14 @@ function abrirModalEnTramite() {
     const registrosEnTramite = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         const tecnico = perfil.toLowerCase();
 
         const matchReg = fRegion === "TODOS" || reg === fRegion;
         const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil.toUpperCase();
         const matchSearch = tecnico.includes(searchVal);
 
         const esPendienteNeto = !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
@@ -553,11 +548,13 @@ function abrirModalEnTramite() {
     const tfoot = document.getElementById('footerTablaDinamicaTramite');
     if (!thead || !tbody || !tfoot) return;
 
+    actualizarCabeceraModalTramite();
+
     if (registrosEnTramite.length === 0) {
         thead.innerHTML = `<tr><th style="text-align: center;">ESTADO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros en trámite para los filtros seleccionados.</td></tr>`;
         tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
-        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: $ 0';
+        document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general: 0';
         const modal = document.getElementById('modalEnTramiteDetalle');
         if (modal) modal.style.display = 'flex';
         return;
@@ -573,11 +570,15 @@ function abrirModalEnTramite() {
         const aprobRegionalVal = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        
+        // Métrica según modo: COP o conteo estricto basado en id_id
+        const valorMetrica = modoVisualizacionModal === 'COP' 
+            ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
+            : 1;
 
-        sumaGranTotal += monto;
+        sumaGranTotal += valorMetrica;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + valorMetrica;
         }
 
         if (!matrizDatos[aprobRegionalVal]) {
@@ -586,9 +587,9 @@ function abrirModalEnTramite() {
             matrizDatos[aprobRegionalVal]["OTRO"] = 0;
         }
         if (departamento !== "OTRO") {
-            matrizDatos[aprobRegionalVal][departamento] += monto;
+            matrizDatos[aprobRegionalVal][departamento] += valorMetrica;
         } else {
-            matrizDatos[aprobRegionalVal]["OTRO"] += monto;
+            matrizDatos[aprobRegionalVal]["OTRO"] += valorMetrica;
         }
     });
 
@@ -622,10 +623,12 @@ function abrirModalEnTramite() {
         listaDepartamentos.forEach(dep => {
             const valDep = montosDeps[dep] || 0;
             totalFila += valDep;
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+            const textoCelda = modoVisualizacionModal === 'COP' ? (valDep > 0 ? formatMoney(valDep) : '-') : (valDep > 0 ? valDep.toLocaleString('es-CO') : '-');
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
         });
 
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+        const textoTotalFila = modoVisualizacionModal === 'COP' ? formatMoney(totalFila) : totalFila.toLocaleString('es-CO');
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${textoTotalFila}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -634,15 +637,55 @@ function abrirModalEnTramite() {
             <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
     `;
     listaDepartamentos.forEach(dep => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+        const valDepTotal = totalesPorDepartamento[dep] || 0;
+        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO');
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    const textoGranTotal = modoVisualizacionModal === 'COP' ? formatMoney(sumaGranTotal) : sumaGranTotal.toLocaleString('es-CO') + ' IDs';
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalEnTramiteModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+    document.getElementById('txtTotalEnTramiteModal').innerText = `Total general acumulado (${modoVisualizacionModal}): ${textoGranTotal}`;
 
     const modal = document.getElementById('modalEnTramiteDetalle');
     if (modal) modal.style.display = 'flex';
+}
+
+function actualizarCabeceraModalTramite() {
+    const modalContainer = document.querySelector('#modalEnTramiteDetalle .modal-container, #modalEnTramiteDetalle > div');
+    if (!modalContainer) return;
+    
+    let headerDiv = modalContainer.querySelector('.modal-header-custom-toggle');
+    if (!headerDiv) {
+        headerDiv = document.createElement('div');
+        headerDiv.className = 'modal-header-custom-toggle';
+        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;";
+        
+        headerDiv.innerHTML = `
+            <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Detalle de Casos en Trámite</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" onclick="alternarModoVisualizacionModal()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                    💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}
+                </button>
+            </div>
+        `;
+        const tablaElem = modalContainer.querySelector('table');
+        if (tablaElem && tablaElem.parentNode) {
+            tablaElem.parentNode.insertBefore(headerDiv, tablaElem);
+        }
+    } else {
+        const btn = headerDiv.querySelector('button');
+        if (btn) {
+            btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
+            btn.innerText = `💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}`;
+        }
+    }
+}
+
+function alternarModoVisualizacionModal() {
+    modoVisualizacionModal = modoVisualizacionModal === 'COP' ? 'IDS' : 'COP';
+    abrirModalEnTramite();
 }
 
 function cerrarModalEnTramite() {
@@ -651,7 +694,7 @@ function cerrarModalEnTramite() {
 }
 
 // ==========================================
-// MODAL RECHAZADOS (COMPLETO)
+// MODAL RECHAZADOS (CON BOTÓN ALTERNADOR COP / IDs)
 // ==========================================
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -662,13 +705,14 @@ function abrirModalRechazados() {
     const registrosRechazados = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
         const mes = String(r.mes || r.MES || "").trim();
-        const perfil = String(r.perfil_wfm || r.PERFIL_WFM || r['PERFIL WFM'] || "").trim();
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         const tecnico = perfil.toLowerCase();
 
         const matchReg = fRegion === "TODOS" || reg === fRegion;
         const matchMes = fMes === "TODOS" || mes === fMes;
-        const matchPerfil = fPerfil === "TODOS" || perfil === fPerfil;
+        const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil.toUpperCase();
         const matchSearch = tecnico.includes(searchVal);
         const esRechazado = aprobReg.includes("RECHAZADO");
 
@@ -680,11 +724,13 @@ function abrirModalRechazados() {
     const tfoot = document.getElementById('footerTablaDinamicaRechazados');
     if (!thead || !tbody || !tfoot) return;
 
+    actualizarCabeceraModalRechazados();
+
     if (registrosRechazados.length === 0) {
         thead.innerHTML = `<tr><th style="text-align: center;">CAUSA RECHAZO</th></tr>`;
         tbody.innerHTML = `<tr><td style="text-align:center; padding: 25px; color: #64748b;">No hay registros rechazados para los filtros seleccionados.</td></tr>`;
         tfoot.innerHTML = `<tr><td style="text-align: center; padding: 10px;">TOTAL GENERAL</td></tr>`;
-        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: $ 0';
+        document.getElementById('txtTotalRechazadosModal').innerText = 'Total general: 0';
         const modal = document.getElementById('modalRechazadosDetalle');
         if (modal) modal.style.display = 'flex';
         return;
@@ -700,11 +746,14 @@ function abrirModalRechazados() {
         const causaRechazoVal = String(r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || r['CAUSA RECHAZO'] || "SIN CAUSA").toUpperCase().trim();
         const depVal = String(r.departamento || r.DEPARTAMENTO || r.dep || "").toUpperCase().trim();
         const departamento = listaDepartamentos.includes(depVal) ? depVal : "OTRO";
-        const monto = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        
+        const valorMetrica = modoVisualizacionModal === 'COP' 
+            ? Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0) 
+            : 1;
 
-        sumaGranTotal += monto;
+        sumaGranTotal += valorMetrica;
         if (departamento !== "OTRO") {
-            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + monto;
+            totalesPorDepartamento[departamento] = (totalesPorDepartamento[departamento] || 0) + valorMetrica;
         }
 
         if (!matrizDatos[causaRechazoVal]) {
@@ -713,9 +762,9 @@ function abrirModalRechazados() {
             matrizDatos[causaRechazoVal]["OTRO"] = 0;
         }
         if (departamento !== "OTRO") {
-            matrizDatos[causaRechazoVal][departamento] += monto;
+            matrizDatos[causaRechazoVal][departamento] += valorMetrica;
         } else {
-            matrizDatos[causaRechazoVal]["OTRO"] += monto;
+            matrizDatos[causaRechazoVal]["OTRO"] += valorMetrica;
         }
     });
 
@@ -749,10 +798,12 @@ function abrirModalRechazados() {
         listaDepartamentos.forEach(dep => {
             const valDep = montosDeps[dep] || 0;
             totalFila += valDep;
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${valDep > 0 ? formatMoney(valDep) : '-'}</td>`;
+            const textoCelda = modoVisualizacionModal === 'COP' ? (valDep > 0 ? formatMoney(valDep) : '-') : (valDep > 0 ? valDep.toLocaleString('es-CO') : '-');
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
         });
 
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFila)}</td></tr>`;
+        const textoTotalFila = modoVisualizacionModal === 'COP' ? formatMoney(totalFila) : totalFila.toLocaleString('es-CO');
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${textoTotalFila}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -761,15 +812,55 @@ function abrirModalRechazados() {
             <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
     `;
     listaDepartamentos.forEach(dep => {
-        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(totalesPorDepartamento[dep] || 0)}</td>`;
+        const valDepTotal = totalesPorDepartamento[dep] || 0;
+        const textoDepTotal = modoVisualizacionModal === 'COP' ? formatMoney(valDepTotal) : valDepTotal.toLocaleString('es-CO');
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${textoDepTotal}</td>`;
     });
-    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    const textoGranTotal = modoVisualizacionModal === 'COP' ? formatMoney(sumaGranTotal) : sumaGranTotal.toLocaleString('es-CO') + ' IDs';
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${textoGranTotal}</td></tr>`;
     
     tfoot.innerHTML = footerFilaHtml;
-    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+    document.getElementById('txtTotalRechazadosModal').innerText = `Total general acumulado (${modoVisualizacionModal}): ${textoGranTotal}`;
 
     const modal = document.getElementById('modalRechazadosDetalle');
     if (modal) modal.style.display = 'flex';
+}
+
+function actualizarCabeceraModalRechazados() {
+    const modalContainer = document.querySelector('#modalRechazadosDetalle .modal-container, #modalRechazadosDetalle > div');
+    if (!modalContainer) return;
+    
+    let headerDiv = modalContainer.querySelector('.modal-header-custom-toggle-rech');
+    if (!headerDiv) {
+        headerDiv = document.createElement('div');
+        headerDiv.className = 'modal-header-custom-toggle-rech';
+        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;";
+        
+        headerDiv.innerHTML = `
+            <div style="font-weight: 900; font-size: 1.1rem; color: #0f172a;">📊 Desglose de Casos Rechazados</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" onclick="alternarModoVisualizacionRechazados()" style="background: ${modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669'}; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; cursor: pointer;">
+                    💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}
+                </button>
+            </div>
+        `;
+        const tablaElem = modalContainer.querySelector('table');
+        if (tablaElem && tablaElem.parentNode) {
+            tablaElem.parentNode.insertBefore(headerDiv, tablaElem);
+        }
+    } else {
+        const btn = headerDiv.querySelector('button');
+        if (btn) {
+            btn.style.background = modoVisualizacionModal === 'COP' ? '#2563eb' : '#059669';
+            btn.innerText = `💱 Vista: ${modoVisualizacionModal === 'COP' ? 'Valores COP ($)' : 'Conteo de IDs'}`;
+        }
+    }
+}
+
+function alternarModoVisualizacionRechazados() {
+    modoVisualizacionModal = modoVisualizacionModal === 'COP' ? 'IDS' : 'COP';
+    abrirModalRechazados();
 }
 
 function cerrarModalRechazados() {
@@ -778,15 +869,15 @@ function cerrarModalRechazados() {
 }
 
 function verificarIncrementosAvance(nuevosRegistros) {
-    // ... (Se mantiene intacto)
+    // Intacto
 }
 
 function actualizarBadgeCampana() {
-    // ... (Se mantiene intacto)
+    // Intacto
 }
 
 function abrirModalNotificaciones() {
-    // ... (Se mantiene intacto)
+    // Intacto
 }
 
 function cerrarModalNotificaciones() {
@@ -860,6 +951,36 @@ function cerrarModalHerramientas() {
     if (modalHerramientas) modalHerramientas.style.display = 'none';
 }
 
+// Función para confirmar y vaciar la base D1 desde herramientas avanzadas
+async function confirmarBorrarBaseD1() {
+    const seguro = confirm("⚠️ ¿Estás completamente seguro de borrar todos los registros de la base de datos D1? Esta acción eliminará el contenido pero mantendrá la estructura de la tabla intacta.");
+    if (!seguro) return;
+
+    cerrarModalHerramientas();
+
+    try {
+        console.log("Enviando solicitud DELETE para vaciar facturacion_detallada...");
+        
+        const response = await fetch(`${API_BASE_URL}/facturacion/vaciar`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Error en el servidor (${response.status}): ${errText}`);
+        }
+
+        const resultado = await response.json();
+        alert("¡Base de datos vaciada con éxito! Todos los registros fueron eliminados.");
+        location.reload();
+
+    } catch (error) {
+        console.error("Error al vaciar la base D1:", error);
+        alert("No se pudo vaciar la base de datos: " + error.message);
+    }
+}
+
 async function procesarYSubirExcel(event) {
     const file = event.target.files[0];
     if (!file) {
@@ -869,10 +990,8 @@ async function procesarYSubirExcel(event) {
 
     console.log("Archivo Excel seleccionado:", file.name);
 
-    // Cerramos el modal de herramientas avanzadas
     cerrarModalHerramientas();
 
-    // Referencias al modal de carga
     const modalCarga = document.getElementById('modalCargandoExcel');
     const barra = document.getElementById('barraProgreso');
     const txtPorc = document.getElementById('txtPorcentajeCarga');
@@ -936,7 +1055,7 @@ async function procesarYSubirExcel(event) {
             if (modalCarga) modalCarga.style.display = 'none';
             alert("Error al procesar el archivo: " + error.message);
         } finally {
-            event.target.value = ''; // Limpiamos el input para permitir reintentos
+            event.target.value = '';
         }
     };
 
@@ -1075,15 +1194,13 @@ function abrirDetalleTecnico(index) {
     if (modal) modal.style.display = 'flex';
 }
 
-// Función del submodal usando estrictamente TECNICO PROGRAMADO (Celda BM)
 function verDetalleRechazosIdTecnico(nombreTecnico) {
     const fMes = String(document.getElementById('filtroMes')?.value || "TODOS").trim().toUpperCase();
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
 
     const itemsRechazados = registrosCrudos.filter(r => {
-        // ÚNICA FUENTE: TECNICO PROGRAMADO
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfilReg = String(rawPerfil).trim().toUpperCase();
+        const perfilReg = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim().toUpperCase();
@@ -1161,6 +1278,7 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     `;
     subModal.style.display = 'flex';
 }
+
 function cerrarModalDetalle() {
     const modal = document.getElementById('modalDetalleTecnico');
     if (modal) modal.style.display = 'none';
@@ -1171,34 +1289,4 @@ function exportExcel() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
-}
-// Función para confirmar y ejecutar el vaciado de la base D1
-async function confirmarBorrarBaseD1() {
-    const seguro = confirm("⚠️ ¿Estás completamente seguro de borrar todos los registros de la base de datos? Esta acción no se puede deshacer.");
-    if (!seguro) return;
-
-    // Cerramos el panel de herramientas
-    cerrarModalHerramientas();
-
-    try {
-        console.log("Enviando solicitud para vaciar la tabla facturacion_detallada...");
-        
-        const response = await fetch(`${API_BASE_URL}/facturacion/vaciar`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (!response.ok) {
-            const errText = await response.text();
-            throw new Error(`Error en el servidor (${response.status}): ${errText}`);
-        }
-
-        const resultado = await response.json();
-        alert("¡Base de datos vaciada con éxito! Todos los registros fueron eliminados.");
-        location.reload();
-
-    } catch (error) {
-        console.error("Error al vaciar la base D1:", error);
-        alert("No se pudo vaciar la base de datos: " + error.message);
-    }
 }
