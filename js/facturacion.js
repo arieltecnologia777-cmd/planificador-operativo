@@ -126,8 +126,19 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
+    
+    // Si la acción es "marcar todo" (true), volvemos a poblar el dropdown completo con los datos originales
+    if (marcar) {
+        if (nombreFiltro === 'Region') poblarSelectsFiltros(registrosCrudos);
+        // Si tienes más filtros, se restablecen con la cascada general
+    }
+    
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    checkboxes.forEach(cb => cb.checked = marcar);
+    checkboxes.forEach(cb => {
+        cb.checked = marcar;
+        cb.parentElement.style.display = 'flex'; // Muestra todos los elementos nuevamente
+    });
+    
     aplicarFiltrosGlobales();
 }
 
