@@ -324,3 +324,9 @@ table.fact-table tr:hover td { background: #f8fafc; }
 .excel-borrar-filtro:hover {
     text-decoration: underline !important;
 }
+.sub-mes-filtrado {
+    font-size: 0.8rem !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    margin-top: 4px !important;
+}
