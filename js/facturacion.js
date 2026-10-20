@@ -12,12 +12,12 @@ let listaNotificacionesCambios = [];
 // --- Meta fija x técnico ---
 const META_FIJA_TECNICO = 9500000;
 
-// Metas fijas exactas por regional y la suma total global
+// Metas fijas exactas mensuales por regional y la suma total global mensual
 const METAS_REGIONALES = {
     "R1": 381140000,
     "R2": 133000000
 };
-const META_GLOBAL_TOTAL = 514140000;
+const META_GLOBAL_TOTAL_MENSUAL = 514140000;
 
 // Lista fija de los 4 departamentos requeridos
 const LISTA_DEPARTAMENTOS_FIJOS = ["ANTIOQUIA", "CESAR", "LA GUAJIRA", "SAI"];
@@ -42,13 +42,13 @@ async function cargarDatosDesdeAPI() {
             } else {
                 console.warn("La base de datos D1 devolvió un arreglo vacío.");
                 renderTable([]);
-                actualizarKPIsGenerales([], [], "TODOS");
+                actualizarKPIsGenerales([], [], "TODOS", "TODOS");
             }
         }
     } catch (err) {
         console.warn("No se pudieron obtener datos de la API:", err);
         renderTable([]);
-        actualizarKPIsGenerales([], [], "TODOS");
+        actualizarKPIsGenerales([], [], "TODOS", "TODOS");
     }
 }
 
@@ -100,11 +100,16 @@ function aplicarFiltrosGlobales() {
 
     const registrosParaMeta = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
-        return fRegion === "TODOS" || reg === fRegion;
+        const mes = String(r.mes || r.MES || "").trim();
+        
+        const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
+        return matchReg && matchMes;
     });
 
     const registrosParaGrafica = registrosCrudos.filter(r => {
         const reg = String(r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim();
+        const mes = String(r.mes || r.MES || "").trim();
         
         const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
@@ -113,11 +118,12 @@ function aplicarFiltrosGlobales() {
         const tecnicoLower = perfil.toLowerCase();
 
         const matchReg = fRegion === "TODOS" || reg === fRegion;
+        const matchMes = fMes === "TODOS" || mes === fMes;
         const matchPerfil = fPerfil === "TODOS" || perfil.toUpperCase() === fPerfil;
         const matchAprob = fAprob === "TODOS" || aprob === fAprob;
         const matchSearch = tecnicoLower.includes(searchVal);
 
-        return matchReg && matchPerfil && matchAprob && matchSearch;
+        return matchReg && matchMes && matchPerfil && matchAprob && matchSearch;
     });
 
     const filtradosCompletos = registrosCrudos.filter(r => {
@@ -141,7 +147,7 @@ function aplicarFiltrosGlobales() {
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos);
     renderTable(tecnicosData);
-    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion);
+    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, fRegion, fMes);
     renderizarEstadoRegional(filtradosCompletos);
     initChartsDinamicos(registrosParaGrafica, fRegion);
 }
@@ -200,12 +206,29 @@ function procesarDatosParaVista(rows) {
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
-// Actualizar Tarjetas KPI generales (% Aprobación)
-function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
-    let totalMeta = META_GLOBAL_TOTAL;
-    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
-        totalMeta = METAS_REGIONALES[fRegion];
+// Actualizar Tarjetas KPI generales con meta proporcional a los meses filtrados
+function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion, fMes) {
+    // 1. Determinamos cuántos meses únicos están presentes en los registros filtrados para la meta proporcional
+    const mesesUnicosSet = new Set();
+    rowsMeta.forEach(r => {
+        const m = String(r.mes || r.MES || "").trim();
+        if (m) mesesUnicosSet.add(m);
+    });
+    
+    // Si hay un mes específico seleccionado en el filtro que no sea "TODOS", usamos 1 (o los que tenga el set)
+    let cantidadMeses = mesesUnicosSet.size;
+    if (fMes && fMes !== "TODOS") {
+        cantidadMeses = 1; // Si el filtro es un mes fijo, la meta es 1 mes de esa regional/global
     }
+    if (cantidadMeses < 1) cantidadMeses = 1; // Seguridad por si viene vacío
+
+    let baseMetaMensual = META_GLOBAL_TOTAL_MENSUAL;
+    if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
+        baseMetaMensual = METAS_REGIONALES[fRegion];
+    }
+
+    // Meta proporcional a la cantidad de meses filtrados
+    let totalMeta = baseMetaMensual * cantidadMeses;
 
     let totalEjecutado = rowsCompletos.reduce((acc, r) => acc + Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0), 0);
 
@@ -233,7 +256,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
         return acc;
     }, 0);
     
-    // Cálculo para % Aprobación (sobre la meta global o regional)
     let porcentajeAprobacion = totalMeta > 0 ? Math.round((totalAprobado / totalMeta) * 100) : 0;
     let porcentajeVisual = Math.min(100, porcentajeAprobacion);
 
@@ -242,6 +264,20 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, fRegion) {
     if(document.getElementById('kpiAprobado')) document.getElementById('kpiAprobado').innerText = formatMoney(totalAprobado);
     if(document.getElementById('kpiRechazado')) document.getElementById('kpiRechazado').innerText = formatMoney(totalRechazado);
     if(document.getElementById('kpiEnTramite')) document.getElementById('kpiEnTramite').innerText = formatMoney(totalEnTramite);
+
+    // Inyectamos dinámicamente el texto del mes filtrado debajo del KPI de Meta para total claridad
+    let subTextoMes = fMes && fMes !== "TODOS" ? `Mes: ${fMes}` : `Meses: Todos (${cantidadMeses} mes${cantidadMeses > 1 ? 'es' : ''})`;
+    let contenedorMetaCard = document.getElementById('kpiMeta')?.closest('.fact-kpi-card, div');
+    if (contenedorMetaCard) {
+        let subLabelMeta = contenedorMetaCard.querySelector('.sub-mes-filtrado');
+        if (!subLabelMeta) {
+            subLabelMeta = document.createElement('div');
+            subLabelMeta.className = 'sub-mes-filtrado';
+            subLabelMeta.style = "font-size: 0.7rem; color: #64748b; font-weight: 700; margin-top: 2px;";
+            contenedorMetaCard.appendChild(subLabelMeta);
+        }
+        subLabelMeta.innerText = subTextoMes;
+    }
 
     let porcEjecutado = totalMeta > 0 ? Math.min(100, Math.round((totalEjecutado / totalMeta) * 100)) : 0;
     let porcAprobado = totalMeta > 0 ? Math.min(100, Math.round((totalAprobado / totalMeta) * 100)) : 0;
@@ -320,7 +356,7 @@ function initChartsDinamicos(records, fRegion = "TODOS") {
     const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const acumuladoMeses = new Array(12).fill(0);
 
-    let metaRegionalTotal = META_GLOBAL_TOTAL;
+    let metaRegionalTotal = META_GLOBAL_TOTAL_MENSUAL;
     if (fRegion && fRegion !== "TODOS" && METAS_REGIONALES[fRegion]) {
         metaRegionalTotal = METAS_REGIONALES[fRegion];
     }
@@ -484,7 +520,7 @@ function renderizarEstadoRegional(rows) {
     `;
 
     const regionesArray = Object.entries(mapaRegiones).map(([reg, val]) => {
-        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL;
+        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL_MENSUAL;
         const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
         return { reg, val, ef };
     }).sort((a, b) => b.ef - a.ef);
