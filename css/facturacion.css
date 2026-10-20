@@ -17,7 +17,7 @@ html, body {
     position: relative !important;
 }
 
-/* Sidebar fijo que cubre todo el alto con min-height 100% */
+/* Sidebar fijo que cubre todo el alto */
 aside.sidebar {
     position: fixed !important;
     top: 0 !important;
@@ -32,6 +32,8 @@ aside.sidebar {
     box-sizing: border-box !important;
     background: rgba(255, 255, 255, 0.96) !important;
     border-right: 1px solid #e2e8f0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 .sidebar-nav {
@@ -100,7 +102,7 @@ aside.sidebar {
     box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
 }
 
-/* Fila superior definitiva: Dividida estrictamente en 3 columnas horizontales (Tendencia, Estado Regional y Banner Avatar) */
+/* Fila superior */
 .fact-top-row {
     display: grid !important;
     grid-template-columns: 1fr 340px 320px !important;
@@ -110,22 +112,20 @@ aside.sidebar {
     box-sizing: border-box !important;
 }
 
-/* Banner motivacional optimizado para la tercera columna horizontal con soporte para el Avatar PNG */
 .fact-banner-avatar {
     background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover !important;
     border-radius: 18px !important;
-    padding: 16px !important; /* Padding más limpio y controlado */
+    padding: 16px !important;
     color: #fff !important;
     box-sizing: border-box !important;
     display: flex !important;
-    flex-direction: column !important; /* Apilado para controlar mejor la posición */
-    align-items: flex-start !important; /* Alineado totalmente a la izquierda */
-    justify-content: flex-start !important; /* Alineado totalmente arriba */
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
     height: 100% !important;
     box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
 }
 
-/* Paneles unificados */
 .fact-panel {
     background: #ffffff !important;
     border: 1px solid #cbd5e0 !important;
@@ -144,29 +144,11 @@ aside.sidebar {
     padding: 11px 0;
     border-bottom: 1px solid #f1f5f9;
 }
-.reg-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-.reg-pill {
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 800;
-}
+.reg-row:last-child { border-bottom: none; padding-bottom: 0; }
+.reg-pill { padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
 .reg-pill-green { background: #e6f4ea; color: #137333; }
 .reg-pill-yellow { background: #fef7e0; color: #b06000; }
 .reg-pill-red { background: #fce8e6; color: #c5221f; }
-
-/* Estados de la tabla */
-.badge-status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 800;
-}
-.badge-progreso { background: #fef3c7; color: #d97706; }
-.badge-riesgo { background: #fee2e2; color: #dc2626; }
 
 .table-wrapper-fact {
     max-height: none !important;
@@ -203,7 +185,7 @@ table.fact-table td {
 
 table.fact-table tr:hover td { background: #f8fafc; }
 
-/* Estilos de Modales */
+/* Modales */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -216,7 +198,6 @@ table.fact-table tr:hover td { background: #f8fafc; }
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    animation: fadeIn 0.2s ease-in-out;
 }
 .modal-container {
     background: #ffffff;
@@ -228,7 +209,6 @@ table.fact-table tr:hover td { background: #f8fafc; }
     display: flex;
     flex-direction: column;
     border: 1px solid #e2e8f0;
-    animation: slideUp 0.3s ease-out;
 }
 .modal-header {
     padding: 18px 24px;
@@ -238,32 +218,11 @@ table.fact-table tr:hover td { background: #f8fafc; }
     align-items: center;
     justify-content: space-between;
 }
-.modal-body {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-.modal-footer {
-    padding: 16px 24px;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
+.modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.modal-footer { padding: 16px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* Estilos del Acordeón en el Sidebar */
-.nav-accordion-group {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
+/* Acordeón Sidebar */
+.nav-accordion-group { display: flex; flex-direction: column; width: 100%; }
 .nav-accordion-toggle {
     display: flex;
     align-items: center;
@@ -277,113 +236,21 @@ table.fact-table tr:hover td { background: #f8fafc; }
     font-size: 0.9rem;
     cursor: pointer;
     text-align: left;
-    transition: background 0.2s, color 0.2s;
     box-sizing: border-box;
 }
+.nav-accordion-toggle:hover { background: #f8fafc; color: #2563eb; }
+.nav-submenu { display: none; flex-direction: column; background: #f8fafc; padding-left: 12px; box-sizing: border-box; }
+.nav-submenu a { padding: 8px 16px; font-size: 0.85rem; }
 
-.nav-accordion-toggle:hover {
-    background: #f8fafc;
-    color: #2563eb;
+#tendenciaChart { cursor: pointer !important; }
+
+@keyframes avatarFlotar {
+    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+    50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
 }
+.avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
 
-.nav-submenu {
-    display: none;
-    flex-direction: column;
-    background: #f8fafc;
-    padding-left: 12px;
-    box-sizing: border-box;
-}
-
-.nav-submenu a {
-    padding: 8px 16px;
-    font-size: 0.85rem;
-}
-/* Cursor de selección interactivo y fluido sobre la gráfica de tendencia */
-#tendenciaChart {
-    cursor: pointer !important;
-}
-/* Animación suave de flotación y pulso para el avatar */
-        @keyframes avatarFlotar {
-            0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
-            50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
-        }
-        .avatar-animado {
-            animation: avatarFlotar 3s ease-in-out infinite;
-        }
-/* Filtros */
-    @keyframes reboteNotif {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(252, 211, 77, 0.9)); }
-    }
-    .notif-activa-sidebar { animation: reboteNotif 1.2s infinite ease-in-out; }
-    @keyframes avatarFlotar {
-        0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
-        50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
-    }
-    .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
-
-    /* Contenedor estático para evitar que expanda la barra lateral */
-    .dropdown-filtro-container { position: static; width: 100%; }
-    
-    .dropdown-filtro-btn {
-        width: 100%;
-        background: #ffffff;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        padding: 7px 10px;
-        text-align: left;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #1e293b;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .dropdown-filtro-btn:hover { border-color: #2563eb; }
-
-    /* Menú flotante absoluto que no altera el diseño del sidebar */
-    .dropdown-filtro-menu {
-        display: none;
-        position: absolute;
-        left: 20px; /* Se posiciona fijo respecto al panel lateral */
-        width: 240px;
-        background: #ffffff;
-        border: 1px solid #cbd5e0;
-        border-radius: 8px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        z-index: 999999;
-        padding: 12px;
-        box-sizing: border-box;
-        font-family: inherit;
-    }
-    .dropdown-filtro-menu.activo { display: block; }
-    
-    .excel-input-buscar {
-        width: 100%;
-        padding: 7px 10px;
-        border: 1px solid #cbd5e0;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        outline: none;
-        box-sizing: border-box;
-        margin-bottom: 8px;
-    }
-    .excel-input-buscar:focus { border-color: #2563eb; }
-    
-    .excel-borrar-filtro {
-        color: #dc2626;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: block;
-        margin-bottom: 8px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    .excel-borrar-filtro:hover { text-decoration: underline; }
-
-/* --- Corrección definitiva para los menús desplegables flotantes tipo Excel --- */
+/* --- Menús desplegables flotantes tipo Excel (Sin scroll en Sidebar) --- */
 .dropdown-filtro-container {
     position: relative;
     width: 100%;
@@ -409,7 +276,7 @@ table.fact-table tr:hover td { background: #f8fafc; }
     border-color: #2563eb;
 }
 
-/* Usamos position: fixed para que salga completamente del sidebar y flote limpio sobre la pantalla */
+/* Posición fija absoluta fuera del flujo del sidebar para evitar desbordamientos y scrolls */
 .dropdown-filtro-menu {
     display: none;
     position: fixed;
