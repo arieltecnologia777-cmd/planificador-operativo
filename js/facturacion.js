@@ -513,7 +513,7 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Función global que abre un submodal idéntico al de la imagen con el desglose de IDs y montos al hacer clic en una celda
+// Submodal actualizado para incluir el departamento en cada fila del desglose
 function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose) {
     let subModal = document.getElementById('modalSubDesgloseMatriz');
     if (!subModal) {
@@ -531,6 +531,7 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
         filasHtml += `
             <tr style="border-bottom: 1px solid #f1f5f9;">
                 <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${item.id}</td>
+                <td style="padding: 10px; color: #334155; font-weight: 700; text-transform: uppercase;">${item.depto}</td>
                 <td style="padding: 10px; color: #dc2626; font-weight: 700; text-transform: uppercase;">${item.causa}</td>
                 <td style="padding: 10px; text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(item.monto)}</td>
             </tr>
@@ -538,12 +539,14 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
     });
 
     if (itemsDesglose.length === 0) {
-        filasHtml = `<tr><td colspan="3" style="text-align:center; padding: 20px; color: #64748b;">No hay registros para esta selección.</td></tr>`;
+        filasHtml = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: #64748b;">No hay registros para esta selección.</td></tr>`;
     }
 
     subModal.innerHTML = `
-        <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
+        <div style="background:white; color:#333; border-radius:14px; width:680px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 35px rgba(0,0,0,0.35); overflow:hidden;">
+            
+            <!-- CABECERA FIJA (STICKY HEADER) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 25px 15px 25px; border-bottom:2px solid #e2e8f0; background:white; position:sticky; top:0; z-index:10;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 ${tituloSubmodal}</h3>
                     <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">${subtitleInfo}</div>
@@ -551,27 +554,33 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
                 <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
             
-            <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
-                <thead>
-                    <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
-                        <th style="padding:10px; text-align:center;">ID</th>
-                        <th style="padding:10px;">Causa / Estado</th>
-                        <th style="padding:10px; text-align:right;">Monto Estimado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filasHtml}
-                </tbody>
-            </table>
+            <!-- CONTENIDO CON SCROLL -->
+            <div style="padding:20px 25px; overflow-y:auto; flex:1;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                    <thead>
+                        <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
+                            <th style="padding:10px; text-align:center;">ID</th>
+                            <th style="padding:10px;">Departamento</th>
+                            <th style="padding:10px;">Causa / Estado</th>
+                            <th style="padding:10px; text-align:right;">Monto Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasHtml}
+                    </tbody>
+                </table>
 
-            <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
-                <span>Total General:</span>
-                <span style="color:#dc2626; font-size:1.05rem;">${formatMoney(sumaTotalSub)}</span>
+                <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
+                    <span>Total General:</span>
+                    <span style="color:#0f172a; font-size:1.05rem;">${formatMoney(sumaTotalSub)}</span>
+                </div>
             </div>
 
-            <div style="margin-top:20px; text-align:right;">
-                <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 18px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
+            <!-- PIE DE PAGINA CON BOTÓN DE CIERRE -->
+            <div style="padding:15px 25px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:right;">
+                <button type="button" onclick="document.getElementById('modalSubDesgloseMatriz').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
             </div>
+
         </div>
     `;
     subModal.style.display = 'flex';
@@ -682,7 +691,6 @@ function abrirModalEnTramite() {
             totalFila += valDep;
 
             if (valDep > 0) {
-                // Filtramos los registros que pertenecen a esta celda específica para enviarlos al submodal al hacer clic
                 const subsetRows = registrosEnTramite.filter(item => {
                     const itemAprob = String(item.aprobacion_regional || item.APROBACION_REGIONAL || item['APROBACION REGIONAL'] || "").toUpperCase().trim();
                     const itemDep = String(item.departamento || item.DEPARTAMENTO || "").toUpperCase().trim();
@@ -691,30 +699,33 @@ function abrirModalEnTramite() {
 
                 const itemsDesglose = subsetRows.map(i => ({
                     id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+                    depto: i.departamento || i.DEPARTAMENTO || dep,
                     causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'EN TRÁMITE',
                     monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
                 }));
 
                 const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #2563eb; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
+                // Color negro estándar, sin colores forzados
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #0f172a; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
-        // Total Fila Fila Fila
+        // Columna Total General de la Fila (agrupa todos los deptos para este estado)
         const subsetRowFila = registrosEnTramite.filter(item => {
             const itemAprob = String(item.aprobacion_regional || item.APROBACION_REGIONAL || item['APROBACION REGIONAL'] || "").toUpperCase().trim();
             return itemAprob === aprobVal;
         });
         const itemsDesgloseFila = subsetRowFila.map(i => ({
             id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+            depto: i.departamento || i.DEPARTAMENTO || 'GENERAL',
             causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'EN TRÁMITE',
             monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
         }));
         const jsonFilaStr = JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;');
 
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #2563eb; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Casos en Trámite', 'Estado: ${aprobVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -869,29 +880,33 @@ function abrirModalRechazados() {
 
                 const itemsDesglose = subsetRows.map(i => ({
                     id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+                    depto: i.departamento || i.DEPARTAMENTO || dep,
                     causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
                     monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
                 }));
 
                 const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #dc2626; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
+                // Color negro estándar, sin colores forzados
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #0f172a; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
             } else {
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
             }
         });
 
+        // Columna Total General de la Fila (agrupa todos los deptos para esta causa)
         const subsetRowFila = registrosRechazados.filter(item => {
             const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
             return itemCausa === causaVal;
         });
         const itemsDesgloseFila = subsetRowFila.map(i => ({
             id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+            depto: i.departamento || i.DEPARTAMENTO || 'GENERAL',
             causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
             monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
         }));
         const jsonFilaStr = JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;');
 
-        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #dc2626; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
 
@@ -1310,8 +1325,9 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     }
 
     subModal.innerHTML = `
-        <div style="background:white; color:#333; padding:25px; border-radius:14px; width:620px; max-height:82vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.35);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">
+        <div style="background:white; color:#333; border-radius:14px; width:620px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 35px rgba(0,0,0,0.35); overflow:hidden;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 25px 15px 25px; border-bottom:2px solid #e2e8f0; background:white; position:sticky; top:0; z-index:10;">
                 <div>
                     <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
                     <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico} | Mes: ${fMes}</div>
@@ -1319,27 +1335,30 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
                 <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
             </div>
             
-            <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
-                <thead>
-                    <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
-                        <th style="padding:10px; text-align:center;">ID</th>
-                        <th style="padding:10px;">Causa Rechazo</th>
-                        <th style="padding:10px; text-align:right;">Monto Estimado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filasHtml}
-                </tbody>
-            </table>
+            <div style="padding:20px 25px; overflow-y:auto; flex:1;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                    <thead>
+                        <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
+                            <th style="padding:10px; text-align:center;">ID</th>
+                            <th style="padding:10px;">Causa Rechazo</th>
+                            <th style="padding:10px; text-align:right;">Monto Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasHtml}
+                    </tbody>
+                </table>
 
-            <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
-                <span>Total Rechazado:</span>
-                <span style="color:#dc2626; font-size:1.05rem;">${formatMoney(sumaRechazosModal)}</span>
+                <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
+                    <span>Total Rechazado:</span>
+                    <span style="color:#0f172a; font-size:1.05rem;">${formatMoney(sumaRechazosModal)}</span>
+                </div>
             </div>
 
-            <div style="margin-top:20px; text-align:right;">
-                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 18px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
+            <div style="padding:15px 25px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:right;">
+                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
             </div>
+
         </div>
     `;
     subModal.style.display = 'flex';
