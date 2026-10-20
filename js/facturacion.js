@@ -64,7 +64,7 @@ async function cargarDatosDesdeAPI() {
     }
 }
 
-// 1. Función para poblar dinámicamente los contenedores con checkboxes
+// 1. Función para poblar dinámicamente los contenedores con checkboxes en el panel lateral
 function poblarSelectsFiltros(rows) {
     const regiones = new Set();
     const departamentos = new Set();
@@ -77,8 +77,8 @@ function poblarSelectsFiltros(rows) {
         const depto = r.departamento || r.DEPARTAMENTO || r.dep;
         const mes = r.mes || r.MES;
         
-        const tecnicoRaw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
-        const perfil = String(tecnicoRaw).replace(/["']/g, "").trim();
+        const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
+        const perfil = String(rawTecnico).replace(/["']/g, "").trim();
 
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
 
@@ -125,7 +125,7 @@ function obtenerValoresSeleccionados(nombreFiltro) {
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
-// 3. Modificación en resetFiltros para marcar todos por defecto al limpiar
+// 3. Modificación en resetFiltros para marcar todos los checkboxes por defecto al limpiar
 function resetFiltros() {
     ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
         seleccionarTodosFiltro(nombre, true);
@@ -1360,7 +1360,7 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
         
         const matchTecnico = perfilReg === tecnicoBuscado;
         const esRechazado = aprobReg.includes("RECHAZADO");
-        const matchMes = fMes === "TODOS" || mesSeleccionados.includes(mesReg);
+        const matchMes = fMes === "TODOS" || mesesSeleccionados.includes(mesReg);
 
         return matchTecnico && esRechazado && matchMes;
     });
