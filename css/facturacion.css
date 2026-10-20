@@ -310,3 +310,75 @@ table.fact-table tr:hover td { background: #f8fafc; }
         .avatar-animado {
             animation: avatarFlotar 3s ease-in-out infinite;
         }
+/* Filtros */
+    @keyframes reboteNotif {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(252, 211, 77, 0.9)); }
+    }
+    .notif-activa-sidebar { animation: reboteNotif 1.2s infinite ease-in-out; }
+    @keyframes avatarFlotar {
+        0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+        50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
+    }
+    .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
+
+    /* Contenedor estático para evitar que expanda la barra lateral */
+    .dropdown-filtro-container { position: static; width: 100%; }
+    
+    .dropdown-filtro-btn {
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        padding: 7px 10px;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1e293b;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .dropdown-filtro-btn:hover { border-color: #2563eb; }
+
+    /* Menú flotante absoluto que no altera el diseño del sidebar */
+    .dropdown-filtro-menu {
+        display: none;
+        position: absolute;
+        left: 20px; /* Se posiciona fijo respecto al panel lateral */
+        width: 240px;
+        background: #ffffff;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        z-index: 999999;
+        padding: 12px;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+    .dropdown-filtro-menu.activo { display: block; }
+    
+    .excel-input-buscar {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        outline: none;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+    }
+    .excel-input-buscar:focus { border-color: #2563eb; }
+    
+    .excel-borrar-filtro {
+        color: #dc2626;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: block;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .excel-borrar-filtro:hover { text-decoration: underline; }
