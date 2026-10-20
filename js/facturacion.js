@@ -112,20 +112,17 @@ function llenarCheckboxesHTML(nombreFiltro, setValues) {
     container.innerHTML = html;
 }
 
-// Función auxiliar para seleccionar o deseleccionar todos los checkboxes de un grupo
 function seleccionarTodosFiltro(nombreFiltro, marcar) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => cb.checked = marcar);
     aplicarFiltrosGlobales();
 }
 
-// 2. Función auxiliar para obtener un arreglo con los valores marcados en cada filtro
 function obtenerValoresSeleccionados(nombreFiltro) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
-// 3. Modificación en resetFiltros para marcar todos los checkboxes por defecto al limpiar
 function resetFiltros() {
     ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
         seleccionarTodosFiltro(nombre, true);
@@ -134,7 +131,6 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// 4. Actualización dentro de aplicarFiltrosGlobales para validar múltiples selecciones
 function aplicarFiltrosGlobales() {
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
@@ -249,7 +245,6 @@ function procesarDatosParaVista(rows) {
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
-// Actualizar Tarjetas KPI generales con meta proporcional a los meses filtrados
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel, fMes, totalMesesSeleccionados) {
     let cantidadMeses = totalMesesSeleccionados || 1;
     if (cantidadMeses < 1) cantidadMeses = 1;
