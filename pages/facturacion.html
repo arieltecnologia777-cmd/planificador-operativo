@@ -565,21 +565,15 @@
         }
     }
 
-    // Posicionamiento flotante lateral para evitar que empuje o expanda el sidebar
+    // Apertura limpia del menú flotante estilo Excel
     function toggleDropdownFiltro(dropdownId, event) {
         event.stopPropagation();
         const menu = document.getElementById(dropdownId);
-        const boton = event.currentTarget;
         const estaActivo = menu.classList.contains('activo');
         
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
         
         if (!estaActivo) {
-            const rect = boton.getBoundingClientRect();
-            // Lo posicionamos exactamente al borde derecho del sidebar (ancho del sidebar 240px o alineado al botón)
-            menu.style.top = rect.top + 'px';
-            menu.style.left = '250px'; 
-            
             menu.classList.add('activo');
             const input = menu.querySelector('input[type="text"]');
             if (input) input.focus();
