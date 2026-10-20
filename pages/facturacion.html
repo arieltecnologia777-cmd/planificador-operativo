@@ -565,12 +565,13 @@
         }
     }
 
-    // Apertura limpia del menú flotante estilo Excel
+    // Despliegue limpio hacia abajo dentro del mismo sidebar
     function toggleDropdownFiltro(dropdownId, event) {
         event.stopPropagation();
         const menu = document.getElementById(dropdownId);
         const estaActivo = menu.classList.contains('activo');
         
+        // Cerramos los demás menús para que no se encimen
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
         
         if (!estaActivo) {
@@ -580,6 +581,7 @@
         }
     }
 
+    // Cierra el menú al hacer clic fuera del sidebar
     window.addEventListener('click', function() {
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
     });
