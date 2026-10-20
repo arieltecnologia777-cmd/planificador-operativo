@@ -214,7 +214,7 @@ function aplicarFiltrosGlobales() {
                tecnicoLower.includes(searchVal);
     });
 
-    tecnicosData = procesarDatosParaVista(filtradosCompletos);
+    tecnicosData = procesarDatosParaVista(filtradosCompletos, mesCheck.length);
     renderTable(tecnicosData);
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
@@ -226,8 +226,10 @@ function aplicarFiltrosGlobales() {
     initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
 }
 
-function procesarDatosParaVista(rows) {
+function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const mapaTecnicos = {};
+    let mesesMultiplicador = cantidadMeses < 1 ? 1 : cantidadMeses;
+    const metaDinamicaTecnico = META_FIJA_TECNICO * mesesMultiplicador;
 
     rows.forEach(r => {
         const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
@@ -239,7 +241,7 @@ function procesarDatosParaVista(rows) {
             mapaTecnicos[nombreTecnico] = {
                 nombre: nombreTecnico,
                 regional: regional,
-                meta: META_FIJA_TECNICO,
+                meta: metaDinamicaTecnico, // <-- Meta multiplicada por los meses seleccionados
                 aprobado: 0,
                 rechazado: 0,
                 subsanado: 0,
@@ -270,7 +272,6 @@ function procesarDatosParaVista(rows) {
 
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
-
 // Actualizar Tarjetas KPI generales con meta proporcional a los meses filtrados
 function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel, fMes, totalMesesSeleccionados) {
     let cantidadMeses = totalMesesSeleccionados || 1;
