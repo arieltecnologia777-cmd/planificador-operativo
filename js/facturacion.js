@@ -938,4 +938,607 @@ function abrirModalRechazados() {
             listaDepartamentos.forEach(dep => matrizDatos[causaRechazoVal][dep] = 0);
             matrizDatos[causaRechazoVal]["OTRO"] = 0;
         }
-        if (departamento !== "OTRO")
+        if (departamento !== "OTRO") {
+            matrizDatos[causaRechazoVal][departamento] += monto;
+        } else {
+            matrizDatos[causaRechazoVal]["OTRO"] += monto;
+        }
+    });
+
+    const causasFiltradas = {};
+    for (const [causaVal, montosDeps] of Object.entries(matrizDatos)) {
+        let totalFila = 0;
+        Object.values(montosDeps).forEach(val => totalFila += val);
+        if (totalFila > 0) {
+            causasFiltradas[causaVal] = montosDeps;
+        }
+    }
+
+    const totalColumnas = 1 + listaDepartamentos.length + 1;
+    const anchoPorcentual = (100 / totalColumnas).toFixed(2) + '%';
+
+    let headHtml = `
+        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+            <th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">CAUSA RECHAZO</th>
+    `;
+    listaDepartamentos.forEach(dep => {
+        headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 800; color: #1e293b; width: ${anchoPorcentual};">${dep}</th>`;
+    });
+    headHtml += `<th style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</th></tr>`;
+    thead.innerHTML = headHtml;
+
+    let bodyHtml = '';
+    for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
+        bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
+        
+        let totalFila = 0;
+        listaDepartamentos.forEach(dep => {
+            const valDep = montosDeps[dep] || 0;
+            totalFila += valDep;
+
+            if (valDep > 0) {
+                const subsetRows = registrosRechazados.filter(item => {
+                    const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
+                    const itemDep = String(item.departamento || item.DEPARTAMENTO || "").toUpperCase().trim();
+                    return itemCausa === causaVal && itemDep === dep;
+                });
+
+                const itemsDesglose = subsetRows.map(i => ({
+                    id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+                    depto: i.departamento || i.DEPARTAMENTO || dep,
+                    causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
+                    monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+                }));
+
+                const jsonRowsStr = JSON.stringify(itemsDesglose).replace(/"/g, '&quot;');
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #0f172a; font-weight: 700; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Depto: ${dep}', ${jsonRowsStr})" title="Clic para ver IDs">${formatMoney(valDep)}</td>`;
+            } else {
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">-</td>`;
+            }
+        });
+
+        const subsetRowFila = registrosRechazados.filter(item => {
+            const itemCausa = String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim();
+            return itemCausa === causaVal;
+        });
+        const itemsDesgloseFila = subsetRowFila.map(i => ({
+            id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A',
+            depto: i.departamento || i.DEPARTAMENTO || 'GENERAL',
+            causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA',
+            monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0)
+        }));
+        const jsonFilaStr = JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;');
+
+        bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${jsonFilaStr})" title="Clic para ver IDs">${formatMoney(totalFila)}</td></tr>`;
+    }
+    tbody.innerHTML = bodyHtml;
+
+    let footerFilaHtml = `
+        <tr style="font-weight: 900;">
+            <td style="padding: 10px 14px; text-align: center; color: #0f172a; text-transform: uppercase; width: ${anchoPorcentual}; background: #f1f5f9;">TOTAL GENERAL</td>
+    `;
+    listaDepartamentos.forEach(dep => {
+        const valDepTotal = totalesPorDepartamento[dep] || 0;
+        footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #0f172a; width: ${anchoPorcentual}; background: #f1f5f9;">${formatMoney(valDepTotal)}</td>`;
+    });
+    footerFilaHtml += `<td style="padding: 10px 14px; text-align: center; color: #2563eb; width: ${anchoPorcentual}; background: #e2e8f0;">${formatMoney(sumaGranTotal)}</td></tr>`;
+    
+    tfoot.innerHTML = footerFilaHtml;
+    document.getElementById('txtTotalRechazadosModal').innerText = 'Total general acumulado: ' + formatMoney(sumaGranTotal);
+
+    const modal = document.getElementById('modalRechazadosDetalle');
+    if (modal) modal.style.display = 'flex';
+}
+
+function actualizarCabeceraModalRechazados() {
+    const modalContainer = document.querySelector('#modalRechazadosDetalle .modal-container, #modalRechazadosDetalle > div');
+    if (!modalContainer) return;
+    
+    let headerDiv = modalContainer.querySelector('.modal-header-custom-toggle-rech');
+    if (!headerDiv) {
+        headerDiv = document.createElement('div');
+        headerDiv.className = 'modal-header-custom-toggle-rech';
+        headerDiv.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 800; color: #1e3a8a; font-size: 0.9rem;";
+        headerDiv.innerHTML = `<span>💡 Haz clic en cualquier monto de la matriz para ver el desglose detallado por ID.</span>`;
+        const tablaElem = modalContainer.querySelector('table');
+        if (tablaElem && tablaElem.parentNode) {
+            tablaElem.parentNode.insertBefore(headerDiv, tablaElem);
+        }
+    }
+}
+
+function cerrarModalRechazados() {
+    const modal = document.getElementById('modalRechazadosDetalle');
+    if (modal) modal.style.display = 'none';
+}
+
+function verificarIncrementosAvance(nuevosRegistros) {}
+function actualizarBadgeCampana() {}
+function abrirModalNotificaciones() {}
+function cerrarModalNotificaciones() {
+    const modal = document.getElementById('modalNotificaciones');
+    if (modal) modal.style.display = 'none';
+}
+
+function abrirModalPassword() {
+    const inputPass = document.getElementById('inputPasswordAdmin');
+    const errorMsg = document.getElementById('errorPasswordMsg');
+    const modalPass = document.getElementById('modalPassword');
+
+    if (inputPass) inputPass.value = '';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (modalPass) modalPass.style.display = 'flex';
+    if (inputPass) inputPass.focus();
+}
+
+function cerrarModalPassword() {
+    const modalPass = document.getElementById('modalPassword');
+    if (modalPass) modalPass.style.display = 'none';
+}
+
+async function verificarPassword() {
+    const inputPass = document.getElementById('inputPasswordAdmin');
+    const passwordIngresada = inputPass ? inputPass.value.trim() : '';
+    const errorMsg = document.getElementById('errorPasswordMsg');
+
+    if (!passwordIngresada) {
+        if (errorMsg) {
+            errorMsg.innerText = "Por favor ingresa la contraseña.";
+            errorMsg.style.display = 'block';
+        }
+        return;
+    }
+
+    try {
+        const response = await fetch(VERIFICAR_KEY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: passwordIngresada })
+        });
+        const resultado = await response.json();
+
+        if (response.ok && (resultado.success === true || resultado.ok === true)) {
+            cerrarModalPassword();
+            const modalHerramientas = document.getElementById('modalHerramientas');
+            if (modalHerramientas) modalHerramientas.style.display = 'flex';
+        } else {
+            if (errorMsg) {
+                errorMsg.innerText = "Contraseña incorrecta.";
+                errorMsg.style.display = 'block';
+            }
+            if (inputPass) {
+                inputPass.value = '';
+                inputPass.focus();
+            }
+        }
+    } catch (err) {
+        console.error("Error al verificar clave:", err);
+        if (errorMsg) {
+            errorMsg.innerText = "Error de red al verificar con el servidor.";
+            errorMsg.style.display = 'block';
+        }
+    }
+}
+
+function cerrarModalHerramientas() {
+    const modalHerramientas = document.getElementById('modalHerramientas');
+    if (modalHerramientas) modalHerramientas.style.display = 'none';
+}
+
+async function confirmarBorrarBaseD1() {
+    const seguro = confirm("⚠️ ¿Estás completamente seguro de borrar todos los registros de la base de datos D1? Esta acción eliminará el contenido pero mantendrá la estructura de la tabla intacta.");
+    if (!seguro) return;
+
+    cerrarModalHerramientas();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/facturacion/vaciar`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Error en el servidor (${response.status}): ${errText}`);
+        }
+
+        const resultado = await response.json();
+        alert("¡Base de datos vaciada con éxito! Todos los registros fueron eliminados.");
+        location.reload();
+
+    } catch (error) {
+        console.error("Error al vaciar la base D1:", error);
+        alert("No se pudo vaciar la base de datos: " + error.message);
+    }
+}
+
+async function procesarYSubirExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    cerrarModalHerramientas();
+
+    const modalCarga = document.getElementById('modalCargandoExcel');
+    const barra = document.getElementById('barraProgreso');
+    const txtPorc = document.getElementById('txtPorcentajeCarga');
+    const txtEstado = document.getElementById('txtEstadoCarga');
+    
+    if (modalCarga) modalCarga.style.display = 'flex';
+    if (barra) barra.style.width = '15%';
+    if (txtPorc) txtPorc.innerText = '15%';
+    if (txtEstado) txtEstado.innerText = 'Leyendo archivo Excel...';
+
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        try {
+            if (barra) barra.style.width = '40%';
+            if (txtPorc) txtPorc.innerText = '40%';
+            if (txtEstado) txtEstado.innerText = 'Procesando filas del Excel...';
+
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (!jsonData || jsonData.length === 0) {
+                alert("El archivo Excel está vacío o no tiene un formato válido.");
+                if (modalCarga) modalCarga.style.display = 'none';
+                event.target.value = '';
+                return;
+            }
+
+            if (barra) barra.style.width = '70%';
+            if (txtPorc) txtPorc.innerText = '70%';
+            if (txtEstado) txtEstado.innerText = 'Sincronizando con Cloudflare D1...';
+
+            const response = await fetch(IMPORTAR_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error en el servidor (${response.status}): ${errorText}`);
+            }
+
+            if (barra) barra.style.width = '100%';
+            if (txtPorc) txtPorc.innerText = '100%';
+            if (txtEstado) txtEstado.innerText = '¡Cargue y sincronización exitosa!';
+
+            setTimeout(() => {
+                if (modalCarga) modalCarga.style.display = 'none';
+                alert("¡Base de facturación cargada y sincronizada con éxito!");
+                location.reload();
+            }, 800);
+
+        } catch (error) {
+            console.error("Error al procesar o subir el archivo:", error);
+            if (modalCarga) modalCarga.style.display = 'none';
+            alert("Error al procesar el archivo: " + error.message);
+        } finally {
+            event.target.value = '';
+        }
+    };
+
+    reader.onerror = function() {
+        if (modalCarga) modalCarga.style.display = 'none';
+        alert("No se pudo leer el archivo seleccionado desde el equipo.");
+        event.target.value = '';
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
+function formatMoney(amount) {
+    return '$ ' + Number(amount || 0).toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
+}
+
+function renderTable(records) {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
+    
+    if(records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No hay registros disponibles para los filtros seleccionados.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    records.forEach((r, index) => {
+        const badgeStyle = r.estado === "Cumple" 
+            ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
+            : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
+            
+        const barColor = r.efectividad >= 100 ? "#22c55e" : (r.efectividad >= 70 ? "#f59e0b" : "#ef4444");
+
+        html += `
+            <tr>
+                <td style="font-weight: 700; color: #1e293b;">${r.nombre}</td>
+                <td>${formatMoney(r.meta)}</td>
+                <td>${formatMoney(r.aprobado)}</td>
+                <td>${formatMoney(r.rechazado)}</td>
+                <td>${formatMoney(r.subsanado)}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: bold; min-width: 32px;">${r.efectividad}%</span>
+                        <div style="width: 80px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${Math.min(100, r.efectividad)}%; background: ${barColor}; height: 100%;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td><span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; text-align: center; ${badgeStyle}">${r.estado}</span></td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="abrirDetalleTecnico(${index})" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 5px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">👁️ Ver detalles</button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+function abrirDetalleTecnico(index) {
+    const r = tecnicosData[index];
+    if (!r) return;
+
+    const modalBody = document.getElementById('modalBodyContent');
+    if(!modalBody) return;
+    
+    const badgeStyleModal = r.estado === "Cumple" 
+        ? "background: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0 !important;" 
+        : "background: #fee2e2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important;";
+
+    const tieneRechazos = r.rechazado > 0;
+    const estilosRechazadoBox = tieneRechazos 
+        ? "background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #fecaca; cursor: pointer; transition: background 0.2s;" 
+        : "background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;";
+    
+    const eventoClickRechazado = tieneRechazos ? `onclick="verDetalleRechazosIdTecnico('${r.nombre.replace(/'/g, "\\'")}')"` : "";
+    const tooltipRechazado = tieneRechazos ? `<div style="font-size:0.68rem; color:#dc2626; font-weight:700; margin-top:2px;">👆 Clic para ver causas por ID</div>` : "";
+
+    modalBody.innerHTML = `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Técnico Evaluado</div>
+                    <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a;">${r.nombre}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Regional</span>
+                    <div style="font-size: 1rem; font-weight: 700; color: #2563eb;">${r.regional}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Estado Actual</span>
+                    <div style="margin-top: 4px;"><span style="display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; ${badgeStyleModal}">${r.estado}</span></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 4px;">
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta Asignada (Fija)</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-top: 4px;">${formatMoney(r.meta)}</div>
+                </div>
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Aprobado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #16a34a; margin-top: 4px;">${formatMoney(r.aprobado)}</div>
+                </div>
+                
+                <div style="${estilosRechazadoBox}" ${eventoClickRechazado} title="${tieneRechazos ? 'Haz clic para ver el detalle por ID' : ''}">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Rechazado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #dc2626; margin-top: 4px;">${formatMoney(r.rechazado)}</div>
+                    ${tooltipRechazado}
+                </div>
+
+                <div style="background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Monto Subsanado</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: #d97706; margin-top: 4px;">${formatMoney(r.subsanado)}</div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Cumplimiento Global del Técnico</div>
+                    <div style="font-size: 0.85rem; color: #334155; margin-top: 2px;">Porcentaje de cumplimiento sobre la meta fija.</div>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #2563eb;">${r.efectividad}%</div>
+            </div>
+        </div>
+    `;
+
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'flex';
+}
+
+function verDetalleRechazosIdTecnico(nombreTecnico) {
+    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
+    const fMes = mesesSeleccionados.length === 1 ? mesesSeleccionados[0] : "TODOS";
+    const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
+
+    const itemsRechazados = registrosCrudos.filter(r => {
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfilReg = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+        
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        const mesReg = String(r.mes || r.MES || "").trim().toUpperCase();
+        
+        const matchTecnico = perfilReg === tecnicoBuscado;
+        const esRechazado = aprobReg.includes("RECHAZADO");
+        const matchMes = fMes === "TODOS" || mesesSeleccionados.includes(mesReg);
+
+        return matchTecnico && esRechazado && matchMes;
+    });
+
+    if (itemsRechazados.length === 0) {
+        alert(`No se encontraron registros de rechazo para "${nombreTecnico}".`);
+        return;
+    }
+
+    let filasHtml = '';
+    let sumaRechazosModal = 0;
+
+    itemsRechazados.forEach(item => {
+        const idReal = item.id_id || item.ID_ID || item.id || item.ID || 'N/A';
+        const causa = item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || item['CAUSA RECHAZO'] || 'NO ESPECIFICADA';
+        const monto = Number(item.estimado_a_facturar ?? item.facturacion ?? item.Facturacion ?? 0);
+        sumaRechazosModal += monto;
+
+        filasHtml += `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px; font-weight: 800; color: #1e3a8a; text-align: center;">${idReal}</td>
+                <td style="padding: 10px; color: #dc2626; font-weight: 700; text-transform: uppercase;">${causa}</td>
+                <td style="padding: 10px; text-align: right; font-weight: 700; color: #0f172a;">${formatMoney(monto)}</td>
+            </tr>
+        `;
+    });
+
+    let subModal = document.getElementById('modalSubDetalleRechazos');
+    if (!subModal) {
+        subModal = document.createElement('div');
+        subModal.id = 'modalSubDetalleRechazos';
+        subModal.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:inherit;";
+        document.body.appendChild(subModal);
+    }
+
+    subModal.innerHTML = `
+        <div style="background:white; color:#333; border-radius:14px; width:620px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 35px rgba(0,0,0,0.35); overflow:hidden;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 25px 15px 25px; border-bottom:2px solid #e2e8f0; background:white; position:sticky; top:0; z-index:10;">
+                <div>
+                    <h3 style="margin:0; color:#1e3a8a; font-size:1.1rem; font-weight:900;">📋 Desglose de Rechazos por ID</h3>
+                    <div style="font-size:0.82rem; color:#64748b; font-weight:600; margin-top:2px;">Técnico: ${nombreTecnico}</div>
+                </div>
+                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
+            </div>
+            
+            <div style="padding:20px 25px; overflow-y:auto; flex:1;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+                    <thead>
+                        <tr style="background:#f8fafc; color:#334155; text-align:left; border-bottom:2px solid #e2e8f0;">
+                            <th style="padding:10px; text-align:center;">ID</th>
+                            <th style="padding:10px;">Causa Rechazo</th>
+                            <th style="padding:10px; text-align:right;">Monto Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasHtml}
+                    </tbody>
+                </table>
+
+                <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-weight:900; color:#0f172a;">
+                    <span>Total Rechazado:</span>
+                    <span style="color:#0f172a; font-size:1.05rem;">${formatMoney(sumaRechazosModal)}</span>
+                </div>
+            </div>
+
+            <div style="padding:15px 25px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:right;">
+                <button type="button" onclick="document.getElementById('modalSubDetalleRechazos').style.display='none'" style="background:#2563eb; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.88rem;">Cerrar</button>
+            </div>
+
+        </div>
+    `;
+    subModal.style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    const modal = document.getElementById('modalDetalleTecnico');
+    if (modal) modal.style.display = 'none';
+}
+
+function exportExcel() {
+    const ws = XLSX.utils.json_to_sheet(tecnicosData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
+    XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
+}
+
+function actualizarSelectsEnCascada() {
+    const regionesSel = obtenerValoresSeleccionados('Region');
+    const deptosSel = obtenerValoresSeleccionados('Departamento');
+    const mesesSel = obtenerValoresSeleccionados('Mes');
+    const perfilesSel = obtenerValoresSeleccionados('PerfilWfm');
+    const aprobSel = obtenerValoresSeleccionados('Aprobacion');
+
+    const filtrarExcluyendo = (campoExcluir) => {
+        return registrosCrudos.filter(r => {
+            const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
+            const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
+            const mes = String(r.mes || r.MES || "").trim();
+            const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+            const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+            const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+
+            const matchReg = campoExcluir === 'Region' || regionesSel.length === 0 || regionesSel.includes(reg);
+            const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.includes(depto);
+            const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.includes(mes);
+            const matchPerfil = campoExcluir === 'PerfilWfm' || perfilesSel.length === 0 || perfilesSel.includes(perfil);
+            const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.includes(aprob);
+
+            return matchReg && matchDepto && matchMes && matchPerfil && matchAprob;
+        });
+    };
+
+    const rowsReg = filtrarExcluyendo('Region');
+    const setReg = new Set();
+    rowsReg.forEach(r => {
+        const val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
+        if (val) setReg.add(String(val).trim().toUpperCase());
+    });
+    llenarDropdownHTMLCascada('Region', setReg, regionesSel);
+
+    const rowsDepto = filtrarExcluyendo('Departamento');
+    const setDepto = new Set();
+    rowsDepto.forEach(r => {
+        const val = r.departamento || r.DEPARTAMENTO || r.dep;
+        if (val) setDepto.add(String(val).trim().toUpperCase());
+    });
+    llenarDropdownHTMLCascada('Departamento', setDepto, deptosSel);
+
+    const rowsMes = filtrarExcluyendo('Mes');
+    const setMes = new Set();
+    rowsMes.forEach(r => {
+        const val = r.mes || r.MES;
+        if (val) setMes.add(String(val).trim());
+    });
+    llenarDropdownHTMLCascada('Mes', setMes, mesesSel);
+
+    const rowsPerfil = filtrarExcluyendo('PerfilWfm');
+    const setPerfil = new Set();
+    rowsPerfil.forEach(r => {
+        const raw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const val = String(raw).replace(/["']/g, "").trim();
+        if (val) setPerfil.add(val.toUpperCase());
+    });
+    llenarDropdownHTMLCascada('PerfilWfm', setPerfil, perfilesSel);
+
+    const rowsAprob = filtrarExcluyendo('Aprobacion');
+    const setAprob = new Set();
+    rowsAprob.forEach(r => {
+        const val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
+        if (val) setAprob.add(String(val).trim());
+    });
+    llenarDropdownHTMLCascada('Aprobacion', setAprob, aprobSel);
+}
+
+function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+    
+    let html = '';
+    const sortedValues = Array.from(setValues).sort();
+    
+    sortedValues.forEach(val => {
+        const marcado = (valoresAnteriores.length === 0 || valoresAnteriores.includes(val)) ? 'checked' : '';
+        html += `
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcado} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                ${val}
+            </label>
+        `;
+    });
+    container.innerHTML = html;
+    actualizarLabelBotonFiltro(nombreFiltro);
+}
