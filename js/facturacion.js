@@ -128,23 +128,14 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
     
-    // Obtenemos el contenedor de las opciones de esta cajita
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (container) {
-        // Mostramos nuevamente todas las etiquetas ocultas por el buscador o filtros previos
-        const labels = container.querySelectorAll('label');
-        labels.forEach(lbl => {
-            lbl.style.display = 'flex';
-        });
-    }
-    
-    // Marcamos o desmarcamos todos los checkboxes de este menú
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
         cb.checked = marcar;
+        if (cb.parentElement) {
+            cb.parentElement.style.display = 'flex';
+        }
     });
     
-    // Actualizamos la vista global
     aplicarFiltrosGlobales();
 }
 
