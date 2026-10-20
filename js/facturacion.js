@@ -221,7 +221,9 @@ function aplicarFiltrosGlobales() {
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
     
     renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(filtradosCompletos, regCheck, depCheck);
+    
+    // --- TENDENCIA ESTÁTICA (Independiente de cualquier filtro) ---
+    initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
 }
 
 function procesarDatosParaVista(rows) {
