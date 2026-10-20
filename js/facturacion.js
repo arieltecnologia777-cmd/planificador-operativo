@@ -128,7 +128,6 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    // Extraemos todos los valores únicos posibles para este filtro desde la fuente global
     const setValores = new Set();
     registrosCrudos.forEach(r => {
         let val = "";
@@ -141,7 +140,6 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
         if (val) setValores.add(String(val).trim().toUpperCase());
     });
 
-    // Pintamos de nuevo la cajita con todos sus elementos visibles y marcados/desmarcados según corresponda
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (container) {
         let html = '';
@@ -158,7 +156,6 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
 
     actualizarLabelBotonFiltro(nombreFiltro);
 
-    // Filtramos las tablas y KPIs sin redibujar agresivamente los demás selects en cascada en este microsegundo
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
