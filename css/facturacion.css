@@ -250,33 +250,33 @@ table.fact-table tr:hover td { background: #f8fafc; }
 }
 .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
 
-/* --- Menús desplegables flotantes tipo Excel (Sin scroll en Sidebar) --- */
+/* --- Corrección definitiva para los menús desplegables flotantes tipo Excel --- */
 .dropdown-filtro-container {
-    position: relative;
-    width: 100%;
+    position: relative !important;
+    width: 100% !important;
 }
 
 .dropdown-filtro-btn {
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    padding: 7px 10px;
-    text-align: left;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #1e293b;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 6px !important;
+    padding: 7px 10px !important;
+    text-align: left !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
 .dropdown-filtro-btn:hover {
-    border-color: #2563eb;
+    border-color: #2563eb !important;
 }
 
-/* Menú flotante absoluto con position: fixed para que flote sobre la pantalla sin ensanchar el sidebar */
+/* Menú flotante absoluto que se posiciona fuera del flujo del sidebar para que no genere scrolls */
 .dropdown-filtro-menu {
     display: none;
     position: fixed !important;
@@ -296,31 +296,31 @@ table.fact-table tr:hover td { background: #f8fafc; }
 }
 
 .excel-input-buscar {
-    width: 100%;
-    padding: 7px 10px;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 8px;
+    width: 100% !important;
+    padding: 7px 10px !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 6px !important;
+    font-size: 0.8rem !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    margin-bottom: 8px !important;
 }
 
 .excel-input-buscar:focus {
-    border-color: #2563eb;
+    border-color: #2563eb !important;
 }
 
 .excel-borrar-filtro {
-    color: #dc2626;
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: block;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e2e8f0;
+    color: #dc2626 !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    display: block !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
 }
 
 .excel-borrar-filtro:hover {
-    text-decoration: underline;
+    text-decoration: underline !important;
 }
