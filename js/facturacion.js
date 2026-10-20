@@ -202,7 +202,6 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     
     // --- TENDENCIA ESTÁTICA ---
     initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
-}
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const mapaTecnicos = {};
     let mesesMultiplicador = cantidadMeses < 1 ? 1 : cantidadMeses;
