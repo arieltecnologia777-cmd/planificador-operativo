@@ -1172,3 +1172,33 @@ function exportExcel() {
     XLSX.utils.book_append_sheet(wb, ws, "Detalle_Tecnicos");
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
+// Función para confirmar y ejecutar el vaciado de la base D1
+async function confirmarBorrarBaseD1() {
+    const seguro = confirm("⚠️ ¿Estás completamente seguro de borrar todos los registros de la base de datos? Esta acción no se puede deshacer.");
+    if (!seguro) return;
+
+    // Cerramos el panel de herramientas
+    cerrarModalHerramientas();
+
+    try {
+        console.log("Enviando solicitud para vaciar la tabla facturacion_detallada...");
+        
+        const response = await fetch(`${API_BASE_URL}/facturacion/vaciar`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Error en el servidor (${response.status}): ${errText}`);
+        }
+
+        const resultado = await response.json();
+        alert("¡Base de datos vaciada con éxito! Todos los registros fueron eliminados.");
+        location.reload();
+
+    } catch (error) {
+        console.error("Error al vaciar la base D1:", error);
+        alert("No se pudo vaciar la base de datos: " + error.message);
+    }
+}
