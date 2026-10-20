@@ -127,102 +127,38 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
-    
-    // Obtenemos el contenedor de la cajita específica
+
+    // Extraemos todos los valores únicos posibles para este filtro desde la fuente global
+    const setValores = new Set();
+    registrosCrudos.forEach(r => {
+        let val = "";
+        if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
+        else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
+        else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
+        else if (nombreFiltro === 'PerfilWfm') val = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "").replace(/["']/g, "").trim();
+        else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
+
+        if (val) setValores.add(String(val).trim().toUpperCase());
+    });
+
+    // Pintamos de nuevo la cajita con todos sus elementos visibles y marcados/desmarcados según corresponda
     const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (!container) return;
-
-    // Si la acción es marcar todo (borrar filtro), restauramos TODOS los valores posibles desde registrosCrudos para este campo
-    if (marcar) {
-        const valoresCompletos = new Set();
-        registrosCrudos.forEach(r => {
-            let val = "";
-            if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
-            else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
-            else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
-            else if (nombreFiltro === 'PerfilWfm') val = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "").replace(/["']/g, "").trim();
-            else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
-
-            if (val) valoresCompletos.add(String(val).trim().toUpperCase());
-        });
-
+    if (container) {
         let html = '';
-        Array.from(valoresCompletos).sort().forEach(val => {
+        Array.from(setValores).sort().forEach(val => {
             html += `
                 <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcar ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
                     ${val}
                 </label>
             `;
         });
         container.innerHTML = html;
-    } else {
-        // Si es desmarcar todo, simplemente apagamos los checkboxes visibles sin ocultar nada
-        const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-        checkboxes.forEach(cb => {
-            cb.checked = false;
-            if (cb.parentElement) cb.parentElement.style.display = 'flex';
-        });
-    }
-    
-    aplicarFiltrosGlobales();
-}function obtenerValoresSeleccionados(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
-}
-
-function actualizarLabelBotonFiltro(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    const total = checkboxes.length;
-    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
-    
-    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) {
-        chkTodo.checked = (total > 0 && seleccionados.length === total);
     }
 
-    const lbl = document.getElementById('lbl' + nombreFiltro);
-    if (!lbl) return;
+    actualizarLabelBotonFiltro(nombreFiltro);
 
-    if (seleccionados.length === total || seleccionados.length === 0) {
-        lbl.innerText = "Todos";
-    } else if (seleccionados.length === 1) {
-        lbl.innerText = seleccionados[0];
-    } else {
-        lbl.innerText = seleccionados.length + " seleccionados";
-    }
-}
-
-function filtrarListaCheck(nombreFiltro, texto) {
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (!container) return;
-    const labels = container.querySelectorAll('label');
-    const query = texto.toLowerCase();
-    labels.forEach(lbl => {
-        const txt = lbl.innerText.toLowerCase();
-        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
-    });
-}
-
-function resetFiltros() {
-    if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
-    poblarSelectsFiltros(registrosCrudos);
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        const chkTodo = document.getElementById('chkTodo' + nombre);
-        if (chkTodo) chkTodo.checked = true;
-        const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
-        checkboxes.forEach(cb => cb.checked = true);
-    });
-    aplicarFiltrosGlobales();
-}
-function aplicarFiltrosGlobales() {
-    // --- ACTUALIZA TODOS LOS FILTROS EN CASCADA ---
-    actualizarSelectsEnCascada();
-
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
-        actualizarLabelBotonFiltro(nombre);
-    });
-
+    // Filtramos las tablas y KPIs sin redibujar agresivamente los demás selects en cascada en este microsegundo
     const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
@@ -240,7 +176,6 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
-        
         return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
@@ -248,18 +183,16 @@ function aplicarFiltrosGlobales() {
         const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
-        
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
-        const tecnicoLower = perfil.toLowerCase();
 
         return regCheck.includes(reg) && 
                depCheck.includes(depto) && 
                mesCheck.includes(mes) && 
                perfCheck.includes(perfil) && 
                aprobCheck.includes(aprob) && 
-               tecnicoLower.includes(searchVal);
+               perfil.toLowerCase().includes(searchVal);
     });
 
     tecnicosData = procesarDatosParaVista(filtradosCompletos, mesCheck.length);
@@ -267,8 +200,8 @@ function aplicarFiltrosGlobales() {
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
-    
     renderizarEstadoRegional(filtradosCompletos);
+}
     
     // --- TENDENCIA ESTÁTICA ---
     initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
