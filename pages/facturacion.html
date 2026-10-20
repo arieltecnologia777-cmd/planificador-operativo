@@ -14,27 +14,19 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* Estilo de animación de rebote y destello para la campana de notificaciones en el sidebar */
         @keyframes reboteNotif {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(252, 211, 77, 0.9)); }
         }
-        .notif-activa-sidebar {
-            animation: reboteNotif 1.2s infinite ease-in-out;
-        }
+        .notif-activa-sidebar { animation: reboteNotif 1.2s infinite ease-in-out; }
         @keyframes avatarFlotar {
             0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
             50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
         }
-        .avatar-animado {
-            animation: avatarFlotar 3s ease-in-out infinite;
-        }
+        .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
 
-        /* Estilos para el Dropdown flotante tipo Excel (Menú desplegable de filtros) */
-        .dropdown-filtro-container {
-            position: relative;
-            width: 100%;
-        }
+        /* Estilos para el Dropdown flotante idéntico a Excel */
+        .dropdown-filtro-container { position: relative; width: 100%; }
         .dropdown-filtro-btn {
             width: 100%;
             background: #ffffff;
@@ -50,27 +42,46 @@
             justify-content: space-between;
             align-items: center;
         }
-        .dropdown-filtro-btn:hover {
-            border-color: #2563eb;
-        }
+        .dropdown-filtro-btn:hover { border-color: #2563eb; }
         .dropdown-filtro-menu {
             display: none;
             position: absolute;
             top: 100%;
             left: 0;
-            width: 220px;
+            width: 240px;
             background: #ffffff;
             border: 1px solid #cbd5e0;
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             z-index: 99999;
-            padding: 10px;
+            padding: 12px;
             margin-top: 4px;
             box-sizing: border-box;
+            font-family: inherit;
         }
-        .dropdown-filtro-menu.activo {
+        .dropdown-filtro-menu.activo { display: block; }
+        .excel-input-buscar {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            outline: none;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+        .excel-input-buscar:focus { border-color: #2563eb; }
+        .excel-borrar-filtro {
+            color: #dc2626;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
             display: block;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
         }
+        .excel-borrar-filtro:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -83,10 +94,8 @@
             </div>
             
             <nav class="sidebar-nav">
-                <!-- 1. Facturación arriba -->
                 <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
 
-                <!-- 2. Planeación -->
                 <div class="nav-accordion-group">
                     <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuPlaneacion', 'accordionArrowPlaneacion')">
                         <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">📅</span> Planeación</span>
@@ -100,7 +109,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Notificaciones -->
                 <div style="padding: 10px 14px; margin-top: 6px;">
                     <button type="button" onclick="abrirModalNotificaciones()" id="btnCampanaNotif" style="width: 100%; background: #2563eb; border: none; padding: 8px 12px; border-radius: 6px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; font-size: 0.82rem;">
                         🔔 Notificaciones
@@ -108,7 +116,7 @@
                     </button>
                 </div>
 
-                <!-- 4. Filtros Flotantes Profesionales (Cerrados por defecto, estilo Excel) -->
+                <!-- Filtros Estilo Excel -->
                 <div class="nav-accordion-group" style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px;">
                     <div style="padding: 0 14px 8px 14px;">
                         <button type="button" onclick="resetFiltros()" style="width: 100%; background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
@@ -128,14 +136,18 @@
                             <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Región</label>
                             <div class="dropdown-filtro-container">
                                 <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownRegion', event)">
-                                    <span id="lblRegion">Seleccionados (...)</span> <span>▼</span>
+                                    <span id="lblRegion">Todos</span> <span>▼</span>
                                 </button>
                                 <div id="dropdownRegion" class="dropdown-filtro-menu">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.72rem; font-weight: bold;">
-                                        <span style="color: #2563eb; cursor: pointer;" onclick="marcarTodosDropdown('Region', true)">Seleccionar todo</span>
-                                        <span style="color: #dc2626; cursor: pointer;" onclick="marcarTodosDropdown('Region', false)">Limpiar</span>
+                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Region', this.value)">
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Region', false)">❌ Borrar filtro</span>
+                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
+                                            <input type="checkbox" id="chkTodoRegion" onchange="seleccionarTodoGeneral('Region', this.checked)" style="cursor: pointer;" checked>
+                                            (Seleccionar todo)
+                                        </label>
+                                        <div id="listaCheckRegion" style="display: flex; flex-direction: column; gap: 4px;"></div>
                                     </div>
-                                    <div id="listaCheckRegion" style="max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -145,14 +157,18 @@
                             <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
                             <div class="dropdown-filtro-container">
                                 <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownDepartamento', event)">
-                                    <span id="lblDepartamento">Seleccionados (...)</span> <span>▼</span>
+                                    <span id="lblDepartamento">Todos</span> <span>▼</span>
                                 </button>
                                 <div id="dropdownDepartamento" class="dropdown-filtro-menu">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.72rem; font-weight: bold;">
-                                        <span style="color: #2563eb; cursor: pointer;" onclick="marcarTodosDropdown('Departamento', true)">Seleccionar todo</span>
-                                        <span style="color: #dc2626; cursor: pointer;" onclick="marcarTodosDropdown('Departamento', false)">Limpiar</span>
+                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Departamento', this.value)">
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', false)">❌ Borrar filtro</span>
+                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
+                                            <input type="checkbox" id="chkTodoDepartamento" onchange="seleccionarTodoGeneral('Departamento', this.checked)" style="cursor: pointer;" checked>
+                                            (Seleccionar todo)
+                                        </label>
+                                        <div id="listaCheckDepartamento" style="display: flex; flex-direction: column; gap: 4px;"></div>
                                     </div>
-                                    <div id="listaCheckDepartamento" style="max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -162,14 +178,18 @@
                             <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
                             <div class="dropdown-filtro-container">
                                 <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownMes', event)">
-                                    <span id="lblMes">Seleccionados (...)</span> <span>▼</span>
+                                    <span id="lblMes">Todos</span> <span>▼</span>
                                 </button>
                                 <div id="dropdownMes" class="dropdown-filtro-menu">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.72rem; font-weight: bold;">
-                                        <span style="color: #2563eb; cursor: pointer;" onclick="marcarTodosDropdown('Mes', true)">Seleccionar todo</span>
-                                        <span style="color: #dc2626; cursor: pointer;" onclick="marcarTodosDropdown('Mes', false)">Limpiar</span>
+                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Mes', this.value)">
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', false)">❌ Borrar filtro</span>
+                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
+                                            <input type="checkbox" id="chkTodoMes" onchange="seleccionarTodoGeneral('Mes', this.checked)" style="cursor: pointer;" checked>
+                                            (Seleccionar todo)
+                                        </label>
+                                        <div id="listaCheckMes" style="display: flex; flex-direction: column; gap: 4px;"></div>
                                     </div>
-                                    <div id="listaCheckMes" style="max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -179,15 +199,18 @@
                             <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Perfil WFM</label>
                             <div class="dropdown-filtro-container">
                                 <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownPerfilWfm', event)">
-                                    <span id="lblPerfilWfm">Seleccionados (...)</span> <span>▼</span>
+                                    <span id="lblPerfilWfm">Todos</span> <span>▼</span>
                                 </button>
                                 <div id="dropdownPerfilWfm" class="dropdown-filtro-menu">
-                                    <input type="text" placeholder="Buscar perfil..." onkeyup="filtrarListaCheck('PerfilWfm', this.value)" style="width: 100%; padding: 4px 6px; font-size: 0.75rem; border: 1px solid #cbd5e0; border-radius: 4px; margin-bottom: 6px; box-sizing: border-box; outline: none;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.72rem; font-weight: bold;">
-                                        <span style="color: #2563eb; cursor: pointer;" onclick="marcarTodosDropdown('PerfilWfm', true)">Seleccionar todo</span>
-                                        <span style="color: #dc2626; cursor: pointer;" onclick="marcarTodosDropdown('PerfilWfm', false)">Limpiar</span>
+                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('PerfilWfm', this.value)">
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('PerfilWfm', false)">❌ Borrar filtro</span>
+                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
+                                            <input type="checkbox" id="chkTodoPerfilWfm" onchange="seleccionarTodoGeneral('PerfilWfm', this.checked)" style="cursor: pointer;" checked>
+                                            (Seleccionar todo)
+                                        </label>
+                                        <div id="listaCheckPerfilWfm" style="display: flex; flex-direction: column; gap: 4px;"></div>
                                     </div>
-                                    <div id="listaCheckPerfilWfm" style="max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -197,14 +220,18 @@
                             <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
                             <div class="dropdown-filtro-container">
                                 <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownAprobacion', event)">
-                                    <span id="lblAprobacion">Seleccionados (...)</span> <span>▼</span>
+                                    <span id="lblAprobacion">Todos</span> <span>▼</span>
                                 </button>
                                 <div id="dropdownAprobacion" class="dropdown-filtro-menu">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.72rem; font-weight: bold;">
-                                        <span style="color: #2563eb; cursor: pointer;" onclick="marcarTodosDropdown('Aprobacion', true)">Seleccionar todo</span>
-                                        <span style="color: #dc2626; cursor: pointer;" onclick="marcarTodosDropdown('Aprobacion', false)">Limpiar</span>
+                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Aprobacion', this.value)">
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', false)">❌ Borrar filtro</span>
+                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
+                                            <input type="checkbox" id="chkTodoAprobacion" onchange="seleccionarTodoGeneral('Aprobacion', this.checked)" style="cursor: pointer;" checked>
+                                            (Seleccionar todo)
+                                        </label>
+                                        <div id="listaCheckAprobacion" style="display: flex; flex-direction: column; gap: 4px;"></div>
                                     </div>
-                                    <div id="listaCheckAprobacion" style="max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +241,6 @@
             </nav>
         </div>
 
-        <!-- Botón de Herramientas Avanzadas en el Sidebar -->
         <div style="border-top: 1px solid #e2e8f0; padding: 10px 12px; width: 100%; box-sizing: border-box;">
             <button type="button" id="btnAbrirConfig" onclick="abrirModalPassword()" style="width: 100%; background: #4a5568; color: white; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 ⚙️ Herramientas Avanzadas
@@ -224,7 +250,6 @@
 
     <main class="main-content">
         <div class="fact-container">
-            <!-- Hero Personalizado -->
             <header class="hero" style="display: flex; justify-content: space-between; align-items: center; padding: 22px 30px; margin-bottom: 0; border-radius: 18px;">
                 <div class="hero-content">
                     <div class="hero-badge"><span></span> FINANCIERO</div>
@@ -233,7 +258,6 @@
                 </div>
             </header>
 
-            <!-- 6 Tarjetas KPI Superiores -->
             <div class="fact-kpi-grid" style="grid-template-columns: repeat(6, 1fr);">
                 <!-- 1. Meta -->
                 <div class="fact-kpi-card">
@@ -320,7 +344,6 @@
                 <div class="fact-kpi-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 10px; box-sizing: border-box; gap: 10px;">
                     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-left: -12px;">
                         <div class="fact-kpi-icon-container" style="background: #16a34a; min-width: 36px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 5px rgba(22, 163, 74, 0.25);">
-                            <!-- Escudo con Check (Aprobado) -->
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
                         </div>
                         <div style="font-size: 0.72rem; color: #1e293b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">% Aprobación</div>
@@ -331,9 +354,7 @@
                 </div>
             </div>
 
-            <!-- Fila Superior: 3 Columnas Proporcionales -->
             <div class="fact-top-row">
-                <!-- Columna 1: Tendencia de Facturación -->
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
@@ -343,17 +364,13 @@
                     </div>
                 </div>
 
-                <!-- Columna 2: Estado Regional -->
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                         <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer">
-                        <!-- Dinámico -->
-                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer"></div>
                 </div>
 
-                <!-- Columna 3: Tarjeta Avatar con Dominic -->
                 <div class="fact-banner-avatar" style="position: relative; padding: 12px;">
                     <div style="width: 100px; height: 100px; min-width: 100px; display: flex; align-items: center; justify-content: center;">
                         <img src="../assets/assistant_casco.png" alt="Assistant Casco" class="avatar-animado" style="width: 100%; height: 100%; object-fit: contain;">
@@ -365,7 +382,6 @@
                 </div>
             </div>
 
-            <!-- Grilla Principal Inferior: Detalle por Técnico -->
             <div class="fact-main-grid" style="display: block; margin-top: 16px;">
                 <div class="fact-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -389,9 +405,7 @@
                                     <th style="text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody">
-                                <!-- Dinámico por JS -->
-                            </tbody>
+                            <tbody id="tableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -400,7 +414,7 @@
     </main>
 </div>
 
-<!-- Modal 1: Contraseña Herramientas Avanzadas -->
+<!-- Modales -->
 <div id="modalPassword" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -408,9 +422,9 @@
             <button type="button" onclick="cerrarModalPassword()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
         </div>
         <div class="modal-body">
-            <p style="margin: 0; font-size: 0.85rem; color: #475569;">Ingresa la contraseña de administrador para acceder a las herramientas avanzadas:</p>
+            <p style="margin: 0; font-size: 0.85rem; color: #475569;">Ingresa la contraseña de administrador:</p>
             <input type="password" id="inputPasswordAdmin" placeholder="Contraseña..." style="padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.9rem; outline: none; width: 100%; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') verificarPassword();">
-            <div id="errorPasswordMsg" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;">Contraseña incorrecta. Intenta nuevamente.</div>
+            <div id="errorPasswordMsg" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;">Contraseña incorrecta.</div>
         </div>
         <div class="modal-footer">
             <button type="button" onclick="cerrarModalPassword()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button>
@@ -419,7 +433,6 @@
     </div>
 </div>
 
-<!-- Modal 2: Menú de Herramientas Avanzadas -->
 <div id="modalHerramientas" class="modal-overlay">
     <div class="modal-container" style="max-width: 550px;">
         <div class="modal-header">
@@ -427,28 +440,23 @@
             <button type="button" onclick="cerrarModalHerramientas()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <div style="font-weight: 800; color: #0f172a; font-size: 0.95rem;">📊 Cargue base facturación (Excel)</div>
-                    <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Sube tu archivo .xlsx para procesar e insertar en Cloudflare D1.</div>
+                    <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Sube tu archivo .xlsx para procesar en D1.</div>
                 </div>
                 <label style="background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: inline-block;">
                     Seleccionar Excel
                     <input type="file" id="excelFileExcel" accept=".xlsx, .xls" style="display: none;" onchange="procesarYSubirExcel(event)">
                 </label>
             </div>
-
             <div style="background: #fff5f5; border: 1px solid #feb2b2; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <div style="font-weight: 800; color: #c53030; font-size: 0.95rem;">🗑️ Vaciar Base de Datos (D1)</div>
-                    <div style="color: #742a2a; font-size: 0.8rem; margin-top: 2px;">Elimina todos los registros sin borrar la estructura de la tabla.</div>
+                    <div style="color: #742a2a; font-size: 0.8rem; margin-top: 2px;">Elimina todos los registros.</div>
                 </div>
-                <button type="button" onclick="confirmarBorrarBaseD1()" style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">
-                    Borrar Datos
-                </button>
+                <button type="button" onclick="confirmarBorrarBaseD1()" style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">Borrar Datos</button>
             </div>
-
         </div>
         <div class="modal-footer">
             <button type="button" onclick="cerrarModalHerramientas()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
@@ -456,12 +464,11 @@
     </div>
 </div>
 
-<!-- Modal 3: Cargando / Barra de Avance con bloqueo de pantalla -->
 <div id="modalCargandoExcel" class="modal-overlay" style="background: rgba(15, 23, 42, 0.85);">
     <div class="modal-container" style="max-width: 420px; text-align: center; padding: 10px;">
         <div class="modal-body" style="align-items: center; gap: 18px; padding: 30px;">
-            <div id="spinnerCarga" style="width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <h3 id="txtEstadoCarga" style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 800;">Procesando archivo Excel...</h3>
+            <div style="width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <h3 id="txtEstadoCarga" style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 800;">Procesando archivo...</h3>
             <div style="width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div id="barraProgreso" style="width: 0%; height: 100%; background: #2563eb; transition: width 0.3s ease;"></div>
             </div>
@@ -470,108 +477,74 @@
     </div>
 </div>
 
-<!-- Modal Amplio de Detalle de Casos -->
 <div id="modalDetalleTecnico" class="modal-overlay">
     <div class="modal-container" style="max-width: 650px;">
         <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                📋 Resumen detallado del técnico
-            </h3>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">📋 Resumen detallado del técnico</h3>
             <button type="button" onclick="cerrarModalDetalle()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
         </div>
-        <div class="modal-body" id="modalBodyContent">
-            <!-- Dinámico -->
-        </div>
+        <div class="modal-body" id="modalBodyContent"></div>
         <div class="modal-footer">
-            <button type="button" onclick="cerrarModalDetalle()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Cerrar</button>
+            <button type="button" onclick="cerrarModalDetalle()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
         </div>
     </div>
 </div>
 
-<!-- Modal de Notificaciones -->
 <div id="modalNotificaciones" class="modal-overlay">
     <div class="modal-container" style="max-width: 550px;">
         <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                🔔 Historial de Incrementos y Cambios
-            </h3>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">🔔 Historial de Notificaciones</h3>
             <button type="button" onclick="cerrarModalNotificaciones()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
         </div>
-        <div class="modal-body" id="modalBodyNotificaciones" style="max-height: 350px; overflow-y: auto; gap: 10px;">
-            <div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay nuevas notificaciones registradas.</div>
+        <div class="modal-body" id="modalBodyNotificaciones" style="max-height: 350px; overflow-y: auto;">
+            <div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay notificaciones.</div>
         </div>
         <div class="modal-footer">
-            <button type="button" onclick="cerrarModalNotificaciones()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Cerrar</button>
+            <button type="button" onclick="cerrarModalNotificaciones()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
         </div>
     </div>
 </div>
 
-<!-- Ventana Modal En Trámite -->
 <div id="modalEnTramiteDetalle" class="modal-overlay">
     <div class="modal-container" style="max-width: 850px !important; width: 90% !important; height: 82vh; display: flex; flex-direction: column;">
         <div class="modal-header" style="flex-shrink: 0;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                📊 Detalle de Casos en Trámite
-            </h3>
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">📊 Detalle de Casos en Trámite</h3>
             <button type="button" onclick="cerrarModalEnTramite()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
         </div>
-        
         <div style="flex-shrink: 0; background: #f8fafc; border-bottom: 2px solid #e2e8f0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <thead id="headTablaDinamicaTramite"></thead>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><thead id="headTablaDinamicaTramite"></thead></table>
         </div>
-
         <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 0 14px; background: #fff;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <tbody id="tableBodyEnTramite"></tbody>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tbody id="tableBodyEnTramite"></tbody></table>
         </div>
-
         <div style="flex-shrink: 0; background: #f1f5f9; border-top: 2px solid #cbd5e0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <tfoot id="footerTablaDinamicaTramite"></tfoot>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tfoot id="footerTablaDinamicaTramite"></tfoot></table>
         </div>
-
         <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <span id="txtTotalEnTramiteModal" style="font-size: 0.8rem; color: #64748b; font-weight: bold;">Total general: $ 0</span>
-            <button type="button" onclick="cerrarModalEnTramite()" style="background: #2563eb; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">Cerrar</button>
+            <button type="button" onclick="cerrarModalEnTramite()" style="background: #2563eb; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
         </div>
     </div>
 </div>
 
-<!-- Ventana Modal Rechazados -->
 <div id="modalRechazadosDetalle" class="modal-overlay">
     <div class="modal-container" style="max-width: 850px !important; width: 90% !important; height: 82vh; display: flex; flex-direction: column;">
         <div class="modal-header" style="flex-shrink: 0;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                ❌ Detalle de causas de rechazo
-            </h3>
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">❌ Detalle de causas de rechazo</h3>
             <button type="button" onclick="cerrarModalRechazados()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
         </div>
-        
         <div style="flex-shrink: 0; background: #f8fafc; border-bottom: 2px solid #e2e8f0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <thead id="headTablaDinamicaRechazados"></thead>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><thead id="headTablaDinamicaRechazados"></thead></table>
         </div>
-
         <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 0 14px; background: #fff;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <tbody id="tableBodyRechazados"></tbody>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tbody id="tableBodyRechazados"></tbody></table>
         </div>
-
         <div style="flex-shrink: 0; background: #f1f5f9; border-top: 2px solid #cbd5e0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;">
-                <tfoot id="footerTablaDinamicaRechazados"></tfoot>
-            </table>
+            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tfoot id="footerTablaDinamicaRechazados"></tfoot></table>
         </div>
-
         <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <span id="txtTotalRechazadosModal" style="font-size: 0.8rem; color: #64748b; font-weight: bold;">Total general: $ 0</span>
-            <button type="button" onclick="cerrarModalRechazados()" style="background: #dc2626; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">Cerrar</button>
+            <button type="button" onclick="cerrarModalRechazados()" style="background: #dc2626; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
         </div>
     </div>
 </div>
@@ -592,21 +565,21 @@
         }
     }
 
-    // Funciones globales para controlar los menús desplegables tipo Excel (Dropdowns flotantes)
+    // Funciones para controlar los menús flotantes estilo Excel
     function toggleDropdownFiltro(dropdownId, event) {
         event.stopPropagation();
         const menu = document.getElementById(dropdownId);
         const estaActivo = menu.classList.contains('activo');
         
-        // Cerrar todos los demás dropdowns abiertos
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
         
         if (!estaActivo) {
             menu.classList.add('activo');
+            const input = menu.querySelector('input[type="text"]');
+            if (input) input.focus();
         }
     }
 
-    // Cerrar dropdowns al hacer clic fuera
     window.addEventListener('click', function() {
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
     });
