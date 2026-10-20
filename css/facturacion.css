@@ -17,7 +17,7 @@ html, body {
     position: relative !important;
 }
 
-/* Permitir que los menús flotantes sobresalgan del sidebar sin cortarse */
+/* Sidebar fijo que cubre todo el alto, sin scroll horizontal */
 aside.sidebar {
     position: fixed !important;
     top: 0 !important;
@@ -33,7 +33,7 @@ aside.sidebar {
     background: rgba(255, 255, 255, 0.96) !important;
     border-right: 1px solid #e2e8f0 !important;
     overflow-y: auto !important;
-    overflow-x: visible !important; /* CAMBIADO de hidden a visible para dejar salir el menú */
+    overflow-x: hidden !important;
 }
 
 .sidebar-nav {
@@ -250,10 +250,11 @@ table.fact-table tr:hover td { background: #f8fafc; }
 }
 .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
 
-/* Contenedor relativo para que el menú flote justo al lado */
+/* --- Menús desplegables tipo Excel (Se expanden hacia abajo dentro del sidebar sin scroll horizontal) --- */
 .dropdown-filtro-container {
     position: relative !important;
     width: 100% !important;
+    margin-bottom: 4px !important;
 }
 
 .dropdown-filtro-btn {
@@ -270,41 +271,39 @@ table.fact-table tr:hover td { background: #f8fafc; }
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
+    box-sizing: border-box !important;
 }
 
 .dropdown-filtro-btn:hover {
     border-color: #2563eb !important;
 }
 
-/* Menú flotante absoluto alineado perfectamente al sidebar */
 .dropdown-filtro-menu {
     display: none;
-    position: absolute !important;
-    left: 100% !important; /* Se coloca exactamente a la derecha del botón del sidebar */
-    top: 0 !important;
-    width: 240px !important;
-    background: #ffffff !important;
+    width: 100% !important;
+    background: #f8fafc !important;
     border: 1px solid #cbd5e0 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
-    z-index: 999999 !important;
-    padding: 12px !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    margin-top: 4px !important;
     box-sizing: border-box !important;
     font-family: inherit !important;
 }
+
 .dropdown-filtro-menu.activo {
     display: block !important;
 }
 
 .excel-input-buscar {
     width: 100% !important;
-    padding: 7px 10px !important;
+    padding: 6px 8px !important;
     border: 1px solid #cbd5e0 !important;
-    border-radius: 6px !important;
-    font-size: 0.8rem !important;
+    border-radius: 4px !important;
+    font-size: 0.78rem !important;
     outline: none !important;
     box-sizing: border-box !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
 }
 
 .excel-input-buscar:focus {
@@ -313,12 +312,12 @@ table.fact-table tr:hover td { background: #f8fafc; }
 
 .excel-borrar-filtro {
     color: #dc2626 !important;
-    font-size: 0.8rem !important;
+    font-size: 0.78rem !important;
     font-weight: 700 !important;
     cursor: pointer !important;
     display: block !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 6px !important;
     border-bottom: 1px solid #e2e8f0 !important;
 }
 
