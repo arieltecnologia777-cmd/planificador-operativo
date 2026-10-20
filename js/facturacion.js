@@ -120,6 +120,7 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
             cb.checked = marcar;
         }
     });
+    // Aplica los filtros normalmente para que actúe como selección rápida en cascada
     aplicarFiltrosGlobales();
 }
 
@@ -127,18 +128,15 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
     
-    // Si la acción es "marcar todo" (true), volvemos a poblar el dropdown completo con los datos originales
-    if (marcar) {
-        if (nombreFiltro === 'Region') poblarSelectsFiltros(registrosCrudos);
-        // Si tienes más filtros, se restablecen con la cascada general
-    }
-    
+    // Desmarca únicamente los checkboxes de esta cajita específica sin afectar el resto de filtros
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
-        cb.checked = marcar;
-        cb.parentElement.style.display = 'flex'; // Muestra todos los elementos nuevamente
+        if (cb.parentElement.style.display !== 'none') {
+            cb.checked = marcar;
+        }
     });
     
+    // Actualiza la vista aplicando los cambios globales
     aplicarFiltrosGlobales();
 }
 
