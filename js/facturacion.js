@@ -127,6 +127,8 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
+    // Si están borrando el filtro de esta cajita, extraemos TODOS los valores posibles 
+    // directamente de los registros originales sin restricciones en cascada
     const setValores = new Set();
     registrosCrudos.forEach(r => {
         let val = "";
@@ -154,6 +156,9 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     }
 
     actualizarLabelBotonFiltro(nombreFiltro);
+    
+    // Si se están marcando todos (borrar filtro), limpiamos también la restricción superior opuesta 
+    // para que la cascada no vuelva a ocultarlos inmediatamente en el próximo ciclo
     aplicarFiltrosGlobales();
 }
 
