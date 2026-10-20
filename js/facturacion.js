@@ -514,23 +514,36 @@ function renderizarEstadoRegional(rows) {
     container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
 }
 
-// Función global para alternar la expansión tipo acordeón de IDs (+ / -)
-function toggleAcordeonCelda(idUnico) {
-    const el = document.getElementById(idUnico);
-    const btn = document.getElementById('btn_' + idUnico);
-    if (el) {
-        if (el.style.display === 'none' || !el.style.display) {
-            el.style.display = 'block';
-            if (btn) btn.innerText = '[-] Ocultar IDs';
-        } else {
-            el.style.display = 'none';
-            if (btn) btn.innerText = '[+] Ver IDs';
-        }
+// Función global que abre un mini-submodal limpio flotante al hacer clic en un contador de IDs
+function abrirMiniSubmodalIDs(tituloInfo, arrIds) {
+    let subModal = document.getElementById('miniSubModalIDs');
+    if (!subModal) {
+        subModal = document.createElement('div');
+        subModal.id = 'miniSubModalIDs';
+        subModal.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:inherit;";
+        document.body.appendChild(subModal);
     }
+
+    subModal.innerHTML = `
+        <div style="background:white; color:#333; padding:22px; border-radius:12px; width:450px; max-height:75vh; overflow-y:auto; box-shadow:0 20px 35px rgba(0,0,0,0.3);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:8px;">
+                <h3 style="margin:0; color:#1e3a8a; font-size:1rem; font-weight:900;">📋 Listado de IDs</h3>
+                <button type="button" onclick="document.getElementById('miniSubModalIDs').style.display='none'" style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748b; font-weight:bold;">&times;</button>
+            </div>
+            <div style="font-size:0.85rem; color:#475569; font-weight:700; margin-bottom:10px;">${tituloInfo} (${arrIds.length} IDs en total)</div>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; max-height:280px; overflow-y:auto; padding:4px;">
+                ${arrIds.map(id => `<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:6px; text-align:center; font-family:monospace; font-weight:800; font-size:0.82rem; color:#0f172a;">${id}</div>`).join('')}
+            </div>
+            <div style="margin-top:18px; text-align:right;">
+                <button type="button" onclick="document.getElementById('miniSubModalIDs').style.display='none'" style="background:#2563eb; color:white; border:none; padding:6px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.85rem;">Cerrar</button>
+            </div>
+        </div>
+    `;
+    subModal.style.display = 'flex';
 }
 
 // ==========================================
-// MODAL EN TRÁMITE (CON ACORDEÓN TIPO EXCEL + / -)
+// MODAL EN TRÁMITE (TABLA LIMPIA Y CLICABLE PARA IDs)
 // ==========================================
 function abrirModalEnTramite() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -650,7 +663,6 @@ function abrirModalEnTramite() {
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
-    let contadorCeldaId = 0;
 
     for (const [aprobVal, montosDeps] of Object.entries(estadosFiltrados)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${aprobVal}</span></td>`;
@@ -666,50 +678,30 @@ function abrirModalEnTramite() {
                 const textoCelda = monto > 0 ? formatMoney(monto) : '-';
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
             } else {
-                contadorCeldaId++;
                 const arrIds = valDep || [];
                 arrIds.forEach(id => idsFilaSet.add(id));
                 
                 let idsHtml = '-';
                 if (arrIds.length > 0) {
-                    const uniqueKey = `tramite_${contadorCeldaId}`;
-                    idsHtml = `
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-weight: 800; color: #0369a1;">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''}</span>
-                                <button type="button" id="btn_${uniqueKey}" onclick="toggleAcordeonCelda('${uniqueKey}')" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">[+] Ver IDs</button>
-                            </div>
-                            <div id="${uniqueKey}" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-top: 4px; max-height: 120px; overflow-y: auto; width: 100%; text-align: left;">
-                                ${arrIds.map(id => `<div style="font-size: 0.75rem; font-family: monospace; color: #0f172a; padding: 1px 0; border-bottom: 1px solid #f1f5f9;">• ID: ${id}</div>`).join('')}
-                            </div>
-                        </div>
-                    `;
+                    const safeTitle = `${aprobVal} - ${dep}`;
+                    const idsJsonStr = JSON.stringify(arrIds).replace(/"/g, '&quot;');
+                    idsHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitle}', ${idsJsonStr})" style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #bae6fd;" title="Clic para ver IDs">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''} 👁️</span>`;
                 }
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual}; vertical-align: top;">${idsHtml}</td>`;
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
             }
         });
 
         if (modoVisualizacionModal === 'COP') {
             bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
         } else {
-            contadorCeldaId++;
             const arrTotalFila = Array.from(idsFilaSet);
-            const uniqueKeyTotal = `tramite_tot_${contadorCeldaId}`;
             let idsTotalHtml = '-';
             if (arrTotalFila.length > 0) {
-                idsTotalHtml = `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 800; color: #1e40af;">${arrTotalFila.length} IDs</span>
-                            <button type="button" id="btn_${uniqueKeyTotal}" onclick="toggleAcordeonCelda('${uniqueKeyTotal}')" style="background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">[+] Ver IDs</button>
-                        </div>
-                        <div id="${uniqueKeyTotal}" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-top: 4px; max-height: 120px; overflow-y: auto; width: 100%; text-align: left;">
-                            ${arrTotalFila.map(id => `<div style="font-size: 0.75rem; font-family: monospace; color: #0f172a; padding: 1px 0; border-bottom: 1px solid #f1f5f9;">• ID: ${id}</div>`).join('')}
-                        </div>
-                    </div>
-                `;
+                const safeTitleTotal = `${aprobVal} - Total General`;
+                const idsTotalJsonStr = JSON.stringify(arrTotalFila).replace(/"/g, '&quot;');
+                idsTotalHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitleTotal}', ${idsTotalJsonStr})" style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #bfdbfe;" title="Clic para ver IDs">${arrTotalFila.length} IDs 👁️</span>`;
             }
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual}; vertical-align: top;">${idsTotalHtml}</td></tr>`;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
         }
     }
     tbody.innerHTML = bodyHtml;
@@ -776,7 +768,7 @@ function cerrarModalEnTramite() {
 }
 
 // ==========================================
-// MODAL RECHAZADOS (CON ACORDEÓN TIPO EXCEL + / -)
+// MODAL RECHAZADOS (TABLA LIMPIA Y CLICABLE PARA IDs)
 // ==========================================
 function abrirModalRechazados() {
     const fRegion = document.getElementById('filtroRegion')?.value || "TODOS";
@@ -895,7 +887,6 @@ function abrirModalRechazados() {
     thead.innerHTML = headHtml;
 
     let bodyHtml = '';
-    let contadorCeldaIdRech = 0;
 
     for (const [causaVal, montosDeps] of Object.entries(causasFiltradas)) {
         bodyHtml += `<tr><td style="padding: 9px 14px; text-align: center; font-weight: 700; color: #334155; width: ${anchoPorcentual};"><span style="background: #ffeeec; color: #dc2626; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;">${causaVal}</span></td>`;
@@ -911,50 +902,30 @@ function abrirModalRechazados() {
                 const textoCelda = monto > 0 ? formatMoney(monto) : '-';
                 bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${textoCelda}</td>`;
             } else {
-                contadorCeldaIdRech++;
                 const arrIds = valDep || [];
                 arrIds.forEach(id => idsFilaSet.add(id));
                 
                 let idsHtml = '-';
                 if (arrIds.length > 0) {
-                    const uniqueKey = `rech_${contadorCeldaIdRech}`;
-                    idsHtml = `
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-weight: 800; color: #b91c1c;">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''}</span>
-                                <button type="button" id="btn_${uniqueKey}" onclick="toggleAcordeonCelda('${uniqueKey}')" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">[+] Ver IDs</button>
-                            </div>
-                            <div id="${uniqueKey}" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-top: 4px; max-height: 120px; overflow-y: auto; width: 100%; text-align: left;">
-                                ${arrIds.map(id => `<div style="font-size: 0.75rem; font-family: monospace; color: #0f172a; padding: 1px 0; border-bottom: 1px solid #f1f5f9;">• ID: ${id}</div>`).join('')}
-                            </div>
-                        </div>
-                    `;
+                    const safeTitle = `${causaVal} - ${dep}`;
+                    const idsJsonStr = JSON.stringify(arrIds).replace(/"/g, '&quot;');
+                    idsHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitle}', ${idsJsonStr})" style="background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #fecaca;" title="Clic para ver IDs">${arrIds.length} ID${arrIds.length > 1 ? 's' : ''} 👁️</span>`;
                 }
-                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual}; vertical-align: top;">${idsHtml}</td>`;
+                bodyHtml += `<td style="padding: 9px 14px; text-align: center; color: #475569; font-weight: 600; width: ${anchoPorcentual};">${idsHtml}</td>`;
             }
         });
 
         if (modoVisualizacionModal === 'COP') {
             bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${formatMoney(totalFilaCOP)}</td></tr>`;
         } else {
-            contadorCeldaIdRech++;
             const arrTotalFila = Array.from(idsFilaSet);
-            const uniqueKeyTotal = `rech_tot_${contadorCeldaIdRech}`;
             let idsTotalHtml = '-';
             if (arrTotalFila.length > 0) {
-                idsTotalHtml = `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 800; color: #991b1b;">${arrTotalFila.length} IDs</span>
-                            <button type="button" id="btn_${uniqueKeyTotal}" onclick="toggleAcordeonCelda('${uniqueKeyTotal}')" style="background: #fecaca; color: #991b1b; border: 1px solid #fca5a5; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">[+] Ver IDs</button>
-                        </div>
-                        <div id="${uniqueKeyTotal}" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-top: 4px; max-height: 120px; overflow-y: auto; width: 100%; text-align: left;">
-                            ${arrTotalFila.map(id => `<div style="font-size: 0.75rem; font-family: monospace; color: #0f172a; padding: 1px 0; border-bottom: 1px solid #f1f5f9;">• ID: ${id}</div>`).join('')}
-                        </div>
-                    </div>
-                `;
+                const safeTitleTotal = `${causaVal} - Total General`;
+                const idsTotalJsonStr = JSON.stringify(arrTotalFila).replace(/"/g, '&quot;');
+                idsTotalHtml = `<span onclick="abrirMiniSubmodalIDs('${safeTitleTotal}', ${idsTotalJsonStr})" style="background: #fecaca; color: #991b1b; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: inline-block; border: 1px solid #fca5a5;" title="Clic para ver IDs">${arrTotalFila.length} IDs 👁️</span>`;
             }
-            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual}; vertical-align: top;">${idsTotalHtml}</td></tr>`;
+            bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; width: ${anchoPorcentual};">${idsTotalHtml}</td></tr>`;
         }
     }
     tbody.innerHTML = bodyHtml;
