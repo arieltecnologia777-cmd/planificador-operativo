@@ -124,7 +124,7 @@
                         </button>
                     </div>
 
-                    <!-- Acordeón principal de filtros -->
+                    <!-- Acordeón principal de filtros (Cerrado por defecto) -->
                     <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
                         <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
                         <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease; transform: rotate(0deg);">▼</span>
@@ -140,9 +140,9 @@
                                 </button>
                                 <div id="dropdownDepartamento" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
                                     <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Departamento', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', false)">❌ Borrar filtro</span>
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', true)">❌ Borrar filtro</span>
                                     <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
                                             <input type="checkbox" id="chkTodoDepartamento" onchange="seleccionarTodoGeneral('Departamento', this.checked)" style="cursor: pointer;" checked>
                                             (Seleccionar todo)
                                         </label>
@@ -161,9 +161,9 @@
                                 </button>
                                 <div id="dropdownMes" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
                                     <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Mes', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', false)">❌ Borrar filtro</span>
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', true)">❌ Borrar filtro</span>
                                     <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
                                             <input type="checkbox" id="chkTodoMes" onchange="seleccionarTodoGeneral('Mes', this.checked)" style="cursor: pointer;" checked>
                                             (Seleccionar todo)
                                         </label>
@@ -182,9 +182,9 @@
                                 </button>
                                 <div id="dropdownAprobacion" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
                                     <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Aprobacion', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', false)">❌ Borrar filtro</span>
+                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', true)">❌ Borrar filtro</span>
                                     <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
                                             <input type="checkbox" id="chkTodoAprobacion" onchange="seleccionarTodoGeneral('Aprobacion', this.checked)" style="cursor: pointer;" checked>
                                             (Seleccionar todo)
                                         </label>
@@ -523,11 +523,15 @@
         }
     }
 
+    // Despliegue limpio hacia abajo dentro del mismo sidebar
     function toggleDropdownFiltro(dropdownId, event) {
         event.stopPropagation();
         const menu = document.getElementById(dropdownId);
         const estaActivo = menu.classList.contains('activo');
+        
+        // Cerramos los demás menús para que no se encimen
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
+        
         if (!estaActivo) {
             menu.classList.add('activo');
             const input = menu.querySelector('input[type="text"]');
@@ -535,6 +539,7 @@
         }
     }
 
+    // Cierra el menú al hacer clic fuera del sidebar
     window.addEventListener('click', function() {
         document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
     });
