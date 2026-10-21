@@ -1530,7 +1530,6 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Aprobacion', setAprob, aprobSel);
 }
-
 function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
