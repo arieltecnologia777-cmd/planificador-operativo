@@ -584,9 +584,9 @@ function renderizarEstadoZona(rows, deptosSeleccionados = []) {
         }
     });
 
-    let html = `
+   let html = `
         <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: grid; grid-template-columns: 85px 55px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
+            <div style="display: grid; grid-template-columns: 95px 50px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
                 <div>Depto</div>
                 <div style="text-align: center;">Efectiv.</div>
                 <div style="text-align: right;">Total</div>
@@ -605,7 +605,7 @@ function renderizarEstadoZona(rows, deptosSeleccionados = []) {
         const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
-            <div style="display: grid; grid-template-columns: 85px 55px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
+            <div style="display: grid; grid-template-columns: 95px 50px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
                 <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
                     <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block; flex-shrink: 0;"></span>
                     <span style="font-weight: 700; color: #0f172a; font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${depto}">${depto}</span>
