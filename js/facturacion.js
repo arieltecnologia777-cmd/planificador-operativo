@@ -80,8 +80,8 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     let html = '';
     Array.from(setValues).sort().forEach(val => {
         html += `
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+            <label data-cascada="visible" style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="cambiarItemFiltro('${nombreFiltro}')" style="cursor: pointer;">
                 ${val}
             </label>
         `;
@@ -90,32 +90,60 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
-// Comportamiento optimizado de "(Seleccionar todo)" idéntico a Excel
+// Al tocar un ítem individual de la lista
+function cambiarItemFiltro(nombreFiltro) {
+    actualizarLabelBotonFiltro(nombreFiltro);
+    aplicarFiltrosGlobales();
+}
+
+// Al tocar "(Seleccionar todo)": marca o desmarca directamente sin ser bloqueado por la cascada
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
 
-    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => {
-        const labelItem = cb.closest('label');
-        if (!labelItem || labelItem.style.display !== 'none') {
-            cb.checked = marcar;
+    const dropdown = document.getElementById('dropdown' + nombreFiltro);
+    const textoBusqueda = dropdown?.querySelector('.excel-input-buscar')?.value.toLowerCase().trim() || '';
+
+    const labels = container.querySelectorAll('label');
+    labels.forEach(lbl => {
+        // Solo ignoramos los que están ocultos por la cascada de OTRO filtro
+        if (lbl.dataset.cascada === 'hidden') return;
+
+        // Si el usuario escribió algo en el buscador, solo afectamos los que coinciden con la búsqueda
+        if (textoBusqueda && !lbl.innerText.toLowerCase().includes(textoBusqueda)) return;
+
+        const cb = lbl.querySelector('input[type="checkbox"]');
+        if (cb) {
+            cb.checked = Boolean(marcar);
         }
     });
 
+    // Sincronizar el propio check de Seleccionar Todo
+    const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
+    if (chkTodo) chkTodo.checked = Boolean(marcar);
+
+    actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
 }
 
-// Botón "❌ Borrar filtro" interno de cada cajita (desmarca todo para permitir búsqueda individual)
-function marcarTodosDropdown(nombreFiltro, marcar) {
+// Botón "❌ Borrar filtro" interno de cada cajita: restaura todo a marcado
+function marcarTodosDropdown(nombreFiltro) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) chkTodo.checked = marcar;
+    if (chkTodo) chkTodo.checked = true;
+
+    const dropdown = document.getElementById('dropdown' + nombreFiltro);
+    if (dropdown) {
+        const inputBuscar = dropdown.querySelector('.excel-input-buscar');
+        if (inputBuscar) inputBuscar.value = '';
+    }
 
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (container) {
-        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            cb.checked = marcar;
+        container.querySelectorAll('label').forEach(lbl => {
+            lbl.dataset.cascada = 'visible';
+            lbl.style.display = 'flex';
+            const cb = lbl.querySelector('input[type="checkbox"]');
+            if (cb) cb.checked = true;
         });
     }
 
@@ -124,14 +152,29 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
 }
 
 function obtenerValoresSeleccionados(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return [];
+    const checkboxes = container.querySelectorAll(`input[name="filtro${nombreFiltro}"]:checked`);
+    return Array.from(checkboxes)
+        .filter(cb => {
+            const lbl = cb.closest('label');
+            return !lbl || lbl.dataset.cascada !== 'hidden';
+        })
+        .map(cb => cb.value);
 }
 
 function actualizarLabelBotonFiltro(nombreFiltro) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    const total = checkboxes.length;
-    const seleccionados = obtenerValoresSeleccionados(nombreFiltro);
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+
+    const todosCheckboxes = Array.from(container.querySelectorAll(`input[name="filtro${nombreFiltro}"]`));
+    const checkboxesDisponibles = todosCheckboxes.filter(cb => {
+        const lbl = cb.closest('label');
+        return !lbl || lbl.dataset.cascada !== 'hidden';
+    });
+
+    const total = checkboxesDisponibles.length;
+    const seleccionados = checkboxesDisponibles.filter(cb => cb.checked).map(cb => cb.value);
     
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) {
@@ -141,8 +184,10 @@ function actualizarLabelBotonFiltro(nombreFiltro) {
     const lbl = document.getElementById('lbl' + nombreFiltro);
     if (!lbl) return;
 
-    if (seleccionados.length === total || seleccionados.length === 0) {
+    if (total > 0 && seleccionados.length === total) {
         lbl.innerText = "Todos";
+    } else if (seleccionados.length === 0) {
+        lbl.innerText = "Ninguno";
     } else if (seleccionados.length === 1) {
         lbl.innerText = seleccionados[0];
     } else {
@@ -154,8 +199,12 @@ function filtrarListaCheck(nombreFiltro, texto) {
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
     const labels = container.querySelectorAll('label');
-    const query = texto.toLowerCase();
+    const query = texto.toLowerCase().trim();
     labels.forEach(lbl => {
+        if (lbl.dataset.cascada === 'hidden') {
+            lbl.style.display = 'none';
+            return;
+        }
         const txt = lbl.innerText.toLowerCase();
         lbl.style.display = txt.includes(query) ? 'flex' : 'none';
     });
@@ -163,6 +212,7 @@ function filtrarListaCheck(nombreFiltro, texto) {
 
 function resetFiltros() {
     if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
+    document.querySelectorAll('.excel-input-buscar').forEach(inp => inp.value = "");
     poblarSelectsFiltros(registrosCrudos);
     ['Departamento', 'Mes', 'Aprobacion'].forEach(nombre => {
         const chkTodo = document.getElementById('chkTodo' + nombre);
@@ -180,27 +230,23 @@ function aplicarFiltrosGlobales() {
         actualizarLabelBotonFiltro(nombre);
     });
 
-    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
-    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
-    const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
+    const depCheck = obtenerValoresSeleccionados('Departamento');
+    const mesCheck = obtenerValoresSeleccionados('Mes');
+    const aprobCheck = obtenerValoresSeleccionados('Aprobacion');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
-    const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
-    const aprobCheck = aprobSeleccionadas.length > 0 ? aprobSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroAprobacion"]')).map(cb => cb.value);
-
     const registrosParaMeta = registrosCrudos.filter(r => {
-        const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim();
+        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         return depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
     const filtradosCompletos = registrosCrudos.filter(r => {
-        const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim();
+        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
-        const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+        const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
         const tecnicoLower = perfil.toLowerCase();
 
         return depCheck.includes(depto) && 
@@ -629,16 +675,13 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
 }
 
 function abrirModalEnTramite() {
-    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
-    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
+    const depCheck = obtenerValoresSeleccionados('Departamento');
+    const mesCheck = obtenerValoresSeleccionados('Mes');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
-    const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
-
     const registrosEnTramite = registrosCrudos.filter(r => {
-        const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim();
+        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
@@ -737,16 +780,13 @@ function actualizarCabeceraModalTramite() {
 function cerrarModalEnTramite() { document.getElementById('modalEnTramiteDetalle').style.display = 'none'; }
 
 function abrirModalRechazados() {
-    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
-    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
+    const depCheck = obtenerValoresSeleccionados('Departamento');
+    const mesCheck = obtenerValoresSeleccionados('Mes');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
-    const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
-
     const registrosRechazados = registrosCrudos.filter(r => {
-        const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim();
+        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
@@ -1149,53 +1189,65 @@ function exportExcel() {
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
 
-// ----------------- CASCADA LIMPIA (DEPARTAMENTO, MES, APROBACIÓN) -----------------
+// 4. Cascada basada en visibilidad (CSS): si desmarcas todo en una caja, no bloquea las demás ni destruye el DOM
 function actualizarSelectsEnCascada() {
     const deptosSel = obtenerValoresSeleccionados('Departamento');
     const mesesSel = obtenerValoresSeleccionados('Mes');
     const aprobSel = obtenerValoresSeleccionados('Aprobacion');
 
+    const totalDeptos = document.querySelectorAll('input[name="filtroDepartamento"]').length;
+    const totalMeses = document.querySelectorAll('input[name="filtroMes"]').length;
+    const totalAprob = document.querySelectorAll('input[name="filtroAprobacion"]').length;
+
     const filtrarExcluyendo = (campoExcluir) => {
         return registrosCrudos.filter(r => {
-            const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
-            const mes = String(r.mes || r.MES || "").trim();
-            const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+            const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+            const mes = String(r.mes || r.MES || "").trim().toUpperCase();
+            const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
 
-            const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.includes(depto);
-            const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.includes(mes);
-            const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.includes(aprob);
+            // Si hay 0 seleccionados (porque acabas de desmarcar "Seleccionar todo" para buscar uno), 
+            // no ocultamos las opciones de las demás listas para no dejarte las cajas en blanco
+            const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.length === totalDeptos || deptosSel.includes(depto);
+            const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.length === totalMeses || mesesSel.includes(mes);
+            const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.length === totalAprob || aprobSel.includes(aprob);
 
             return matchDepto && matchMes && matchAprob;
         });
     };
 
-    const actualizarCajitaCascada = (nombreFiltro, rowsFiltradas, extractorFn) => {
+    const actualizarVisibilidadCajita = (nombreFiltro, rowsFiltradas, extractorFn) => {
         const container = document.getElementById('listaCheck' + nombreFiltro);
         if (!container) return;
 
-        const setValoresNuevos = new Set();
+        const valoresValidos = new Set();
         rowsFiltradas.forEach(r => {
             const val = extractorFn(r);
-            if (val) setValoresNuevos.add(String(val).trim().toUpperCase());
+            if (val) valoresValidos.add(String(val).trim().toUpperCase());
         });
 
-        const previamenteSeleccionados = obtenerValoresSeleccionados(nombreFiltro);
-        
-        let html = '';
-        Array.from(setValoresNuevos).sort().forEach(val => {
-            const estaMarcado = previamenteSeleccionados.length === 0 || previamenteSeleccionados.includes(val);
-            html += `
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${estaMarcado ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
-                    ${val}
-                </label>
-            `;
+        const dropdown = document.getElementById('dropdown' + nombreFiltro);
+        const textoBusqueda = dropdown?.querySelector('.excel-input-buscar')?.value.toLowerCase().trim() || '';
+
+        const labels = container.querySelectorAll('label');
+        labels.forEach(lbl => {
+            const cb = lbl.querySelector('input[type="checkbox"]');
+            if (cb) {
+                const valorCheckbox = cb.value.trim().toUpperCase();
+                if (valoresValidos.has(valorCheckbox)) {
+                    lbl.dataset.cascada = 'visible';
+                    const coincideTexto = !textoBusqueda || lbl.innerText.toLowerCase().includes(textoBusqueda);
+                    lbl.style.display = coincideTexto ? 'flex' : 'none';
+                } else {
+                    lbl.dataset.cascada = 'hidden';
+                    lbl.style.display = 'none';
+                }
+            }
         });
-        container.innerHTML = html;
+
         actualizarLabelBotonFiltro(nombreFiltro);
     };
 
-    actualizarCajitaCascada('Departamento', filtrarExcluyendo('Departamento'), r => r.departamento || r.DEPARTAMENTO || r.dep);
-    actualizarCajitaCascada('Mes', filtrarExcluyendo('Mes'), r => r.mes || r.MES);
-    actualizarCajitaCascada('Aprobacion', filtrarExcluyendo('Aprobacion'), r => r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL']);
+    actualizarVisibilidadCajita('Departamento', filtrarExcluyendo('Departamento'), r => r.departamento || r.DEPARTAMENTO || r.dep);
+    actualizarVisibilidadCajita('Mes', filtrarExcluyendo('Mes'), r => r.mes || r.MES);
+    actualizarVisibilidadCajita('Aprobacion', filtrarExcluyendo('Aprobacion'), r => r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL']);
 }
