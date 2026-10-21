@@ -90,14 +90,63 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero */
-.hero{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(110deg,#07163E 0%,#0C2A78 55%,#0F3C9E 100%);color:#fff;padding:30px 36px;min-height:180px;display:flex;align-items:center}
-.hero svg.art{position:absolute;right:0;top:0;height:100%;width:62%;opacity:.95;pointer-events:none}
-.hero .txt{position:relative;z-index:2;max-width:480px}
-.eyebrow{font-size:13px;font-weight:700;color:#86A9FF;letter-spacing:.08em}
-.hero h1{margin:8px 0 12px;font-size:38px;line-height:1.08;letter-spacing:-.025em;font-weight:800}
-.hero p{margin:0;font-size:15px;line-height:1.55;color:#D2DEFF}
-.mascot{position:absolute;right:34px;top:50%;transform:translateY(-50%);width:150px;z-index:2;filter:drop-shadow(0 14px 24px rgba(0,10,50,.5))}
+/* Hero sutil y de fondo integrado */
+.hero{
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #0a1736 0%, #10255a 100%);
+    color: #fff;
+    padding: 30px 36px;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 10px 25px -10px rgba(10, 23, 54, 0.3);
+}
+.hero svg.art{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 62%;
+    opacity: 0.4; /* Reducido para que no compita con el texto */
+    pointer-events: none;
+}
+.hero .txt{
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+}
+.eyebrow{
+    font-size: 13px;
+    font-weight: 700;
+    color: #93b5ff;
+    letter-spacing: .08em;
+}
+.hero h1{
+    margin: 8px 0 12px;
+    font-size: 38px;
+    line-height: 1.08;
+    letter-spacing: -.025em;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.hero p{
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #e0e8ff;
+}
+.mascot{
+    position: absolute;
+    right: 34px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 140px;
+    z-index: 2;
+    opacity: 0.95;
+    filter: drop-shadow(0 8px 16px rgba(0,10,50,0.3));
+}
 .hello{position:absolute;right:210px;top:50%;transform:translateY(-50%);z-index:2;text-align:right;display:none}
 
 /* Profile */
