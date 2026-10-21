@@ -90,18 +90,17 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero con fondo banner.jpg y capa oscura semitransparente */
+/* Hero con fondo banner.jpg y capa oscura semitransparente (altura compacta y elegante) */
 .hero{
     position: relative;
     overflow: hidden;
     border-radius: 22px;
-    background: linear-gradient(135deg, rgba(7, 22, 62, 0.85) 0%, rgba(12, 42, 120, 0.8) 100%), url('../assets/banner.jpg');
+    background: linear-gradient(135deg, rgba(7, 22, 62, 0.88) 0%, rgba(12, 42, 120, 0.82) 100%), url('../assets/banner.jpg');
     background-size: cover;
     background-position: center;
     color: #fff;
-    padding: 30px 36px;
-    min-height: 180px;
-    max-height: 210px;
+    padding: 24px 32px;
+    height: 145px;
     display: flex;
     align-items: center;
     box-shadow: 0 10px 25px -10px rgba(10, 23, 54, 0.3);
@@ -112,40 +111,38 @@ button{font:inherit;color:inherit;cursor:pointer}
     max-width: 480px;
 }
 .eyebrow{
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: #93b5ff;
     letter-spacing: .08em;
 }
 .hero h1{
-    margin: 8px 0 12px;
-    font-size: 38px;
-    line-height: 1.08;
-    letter-spacing: -.025em;
+    margin: 4px 0 8px;
+    font-size: 28px;
+    line-height: 1.12;
+    letter-spacing: -.02em;
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 .hero p{
     margin: 0;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 13.5px;
+    line-height: 1.45;
     color: #e0e8ff;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Restricción de tamaño perfecta para assistant_casco.png */
+/* Avatar compacto y perfectamente ajustado al hero */
 .mascot-img{
     position: absolute;
-    right: 40px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 110px;
-    max-height: 150px;
+    right: 36px;
+    bottom: 0;
+    width: 68px;
     height: auto;
     object-fit: contain;
     z-index: 2;
     opacity: 0.98;
-    filter: drop-shadow(0 8px 20px rgba(0,10,50,0.4));
+    filter: drop-shadow(0 6px 12px rgba(0,10,50,0.4));
 }
 
 /* Profile */
@@ -255,9 +252,9 @@ tbody tr:hover td{background:#F8FAFE}
   }
   
   .main{padding:14px; padding-top: 70px;}
-  .hero{padding:24px}
+  .hero{padding:20px; height: auto;}
   .mascot-img{display:none}
-  .hero h1{font-size:30px}
+  .hero h1{font-size:24px}
   .user span.n{display:none}
 }
 
