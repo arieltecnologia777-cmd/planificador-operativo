@@ -90,12 +90,11 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
-// Comportamiento de "Seleccionar todo" idéntico a Excel: marca/desmarca todos los visibles
+// Comportamiento optimizado de "(Seleccionar todo)" idéntico a Excel
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
 
-    // Selecciona únicamente los checkboxes visibles (por si hay un filtro de búsqueda escrito en la cajita)
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
         const labelItem = cb.closest('label');
@@ -106,15 +105,19 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
 
     aplicarFiltrosGlobales();
 }
-// Botón "❌ Borrar filtro" interno de cada cajita
+
+// Botón "❌ Borrar filtro" interno de cada cajita (desmarca todo para permitir búsqueda individual)
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    checkboxes.forEach(cb => {
-        cb.checked = marcar;
-    });
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            cb.checked = marcar;
+        });
+    }
 
     actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
@@ -815,7 +818,7 @@ function abrirModalRechazados() {
         });
 
         const subsetRowFila = registrosRechazados.filter(item => String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim() === causaVal);
-        const itemsDesgloseFila = subsetRowFil.map ? subsetRowFila.map(i => ({ id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A', depto: i.departamento || i.DEPARTAMENTO || 'GENERAL', causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA', monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0) })) : [];
+        const itemsDesgloseFila = subsetRowFila.map(i => ({ id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A', depto: i.departamento || i.DEPARTAMENTO || 'GENERAL', causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA', monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0) }));
         bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;')})">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
