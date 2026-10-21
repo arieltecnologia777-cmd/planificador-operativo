@@ -244,3 +244,20 @@ body.tech-body {
 .tech-back-link:hover {
     text-decoration: underline;
 }
+/* Estilos modernos adaptados al diseño principal de Dominion */
+.fact-kpi-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+    border-color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+    .fact-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .fact-top-row {
+        grid-template-columns: 1fr !important;
+    }
+    .fact-banner-avatar {
+        display: none !important;
+    }
+}
