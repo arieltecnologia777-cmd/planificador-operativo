@@ -113,25 +113,45 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
+
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+
     checkboxes.forEach(cb => {
-        if (cb.parentElement.style.display !== 'none') {
-            cb.checked = marcar;
-        }
+        cb.checked = marcar;
     });
+
+    actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
 }
 
+
 function marcarTodosDropdown(nombreFiltro, marcar) {
+    const menu = document.getElementById('dropdown' + nombreFiltro);
+
+    if (menu) {
+        const inputBuscar = menu.querySelector('.excel-input-buscar');
+        if (inputBuscar) {
+            inputBuscar.value = '';
+        }
+
+        const lista = document.getElementById('listaCheck' + nombreFiltro);
+        if (lista) {
+            lista.querySelectorAll('label').forEach(label => {
+                label.style.display = 'flex';
+            });
+        }
+    }
+
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
-    if (chkTodo) chkTodo.checked = marcar;
+    if (chkTodo) {
+        chkTodo.checked = marcar;
+    }
 
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+
     checkboxes.forEach(cb => {
-        if (cb.parentElement.style.display !== 'none') {
-            cb.checked = marcar;
-        }
+        cb.checked = marcar;
     });
 
     actualizarLabelBotonFiltro(nombreFiltro);
