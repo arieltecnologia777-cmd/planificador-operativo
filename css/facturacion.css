@@ -1,482 +1,332 @@
-@keyframes avatarFlotar {
-    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
-    50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
-}
-.avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; width: 100%; height: 100%; object-fit: contain; }
-
-/* Reset general y ancho completo */
-body, html {
-    width: 100% !important;
-    height: 100% !important;
+/* Permitir scroll natural y expansión completa de la pantalla */
+html, body {
+    zoom: 100% !important;
+    transform: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow-x: hidden;
-    background-color: #f4f6f9;
-    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh !important;
+    background: #f3f6fb !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    overflow-x: hidden !important;
 }
 
 .layout {
-    display: block !important;
+    display: flex !important;
     width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    min-height: 100vh !important;
+    position: relative !important;
 }
 
-.main-content {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 20px !important;
-    box-sizing: border-box !important;
-}
-
-.fact-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-}
-
-/* Sidebar con efecto Vidrio Traslúcido (Glassmorphism) real */
-.sidebar {
+/* Sidebar fijo que cubre todo el alto, sin scroll horizontal */
+aside.sidebar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 280px !important;
-    height: 100vh !important;
-    background: rgba(255, 255, 255, 0.65) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    z-index: 99999 !important;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100% !important;
+    min-height: 100vh !important;
+    width: 240px !important;
+    z-index: 1000 !important;
     display: flex !important;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    box-sizing: border-box;
-    margin: 0 !important;
-}
-.sidebar.activo {
-    transform: translateX(0) !important;
-}
-
-.sidebar-header-mobile {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    margin-bottom: 15px;
-}
-
-.sidebar-close-btn {
-    background: rgba(0,0,0,0.05);
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #334155;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-right: 1px solid #e2e8f0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 .sidebar-nav {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+}
+
+/* Contenido principal con scroll vertical completo */
+.main-content {
+    margin-left: 240px !important;
+    width: calc(100% - 240px) !important;
+    min-height: 100vh !important;
+    padding: 16px 24px 32px 24px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Contenedor principal de facturación */
+.fact-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.sidebar-nav a {
-    padding: 10px 12px;
-    border-radius: 8px;
-    color: #334155;
-    text-decoration: none;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sidebar-nav a.active {
-    background: #2563eb;
-    color: white;
-}
-
-.sidebar-footer {
-    border-top: 1px solid rgba(0,0,0,0.08);
-    padding-top: 12px;
-}
-
-.sidebar-back-btn {
-    width: 100%;
-    background: #0f172a;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-/* Botón Hamburguesa Flotante */
-#btnAbrirSidebar {
-    position: fixed !important;
-    top: 14px !important;
-    left: 14px !important;
-    z-index: 99998 !important;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    color: #0f172a;
-    border: 1px solid #cbd5e0;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Hero Banner */
-.hero {
-    position: relative;
-    background: url('../assets/hero_bg.png') center/cover no-repeat #1e3a8a;
-    padding: 28px 32px;
-    margin-bottom: 20px;
-    border-radius: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+    gap: 16px;
+    max-width: 1720px;
+    margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
+    flex: 1;
 }
 
-.hero-overlay {
-    position: absolute;
+/* Grilla de Tarjetas KPI superiores */
+.fact-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.fact-kpi-card {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 16px !important;
+    padding: 16px 18px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 132px !important;
+    box-sizing: border-box !important;
+}
+
+.fact-kpi-top {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.fact-kpi-icon-container {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 50% !important;
+    display: grid !important;
+    place-items: center !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12) !important;
+}
+
+/* Fila superior */
+.fact-top-row {
+    display: grid !important;
+    grid-template-columns: 1fr 340px 320px !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.fact-banner-avatar {
+    background: linear-gradient(135deg, rgba(30,64,175,0.88), rgba(59,130,246,0.85)), url('../assets/banner.jpg') center/cover !important;
+    border-radius: 18px !important;
+    padding: 16px !important;
+    color: #fff !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    height: 100% !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
+}
+
+.fact-panel {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 18px !important;
+    padding: 18px 20px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+/* Estado Regional */
+.reg-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.reg-row:last-child { border-bottom: none; padding-bottom: 0; }
+.reg-pill { padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
+.reg-pill-green { background: #e6f4ea; color: #137333; }
+.reg-pill-yellow { background: #fef7e0; color: #b06000; }
+.reg-pill-red { background: #fce8e6; color: #c5221f; }
+
+.table-wrapper-fact {
+    max-height: none !important;
+    overflow-y: visible !important;
+    border: 1px solid #edf1f5;
+    border-radius: 12px;
+}
+
+table.fact-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+table.fact-table th {
+    background: #f8fafc;
+    color: #475569;
+    padding: 11px 14px;
+    font-weight: 800;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table.fact-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+table.fact-table tr:hover td { background: #f8fafc; }
+
+/* Modales */
+.modal-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 58, 138, 0.7) 100%);
-    z-index: 1;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    color: white;
-    max-width: 600px;
-}
-
-.hero-badge {
-    background: #0ea5e9;
-    color: white;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    display: inline-block;
-    margin-bottom: 8px;
-}
-
-.hero h1 {
-    font-size: 1.65rem;
-    margin: 0 0 4px 0;
-    font-weight: 900;
-    color: #ffffff;
-}
-
-.hero p {
-    font-size: 0.88rem;
-    margin: 0;
-    color: rgba(255,255,255,0.9);
-}
-
-.hero-avatar-container {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.hero-avatar-text {
     background: rgba(15, 23, 42, 0.6);
-    padding: 10px 16px;
-    border-radius: 12px;
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.15);
-    text-align: right;
-}
-
-.hero-avatar-img-box {
-    width: 75px;
-    height: 75px;
-    display: flex;
-    align-items: center;
+    backdrop-filter: blur(4px);
+    display: none;
     justify-content: center;
-}
-
-/* Selector de Perfil */
-.selector-panel {
-    background: white;
-    padding: 16px 20px;
-    border-radius: 14px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    display: flex;
     align-items: center;
-    gap: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    z-index: 2000;
 }
-
-.selector-icon {
-    font-size: 1.1rem;
-    background: #eff6ff;
-    padding: 8px;
-    border-radius: 10px;
-}
-
-.selector-label {
-    font-size: 0.68rem;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 2px;
-}
-
-.selector-select {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 0.9rem;
-    font-weight: 900;
-    color: #0f172a;
-    outline: none;
-    cursor: pointer;
-}
-
-/* --- ESTILO EXACTO DE LAS 4 KPI CARDS Y SUS ICONOS 3D --- */
-.fact-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.fact-kpi-card-exact {
+.modal-container {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-    position: relative;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.fact-kpi-card-exact:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.06);
-}
-
-.kpi-card-meta {
-    background: linear-gradient(180deg, #ffffff 0%, rgba(239, 246, 255, 0.45) 100%);
-}
-
-.kpi-card-aprobado {
-    background: linear-gradient(180deg, #ffffff 0%, rgba(240, 253, 244, 0.5) 100%);
-}
-
-.kpi-card-rechazado {
-    background: linear-gradient(180deg, #ffffff 0%, rgba(254, 242, 242, 0.5) 100%);
-    border-color: #fecaca;
-    cursor: pointer;
-}
-
-.kpi-card-subsanado {
-    background: linear-gradient(180deg, #ffffff 0%, rgba(254, 243, 199, 0.35) 100%);
-}
-
-.kpi-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.kpi-title-label {
-    font-size: 0.72rem;
-    color: #64748b;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.kpi-main-value {
-    font-size: 1.35rem;
-    font-weight: 900;
-    color: #0f172a;
-    margin: 4px 0;
-    letter-spacing: -0.5px;
-}
-
-.kpi-footer-box {
-    margin-top: 12px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-    font-size: 0.72rem;
-    font-weight: 700;
-}
-
-/* Contenedores para las imágenes 3D de los iconos */
-.kpi-icon-container-3d {
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.kpi-img-3d {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.12));
-}
-
-/* Estado general del periodo */
-.period-panel {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px 24px;
-    margin-bottom: 20px;
-    width: 100%;
-    box-sizing: border-box;
-    background: white;
-    border-radius: 14px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
-
-.period-title {
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: #0f172a;
-    min-width: 190px;
-}
-
-.period-bar-bg {
-    flex: 1;
-    background: #e2e8f0;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.period-bar-fill {
-    background: #16a34a;
-    width: 0%;
-    height: 100%;
-    transition: width 0.4s ease;
-}
-
-.period-badge-meta {
-    background: #dcfce7;
-    color: #16a34a;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 900;
-    white-space: nowrap;
-}
-
-/* Tabla */
-.table-header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-.table-title {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #0f172a;
-}
-
-.table-btn-all {
+.modal-header {
+    padding: 18px 24px;
     background: #f8fafc;
-    border: 1px solid #cbd5e0;
-    color: #334155;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-weight: bold;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.modal-footer { padding: 16px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
+
+/* Acordeón Sidebar */
+.nav-accordion-group { display: flex; flex-direction: column; width: 100%; }
+.nav-accordion-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
-    font-size: 0.82rem;
+    text-align: left;
+    box-sizing: border-box;
+}
+.nav-accordion-toggle:hover { background: #f8fafc; color: #2563eb; }
+.nav-submenu { display: none; flex-direction: column; background: #f8fafc; padding-left: 12px; box-sizing: border-box; }
+.nav-submenu a { padding: 8px 16px; font-size: 0.85rem; }
+
+#tendenciaChart { cursor: pointer !important; }
+
+@keyframes avatarFlotar {
+    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+    50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
+}
+.avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
+
+/* --- Menús desplegables tipo Excel (Se expanden hacia abajo dentro del sidebar sin scroll horizontal) --- */
+.dropdown-filtro-container {
+    position: relative !important;
+    width: 100% !important;
+    margin-bottom: 4px !important;
 }
 
-/* Responsividad Adaptativa */
-@media (max-width: 1100px) {
-    .fact-kpi-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-    .hero {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 16px;
-    }
-    .period-panel {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-    .period-title {
-        min-width: auto;
-    }
+.dropdown-filtro-btn {
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 6px !important;
+    padding: 7px 10px !important;
+    text-align: left !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
 }
 
-@media (max-width: 640px) {
-    .fact-kpi-grid {
-        grid-template-columns: 1fr !important;
-    }
-    .main-content {
-        padding: 10px !important;
-    }
+.dropdown-filtro-btn:hover {
+    border-color: #2563eb !important;
 }
-/* Contenedor específico para recortar la imagen de las monedas desde el archivo existente */
-.kpi-icon-monedas-sprite {
-    width: 44px;
-    height: 44px;
-    background-image: url('../assets/icon_aprobado_3d.png');
-    background-size: 240px auto; /* Escala la imagen global para ubicar el sector de las monedas */
-    background-position: -95px -5px; /* Posición exacta donde están las monedas en tu imagen subida */
-    background-repeat: no-repeat;
-    display: inline-block;
-    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.12));
+
+.dropdown-filtro-menu {
+    display: none;
+    width: 100% !important;
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    margin-top: 4px !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+}
+
+.dropdown-filtro-menu.activo {
+    display: block !important;
+}
+
+.excel-input-buscar {
+    width: 100% !important;
+    padding: 6px 8px !important;
+    border: 1px solid #cbd5e0 !important;
+    border-radius: 4px !important;
+    font-size: 0.78rem !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    margin-bottom: 6px !important;
+}
+
+.excel-input-buscar:focus {
+    border-color: #2563eb !important;
+}
+
+.excel-borrar-filtro {
+    color: #dc2626 !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    display: block !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.excel-borrar-filtro:hover {
+    text-decoration: underline !important;
+}
+.sub-mes-filtrado {
+    font-size: 0.8rem !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    margin-top: 4px !important;
 }
