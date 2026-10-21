@@ -80,19 +80,15 @@
                 </div>
             </div>
 
-            <!-- Grid de las 4 KPIs Exactas (Gobernadas por el CSS) -->
+            <!-- Grid de las 4 KPIs con Iconos 3D de Assets -->
             <div class="fact-kpi-grid">
                 
                 <!-- 1. Meta Asignada -->
                 <div class="fact-kpi-card-exact kpi-card-meta">
                     <div>
                         <div class="kpi-top-row">
-                            <div style="width: 36px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="34" height="30" viewBox="0 0 36 32" fill="none">
-                                    <circle cx="16" cy="16" r="13" stroke="#cbd5e0" stroke-width="3.5"/>
-                                    <path d="M16 3C23.1797 3 29 8.8203 29 16" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round"/>
-                                    <path d="M16 9C19.866 9 23 12.134 23 16" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
-                                </svg>
+                            <div class="kpi-icon-container-3d">
+                                <img src="../assets/icon_meta_3d.png" alt="Meta Asignada" class="kpi-img-3d">
                             </div>
                             <span style="color: #94a3b8; font-size: 1.1rem; font-weight: bold;">›</span>
                         </div>
@@ -108,13 +104,8 @@
                 <div class="fact-kpi-card-exact kpi-card-aprobado">
                     <div>
                         <div class="kpi-top-row">
-                            <div style="width: 36px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="36" height="30" viewBox="0 0 38 32" fill="none">
-                                    <ellipse cx="15" cy="10" rx="11" ry="5" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
-                                    <path d="M4 10v6c0 2.76 4.93 5 11 5s11-2.24 11-5v-6" stroke="#d97706" stroke-width="1.5"/>
-                                    <ellipse cx="15" cy="18" rx="11" ry="5" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
-                                    <path d="M4 18v6c0 2.76 4.93 5 11 5s11-2.24 11-5v-6" stroke="#d97706" stroke-width="1.5"/>
-                                </svg>
+                            <div class="kpi-icon-container-3d">
+                                <img src="../assets/icon_aprobado_3d.png" alt="Monto Aprobado" class="kpi-img-3d">
                             </div>
                             <span style="color: #94a3b8; font-size: 1.1rem; font-weight: bold;">›</span>
                         </div>
@@ -131,14 +122,8 @@
                     <div>
                         <div class="kpi-top-row">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <div style="width: 34px; height: 30px; display: flex; align-items: center; justify-content: center;">
-                                    <svg width="32" height="30" viewBox="0 0 34 32" fill="none">
-                                        <rect x="4" y="2" width="22" height="28" rx="3" fill="#f8fafc" stroke="#cbd5e0" stroke-width="2"/>
-                                        <line x1="9" y1="9" x2="21" y2="9" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
-                                        <rect x="18" y="18" width="12" height="10" rx="2" fill="#dc2626"/>
-                                        <circle cx="24" cy="23" r="3" fill="white"/>
-                                        <path d="M22.5 23L25.5 23" stroke="#dc2626" stroke-width="1.5"/>
-                                    </svg>
+                                <div class="kpi-icon-container-3d">
+                                    <img src="../assets/icon_rechazado_3d.png" alt="Rechazado" class="kpi-img-3d">
                                 </div>
                                 <span style="background: #fee2e2; color: #dc2626; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold;">👁</span>
                             </div>
@@ -156,10 +141,8 @@
                 <div class="fact-kpi-card-exact kpi-card-subsanado">
                     <div>
                         <div class="kpi-top-row">
-                            <div style="width: 36px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="34" height="30" viewBox="0 0 36 32" fill="none">
-                                    <path d="M6 22C6 14 12 8 22 8M22 8L16 2M22 8L16 14" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
+                            <div class="kpi-icon-container-3d">
+                                <img src="../assets/icon_subsanado_3d.png" alt="Monto Subsanado" class="kpi-img-3d">
                             </div>
                             <span style="color: #94a3b8; font-size: 1.1rem; font-weight: bold;">›</span>
                         </div>
@@ -218,7 +201,7 @@
     </main>
 </div>
 
-<!-- Script del Sidebar Traslúcido con efecto deslizante -->
+<!-- Script del Sidebar Traslúcido -->
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('appSidebar');
