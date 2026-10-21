@@ -1,184 +1,47 @@
-const API_BASE_URL = "https://facturacion.modulo-de-exclusiones.workers.dev/api";
-const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
-
-let registrosCrudos = [];
-let tecnicoActual = "";
-const META_FIJA_TECNICO = 9500000;
-
-document.addEventListener("DOMContentLoaded", () => {
-    cargarDatosTecnicos();
+const ORDERS=[
+ {id:30785,dep:'CESAR',st:'grn',cause:'',est:0,apr:0},
+ {id:30784,dep:'CESAR',st:'pe',cause:'Falta de documentación',est:250000,apr:0},
+ {id:30783,dep:'RUTA CARIBE',st:'re',cause:'Información inconsistente',est:180000,apr:0},
+ {id:30782,dep:'RUTA CARIBE',st:'ok',cause:'',est:420000,apr:420000},
+ {id:30781,dep:'CESAR',st:'grn',cause:'',est:300000,apr:300000}
+];
+const LABEL={grn:['ok','GRN/BTS/RVST'],pe:['pe','PENDIENTE'],re:['re','RECHAZADA'],ok:['ok','APROBADA']};
+const ICON={
+ ok:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+ pe:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4"/></svg>',
+ re:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'};
+const DOC='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M10 11l4 4M14 11l-4 4"/></svg>';
+const money=n=>'$ '+n.toLocaleString('es-CO');
+function bars(seed,color){
+  const h=[.35,.55,.3,.7,.45,.9,.6].map((v,i)=>Math.max(.15,Math.abs(Math.sin(seed*(i+2)))*.8+.15));
+  return '<svg viewBox="0 0 70 26" aria-hidden="true">'+h.map((v,i)=>`<rect x="${i*10}" y="${26-v*24}" width="6" height="${v*24}" rx="1.5" fill="${color}"/>`).join('')+'</svg>';
+}
+const state={q:'',f:'todas'};
+const FILTERS=['todas','pendientes','rechazadas','aprobadas'];
+function render(){
+  const tb=document.getElementById('rows');
+  const q=state.q.trim().toLowerCase();
+  const list=ORDERS.filter(o=>{
+    const [cls,txt]=LABEL[o.st];
+    const hay=(o.id+' '+o.dep+' '+txt+' '+o.cause).toLowerCase();
+    const okF=state.f==='todas'||(state.f==='pendientes'&&o.st==='pe')||(state.f==='rechazadas'&&o.st==='re')||(state.f==='aprobadas'&&(o.st==='ok'||o.st==='grn'));
+    return okF&&(!q||hay.includes(q));
+  });
+  tb.innerHTML=list.map(o=>{
+    const [cls,txt]=LABEL[o.st];
+    return `<tr><td><span class="ot">${o.id}</span></td><td>${o.dep}</td>
+    <td><span class="st ${cls}">${ICON[cls]}${txt}</span></td>
+    <td>${o.cause?`<span class="cause">${DOC}${o.cause}</span>`:'<span style="color:#9AA4BF">—</span>'}</td>
+    <td><span class="amt">${money(o.est)}${bars(o.id%7+1,'#2F5BC8')}</span></td>
+    <td><span class="amt">${money(o.apr)}${bars(o.id%5+2,o.apr?'#12A15F':'#9FB2E8')}</span></td>
+    <td><button class="dots" aria-label="Acciones de la orden ${o.id}">⋮</button></td></tr>`;
+  }).join('');
+  document.getElementById('empty').hidden=list.length>0;
+}
+document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value;render()});
+document.getElementById('fs').addEventListener('click',e=>{
+  const i=(FILTERS.indexOf(state.f)+1)%FILTERS.length;state.f=FILTERS[i];
+  document.getElementById('fl').textContent='Filtrar: '+state.f;
+  e.currentTarget.setAttribute('aria-pressed',state.f!=='todas');render();
 });
-
-async function cargarDatosTecnicos() {
-    try {
-        const response = await fetch(FACTURACION_API_URL);
-        if (response.ok) {
-            registrosCrudos = await response.json();
-            if (Array.isArray(registrosCrudos) && registrosCrudos.length > 0) {
-                poblarSelectTecnicos(registrosCrudos);
-            } else {
-                document.getElementById('selectTecnico').innerHTML = '<option value="">No hay registros en la base de datos</option>';
-            }
-        }
-    } catch (err) {
-        console.error("Error al conectar con la API:", err);
-    }
-}
-
-function poblarSelectTecnicos(rows) {
-    const setTecnicos = new Set();
-
-    rows.forEach(r => {
-        const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawTecnico).replace(/["']/g, "").trim();
-        if (perfil && perfil !== "SIN PROGRAMACION") {
-            setTecnicos.add(perfil.toUpperCase());
-        }
-    });
-
-    const select = document.getElementById('selectTecnico');
-    let html = '<option value="">-- Elige tu nombre de técnico --</option>';
-    
-    Array.from(setTecnicos).sort().forEach(tec => {
-        html += `<option value="${tec}">${tec}</option>`;
-    });
-
-    select.innerHTML = html;
-
-    if (setTecnicos.size > 0) {
-        select.value = Array.from(setTecnicos).sort()[0];
-        cambiarTecnicoSeleccionado();
-    }
-}
-
-function cambiarTecnicoSeleccionado() {
-    const select = document.getElementById('selectTecnico');
-    tecnicoActual = select.value;
-    if (!tecnicoActual) return;
-
-    filtrarYRenderizarPerfilTecnico();
-}
-
-function filtrarYRenderizarPerfilTecnico(filtroEstadoExtra = null) {
-    if (!tecnicoActual) return;
-
-    const registrosTecnico = registrosCrudos.filter(r => {
-        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
-        return perfil === tecnicoActual;
-    });
-
-    let totalAprobado = 0;
-    let totalRechazado = 0;
-    let totalSubsanado = 0;
-
-    registrosTecnico.forEach(r => {
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        const estAceptar = aprobReg.includes("ACEPTADO");
-        const estRechazar = aprobReg.includes("RECHAZADO");
-        const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-        const aprobadoVal = estAceptar ? Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0) : 0;
-        const rechazadoVal = estRechazar ? montoBase : 0;
-        const subsanadoVal = Number(r.trasiego_esp ?? 0);
-
-        totalAprobado += aprobadoVal;
-        totalRechazado += rechazadoVal;
-        totalSubsanado += subsanadoVal;
-    });
-
-    const porcentaje = META_FIJA_TECNICO > 0 ? Math.round((totalAprobado / META_FIJA_TECNICO) * 100) : 0;
-
-    document.getElementById('techMeta').innerText = formatMoney(META_FIJA_TECNICO);
-    document.getElementById('techAprobado').innerText = formatMoney(totalAprobado);
-    document.getElementById('techRechazado').innerText = formatMoney(totalRechazado);
-    document.getElementById('techSubsanado').innerText = formatMoney(totalSubsanado);
-    document.getElementById('techPorcentajeCumplimiento').innerText = `${porcentaje}%`;
-
-    const barraAprobado = document.getElementById('techBarAprobado');
-    if (barraAprobado) barraAprobado.style.width = Math.min(100, porcentaje) + '%';
-
-    const barraProgreso = document.getElementById('techBarraProgreso');
-    const badgeEstado = document.getElementById('techBadgeEstado');
-    if (barraProgreso) barraProgreso.style.width = Math.min(100, porcentaje) + '%';
-
-    if (porcentaje >= 100) {
-        if (barraProgreso) barraProgreso.style.backgroundColor = '#16a34a';
-        if (badgeEstado) {
-            badgeEstado.innerText = '¡Meta Cumplida! 🏆';
-            badgeEstado.style.background = '#dcfce7';
-            badgeEstado.style.color = '#16a34a';
-        }
-    } else {
-        if (barraProgreso) barraProgreso.style.backgroundColor = '#2563eb';
-        if (badgeEstado) {
-            badgeEstado.innerText = 'En Progreso ⚡';
-            badgeEstado.style.background = '#eff6ff';
-            badgeEstado.style.color = '#2563eb';
-        }
-    }
-
-    let registrosTabla = registrosTecnico;
-    if (filtroEstadoExtra) {
-        registrosTabla = registrosTecnico.filter(r => {
-            const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-            return aprobReg.includes(filtroEstadoExtra);
-        });
-    }
-
-    renderTableTecnico(registrosTabla);
-}
-
-function filtrarTablaEstado(estado) {
-    filtrarYRenderizarPerfilTecnico(estado);
-}
-
-function resetFiltroTabla() {
-    filtrarYRenderizarPerfilTecnico(null);
-}
-
-function renderTableTecnico(rows) {
-    const tbody = document.getElementById('techTableBody');
-    if (!tbody) return;
-
-    if (rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 25px;">No hay registros para mostrar.</td></tr>`;
-        return;
-    }
-
-    let html = '';
-    rows.forEach(r => {
-        const idOT = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
-        const depto = r.departamento || r.DEPARTAMENTO || r.dep || 'N/A';
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "PENDIENTE");
-        const causa = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
-        const estimado = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-        const aprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-
-        let badgeColor = "background: #fef3c7; color: #d97706;";
-        const upperAprob = aprobReg.toUpperCase();
-        if (upperAprob.includes("ACEPTADO")) badgeColor = "background: #dcfce7; color: #16a34a;";
-        else if (upperAprob.includes("RECHAZADO")) badgeColor = "background: #fee2e2; color: #dc2626;";
-
-        html += `
-            <tr>
-                <td style="font-weight: 800; color: #1e3a8a;">${idOT}</td>
-                <td style="text-transform: uppercase;">${depto}</td>
-                <td><span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem; ${badgeColor}">${aprobReg}</span></td>
-                <td style="color: #dc2626; font-weight: 700;">${causa}</td>
-                <td style="text-align: right; font-weight: 700;">${formatMoney(estimado)}</td>
-                <td style="text-align: right; font-weight: 800; color: #16a34a;">${formatMoney(aprobado)}</td>
-            </tr>
-        `;
-    });
-
-    tbody.innerHTML = html;
-}
-
-function formatMoney(amount) {
-    return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-}
-
-function toggleSidebar() {
-    const sidebar = document.getElementById('appSidebar');
-    sidebar.classList.toggle('activo');
-}
+render();
