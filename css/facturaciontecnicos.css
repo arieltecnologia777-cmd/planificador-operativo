@@ -1,0 +1,246 @@
+body.tech-body {
+    background-color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+}
+
+.tech-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px;
+    box-sizing: border-box;
+}
+
+.tech-header {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.tech-badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.tech-header h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px 0;
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.tech-header p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 0 16px 0;
+}
+
+.tech-selector-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tech-selector-box label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.tech-selector-box select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: bold;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    cursor: pointer;
+}
+
+.tech-selector-box select:focus {
+    border-color: #2563eb;
+    background: #ffffff;
+}
+
+.tech-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+@media(min-width: 640px) {
+    .tech-kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.tech-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.tech-kpi-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.tech-kpi-value {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.tech-kpi-value.green { color: #16a34a; }
+.tech-kpi-value.red { color: #dc2626; }
+.tech-kpi-value.orange { color: #d97706; }
+
+.tech-kpi-sub {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.tech-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.tech-progress-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tech-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tech-progress-info h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.tech-badge-estado {
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.tech-progress-bar-container {
+    width: 100%;
+    background: #e2e8f0;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.tech-progress-bar {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.4s ease;
+}
+
+.tech-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.tech-panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.tech-btn-secondary {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e0;
+    color: #334155;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tech-btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.tech-table-wrapper {
+    overflow-x: auto;
+}
+
+.tech-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.tech-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 800;
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tech-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-weight: 600;
+}
+
+.tech-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.tech-back-link {
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.88rem;
+}
+
+.tech-back-link:hover {
+    text-decoration: underline;
+}
