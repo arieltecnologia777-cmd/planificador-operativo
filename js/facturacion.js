@@ -1457,11 +1457,13 @@ function exportExcel() {
 
 function actualizarSelectsEnCascada() {
     const regionesSel = obtenerValoresSeleccionados('Region');
-    const deptosSel = obtenerValoresSeleccionados('Departamento');
+    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSel = obtenerValoresSeleccionados('Mes');
     const perfilesSel = obtenerValoresSeleccionados('PerfilWfm');
     const aprobSel = obtenerValoresSeleccionados('Aprobacion');
 
+    // Función clave basada en el módulo de planeación: 
+    // Filtra los registros excluyendo el campo actual para que sus propias opciones no se autolimiten o desaparezcan
     const filtrarExcluyendo = (campoExcluir) => {
         return registrosCrudos.filter(r => {
             const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
@@ -1472,7 +1474,7 @@ function actualizarSelectsEnCascada() {
             const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
 
             const matchReg = campoExcluir === 'Region' || regionesSel.length === 0 || regionesSel.includes(reg);
-            const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.includes(depto);
+            const matchDepto = campoExcluir === 'Departamento' || deptosSeleccionados.length === 0 || deptosSeleccionados.includes(depto);
             const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.includes(mes);
             const matchPerfil = campoExcluir === 'PerfilWfm' || perfilesSel.length === 0 || perfilesSel.includes(perfil);
             const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.includes(aprob);
@@ -1481,6 +1483,7 @@ function actualizarSelectsEnCascada() {
         });
     };
 
+    // 1. Llenar Región
     const rowsReg = filtrarExcluyendo('Region');
     const setReg = new Set();
     rowsReg.forEach(r => {
@@ -1489,14 +1492,17 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Region', setReg, regionesSel);
 
+    // 2. Llenar Departamento (Al excluirse a sí mismo en filtrarExcluyendo, si borras o seleccionas R1, 
+    // los demás departamentos no desaparecen de la lista, permitiéndote elegirlos libremente)
     const rowsDepto = filtrarExcluyendo('Departamento');
     const setDepto = new Set();
     rowsDepto.forEach(r => {
         const val = r.departamento || r.DEPARTAMENTO || r.dep;
         if (val) setDepto.add(String(val).trim().toUpperCase());
     });
-    llenarDropdownHTMLCascada('Departamento', setDepto, deptosSel);
+    llenarDropdownHTMLCascada('Departamento', setDepto, deptosSeleccionados);
 
+    // 3. Llenar Mes
     const rowsMes = filtrarExcluyendo('Mes');
     const setMes = new Set();
     rowsMes.forEach(r => {
@@ -1505,6 +1511,7 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('Mes', setMes, mesesSel);
 
+    // 4. Llenar Perfil WFM
     const rowsPerfil = filtrarExcluyendo('PerfilWfm');
     const setPerfil = new Set();
     rowsPerfil.forEach(r => {
@@ -1514,6 +1521,7 @@ function actualizarSelectsEnCascada() {
     });
     llenarDropdownHTMLCascada('PerfilWfm', setPerfil, perfilesSel);
 
+    // 5. Llenar Aprobación
     const rowsAprob = filtrarExcluyendo('Aprobacion');
     const setAprob = new Set();
     rowsAprob.forEach(r => {
