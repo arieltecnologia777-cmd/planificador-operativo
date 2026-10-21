@@ -261,3 +261,19 @@ body.tech-body {
         display: none !important;
     }
 }
+/* Ajustes específicos para la vista de técnicos basada en el ADN principal */
+@media (max-width: 1024px) {
+    .fact-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .hero {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 16px;
+    }
+}
+@media (max-width: 640px) {
+    .fact-kpi-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
