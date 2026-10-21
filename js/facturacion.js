@@ -44,39 +44,34 @@ async function cargarDatosDesdeAPI() {
                 verificarIncrementosAvance(registrosCrudos);
             } else {
                 renderTable([]);
-                actualizarKPIsGenerales([], [], [], [], "TODOS", 1);
+                actualizarKPIsGenerales([], [], [], "TODOS", 1);
             }
         }
     } catch (err) {
         renderTable([]);
-        actualizarKPIsGenerales([], [], [], [], "TODOS", 1);
+        actualizarKPIsGenerales([], [], [], "TODOS", 1);
     }
 }
 
-// Poblar dinámicamente los menús desplegables de forma independiente (sin cascada)
 function poblarSelectsFiltros(rows) {
-    const regiones = new Set();
     const departamentos = new Set();
     const meses = new Set();
     const perfiles = new Set();
     const aprobaciones = new Set();
 
     rows.forEach(r => {
-        const reg = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
         const depto = r.departamento || r.DEPARTAMENTO || r.dep;
         const mes = r.mes || r.MES;
         const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
         const perfil = String(rawTecnico).replace(/["']/g, "").trim();
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
 
-        if (reg) regiones.add(String(reg).trim().toUpperCase());
         if (depto) departamentos.add(String(depto).trim().toUpperCase());
         if (mes) meses.add(String(mes).trim());
         if (perfil) perfiles.add(perfil.toUpperCase());
         if (aprob) aprobaciones.add(String(aprob).trim());
     });
 
-    llenarDropdownHTML('Region', regiones);
     llenarDropdownHTML('Departamento', departamentos);
     llenarDropdownHTML('Mes', meses);
     llenarDropdownHTML('PerfilWfm', perfiles);
@@ -103,7 +98,9 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
-        cb.checked = marcar;
+        if (cb.parentElement.style.display !== 'none') {
+            cb.checked = marcar;
+        }
     });
     aplicarFiltrosGlobales();
 }
@@ -112,10 +109,30 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-    checkboxes.forEach(cb => {
-        cb.checked = marcar;
+    const setValoresGlobales = new Set();
+    registrosCrudos.forEach(r => {
+        let val = "";
+        if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
+        else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
+        else if (nombreFiltro === 'PerfilWfm') val = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "").replace(/["']/g, "").trim();
+        else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
+
+        if (val) setValoresGlobales.add(String(val).trim().toUpperCase());
     });
+
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        let html = '';
+        Array.from(setValoresGlobales).sort().forEach(val => {
+            html += `
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcar ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                    ${val}
+                </label>
+            `;
+        });
+        container.innerHTML = html;
+    }
 
     actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
@@ -162,7 +179,7 @@ function filtrarListaCheck(nombreFiltro, texto) {
 function resetFiltros() {
     if (document.getElementById('searchInput')) document.getElementById('searchInput').value = "";
     poblarSelectsFiltros(registrosCrudos);
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+    ['Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
         const chkTodo = document.getElementById('chkTodo' + nombre);
         if (chkTodo) chkTodo.checked = true;
         const checkboxes = document.querySelectorAll(`input[name="filtro${nombre}"]`);
@@ -171,34 +188,31 @@ function resetFiltros() {
     aplicarFiltrosGlobales();
 }
 
-// Sin cascada: los filtros operan directamente sobre registrosCrudos de forma independiente
 function aplicarFiltrosGlobales() {
-    ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
+    actualizarSelectsEnCascada();
+
+    ['Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
         actualizarLabelBotonFiltro(nombre);
     });
 
-    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
     const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
     const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
     const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
     const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
     const perfCheck = perfilesSeleccionados.length > 0 ? perfilesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroPerfilWfm"]')).map(cb => cb.value);
     const aprobCheck = aprobSeleccionadas.length > 0 ? aprobSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroAprobacion"]')).map(cb => cb.value);
 
     const registrosParaMeta = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
-        return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes);
+        return depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
     const filtradosCompletos = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
@@ -206,8 +220,7 @@ function aplicarFiltrosGlobales() {
         const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
         const tecnicoLower = perfil.toLowerCase();
 
-        return regCheck.includes(reg) && 
-               depCheck.includes(depto) && 
+        return depCheck.includes(depto) && 
                mesCheck.includes(mes) && 
                perfCheck.includes(perfil) && 
                aprobCheck.includes(aprob) && 
@@ -218,9 +231,9 @@ function aplicarFiltrosGlobales() {
     renderTable(tecnicosData);
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
-    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, regCheck, depCheck, primerMesFiltro, mesCheck.length);
+    actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, depCheck, primerMesFiltro, mesCheck.length);
     renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(registrosCrudos, "TODOS", "TODOS");
+    initChartsDinamicos(registrosCrudos, "TODOS");
 }
 
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
@@ -268,15 +281,13 @@ function procesarDatosParaVista(rows, cantidadMeses = 1) {
     return tecnicosArray.sort((a, b) => b.efectividad - a.efectividad);
 }
 
-function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel, fMes, totalMesesSeleccionados) {
+function actualizarKPIsGenerales(rowsCompletos, rowsMeta, deptosSel, fMes, totalMesesSeleccionados) {
     let cantidadMeses = totalMesesSeleccionados || 1;
     if (cantidadMeses < 1) cantidadMeses = 1;
 
     let baseMetaMensual = META_GLOBAL_TOTAL_MENSUAL;
     if (deptosSel.length === 1 && METAS_DEPARTAMENTOS[deptosSel[0]]) {
         baseMetaMensual = METAS_DEPARTAMENTOS[deptosSel[0]];
-    } else if (regionesSel.length === 1 && METAS_REGIONALES[regionesSel[0]]) {
-        baseMetaMensual = METAS_REGIONALES[regionesSel[0]];
     }
 
     let totalMeta = baseMetaMensual * cantidadMeses;
@@ -386,7 +397,7 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, regionesSel, deptosSel
     }
 }
 
-function initChartsDinamicos(records, fRegion = "TODOS", fDepto = "TODOS") {
+function initChartsDinamicos(records, fDepto = "TODOS") {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
 
@@ -396,8 +407,6 @@ function initChartsDinamicos(records, fRegion = "TODOS", fDepto = "TODOS") {
     let metaMensualGrafica = META_GLOBAL_TOTAL_MENSUAL;
     if (fDepto.length === 1 && METAS_DEPARTAMENTOS[fDepto[0]]) {
         metaMensualGrafica = METAS_DEPARTAMENTOS[fDepto[0]];
-    } else if (fRegion.length === 1 && METAS_REGIONALES[fRegion[0]]) {
-        metaMensualGrafica = METAS_REGIONALES[fRegion[0]];
     }
 
     records.forEach(r => {
@@ -638,24 +647,21 @@ function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose
 }
 
 function abrirModalEnTramite() {
-    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
     const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
     const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
 
     const registrosEnTramite = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
 
-        return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes) && perfil.includes(searchVal) && !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
+        return depCheck.includes(depto) && mesCheck.includes(mes) && perfil.includes(searchVal) && !aprobReg.includes("ACEPTADO") && !aprobReg.includes("RECHAZADO");
     });
 
     const thead = document.getElementById('headTablaDinamicaTramite');
@@ -749,24 +755,21 @@ function actualizarCabeceraModalTramite() {
 function cerrarModalEnTramite() { document.getElementById('modalEnTramiteDetalle').style.display = 'none'; }
 
 function abrirModalRechazados() {
-    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
     const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
     const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
     const depCheck = deptosSeleccionados.length > 0 ? deptosSeleccionados : Array.from(document.querySelectorAll('input[name="filtroDepartamento"]')).map(cb => cb.value);
     const mesCheck = mesesSeleccionados.length > 0 ? mesesSeleccionados : Array.from(document.querySelectorAll('input[name="filtroMes"]')).map(cb => cb.value);
 
     const registrosRechazados = registrosCrudos.filter(r => {
-        const reg = String(r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "").trim().toUpperCase();
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
 
-        return regCheck.includes(reg) && depCheck.includes(depto) && mesCheck.includes(mes) && perfil.includes(searchVal) && aprobReg.includes("RECHAZADO");
+        return depCheck.includes(depto) && mesCheck.includes(mes) && perfil.includes(searchVal) && aprobReg.includes("RECHAZADO");
     });
 
     const thead = document.getElementById('headTablaDinamicaRechazados');
@@ -1164,6 +1167,61 @@ function exportExcel() {
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
 
-// Sin cascada: funciones vacías o eliminadas para evitar recortes de opciones en los menús
-function actualizarSelectsEnCascada() {}
-function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {}
+// ----------------- CASCADA LIMPIA (SIN REGIÓN) -----------------
+function actualizarSelectsEnCascada() {
+    const deptosSel = obtenerValoresSeleccionados('Departamento');
+    const mesesSel = obtenerValoresSeleccionados('Mes');
+    const perfilesSel = obtenerValoresSeleccionados('PerfilWfm');
+    const aprobSel = obtenerValoresSeleccionados('Aprobacion');
+
+    const filtrarExcluyendo = (campoExcluir) => {
+        return registrosCrudos.filter(r => {
+            const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
+            const mes = String(r.mes || r.MES || "").trim();
+            const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+            const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+            const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim();
+
+            const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.includes(depto);
+            const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.includes(mes);
+            const matchPerfil = campoExcluir === 'PerfilWfm' || perfilesSel.length === 0 || perfilesSel.includes(perfil);
+            const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.includes(aprob);
+
+            return matchDepto && matchMes && matchPerfil && matchAprob;
+        });
+    };
+
+    const actualizarCajitaCascada = (nombreFiltro, rowsFiltradas, extractorFn) => {
+        const container = document.getElementById('listaCheck' + nombreFiltro);
+        if (!container) return;
+
+        const setValoresNuevos = new Set();
+        rowsFiltradas.forEach(r => {
+            const val = extractorFn(r);
+            if (val) setValoresNuevos.add(String(val).trim().toUpperCase());
+        });
+
+        const previamenteSeleccionados = obtenerValoresSeleccionados(nombreFiltro);
+        
+        let html = '';
+        Array.from(setValoresNuevos).sort().forEach(val => {
+            const estaMarcado = previamenteSeleccionados.length === 0 || previamenteSeleccionados.includes(val);
+            html += `
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${estaMarcado ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                    ${val}
+                </label>
+            `;
+        });
+        container.innerHTML = html;
+        actualizarLabelBotonFiltro(nombreFiltro);
+    };
+
+    actualizarCajitaCascada('Departamento', filtrarExcluyendo('Departamento'), r => r.departamento || r.DEPARTAMENTO || r.dep);
+    actualizarCajitaCascada('Mes', filtrarExcluyendo('Mes'), r => r.mes || r.MES);
+    actualizarCajitaCascada('PerfilWfm', filtrarExcluyendo('PerfilWfm'), r => {
+        const raw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        return String(raw).replace(/["']/g, "").trim();
+    });
+    actualizarCajitaCascada('Aprobacion', filtrarExcluyendo('Aprobacion'), r => r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL']);
+}
