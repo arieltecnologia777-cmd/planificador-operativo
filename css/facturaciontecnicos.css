@@ -8,8 +8,24 @@ button{font:inherit;color:inherit;cursor:pointer}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
 /* Sidebar Estilo Base y Escritorio (Efecto Traslúcido Glassmorphism) */
-.side{background:rgba(255, 255, 255, 0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#34406A;padding:22px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;border-right:1px solid rgba(230, 234, 244, 0.8);box-shadow:4px 0 24px rgba(15,27,61,.02);z-index:1000;transition:transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
-.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
+/* Sidebar Flotante y Traslúcido con Sombra Pronunciada */
+.side{
+    background: rgba(255, 255, 255, 0.65) !important; /* Mayor transparencia */
+    backdrop-filter: blur(20px) !important;            /* Efecto difuminado más fuerte */
+    -webkit-backdrop-filter: blur(20px) !important;
+    color: #34406A;
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 10px 0 35px rgba(15, 27, 61, 0.08) !important; /* Sombra lateral más elegante y sobresaliente */
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .nav{display:flex;flex-direction:column;gap:6px}
 .nav a{display:flex;align-items:center;gap:14px;padding:0 16px;min-height:48px;border-radius:12px;color:#5B6584;text-decoration:none;font-weight:700;font-size:15px;transition:background .15s, color .15s}
 .nav a:hover{background:#F1F4FB;color:#0F1B3D}
