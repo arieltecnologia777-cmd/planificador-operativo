@@ -22,10 +22,6 @@ const METAS_DEPARTAMENTOS = {
     "SAI": 9500000
 };
 
-const METAS_REGIONALES = {
-    "R1": 332500000, 
-    "R2": 129711538  
-};
 const META_GLOBAL_TOTAL_MENSUAL = 462211538;
 const LISTA_DEPARTAMENTOS_FIJOS = ["ANTIOQUIA", "CESAR", "LA GUAJIRA", "SAI"];
 
@@ -90,13 +86,11 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
-// Al tocar un ítem individual de la lista
 function cambiarItemFiltro(nombreFiltro) {
     actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
 }
 
-// Al tocar "(Seleccionar todo)": marca o desmarca directamente sin ser bloqueado por la cascada
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const container = document.getElementById('listaCheck' + nombreFiltro);
     if (!container) return;
@@ -106,10 +100,7 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
 
     const labels = container.querySelectorAll('label');
     labels.forEach(lbl => {
-        // Solo ignoramos los que están ocultos por la cascada de OTRO filtro
         if (lbl.dataset.cascada === 'hidden') return;
-
-        // Si el usuario escribió algo en el buscador, solo afectamos los que coinciden con la búsqueda
         if (textoBusqueda && !lbl.innerText.toLowerCase().includes(textoBusqueda)) return;
 
         const cb = lbl.querySelector('input[type="checkbox"]');
@@ -118,7 +109,6 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
         }
     });
 
-    // Sincronizar el propio check de Seleccionar Todo
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = Boolean(marcar);
 
@@ -126,7 +116,6 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
     aplicarFiltrosGlobales();
 }
 
-// Botón "❌ Borrar filtro" interno de cada cajita: restaura todo a marcado
 function marcarTodosDropdown(nombreFiltro) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = true;
@@ -260,8 +249,12 @@ function aplicarFiltrosGlobales() {
     
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, depCheck, primerMesFiltro, mesCheck.length);
-    renderizarEstadoRegional(filtradosCompletos);
-    initChartsDinamicos(registrosCrudos, "TODOS");
+    
+    // Actualizamos el estado zona pasando los departamentos seleccionados actuales
+    renderizarEstadoZona(registrosCrudos, depCheck);
+    
+    // Pasamos el filtro de departamento actual al gráfico de tendencia
+    initChartsDinamicos(registrosCrudos, depCheck);
 }
 
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
@@ -425,19 +418,27 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, deptosSel, fMes, total
     }
 }
 
-function initChartsDinamicos(records, fDepto = "TODOS") {
+// Gráfico de tendencia vinculado dinámicamente al departamento seleccionado
+function initChartsDinamicos(records, deptosSeleccionados = []) {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
 
     const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const acumuladoMeses = new Array(12).fill(0);
 
-    let metaMensualGrafica = META_GLOBAL_TOTAL_MENSUAL;
-    if (fDepto.length === 1 && METAS_DEPARTAMENTOS[fDepto[0]]) {
-        metaMensualGrafica = METAS_DEPARTAMENTOS[fDepto[0]];
+    // Calculamos la meta mensual según los departamentos seleccionados
+    let metaMensualBase = META_GLOBAL_TOTAL_MENSUAL;
+    if (deptosSeleccionados.length === 1 && METAS_DEPARTAMENTOS[deptosSeleccionados[0]]) {
+        metaMensualBase = METAS_DEPARTAMENTOS[deptosSeleccionados[0]];
     }
 
     records.forEach(r => {
+        const deptoR = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
+        // Si hay departamentos seleccionados, filtramos el acumulado por esos departamentos
+        if (deptosSeleccionados.length > 0 && !deptosSeleccionados.includes(deptoR)) {
+            return;
+        }
+
         const mesStr = String(r.mes || r.MES || "").trim();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
@@ -460,7 +461,7 @@ function initChartsDinamicos(records, fDepto = "TODOS") {
         }
     });
 
-    const metaLineData = new Array(12).fill(metaMensualGrafica);
+    const metaLineData = new Array(12).fill(metaMensualBase);
     if (chartTendencia) chartTendencia.destroy();
     
     chartTendencia = new Chart(ctxTendencia, {
@@ -559,50 +560,60 @@ function initChartsDinamicos(records, fDepto = "TODOS") {
     });
 }
 
-function renderizarEstadoRegional(rows) {
+// Panel lateral cambiado de Estado Regional a Estado Zona (listando Departamentos)
+function renderizarEstadoZona(rows, deptosSeleccionados = []) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
 
-    const mapaRegiones = {};
+    // Actualizamos el encabezado del panel cambiando el título a "Estado Zona" y la etiqueta a "Departamento"
+    const panelHeader = container.closest('.fact-panel')?.querySelector('h3');
+    if (panelHeader) panelHeader.innerText = "Estado zona";
+
+    const mapaDepartamentos = {};
     rows.forEach(r => {
-        const reg = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
-        if (!mapaRegiones[reg]) mapaRegiones[reg] = { aprobado: 0 };
+        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "GENERAL").trim().toUpperCase();
+        // Si hay selección de departamentos, solo procesamos los seleccionados para el desglose de zona
+        if (deptosSeleccionados.length > 0 && !deptosSeleccionados.includes(depto)) {
+            return;
+        }
+
+        if (!mapaDepartamentos[depto]) mapaDepartamentos[depto] = { aprobado: 0 };
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         if (aprobReg.includes("ACEPTADO")) {
-            mapaRegiones[reg].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
+            mapaDepartamentos[depto].aprobado += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? 0);
         }
     });
 
     let html = `
         <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
-                <div>Regional</div>
+            <div style="display: grid; grid-template-columns: 85px 55px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
+                <div>Depto</div>
                 <div style="text-align: center;">Efectiv.</div>
                 <div style="text-align: right;">Total</div>
             </div>
     `;
 
-    const regionesArray = Object.entries(mapaRegiones).map(([reg, val]) => {
-        const metaRegional = METAS_REGIONALES[reg] || META_GLOBAL_TOTAL_MENSUAL;
-        const ef = metaRegional > 0 ? Math.round((val.aprobado / metaRegional) * 100) : 0;
-        return { reg, val, ef };
+    const deptosArray = Object.entries(mapaDepartamentos).map(([depto, val]) => {
+        const metaDepto = METAS_DEPARTAMENTOS[depto] || META_GLOBAL_TOTAL_MENSUAL;
+        const ef = metaDepto > 0 ? Math.round((val.aprobado / metaDepto) * 100) : 0;
+        return { depto, val, ef };
     }).sort((a, b) => b.ef - a.ef);
 
-    regionesArray.forEach(item => {
-        const { reg, val, ef } = item;
+    deptosArray.forEach(item => {
+        const { depto, val, ef } = item;
         const colorClass = ef >= 100 ? "reg-pill-green" : (ef >= 70 ? "reg-pill-yellow" : "reg-pill-red");
         const dotColor = ef >= 100 ? "#22c55e" : (ef >= 70 ? "#f59e0b" : "#ef4444");
 
         html += `
-            <div style="display: grid; grid-template-columns: 75px 65px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
-                    <span style="font-weight: 700; color: #0f172a; font-size: 0.82rem;">${reg}</span>
+            <div style="display: grid; grid-template-columns: 85px 55px 1fr; align-items: center; padding: 5px 4px; border-bottom: 1px solid #f1f5f9;">
+                <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: ${dotColor}; display: inline-block; flex-shrink: 0;"></span>
+                    <span style="font-weight: 700; color: #0f172a; font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${depto}">${depto}</span>
                 </div>
                 <div style="text-align: center;">
-                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 1px 5px; border-radius: 5px; font-size: 0.72rem; font-weight: bold;">${ef}%</span>
+                    <span class="reg-pill ${colorClass}" style="display: inline-block; padding: 1px 4px; border-radius: 5px; font-size: 0.68rem; font-weight: bold;">${ef}%</span>
                 </div>
-                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.8rem;">
+                <div style="text-align: right; font-weight: 700; color: #334155; font-size: 0.78rem;">
                     ${formatMoney(val.aprobado)}
                 </div>
             </div>
@@ -610,7 +621,7 @@ function renderizarEstadoRegional(rows) {
     });
 
     html += `</div>`;
-    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos regionales</div>';
+    container.innerHTML = html || '<div style="color: #64748b; font-size: 0.82rem; text-align: center; padding: 8px;">Sin datos de zona</div>';
 }
 
 function abrirSubmodalDesgloseMatriz(tituloSubmodal, subtitleInfo, itemsDesglose) {
@@ -785,8 +796,8 @@ function abrirModalRechazados() {
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const registrosRechazados = registrosCrudos.filter(r => {
-        const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
-        const mes = String(r.mes || r.MES || "").trim().toUpperCase();
+        const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
+        const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toLowerCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
@@ -1189,7 +1200,7 @@ function exportExcel() {
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
 
-// 4. Cascada basada en visibilidad (CSS): si desmarcas todo en una caja, no bloquea las demás ni destruye el DOM
+// 5. Cascada limpia y segura que respeta cuando el usuario desmarca todo para buscar a voluntad
 function actualizarSelectsEnCascada() {
     const deptosSel = obtenerValoresSeleccionados('Departamento');
     const mesesSel = obtenerValoresSeleccionados('Mes');
@@ -1205,8 +1216,6 @@ function actualizarSelectsEnCascada() {
             const mes = String(r.mes || r.MES || "").trim().toUpperCase();
             const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
 
-            // Si hay 0 seleccionados (porque acabas de desmarcar "Seleccionar todo" para buscar uno), 
-            // no ocultamos las opciones de las demás listas para no dejarte las cajas en blanco
             const matchDepto = campoExcluir === 'Departamento' || deptosSel.length === 0 || deptosSel.length === totalDeptos || deptosSel.includes(depto);
             const matchMes = campoExcluir === 'Mes' || mesesSel.length === 0 || mesesSel.length === totalMeses || mesesSel.includes(mes);
             const matchAprob = campoExcluir === 'Aprobacion' || aprobSel.length === 0 || aprobSel.length === totalAprob || aprobSel.includes(aprob);
