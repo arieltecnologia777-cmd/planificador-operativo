@@ -476,3 +476,25 @@ body, html {
         padding: 10px !important;
     }
 }
+/* --- REDUCCIÓN ESTRICTA DE TAMAÑO PARA ICONOS 3D --- */
+.kpi-icon-container-3d {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+.kpi-img-3d {
+    width: 28px !important;
+    height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    object-fit: contain !important;
+    display: block !important;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+}
