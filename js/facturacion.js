@@ -231,7 +231,6 @@ function resetFiltros() {
 }
 
 function aplicarFiltrosGlobales() {
-    sincronizarEstadoFiltros();
     actualizarSelectsEnCascada();
 
     ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
@@ -239,12 +238,11 @@ function aplicarFiltrosGlobales() {
     });
 
     
-const regionesSeleccionadas = obtenerSeleccionActual('Region');
-const deptosSeleccionados = obtenerSeleccionActual('Departamento');
-const mesesSeleccionados = obtenerSeleccionActual('Mes');
-const perfilesSeleccionados = obtenerSeleccionActual('PerfilWfm');
-const aprobSeleccionadas = obtenerSeleccionActual('Aprobacion');
-
+    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
+    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
+    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
+    const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
+    const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
