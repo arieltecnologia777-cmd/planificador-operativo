@@ -469,3 +469,14 @@ body, html {
         padding: 10px !important;
     }
 }
+/* Contenedor específico para recortar la imagen de las monedas desde el archivo existente */
+.kpi-icon-monedas-sprite {
+    width: 44px;
+    height: 44px;
+    background-image: url('../assets/icon_aprobado_3d.png');
+    background-size: 240px auto; /* Escala la imagen global para ubicar el sector de las monedas */
+    background-position: -95px -5px; /* Posición exacta donde están las monedas en tu imagen subida */
+    background-repeat: no-repeat;
+    display: inline-block;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.12));
+}
