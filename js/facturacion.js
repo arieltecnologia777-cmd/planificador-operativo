@@ -90,6 +90,8 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
+// Comportamiento estilo Excel para "(Seleccionar todo)": 
+// Si está marcado, al hacer clic desmarca todo. Si está desmarcado, marca todo lo visible.
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
@@ -144,6 +146,7 @@ function actualizarLabelBotonFiltro(nombreFiltro) {
     
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) {
+        // Se sincroniza con el estado real si todos están marcados
         chkTodo.checked = (total > 0 && seleccionados.length === total);
     }
 
@@ -890,7 +893,7 @@ async function verificarPassword() {
             cerrarModalPassword();
             document.getElementById('modalHerramientas').style.display = 'flex';
         } else {
-            if (errorMsg) { errorMsg.innerText = "Contraseña incorrecta."; errorMsg.style.display = 'block'; }
+            if (errorPos = errorMsg) { errorMsg.innerText = "Contraseña incorrecta."; errorMsg.style.display = 'block'; }
             if (inputPass) { inputPass.value = ''; inputPass.focus(); }
         }
     } catch (err) {
