@@ -2183,6 +2183,16 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
     const nuevoEstado = selectEstado.value;
 
     if (nuevoEstado === "Operativa" && estadoAnterior !== "Operativa") {
+        
+        selectEstado.dataset.valorAnterior = nuevoEstado;
+
+        fila.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        fila.style.opacity = "0";
+        fila.style.transform = "scaleY(0)";
+        setTimeout(() => {
+            fila.style.display = "none";
+        }, 300);
+
         const toastId = `toast_${ot}_${Date.now()}`;
         const toastEl = document.createElement('div');
         toastEl.className = 'toast-operativa-container';
@@ -2207,9 +2217,20 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
             const tEl = document.getElementById(toastId);
             if (tEl) tEl.remove();
 
-            fila.style.transition = "opacity 0.4s ease";
-            fila.style.opacity = "0";
-            setTimeout(() => fila.remove(), 400);
+            fila.remove();
+            
+            datosGlobal = datosGlobal.filter(f => {
+                const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+                return String(f[idxOT] || "").trim() !== ot;
+            });
+            datosFiltradosGlobal = datosFiltradosGlobal.filter(f => {
+                const idxOT = buscarIndiceColumnaFlexible(encabezadosGlobal, ["OT"]);
+                return String(f[idxOT] || "").trim() !== ot;
+            });
+            
+            otsCompletadasSet.add(ot);
+            actualizarKPIs(datosFiltradosGlobal);
+            actualizarOpcionesFiltros(datosGlobal);
 
             await enviarOTCompletadaD1(fila, ot);
 
@@ -2221,14 +2242,14 @@ function manejarCambioEstadoOperativa(fila, selectEstado) {
             toastId: toastId,
             fila: fila,
             selectEstado: selectEstado,
-            estadoAnterior: estadoAnterior
+            estadoAnterior: estadoAnterior,
+            ot: ot
         };
 
     } else if (estadoAnterior === "Operativa" && nuevoEstado !== "Operativa") {
         selectEstado.dataset.valorAnterior = nuevoEstado;
     }
 }
-
 async function enviarOTCompletadaD1(fila, ot) {
     const valId = fila.children[0]?.textContent.trim() || "";
     const valDepto = fila.children[1]?.textContent.trim() || "";
@@ -2279,11 +2300,13 @@ document.addEventListener("click", (e) => {
             const tEl = document.getElementById(toastId);
             if (tEl) tEl.remove();
 
-            delete window.temporizadoresOperativa[ot];
-
-            if (typeof guardarOT === "function") {
-                guardarOT(info.fila);
+            if (info.fila) {
+                info.fila.style.display = "";
+                info.fila.style.opacity = "1";
+                info.fila.style.transform = "scaleY(1)";
             }
+
+            delete window.temporizadoresOperativa[ot];
         }
     }
 });
