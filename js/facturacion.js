@@ -251,7 +251,7 @@ function aplicarFiltrosGlobales() {
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, depCheck, primerMesFiltro, mesCheck.length);
     
     // Actualizamos el estado zona pasando los departamentos seleccionados actuales
-    renderizarEstadoZona(registrosCrudos, depCheck);
+    renderizarEstadoZona(registrosCrudos, depCheck, mesCheck);
     
     // Pasamos el filtro de departamento actual al gráfico de tendencia
     initChartsDinamicos(registrosCrudos, depCheck);
@@ -561,7 +561,7 @@ function initChartsDinamicos(records, deptosSeleccionados = []) {
 }
 
 // Panel lateral cambiado de Estado Regional a Estado Zona (listando Departamentos)
-function renderizarEstadoZona(rows, deptosSeleccionados = []) {
+function renderizarEstadoZona(rows, deptosSeleccionados = [], mesesSeleccionados = []) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
 
@@ -570,10 +570,18 @@ function renderizarEstadoZona(rows, deptosSeleccionados = []) {
     if (panelHeader) panelHeader.innerText = "Estado zona";
 
     const mapaDepartamentos = {};
+    const totalMesesDisponibles = document.querySelectorAll('input[name="filtroMes"]').length;
+    const esTodosLosMeses = mesesSeleccionados.length === 0 || mesesSeleccionados.length === totalMesesDisponibles;
+
     rows.forEach(r => {
         const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "GENERAL").trim().toUpperCase();
-        // Si hay selección de departamentos, solo procesamos los seleccionados para el desglose de zona
+        const mesR = String(r.mes || r.MES || "").trim().toUpperCase();
+
+        // Filtro dinámico por Departamento y Mes
         if (deptosSeleccionados.length > 0 && !deptosSeleccionados.includes(depto)) {
+            return;
+        }
+        if (!esTodosLosMeses && !mesesSeleccionados.includes(mesR)) {
             return;
         }
 
@@ -584,7 +592,7 @@ function renderizarEstadoZona(rows, deptosSeleccionados = []) {
         }
     });
 
-   let html = `
+    let html = `
         <div style="display: flex; flex-direction: column; gap: 6px;">
             <div style="display: grid; grid-template-columns: 95px 50px 1fr; align-items: center; padding: 2px 4px; font-size: 0.68rem; font-weight: 800; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; margin-bottom: 2px;">
                 <div>Depto</div>
@@ -593,9 +601,13 @@ function renderizarEstadoZona(rows, deptosSeleccionados = []) {
             </div>
     `;
 
+    // Multiplicador de la meta según la cantidad de meses seleccionados para que la efectividad sea real
+    const cantidadMesesActivos = esTodosLosMeses ? 1 : mesesSeleccionados.length;
+
     const deptosArray = Object.entries(mapaDepartamentos).map(([depto, val]) => {
-        const metaDepto = METAS_DEPARTAMENTOS[depto] || META_GLOBAL_TOTAL_MENSUAL;
-        const ef = metaDepto > 0 ? Math.round((val.aprobado / metaDepto) * 100) : 0;
+        const metaBaseDepto = METAS_DEPARTAMENTOS[depto] || META_GLOBAL_TOTAL_MENSUAL;
+        const metaDeptoDinamica = metaBaseDepto * cantidadMesesActivos;
+        const ef = metaDeptoDinamica > 0 ? Math.round((val.aprobado / metaDeptoDinamica) * 100) : 0;
         return { depto, val, ef };
     }).sort((a, b) => b.ef - a.ef);
 
