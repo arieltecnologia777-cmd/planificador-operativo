@@ -11,49 +11,27 @@
 <body>
 <div class="app">
 
-<aside class="sidebar" id="appSidebar">
-    <div>
-        <div class="sidebar-header-mobile" style="padding: 18px 16px; display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="../assets/dominion_logo.png" alt="Dominion" style="width: 110px; height: auto; object-fit: contain;">
-            </div>
-            <button type="button" onclick="toggleSidebar()" class="sidebar-close-btn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #475569;">✕</button>
-        </div>
-        
-        <nav class="sidebar-nav" style="padding: 0 12px; display: flex; flex-direction: column; gap: 4px;">
-            <a href="facturacion.html" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #475569; text-decoration: none; font-weight: 700; font-size: 0.88rem;">
-                <span>💰</span> Facturación
-            </a>
-            <a href="portal-tecnicos.html" class="active" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; background: #2563eb; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 0.88rem;">
-                <span>👷‍♂️</span> Mi Rendimiento
-            </a>
-            <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #475569; text-decoration: none; font-weight: 700; font-size: 0.88rem;">
-                <span>📋</span> Órdenes de Trabajo
-            </a>
-            <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #475569; text-decoration: none; font-weight: 700; font-size: 0.88rem;">
-                <span>📊</span> Reportes
-            </a>
-            <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: #475569; text-decoration: none; font-weight: 700; font-size: 0.88rem;">
-                <span>⚙️</span> Configuración
-            </a>
-        </nav>
-    </div>
-
-    <!-- Cuerpo inferior del sidebar restaurado -->
-    <div style="position: relative; overflow: hidden; padding-bottom: 10px;">
-        <div class="tag" style="padding: 0 16px 12px 16px; font-size: 0.8rem; line-height: 1.4; color: #64748b; font-weight: 600; position: relative; z-index: 2;">
-            <div style="width: 24px; height: 3px; border-radius: 2px; background: #2563eb; margin-bottom: 8px;"></div>
-            Tu trabajo<br>hace que todo<br>funcione
-        </div>
-        <div class="sidebar-footer" style="padding: 0 16px 16px 16px; position: relative; z-index: 2;">
-            <a href="facturacion.html" style="text-decoration: none;">
-                <button type="button" style="width: 100%; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    ⬅ Volver a Admin
-                </button>
-            </a>
-        </div>
-        <svg class="wave" viewBox="0 0 240 90" preserveAspectRatio="none" height="70" style="position: absolute; left: 0; right: 0; bottom: 0; opacity: 0.25; pointer-events: none;" aria-hidden="true"><path d="M0 90V62C30 40 55 28 85 34s50 24 80 8 50-22 75-14v62z" fill="#2563eb"/><path d="M0 90V74c30-16 60-22 90-12s60 6 150-10v38z" fill="#1d4ed8" opacity="0.4"/></svg>
-    </div>
+<aside class="side" id="appSidebar">
+  <div class="brand">
+    <img src="../assets/dominion_logo.png" alt="Dominion" style="width: 120px; height: auto; object-fit: contain;">
+  </div>
+  <nav class="nav" aria-label="Principal">
+    <a href="facturacion.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Facturación</a>
+    <a class="on" href="portal-tecnicos.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Mi Rendimiento</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Órdenes de Trabajo</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V10M12 21V4M19 21v-7"/></svg>Reportes</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configuración</a>
+  </nav>
+  
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
+    <div class="tag">Tu trabajo<br>hace que todo<br>funcione</div>
+    <a href="facturacion.html" style="text-decoration: none;">
+      <button type="button" style="width: 100%; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        ⬅ Volver a Admin
+      </button>
+    </a>
+  </div>
+  <svg class="wave" viewBox="0 0 240 90" preserveAspectRatio="none" height="90" aria-hidden="true"><path d="M0 90V62C30 40 55 28 85 34s50 24 80 8 50-22 75-14v62z" fill="#1D5FE0" opacity=".15"/><path d="M0 90V74c30-16 60-22 90-12s60 6 150-10v38z" fill="#2F7BFF" opacity=".25"/></svg>
 </aside>
 
 <main class="main">
@@ -177,6 +155,6 @@
 </main>
 </div>
 
-<script src="../js/portal-tecnicos.js"></script>
+<script src="../js/facturaciontecnicos.js"></script>
 </body>
 </html>
