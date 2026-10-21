@@ -355,6 +355,7 @@ function pintarTabla(datos){
     const idxPrioridad = buscarIndiceColumnaFlexible(encabezados, ["Tipo de prioridad", "Prioridad"]);
     const idxRangoAfectacion = buscarIndiceColumnaFlexible(encabezados, ["Rango de afectación", "Rango de afect"]);
     const idxStoppersDominion = buscarIndiceColumnaFlexible(encabezados, ["Stoppers Dominion", "Stoppers"]);
+    const idxIndicadorBacklog = buscarIndiceColumnaFlexible(encabezados, ["Indicador backlog", "Backlog"]); // <-- CORRECCIÓN: Índice agregado
     const idxStopperP3 = buscarIndiceColumnaFlexible(encabezados, ["Stopper P3"]);
     const idxEstadoOT = buscarIndiceColumnaFlexible(encabezados, ["Estado OT"]);
     const idxTipoFacturacion = buscarIndiceColumnaFlexible(encabezados, ["Tipo facturación", "Tipo facturacio"]);
@@ -455,6 +456,7 @@ function pintarTabla(datos){
                     ${TECNICOS.map(nombre => `<option value="${nombre}" ${d1.acompanamiento === nombre ? "selected" : ""}>${nombre}</option>`).join("")}
                 </select>
             </td>
+            <td>${idxIndicadorBacklog !== -1 ? (fila[idxIndicadorBacklog] || "") : ""}</td> <!-- <-- CORRECCIÓN: Celda añadida en su posición correcta -->
             <td>${idxStopperP3 !== -1 ? (fila[idxStopperP3] || "") : ""}</td>
             <td>${idxEstadoOT !== -1 ? (fila[idxEstadoOT] || "") : ""}</td>
             <td>${idxTipoFacturacion !== -1 ? (fila[idxTipoFacturacion] || "") : ""}</td>
