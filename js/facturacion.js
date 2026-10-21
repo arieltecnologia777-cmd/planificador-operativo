@@ -109,36 +109,41 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
     aplicarFiltrosGlobales();
 }
 
-// SOLUCIÓN DEFINITIVA: Al dar "Borrar filtro" dentro de la cajita, extrae TODOS los valores globales posibles 
-// de ese campo desde 'registrosCrudos' para que no desaparezca ninguna opción (como Antioquia).
+// CORRECCIÓN CLAVE: Si se borra el filtro específico de Región o Departamento, 
+// extraemos los valores globales de la fuente original para que se restablezcan por completo sin restricciones cruzadas.
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    const setValoresGlobales = new Set();
-    registrosCrudos.forEach(r => {
-        let val = "";
-        if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
-        else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
-        else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
-        else if (nombreFiltro === 'PerfilWfm') val = String(r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "").replace(/["']/g, "").trim();
-        else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
-
-        if (val) setValoresGlobales.add(String(val).trim().toUpperCase());
-    });
-
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (container) {
-        let html = '';
-        Array.from(setValoresGlobales).sort().forEach(val => {
-            html += `
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcar ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
-                    ${val}
-                </label>
-            `;
+    if (marcar && (nombreFiltro === 'Region' || nombreFiltro === 'Departamento')) {
+        const setValoresGlobales = new Set();
+        registrosCrudos.forEach(r => {
+            let val = "";
+            if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
+            else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
+            if (val) setValoresGlobales.add(String(val).trim().toUpperCase());
         });
-        container.innerHTML = html;
+
+        const container = document.getElementById('listaCheck' + nombreFiltro);
+        if (container) {
+            let html = '';
+            Array.from(setValoresGlobales).sort().forEach(val => {
+                html += `
+                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                        <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                        ${val}
+                    </label>
+                `;
+            });
+            container.innerHTML = html;
+        }
+    } else {
+        const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+        checkboxes.forEach(cb => {
+            if (cb.parentElement.style.display !== 'none') {
+                cb.checked = marcar;
+            }
+        });
     }
 
     actualizarLabelBotonFiltro(nombreFiltro);
