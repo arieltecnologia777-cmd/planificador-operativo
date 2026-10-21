@@ -11,7 +11,7 @@ body, html {
     margin: 0 !important;
     padding: 0 !important;
     overflow-x: hidden;
-    background-color: #f1f5f9;
+    background-color: #f4f6f9;
     font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -25,7 +25,7 @@ body, html {
 .main-content {
     width: 100% !important;
     margin: 0 !important;
-    padding: 14px !important;
+    padding: 20px !important;
     box-sizing: border-box !important;
 }
 
@@ -43,8 +43,8 @@ body, html {
     left: 0 !important;
     width: 280px !important;
     height: 100vh !important;
-    background: rgba(255, 255, 255, 0.65) !important; /* Fondo translúcido */
-    backdrop-filter: blur(16px) !important;           /* Efecto difuminado estilo cristal */
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
@@ -153,9 +153,9 @@ body, html {
 .hero {
     position: relative;
     background: url('../assets/hero_bg.png') center/cover no-repeat #1e3a8a;
-    padding: 24px 20px;
-    margin-bottom: 16px;
-    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    border-radius: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -194,14 +194,14 @@ body, html {
 }
 
 .hero h1 {
-    font-size: 1.5rem;
+    font-size: 1.65rem;
     margin: 0 0 4px 0;
     font-weight: 900;
     color: #ffffff;
 }
 
 .hero p {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     margin: 0;
     color: rgba(255,255,255,0.9);
 }
@@ -216,32 +216,32 @@ body, html {
 
 .hero-avatar-text {
     background: rgba(15, 23, 42, 0.6);
-    padding: 8px 12px;
-    border-radius: 10px;
+    padding: 10px 16px;
+    border-radius: 12px;
     backdrop-filter: blur(6px);
     border: 1px solid rgba(255,255,255,0.15);
     text-align: right;
 }
 
 .hero-avatar-img-box {
-    width: 65px;
-    height: 65px;
+    width: 75px;
+    height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Componentes internos */
+/* Selector de Perfil y Periodo */
 .selector-panel {
     background: white;
-    padding: 14px 18px;
+    padding: 16px 20px;
     border-radius: 14px;
     border: 1px solid #e2e8f0;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -273,100 +273,103 @@ body, html {
     cursor: pointer;
 }
 
+/* --- ESTILO EXACTO DE LAS 4 KPI CARDS (Basado en la captura) --- */
 .fact-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 16px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
-.fact-kpi-card {
-    background: white;
+.fact-kpi-card-exact {
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 14px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.kpi-title {
-    font-size: 0.68rem;
+.fact-kpi-card-exact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.06);
+}
+
+.kpi-card-meta {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(239, 246, 255, 0.45) 100%);
+}
+
+.kpi-card-aprobado {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(240, 253, 244, 0.5) 100%);
+}
+
+.kpi-card-rechazado {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(254, 242, 242, 0.5) 100%);
+    border-color: #fecaca;
+    cursor: pointer;
+}
+
+.kpi-card-subsanado {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(254, 243, 199, 0.35) 100%);
+}
+
+.kpi-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.kpi-title-label {
+    font-size: 0.72rem;
     color: #64748b;
     font-weight: 800;
     text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
-.kpi-value {
-    font-size: 1.1rem;
+.kpi-main-value {
+    font-size: 1.35rem;
     font-weight: 900;
     color: #0f172a;
-    margin-top: 3px;
+    margin: 4px 0;
+    letter-spacing: -0.5px;
 }
 
-.kpi-progress-bg {
-    background: #e2e8f0;
-    height: 6px;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 6px;
-}
-
-.kpi-progress-fill {
-    background: #00b087;
-    width: 0%;
-    height: 100%;
-}
-
-.kpi-progress-text-wrap {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 3px;
-}
-
-.kpi-progress-badge {
-    background: #f0fdf4;
-    color: #00b087;
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 1px 5px;
-    border-radius: 6px;
-}
-
-.kpi-card-clickable {
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-.kpi-card-clickable:hover {
-    transform: translateY(-2px);
-}
-
-.kpi-link-text {
+.kpi-footer-box {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
     font-size: 0.72rem;
-    color: #dc2626;
-}
-
-.kpi-subtext {
-    font-size: 0.7rem;
-    color: #64748b;
     font-weight: 700;
-    margin-top: 6px;
 }
 
+/* Estado general del periodo */
 .period-panel {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px 20px;
-    margin-bottom: 14px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
     width: 100%;
     box-sizing: border-box;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
 
 .period-title {
     font-weight: 800;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #0f172a;
-    min-width: 160px;
+    min-width: 190px;
 }
 
 .period-bar-bg {
@@ -387,24 +390,25 @@ body, html {
 .period-badge-meta {
     background: #dcfce7;
     color: #16a34a;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.72rem;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
     font-weight: 900;
     white-space: nowrap;
 }
 
+/* Tabla */
 .table-header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .table-title {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 800;
+    font-size: 1.05rem;
+    font-weight: 900;
     color: #0f172a;
 }
 
@@ -412,22 +416,22 @@ body, html {
     background: #f8fafc;
     border: 1px solid #cbd5e0;
     color: #334155;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
 }
 
 /* Responsividad Adaptativa */
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
     .fact-kpi-grid {
         grid-template-columns: repeat(2, 1fr) !important;
     }
     .hero {
         flex-direction: column;
         align-items: flex-start !important;
-        gap: 14px;
+        gap: 16px;
     }
     .period-panel {
         flex-direction: column;
@@ -442,5 +446,8 @@ body, html {
 @media (max-width: 640px) {
     .fact-kpi-grid {
         grid-template-columns: 1fr !important;
+    }
+    .main-content {
+        padding: 10px !important;
     }
 }
