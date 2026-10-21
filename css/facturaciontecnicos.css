@@ -152,7 +152,7 @@ body, html {
 /* Hero Banner */
 .hero {
     position: relative;
-    background: url('../assets/hero_bg.png') center/cover no-repeat #1e3a8a;
+    background: url('../assets/banner.jpg') center/cover no-repeat #1e3a8a;
     padding: 28px 32px;
     margin-bottom: 20px;
     border-radius: 18px;
@@ -231,7 +231,7 @@ body, html {
     justify-content: center;
 }
 
-/* Selector de Perfil y Periodo */
+/* Selector de Perfil */
 .selector-panel {
     background: white;
     padding: 16px 20px;
@@ -273,7 +273,7 @@ body, html {
     cursor: pointer;
 }
 
-/* --- ESTILO EXACTO DE LAS 4 KPI CARDS (Basado en la captura) --- */
+/* --- ESTILO DE LAS 4 KPI CARDS (DISEÑO COMPACTO ESTILO REFERENCIA) --- */
 .fact-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -319,23 +319,30 @@ body, html {
     background: linear-gradient(180deg, #ffffff 0%, rgba(254, 243, 199, 0.35) 100%);
 }
 
-.kpi-top-row {
+.kpi-top-row-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+}
+
+.kpi-left-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .kpi-title-label {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: #64748b;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    margin: 0;
 }
 
 .kpi-main-value {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 900;
     color: #0f172a;
     margin: 4px 0;
@@ -343,11 +350,29 @@ body, html {
 }
 
 .kpi-footer-box {
-    margin-top: 12px;
-    padding-top: 8px;
+    margin-top: 10px;
+    padding-top: 6px;
     border-top: 1px solid rgba(0, 0, 0, 0.04);
     font-size: 0.72rem;
     font-weight: 700;
+}
+
+/* Contenedores para los iconos 3D en miniatura alineados al título */
+.kpi-icon-container-3d {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.kpi-img-3d {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 /* Estado general del periodo */
