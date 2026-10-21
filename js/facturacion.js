@@ -90,8 +90,7 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
     actualizarLabelBotonFiltro(nombreFiltro);
 }
 
-// Comportamiento estilo Excel para "(Seleccionar todo)": 
-// Si está marcado, al hacer clic desmarca todo. Si está desmarcado, marca todo lo visible.
+// Comportamiento de "Seleccionar todo" idéntico a Excel: marca/desmarca todos los visibles
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
@@ -102,33 +101,15 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
     aplicarFiltrosGlobales();
 }
 
+// Botón "❌ Borrar filtro" interno de cada cajita
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    const setValoresGlobales = new Set();
-    registrosCrudos.forEach(r => {
-        let val = "";
-        if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
-        else if (nombreFiltro === 'Mes') val = r.mes || r.MES;
-        else if (nombreFiltro === 'Aprobacion') val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
-
-        if (val) setValoresGlobales.add(String(val).trim().toUpperCase());
+    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    checkboxes.forEach(cb => {
+        cb.checked = marcar;
     });
-
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (container) {
-        let html = '';
-        Array.from(setValoresGlobales).sort().forEach(val => {
-            html += `
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcar ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
-                    ${val}
-                </label>
-            `;
-        });
-        container.innerHTML = html;
-    }
 
     actualizarLabelBotonFiltro(nombreFiltro);
     aplicarFiltrosGlobales();
@@ -146,7 +127,6 @@ function actualizarLabelBotonFiltro(nombreFiltro) {
     
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) {
-        // Se sincroniza con el estado real si todos están marcados
         chkTodo.checked = (total > 0 && seleccionados.length === total);
     }
 
@@ -830,7 +810,7 @@ function abrirModalRechazados() {
         });
 
         const subsetRowFila = registrosRechazados.filter(item => String(item.causa_rechazo || item.CAUSA_RECHAZO || item['Causa Rechazo'] || "SIN CAUSA").toUpperCase().trim() === causaVal);
-        const itemsDesgloseFila = subsetRowFila.map(i => ({ id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A', depto: i.departamento || i.DEPARTAMENTO || 'GENERAL', causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA', monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0) }));
+        const itemsDesgloseFila = subsetRowFil.map ? subsetRowFila.map(i => ({ id: i.id_id || i.ID_ID || i.id || i.ID || 'N/A', depto: i.departamento || i.DEPARTAMENTO || 'GENERAL', causa: i.causa_rechazo || i.CAUSA_RECHAZO || i['Causa Rechazo'] || 'NO ESPECIFICADA', monto: Number(i.estimado_a_facturar ?? i.facturacion ?? i.Facturacion ?? 0) })) : [];
         bodyHtml += `<td style="padding: 9px 14px; text-align: center; font-weight: 800; color: #0f172a; background: #f8fafc; cursor: pointer; width: ${anchoPorcentual}; text-decoration: underline;" onclick="abrirSubmodalDesgloseMatriz('Desglose de Rechazos por ID', 'Causa: ${causaVal} | Total General', ${JSON.stringify(itemsDesgloseFila).replace(/"/g, '&quot;')})">${formatMoney(totalFila)}</td></tr>`;
     }
     tbody.innerHTML = bodyHtml;
@@ -893,7 +873,7 @@ async function verificarPassword() {
             cerrarModalPassword();
             document.getElementById('modalHerramientas').style.display = 'flex';
         } else {
-            if (errorPos = errorMsg) { errorMsg.innerText = "Contraseña incorrecta."; errorMsg.style.display = 'block'; }
+            if (errorMsg) { errorMsg.innerText = "Contraseña incorrecta."; errorMsg.style.display = 'block'; }
             if (inputPass) { inputPass.value = ''; inputPass.focus(); }
         }
     } catch (err) {
