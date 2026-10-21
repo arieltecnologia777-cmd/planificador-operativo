@@ -5,6 +5,14 @@ const IMPORTAR_API_URL = `${API_BASE_URL}/facturacion/importar`;
 
 let tecnicosData = [];
 let registrosCrudos = [];
+// Conserva las selecciones aunque la cascada oculte opciones temporalmente.
+const estadoSeleccionFiltros = {
+    Region: null,
+    Departamento: null,
+    Mes: null,
+    PerfilWfm: null,
+    Aprobacion: null
+};
 let chartTendencia = null;
 let chartGauge = null;
 let listaNotificacionesCambios = [];
@@ -129,6 +137,54 @@ function obtenerValoresSeleccionados(nombreFiltro) {
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
+
+function sincronizarEstadoFiltros() {
+    const nombres = [
+        'Region',
+        'Departamento',
+        'Mes',
+        'PerfilWfm',
+        'Aprobacion'
+    ];
+
+    nombres.forEach(nombre => {
+        const checkboxes = Array.from(
+            document.querySelectorAll(`input[name="filtro${nombre}"]`)
+        );
+
+        const valoresPresentes = checkboxes.map(cb => cb.value);
+        const valoresMarcados = checkboxes
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        if (!Array.isArray(estadoSeleccionFiltros[nombre])) {
+            estadoSeleccionFiltros[nombre] = valoresMarcados;
+            return;
+        }
+
+        // Conserva las selecciones que la cascada ocultó del menú.
+        const valoresOcultosSeleccionados =
+            estadoSeleccionFiltros[nombre].filter(
+                valor => !valoresPresentes.includes(valor)
+            );
+
+        estadoSeleccionFiltros[nombre] = [
+            ...new Set([
+                ...valoresMarcados,
+                ...valoresOcultosSeleccionados
+            ])
+        ];
+    });
+}
+
+function obtenerSeleccionActual(nombreFiltro) {
+    if (Array.isArray(estadoSeleccionFiltros[nombreFiltro])) {
+        return estadoSeleccionFiltros[nombreFiltro];
+    }
+
+    return obtenerValoresSeleccionados(nombreFiltro);
+}
+
 function actualizarLabelBotonFiltro(nombreFiltro) {
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     const total = checkboxes.length;
@@ -175,17 +231,20 @@ function resetFiltros() {
 }
 
 function aplicarFiltrosGlobales() {
+    sincronizarEstadoFiltros();
     actualizarSelectsEnCascada();
 
     ['Region', 'Departamento', 'Mes', 'PerfilWfm', 'Aprobacion'].forEach(nombre => {
         actualizarLabelBotonFiltro(nombre);
     });
 
-    const regionesSeleccionadas = obtenerValoresSeleccionados('Region');
-    const deptosSeleccionados = obtenerValoresSeleccionados('Departamento');
-    const mesesSeleccionados = obtenerValoresSeleccionados('Mes');
-    const perfilesSeleccionados = obtenerValoresSeleccionados('PerfilWfm');
-    const aprobSeleccionadas = obtenerValoresSeleccionados('Aprobacion');
+    
+const regionesSeleccionadas = obtenerSeleccionActual('Region');
+const deptosSeleccionados = obtenerSeleccionActual('Departamento');
+const mesesSeleccionados = obtenerSeleccionActual('Mes');
+const perfilesSeleccionados = obtenerSeleccionActual('PerfilWfm');
+const aprobSeleccionadas = obtenerSeleccionActual('Aprobacion');
+
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const regCheck = regionesSeleccionadas.length > 0 ? regionesSeleccionadas : Array.from(document.querySelectorAll('input[name="filtroRegion"]')).map(cb => cb.value);
@@ -1169,11 +1228,12 @@ function exportExcel() {
 }
 
 function actualizarSelectsEnCascada() {
-    const regionesSel = obtenerValoresSeleccionados('Region');
-    const deptosSel = obtenerValoresSeleccionados('Departamento');
-    const mesesSel = obtenerValoresSeleccionados('Mes');
-    const perfilesSel = obtenerValoresSeleccionados('PerfilWfm');
-    const aprobSel = obtenerValoresSeleccionados('Aprobacion');
+   
+const regionesSel = obtenerSeleccionActual('Region');
+const deptosSeleccionados = obtenerSeleccionActual('Departamento');
+const mesesSel = obtenerSeleccionActual('Mes');
+const perfilesSel = obtenerSeleccionActual('PerfilWfm');
+const aprobSel = obtenerSeleccionActual('Aprobacion');
 
     const filtrarExcluyendo = (campoExcluir) => {
         return registrosCrudos.filter(r => {
