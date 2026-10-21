@@ -7,11 +7,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid #7FA6FF;outline-offset:2px}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
-/* Sidebar Estilo Base y Escritorio (Efecto Traslúcido Glassmorphism) */
 /* Sidebar Flotante y Traslúcido con Sombra Pronunciada */
 .side{
-    background: rgba(255, 255, 255, 0.65) !important; /* Mayor transparencia */
-    backdrop-filter: blur(20px) !important;            /* Efecto difuminado más fuerte */
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     color: #34406A;
     padding: 22px 14px;
@@ -22,10 +21,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     height: 100vh;
     overflow: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 10px 0 35px rgba(15, 27, 61, 0.08) !important; /* Sombra lateral más elegante y sobresaliente */
+    box-shadow: 10px 0 35px rgba(15, 27, 61, 0.08) !important;
     z-index: 1000;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
 .nav{display:flex;flex-direction:column;gap:6px}
 .nav a{display:flex;align-items:center;gap:14px;padding:0 16px;min-height:48px;border-radius:12px;color:#5B6584;text-decoration:none;font-weight:700;font-size:15px;transition:background .15s, color .15s}
 .nav a:hover{background:#F1F4FB;color:#0F1B3D}
@@ -90,27 +90,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero sutil y de fondo integrado */
+/* Hero con fondo banner.jpg y capa oscura semitransparente para legibilidad */
 .hero{
     position: relative;
     overflow: hidden;
     border-radius: 22px;
-    background: linear-gradient(135deg, #0a1736 0%, #10255a 100%);
+    background: linear-gradient(135deg, rgba(7, 22, 62, 0.85) 0%, rgba(12, 42, 120, 0.8) 100%), url('../assets/banner.jpg');
+    background-size: cover;
+    background-position: center;
     color: #fff;
     padding: 30px 36px;
     min-height: 180px;
     display: flex;
     align-items: center;
     box-shadow: 0 10px 25px -10px rgba(10, 23, 54, 0.3);
-}
-.hero svg.art{
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 62%;
-    opacity: 0.4; /* Reducido para que no compita con el texto */
-    pointer-events: none;
 }
 .hero .txt{
     position: relative;
@@ -129,13 +122,14 @@ button{font:inherit;color:inherit;cursor:pointer}
     line-height: 1.08;
     letter-spacing: -.025em;
     font-weight: 800;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 .hero p{
     margin: 0;
     font-size: 15px;
     line-height: 1.55;
     color: #e0e8ff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 .mascot{
     position: absolute;
@@ -144,10 +138,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     transform: translateY(-50%);
     width: 140px;
     z-index: 2;
-    opacity: 0.95;
-    filter: drop-shadow(0 8px 16px rgba(0,10,50,0.3));
+    opacity: 0.98;
+    filter: drop-shadow(0 8px 20px rgba(0,10,50,0.4));
 }
-.hello{position:absolute;right:210px;top:50%;transform:translateY(-50%);z-index:2;text-align:right;display:none}
 
 /* Profile */
 .profile{display:flex;align-items:center;gap:16px;padding:14px 18px;flex-wrap:wrap}
@@ -257,7 +250,7 @@ tbody tr:hover td{background:#F8FAFE}
   
   .main{padding:14px; padding-top: 70px;}
   .hero{padding:24px}
-  .hero svg.art,.mascot{display:none}
+  .mascot{display:none}
   .hero h1{font-size:30px}
   .user span.n{display:none}
 }
