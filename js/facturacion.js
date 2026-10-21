@@ -109,40 +109,16 @@ function seleccionarTodoGeneral(nombreFiltro, marcar) {
     aplicarFiltrosGlobales();
 }
 
-// CORRECCIÓN CLAVE: Si se borra el filtro específico de Región o Departamento, 
-// extraemos los valores globales de la fuente original para que se restablezcan por completo sin restricciones cruzadas.
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
-    if (marcar && (nombreFiltro === 'Region' || nombreFiltro === 'Departamento')) {
-        const setValoresGlobales = new Set();
-        registrosCrudos.forEach(r => {
-            let val = "";
-            if (nombreFiltro === 'Region') val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 '];
-            else if (nombreFiltro === 'Departamento') val = r.departamento || r.DEPARTAMENTO || r.dep;
-            if (val) setValoresGlobales.add(String(val).trim().toUpperCase());
-        });
-
-        const container = document.getElementById('listaCheck' + nombreFiltro);
-        if (container) {
-            let html = '';
-            Array.from(setValoresGlobales).sort().forEach(val => {
-                html += `
-                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                        <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" checked onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
-                        ${val}
-                    </label>
-                `;
-            });
-            container.innerHTML = html;
-        }
-    } else {
-        const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
-        checkboxes.forEach(cb => {
-            if (cb.parentElement.style.display !== 'none') {
-                cb.checked = marcar;
-            }
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        container.querySelectorAll('label').forEach(lbl => {
+            lbl.style.display = 'flex';
+            const cb = lbl.querySelector('input[type="checkbox"]');
+            if (cb) cb.checked = marcar;
         });
     }
 
@@ -1220,48 +1196,38 @@ function actualizarSelectsEnCascada() {
         });
     };
 
-    const rowsReg = filtrarExcluyendo('Region');
-    const setReg = new Set();
-    rowsReg.forEach(r => { const val = r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 ']; if (val) setReg.add(String(val).trim().toUpperCase()); });
-    llenarDropdownHTMLCascada('Region', setReg, regionesSel);
+    const actualizarCajitaSegura = (nombreFiltro, rowsFiltradas, extractorFn) => {
+        const container = document.getElementById('listaCheck' + nombreFiltro);
+        if (!container) return;
 
-    const rowsDepto = filtrarExcluyendo('Departamento');
-    const setDepto = new Set();
-    rowsDepto.forEach(r => { const val = r.departamento || r.DEPARTAMENTO || r.dep; if (val) setDepto.add(String(val).trim().toUpperCase()); });
-    llenarDropdownHTMLCascada('Departamento', setDepto, deptosSel);
+        const setValoresNuevos = new Set();
+        rowsFiltradas.forEach(r => {
+            const val = extractorFn(r);
+            if (val) setValoresNuevos.add(String(val).trim().toUpperCase());
+        });
 
-    const rowsMes = filtrarExcluyendo('Mes');
-    const setMes = new Set();
-    rowsMes.forEach(r => { const val = r.mes || r.MES; if (val) setMes.add(String(val).trim()); });
-    llenarDropdownHTMLCascada('Mes', setMes, mesesSel);
+        const previamenteSeleccionados = obtenerValoresSeleccionados(nombreFiltro);
+        
+        let html = '';
+        Array.from(setValoresNuevos).sort().forEach(val => {
+            const estaMarcado = previamenteSeleccionados.length === 0 || previamenteSeleccionados.includes(val);
+            html += `
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
+                    <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${estaMarcado ? 'checked' : ''} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
+                    ${val}
+                </label>
+            `;
+        });
+        container.innerHTML = html;
+        actualizarLabelBotonFiltro(nombreFiltro);
+    };
 
-    const rowsPerfil = filtrarExcluyendo('PerfilWfm');
-    const setPerfil = new Set();
-    rowsPerfil.forEach(r => { const raw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || ""; const val = String(raw).replace(/["']/g, "").trim(); if (val) setPerfil.add(val.toUpperCase()); });
-    llenarDropdownHTMLCascada('PerfilWfm', setPerfil, perfilesSel);
-
-    const rowsAprob = filtrarExcluyendo('Aprobacion');
-    const setAprob = new Set();
-    rowsAprob.forEach(r => { const val = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL']; if (val) setAprob.add(String(val).trim()); });
-    llenarDropdownHTMLCascada('Aprobacion', setAprob, aprobSel);
-}
-
-function llenarDropdownHTMLCascada(nombreFiltro, setValues, valoresAnteriores) {
-    const container = document.getElementById('listaCheck' + nombreFiltro);
-    if (!container) return;
-    
-    let html = '';
-    const sortedValues = Array.from(setValues).sort();
-    
-    sortedValues.forEach(val => {
-        const marcado = (valoresAnteriores.length === 0 || valoresAnteriores.includes(val)) ? 'checked' : '';
-        html += `
-            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #1e293b; cursor: pointer; font-weight: 600; padding: 2px 4px;" onclick="event.stopPropagation()">
-                <input type="checkbox" name="filtro${nombreFiltro}" value="${val}" ${marcado} onchange="aplicarFiltrosGlobales()" style="cursor: pointer;">
-                ${val}
-            </label>
-        `;
+    actualizarCajitaSegura('Region', filtrarExcluyendo('Region'), r => r.region || r.REGION || r['REGIONAL2'] || r[' REGIONAL2 ']);
+    actualizarCajitaSegura('Departamento', filtrarExcluyendo('Departamento'), r => r.departamento || r.DEPARTAMENTO || r.dep);
+    actualizarCajitaSegura('Mes', filtrarExcluyendo('Mes'), r => r.mes || r.MES);
+    actualizarCajitaSegura('PerfilWfm', filtrarExcluyendo('PerfilWfm'), r => {
+        const raw = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        return String(raw).replace(/["']/g, "").trim();
     });
-    container.innerHTML = html;
-    actualizarLabelBotonFiltro(nombreFiltro);
+    actualizarCajitaSegura('Aprobacion', filtrarExcluyendo('Aprobacion'), r => r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL']);
 }
