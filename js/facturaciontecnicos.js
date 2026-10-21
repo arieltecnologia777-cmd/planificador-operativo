@@ -101,6 +101,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     color: #fff;
     padding: 30px 36px;
     min-height: 180px;
+    max-height: 210px;
     display: flex;
     align-items: center;
     box-shadow: 0 10px 25px -10px rgba(10, 23, 54, 0.3);
@@ -131,13 +132,15 @@ button{font:inherit;color:inherit;cursor:pointer}
     color: #e0e8ff;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
-/* Estilo para la imagen assistant_casco.png */
+
+/* Restricción de tamaño perfecta para assistant_casco.png */
 .mascot-img{
     position: absolute;
-    right: 34px;
+    right: 40px;
     top: 50%;
     transform: translateY(-50%);
-    width: 140px;
+    width: 110px;
+    max-height: 150px;
     height: auto;
     object-fit: contain;
     z-index: 2;
