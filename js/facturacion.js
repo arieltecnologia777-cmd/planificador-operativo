@@ -92,15 +92,20 @@ function llenarDropdownHTML(nombreFiltro, setValues) {
 
 // Comportamiento de "Seleccionar todo" idéntico a Excel: marca/desmarca todos los visibles
 function seleccionarTodoGeneral(nombreFiltro, marcar) {
-    const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (!container) return;
+
+    // Selecciona únicamente los checkboxes visibles (por si hay un filtro de búsqueda escrito en la cajita)
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
-        if (cb.parentElement.style.display !== 'none') {
+        const labelItem = cb.closest('label');
+        if (!labelItem || labelItem.style.display !== 'none') {
             cb.checked = marcar;
         }
     });
+
     aplicarFiltrosGlobales();
 }
-
 // Botón "❌ Borrar filtro" interno de cada cajita
 function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
