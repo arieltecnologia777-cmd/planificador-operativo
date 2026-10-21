@@ -113,11 +113,17 @@ function marcarTodosDropdown(nombreFiltro, marcar) {
     const chkTodo = document.getElementById('chkTodo' + nombreFiltro);
     if (chkTodo) chkTodo.checked = marcar;
 
+    // Al hacer clic en "Borrar filtro", restauramos la visualización de todas las etiquetas de la cajita
+    const container = document.getElementById('listaCheck' + nombreFiltro);
+    if (container) {
+        container.querySelectorAll('label').forEach(lbl => {
+            lbl.style.display = 'flex';
+        });
+    }
+
     const checkboxes = document.querySelectorAll(`input[name="filtro${nombreFiltro}"]`);
     checkboxes.forEach(cb => {
-        if (cb.parentElement.style.display !== 'none') {
-            cb.checked = marcar;
-        }
+        cb.checked = marcar;
     });
 
     actualizarLabelBotonFiltro(nombreFiltro);
