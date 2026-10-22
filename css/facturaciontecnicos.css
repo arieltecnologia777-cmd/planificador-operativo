@@ -37,9 +37,8 @@ button{font:inherit;color:inherit;cursor:pointer}
     line-height: 1.1;
 }
 
-/* Estilo para la mascota ubicada en el header del sidebar junto al logo */
 .sidebar-mascot-img {
-    height: 26px !important;
+    height: 77px !important;
     width: auto !important;
     max-width: none !important;
     object-fit: contain;
