@@ -103,7 +103,7 @@ body:has(.side.activo) .hamburger-btn {
     z-index: 3;
 }
 
-./* Hero con posicionamiento relativo para albergar la fecha arriba */
+/* Hero con posicionamiento relativo para albergar la fecha arriba */
 .hero {
     position: relative;
     overflow: hidden;
@@ -117,6 +117,7 @@ body:has(.side.activo) .hamburger-btn {
     align-items: center;
     box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
+
 .hero .txt{ position: relative; z-index: 2; max-width: 480px; }
 .eyebrow{ font-size: 12px; font-weight: 700; color: #e0f2fe; letter-spacing: .08em; }
 .hero h1{ margin: 4px 0 8px; font-size: 28px; line-height: 1.12; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
