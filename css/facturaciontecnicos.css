@@ -119,6 +119,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 .kpi.amber{background:linear-gradient(180deg,#fff 40%,#FFF8E8)}
 .kpi .head{display:flex;align-items:center;gap:14px}
 .kpi .ill{width:62px;height:62px;flex:none}
+
+/* Resplandor de color detrás de los iconos según su KPI */
+.kpi.blue .ill { filter: drop-shadow(0 8px 16px rgba(29, 95, 224, 0.28)); }
+.kpi.green .ill { filter: drop-shadow(0 8px 16px rgba(18, 161, 95, 0.28)); }
+.kpi.red .ill { filter: drop-shadow(0 8px 16px rgba(224, 51, 76, 0.28)); }
+.kpi.amber .ill { filter: drop-shadow(0 8px 16px rgba(224, 138, 0, 0.28)); }
+
 .kpi .t{flex:1;min-width:0}
 .kpi .t span{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
 .kpi .t span em{font-style:normal;color:var(--red)}
