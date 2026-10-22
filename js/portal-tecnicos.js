@@ -217,3 +217,125 @@ function renderizarPortalVacio() {
 function formatMoney(amount) {
     return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
+// Añade este fragmento dentro de tu lógica al momento de cargar los datos de la API:
+
+function poblarSelectoresYFiltros(rows) {
+    const tecnicosSet = new Set();
+    const mesesSet = new Set();
+
+    rows.forEach(r => {
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
+        if (perfil && perfil !== "SIN PROGRAMACION") tecnicosSet.add(perfil);
+
+        // Capturamos el mes tal como viene de D1 (ej. "2026 10 OCTUBRE")
+        const mesVal = String(r.mes || r.MES || "").trim();
+        if (mesVal) mesesSet.add(mesVal);
+    });
+
+    // 1. Poblar select de técnicos
+    const selectTec = document.getElementById('tec');
+    if (selectTec) {
+        let htmlTec = '';
+        Array.from(tecnicosSet).sort().forEach(tec => {
+            htmlTec += `<option value="${tec}">${tec}</option>`;
+        });
+        selectTec.innerHTML = htmlTec;
+    }
+
+    // 2. Poblar select de meses reales de D1
+    const selectMes = document.getElementById('filtroMesTecnico');
+    if (selectMes) {
+        let htmlMes = `<option value="TODOS">📅 Todos los periodos (${mesesSet.size} meses)</option>`;
+        // Ordenar alfabéticamente o cronológicamente según el formato "YYYY MM NOMBRE"
+        Array.from(mesesSet).sort().forEach(mes => {
+            htmlMes += `<option value="${mes}">${mes}</option>`;
+        });
+        selectMes.innerHTML = htmlMes;
+    }
+
+    // Eventos de cambio en los filtros
+    if (selectTec) {
+        selectTec.addEventListener('change', () => ejecutarFiltroYRenderizado());
+    }
+    if (selectMes) {
+        selectMes.addEventListener('change', () => ejecutarFiltroYRenderizado());
+    }
+
+    // Render inicial con el primer técnico y todos los meses o por defecto
+    if (selectTec && selectTec.options.length > 0) {
+        selectTec.selectedIndex = 0;
+        ejecutarFiltroYRenderizado();
+    }
+}
+
+function ejecutarFiltroYRenderizado() {
+    const selectTec = document.getElementById('tec');
+    const selectMes = document.getElementById('filtroMesTecnico');
+    
+    const tecnicoSeleccionado = selectTec ? selectTec.value : "";
+    const mesSeleccionado = selectMes ? selectMes.value : "TODOS";
+
+    procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesSeleccionado);
+}
+
+function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
+    const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
+    
+    // Filtramos los registros del técnico y el mes seleccionado (si no es "TODOS")
+    const misRegistros = registrosCrudosTecnicos.filter(r => {
+        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
+        const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
+        const mesReg = String(r.mes || r.MES || "").trim();
+
+        const matchTecnico = perfil === tecnicoBuscado;
+        const matchMes = (mesFiltro === "TODOS" || mesReg === mesFiltro);
+
+        return matchTecnico && matchMes;
+    });
+
+    // Si se seleccionó "TODOS", contamos cuántos meses únicos tiene activos ese técnico
+    let mesesSet = new Set();
+    misRegistros.forEach(r => {
+        const m = String(r.mes || r.MES || "").trim();
+        if (m) mesesSet.add(m);
+    });
+    
+    // Cantidad de meses para multiplicar la base de la meta ($9.500.000 por mes)
+    const cantidadMeses = mesFiltro === "TODOS" ? Math.max(1, mesesSet.size) : 1;
+    const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
+
+    let montoAprobadoTotal = 0;
+    let montoRechazadoTotal = 0;
+    let montoSubsanadoTotal = 0;
+
+    misRegistros.forEach(r => {
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        const estAceptar = aprobReg.includes("ACEPTADO");
+        const estRechazar = aprobReg.includes("RECHAZADO");
+        const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        
+        if (estAceptar) {
+            montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        }
+        if (estRechazar) {
+            montoRechazadoTotal += montoBase;
+        }
+        montoSubsanadoTotal += Number(r.trasiego_esp ?? 0);
+    });
+
+    // Actualizar KPIs en interfaz
+    document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
+    document.getElementById('kpiMontoAprobado').innerText = formatMoney(montoAprobadoTotal);
+    document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
+    document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoSubsanadoTotal);
+
+    let porcentajeCumplimiento = metaAsignadaTotal > 0 ? Math.round((montoAprobadoTotal / metaAsignadaTotal) * 100) : 0;
+    document.getElementById('txtPorcentajeCumplimientoNota').innerText = `${porcentajeCumplimiento}% de cumplimiento de tu meta`;
+
+    // Actualizar barra de estado general
+    actualizarBarraEstadoGeneralPeriodo(montoAprobadoTotal, metaAsignadaTotal, porcentajeCumplimiento, cantidadMeses);
+
+    // Renderizar tabla
+    renderizarTablaOrdenesTecnico(misRegistros);
+}
