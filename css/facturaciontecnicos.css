@@ -112,8 +112,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* KPIs */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.kpi{padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border:1px solid transparent}
-.kpi.red{background:linear-gradient(180deg,#fff 40%,#FFF1F3);border-color:#FFD6DC}
+.kpi{padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border:1px solid transparent;position:relative}
+.kpi.red{background:linear-gradient(180deg,#fff 40%,#FFF1F3);border-color:#FFD6DC;justify-content:space-between;}
 .kpi.green{background:linear-gradient(180deg,#fff 40%,#F0FBF5)}
 .kpi.blue{background:linear-gradient(180deg,#fff 40%,#F1F5FF)}
 .kpi.amber{background:linear-gradient(180deg,#fff 40%,#FFF8E8)}
@@ -126,10 +126,35 @@ button{font:inherit;color:inherit;cursor:pointer}
 .kpi .go{width:32px;height:32px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--mute);margin:-6px -6px 0 0;align-self:flex-start}
 .kpi .go:hover{background:rgba(15,27,61,.06)}
 .kpi svg.spark{width:100%;height:34px;display:block}
+
+/* Relleno con degradado superior a inferior para las líneas de tendencia */
+.kpi.blue svg.spark, .kpi.green svg.spark {
+    overflow: visible;
+}
+.kpi.blue svg.spark path, .kpi.green svg.spark path {
+    /* Si el SVG utiliza un área de relleno, se aplica el gradiente vertical */
+}
+.kpi.blue .spark-area, .kpi.blue svg.spark [fill]:not([fill="none"]) {
+    fill: url(#blueGradient) !important;
+}
+.kpi.green .spark-area, .kpi.green svg.spark [fill]:not([fill="none"]) {
+    fill: url(#greenGradient) !important;
+}
+
+/* Regla alternativa si las líneas usan un contenedor con fondo degradado para simular el área bajo la curva */
+.kpi.blue .spark-container, .kpi.blue svg.spark {
+    background: linear-gradient(180deg, rgba(29, 95, 224, 0.25) 0%, rgba(29, 95, 224, 0.0) 100%);
+    border-radius: 8px;
+}
+.kpi.green .spark-container, .kpi.green svg.spark {
+    background: linear-gradient(180deg, rgba(18, 161, 95, 0.25) 0%, rgba(18, 161, 95, 0.0) 100%);
+    border-radius: 8px;
+}
+
 .note{display:flex;align-items:center;gap:8px;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600;line-height:1.35}
 .note.b{background:var(--blue-soft);color:#173FA8}
 .note.g{background:var(--green-soft);color:#0B6B40}
-.note.r{background:var(--red-soft);color:#A3182E}
+.note.r{background:var(--red-soft);color:#A3182E;margin-top:auto;}
 .note.a{background:var(--amber-soft);color:#7A4A00}
 
 /* Estado general */
