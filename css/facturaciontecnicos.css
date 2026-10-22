@@ -87,6 +87,27 @@ body:has(.side.activo) .hamburger-btn {
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
+/* Cabecera superior con Fecha y Hora Real */
+.top-header-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 4px;
+}
+.live-datetime-badge {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(15, 27, 61, 0.04);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
 /* Hero con el azul corporativo brillante de referencia y degradado horizontal */
 .hero {
     position: relative;
