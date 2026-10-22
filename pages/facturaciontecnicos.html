@@ -6,16 +6,14 @@
 <title>Portal de Técnicos – Mi Rendimiento Financiero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/facturaciontecnicos.css">
+<link rel="stylesheet" href="../css/facturaciontecnicos.css?v=2">
 </head>
 <body>
 
-<!-- Botón Hamburguesa Flotante para Móviles -->
 <button type="button" id="btnAbrirSidebar" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
 </button>
 
-<!-- Overlay de fondo oscuro para móvil -->
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div class="app">
@@ -29,9 +27,8 @@
     <a class="on" href="portal-tecnicos.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Mi Rendimiento</a>
     <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Órdenes de Trabajo</a>
     <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V10M12 21V4M19 21v-7"/></svg>Reportes</a>
-    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configuración</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configuración</a>
     
-    <!-- Opción de Cerrar Menú al final de las opciones de navegación -->
     <a href="#" onclick="toggleSidebar(); return false;" class="nav-close-mobile" style="color: #E0334C;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Cerrar menú</a>
   </nav>
   
@@ -61,10 +58,10 @@
       <h1>Mi Rendimiento<br>Financiero</h1>
       <p>Consulta tu meta personal, montos aprobados, rechazos y estados en tiempo real.</p>
     </div>
-    <!-- Avatar con tamaño controlado -->
     <img src="../assets/assistant_casco.png" alt="Dominic, la mascota del portal" class="mascot-img">
   </section>
 
+  <!-- Resto de secciones de la app... -->
   <section class="card profile" aria-label="Perfil y periodo">
     <div class="sel">
       <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
@@ -77,77 +74,9 @@
       <div><small>Periodo actual</small><b>Abr 2025 – Jun 2025</b></div>
     </div>
   </section>
-
-  <section class="kpis" aria-label="Indicadores">
-    <article class="card kpi blue">
-      <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#DCE6FB" stroke-width="9"/><path d="M32 6a26 26 0 0123 14" fill="none" stroke="#1D5FE0" stroke-width="9" stroke-linecap="round"/><path d="M32 58A26 26 0 016 32" fill="none" stroke="#2F7BFF" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="#1D5FE0"/></svg>
-        <div class="t"><span>Meta asignada</span><div class="v">$ 9.500.000</div></div>
-        <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C20 8 36 8 55 20s38 12 58-2 40-14 60-6 20 2 27-2" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round"/></svg>
-      <div class="note b">Meta mensual asignada para este periodo</div>
-    </article>
-
-    <article class="card kpi green">
-      <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="50" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="40" width="44" height="10" fill="#F5C13A"/><ellipse cx="32" cy="40" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="32" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="26" width="44" height="6" fill="#F5C13A"/><ellipse cx="32" cy="26" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="18" rx="18" ry="6" fill="#FFE393"/></svg>
-        <div class="t"><span>Monto aprobado</span><div class="v">$ 56.373.775</div></div>
-        <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28C25 26 35 12 60 16s35 12 60 2 45-10 80-12" fill="none" stroke="#12A15F" stroke-width="2.5" stroke-linecap="round"/></svg>
-      <div class="note g">593% de cumplimiento de tu meta</div>
-    </article>
-
-    <article class="card kpi red">
-      <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 6h28l10 10v42H14z" fill="#fff" stroke="#C9D0E2" stroke-width="2"/><path d="M42 6v10h10" fill="#E6EAF4"/><path d="M22 26h20M22 34h20M22 42h12" stroke="#C9D0E2" stroke-width="3" stroke-linecap="round"/><path d="M34 40h22l-5 7 5 7H34z" fill="#E0334C"/></svg>
-        <div class="t"><span>Rechazado <em>(VER)</em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="v">$ 320.029</div></div>
-        <button class="go" aria-label="Ver rechazados"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-      <div class="note r"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Requiere revisión en campo</div>
-    </article>
-
-    <article class="card kpi amber">
-      <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/><path d="M8 44c6-18 22-24 36-20" fill="none" stroke="#6FA0FF" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
-        <div class="t"><span>Monto subsanado</span><div class="v">$ 0</div></div>
-        <button class="go" aria-label="Ver monto subsanado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-      <div class="note a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E08A00" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>En proceso de rescate</div>
-    </article>
-  </section>
-
-  <section class="card state" aria-label="Estado general del periodo">
-    <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
-    <div class="mid">
-      <div class="row"><h2>Estado general del periodo</h2>
-        <span class="badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3"/></svg>¡Meta cumplida! 593%</span></div>
-      <div class="bar" role="progressbar" aria-valuenow="593" aria-valuemin="0" aria-valuemax="100" aria-label="Cumplimiento de la meta"><span class="f1"></span><span class="f2"></span><span class="pin"></span></div>
-      <div class="legend"><span>Semanal</span><span>Meta mensual</span></div>
-    </div>
-  </section>
-
-  <section class="card orders" aria-label="Detalle de órdenes de trabajo">
-    <div class="otop">
-      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
-      <h2>Detalle de mis órdenes de trabajo</h2>
-      <button class="chip" id="fs" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="fl">Filtrar: todas</span></button>
-      <button class="chip on" id="fg" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v7M8 7l4-4 4 4M5 21h14M9 17h6"/></svg>GRN/BTS/RVST</button>
-      <button class="all">Ver todas<i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></i></button>
-    </div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>ID / OT</th><th>Departamento</th><th>Estado</th><th>Causa de rechazo</th><th>Estimado</th><th>Aprobado</th><th>Acciones</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-      <div class="empty" id="empty" hidden>No hay órdenes que coincidan con tu búsqueda.</div>
-    </div>
-  </section>
 </main>
 </div>
 
-<!-- Script para controlar el menú lateral móvil -->
 <script>
 function toggleSidebar() {
   const sidebar = document.getElementById('appSidebar');
