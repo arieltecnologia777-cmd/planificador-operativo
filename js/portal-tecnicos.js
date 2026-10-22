@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
 function iniciarRelojTiempoReal() {
     const relojElem = document.getElementById('liveDateTime');
     if (!relojElem) return;
