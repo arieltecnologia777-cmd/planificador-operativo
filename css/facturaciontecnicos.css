@@ -28,9 +28,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .brand{
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Distribuye espacio de forma uniforme */
-    gap: 8px; /* Los acerca más entre sí */
-    padding: 6px 12px 26px 12px; /* Centrado uniforme respecto a los márgenes del sidebar */
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 12px 26px 12px;
     color: #0F1B3D;
     font-weight: 800;
     font-size: 17px;
@@ -39,7 +39,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* Estilo para la mascota ubicada en el header del sidebar junto al logo */
 .sidebar-mascot-img {
-    height: 77px !important;
+    height: 26px !important;
     width: auto !important;
     max-width: none !important;
     object-fit: contain;
@@ -74,19 +74,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero con banner.jpg de fondo */
+/* Hero con fondo traslúcido en tonos azules corporativos (sin imágenes externas) */
 .hero{
     position: relative;
     overflow: hidden;
     border-radius: 22px;
-    background: linear-gradient(135deg, rgba(7, 22, 62, 0.9) 0%, rgba(12, 42, 120, 0.8) 100%), url('../assets/banner.jpg');
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, rgba(10, 31, 92, 0.92) 0%, rgba(29, 95, 224, 0.85) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: #fff;
     padding: 30px 36px;
     min-height: 180px;
     display: flex;
     align-items: center;
+    box-shadow: 0 10px 30px rgba(29, 95, 224, 0.18);
 }
 .hero .txt{
     position: relative;
@@ -196,7 +197,7 @@ tbody tr:hover td{background:#F8FAFE}
     transform: translateX(0) !important;
   }
   
- /* Botón hamburguesa (Se oculta si el sidebar está abierto con la clase .activo) */
+  /* Botón hamburguesa */
   .hamburger-btn {
     display: flex !important;
     position: fixed;
@@ -215,8 +216,8 @@ tbody tr:hover td{background:#F8FAFE}
     justify-content: center;
     transition: opacity 0.2s ease, visibility 0.2s ease;
   }
-  
-  /* Ocultar hamburguesa cuando el menú móvil está desplegado */
+
+  /* Ocultar la hamburguesa cuando el sidebar esté activo en móvil */
   .side.activo ~ .hamburger-btn {
     opacity: 0 !important;
     visibility: hidden !important;
