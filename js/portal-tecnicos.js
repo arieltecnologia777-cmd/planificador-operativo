@@ -14,7 +14,6 @@ async function cargarDatosTecnicosDesdeAPI() {
         if (response.ok) {
             registrosCrudosTecnicos = await response.json();
             if (Array.isArray(registrosCrudosTecnicos) && registrosCrudosTecnicos.length > 0) {
-                // Aquí está la llamada clave que faltaba para poblar los selects con datos reales de D1
                 poblarSelectoresYFiltros(registrosCrudosTecnicos);
             } else {
                 renderizarPortalVacio();
@@ -35,7 +34,6 @@ function poblarSelectoresYFiltros(rows) {
         const perfil = String(rawPerfil).replace(/["']/g, "").trim();
         if (perfil && perfil !== "SIN PROGRAMACION") tecnicosSet.add(perfil);
 
-        // Extraemos los meses reales de la base de datos D1 (ej. "2026 10 OCTUBRE")
         const mesVal = String(r.mes || r.MES || "").trim();
         if (mesVal) mesesSet.add(mesVal);
     });
@@ -50,11 +48,14 @@ function poblarSelectoresYFiltros(rows) {
         selectTec.innerHTML = htmlTec;
     }
 
-    // 2. Poblar select de meses reales extraídos de D1
+    // 2. Filtrar y ordenar para mostrar SOLAMENTE los últimos 3 meses vigentes de D1
+    const mesesOrdenados = Array.from(mesesSet).sort();
+    const ultimosTresMeses = mesesOrdenados.slice(-3); // Toma los últimos 3 meses del listado
+
     const selectMes = document.getElementById('filtroMesTecnico');
     if (selectMes) {
-        let htmlMes = `<option value="TODOS">📅 Todos los periodos (${mesesSet.size} meses)</option>`;
-        Array.from(mesesSet).sort().forEach(mes => {
+        let htmlMes = `<option value="TODOS">📅 Últimos 3 meses vigentes (${ultimosTresMeses.length} meses)</option>`;
+        ultimosTresMeses.forEach(mes => {
             htmlMes += `<option value="${mes}">${mes}</option>`;
         });
         selectMes.innerHTML = htmlMes;
@@ -68,7 +69,7 @@ function poblarSelectoresYFiltros(rows) {
         selectMes.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // Render inicial con el primer técnico y todos los meses
+    // Render inicial con el primer técnico y todos los periodos filtrados por defecto
     if (selectTec && selectTec.options.length > 0) {
         selectTec.selectedIndex = 0;
         ejecutarFiltroYRenderizado();
@@ -88,13 +89,22 @@ function ejecutarFiltroYRenderizado() {
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
     
+    // Si el filtro está en "TODOS", limitamos los registros únicamente a los últimos 3 meses detectados en el selector
+    const selectMes = document.getElementById('filtroMesTecnico');
+    let mesesPermitidos = [];
+    if (selectMes) {
+        for (let i = 1; i < selectMes.options.length; i++) {
+            mesesPermitidos.push(selectMes.options[i].value);
+        }
+    }
+
     const misRegistros = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim();
 
         const matchTecnico = perfil === tecnicoBuscado;
-        const matchMes = (mesFiltro === "TODOS" || mesReg === mesFiltro);
+        const matchMes = (mesFiltro === "TODOS" ? mesesPermitidos.includes(mesReg) : mesReg === mesFiltro);
 
         return matchTecnico && matchMes;
     });
