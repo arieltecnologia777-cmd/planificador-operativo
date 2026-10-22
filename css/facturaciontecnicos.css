@@ -37,6 +37,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     line-height: 1.1;
 }
 
+/* Estilo para la mascota ubicada en el header del sidebar junto al logo */
 .sidebar-mascot-img {
     height: 77px !important;
     width: auto !important;
@@ -217,10 +218,9 @@ tbody tr:hover td{background:#F8FAFE}
   }
 
   /* Ocultar la hamburguesa cuando el sidebar esté activo en móvil */
-  .side.activo ~ .hamburger-btn {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+  .side.activo ~ .hamburger-btn,
+  body:has(.side.activo) .hamburger-btn {
+    display: none !important;
   }
 
   /* Desenfoque y fondo oscuro en móvil con el menú abierto */
