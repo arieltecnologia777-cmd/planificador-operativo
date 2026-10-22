@@ -271,45 +271,75 @@ tbody tr:hover td{background:#F8FAFE}
     display: flex !important;
   }
   
-  .main{padding:14px; padding-top: 70px;}
+  .main{
+    padding: 12px !important; 
+    padding-top: 70px !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
   .hero{padding:20px; height: auto;}
   .mascot-img{display:none}
   .hero h1{font-size:24px}
 
-  /* Perfil y periodos en 2 columnas en móviles */
+  /* Perfil y periodos en 2 columnas en móviles sin desbordarse */
   .profile {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
     padding: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .profile .sel {
+  .sel {
     min-width: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    padding: 6px 10px 6px 8px !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+  .sel select {
+    font-size: 11.5px !important;
+    padding-right: 18px !important;
+  }
+  .sel label {
+    font-size: 9.5px !important;
+  }
+  .sel .ic {
+    width: 34px !important;
+    height: 34px !important;
   }
 
-  /* KPIs estrictamente en 2 columnas en dispositivos móviles */
+  /* KPIs estrictamente en 2 columnas con box-sizing para evitar scroll horizontal */
   .kpis {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .kpi {
-    padding: 14px 12px !important;
-    gap: 8px !important;
+    padding: 12px 10px !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
   .kpi .v {
-    font-size: 20px !important;
+    font-size: 18px !important;
   }
   .kpi .ill {
-    width: 42px !important;
-    height: 42px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .kpi .head {
+    gap: 8px !important;
   }
 }
 
 @media(max-width:480px){
   .profile {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr 1fr !important;
   }
   .kpis {
     grid-template-columns: repeat(2, 1fr) !important;
