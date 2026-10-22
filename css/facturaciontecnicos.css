@@ -74,18 +74,18 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero con el azul corporativo institucional y sobrio */
+/* Hero con azul suave y degradado fluido desde la izquierda oscura hacia la derecha luminosa */
 .hero{
     position: relative;
     overflow: hidden;
     border-radius: 22px;
-    background: linear-gradient(135deg, #0A1F5C 0%, #1D5FE0 100%);
+    background: linear-gradient(90deg, #102a6b 0%, #1d5fe0 45%, #4f83ee 100%);
     color: #fff;
     padding: 24px 32px;
     height: 145px;
     display: flex;
     align-items: center;
-    box-shadow: 0 10px 25px -10px rgba(10, 31, 92, 0.4);
+    box-shadow: 0 10px 25px -10px rgba(29, 95, 224, 0.3);
 }
 .hero .txt{
     position: relative;
@@ -95,7 +95,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .eyebrow{
     font-size: 12px;
     font-weight: 700;
-    color: #86A9FF;
+    color: #b3ccff;
     letter-spacing: .08em;
 }
 .hero h1{
@@ -104,14 +104,14 @@ button{font:inherit;color:inherit;cursor:pointer}
     line-height: 1.12;
     letter-spacing: -.02em;
     font-weight: 800;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .hero p{
     margin: 0;
     font-size: 13.5px;
     line-height: 1.45;
-    color: #D2DEFF;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    color: #e6eeff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Profile */
