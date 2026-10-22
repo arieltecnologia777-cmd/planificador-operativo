@@ -97,6 +97,7 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
         }
     }
 
+    // Filtramos los registros que correspondan al técnico y al mes (o a los 3 meses si está en "TODOS")
     const misRegistros = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
@@ -108,13 +109,15 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
         return matchTecnico && matchMes;
     });
 
-    let mesesSet = new Set();
+    // Determinamos de forma exacta cuántos meses únicos están involucrados en estos registros filtrados
+    let mesesUnicosFiltrados = new Set();
     misRegistros.forEach(r => {
         const m = String(r.mes || r.MES || "").trim();
-        if (m) mesesSet.add(m);
+        if (m) mesesUnicosFiltrados.add(m);
     });
     
-    const cantidadMeses = mesFiltro === "TODOS" ? Math.max(1, mesesSet.size) : 1;
+    // Si es "TODOS", toma la cantidad de los meses permitidos (3), o los que tenga el técnico. Si es un mes específico, es 1.
+    const cantidadMeses = mesFiltro === "TODOS" ? mesesPermitidos.length : 1;
     const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
 
     let montoAprobadoTotal = 0;
@@ -136,7 +139,7 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
         montoSubsanadoTotal += Number(r.trasiego_esp ?? 0);
     });
 
-    // Actualizar KPIs en interfaz
+    // Actualizar KPIs en interfaz con los valores multiplicados y filtrados correctamente
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(montoAprobadoTotal);
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
