@@ -397,3 +397,20 @@ tbody tr:hover td{background:#F8FAFE}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Sombras de color elegantes para los iconos de los KPIs según su categoría */
+.kpi.blue .ill {
+    filter: drop-shadow(0 6px 12px rgba(29, 95, 224, 0.35)) !important;
+}
+
+.kpi.green .ill {
+    filter: drop-shadow(0 6px 12px rgba(18, 161, 95, 0.35)) !important;
+}
+
+.kpi.red .ill {
+    filter: drop-shadow(0 6px 12px rgba(224, 51, 76, 0.35)) !important;
+}
+
+.kpi.amber .ill {
+    filter: drop-shadow(0 6px 12px rgba(224, 138, 0, 0.35)) !important;
+}
