@@ -5,13 +5,13 @@ let registrosCrudosTecnicos = [];
 const META_BASE_MENSUAL_TECNICO = 9500000;
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarDatosTecnicosDesdeAPI();
-    iniciarRelojTiempoReal();
-    
-    // Forzar que el dropdown inicie completamente cerrado al cargar o refrescar
+    // Forzar cierre estricto al cargar o refrescar
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
+    cargarDatosTecnicosDesdeAPI();
+    iniciarRelojTiempoReal();
+    
     // Cerrar dropdown al hacer clic fuera
     document.addEventListener('click', (e) => {
         if (drop && !drop.contains(e.target) && !e.target.closest('.sel')) {
@@ -108,9 +108,14 @@ function poblarSelectoresYFiltros(rows) {
 }
 
 function toggleDropdownPeriodo(e) {
+    if (e) e.stopPropagation();
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) {
-        drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+        if (drop.style.display === 'block' || drop.style.display === '') {
+            drop.style.display = 'none';
+        } else {
+            drop.style.display = 'block';
+        }
     }
 }
 
