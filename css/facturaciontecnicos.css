@@ -300,3 +300,49 @@ tbody tr:hover td{background:#F8FAFE}
 
 @media(max-width:560px){.kpis{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Estilo moderno y estilizado para los selectores (idéntico a la referencia) */
+.sel {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 8px 16px 8px 12px !important;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(15, 27, 61, 0.04);
+}
+
+.sel select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0 !important;
+    background: transparent !important;
+    font: 700 14px 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    color: #0f172a !important;
+    width: 100%;
+    padding: 4px 28px 4px 0 !important;
+    cursor: pointer;
+    outline: none !important;
+}
+
+.sel label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sel .chev {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #64748b;
+}
