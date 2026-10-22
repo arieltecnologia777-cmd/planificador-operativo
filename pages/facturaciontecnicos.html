@@ -67,18 +67,30 @@
       <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1B3D" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </div>
 
-    <!-- Selector de Periodo dinámico extraído de D1 -->
-    <div class="sel">
+    <!-- Selector de Periodo de Selección Múltiple Estilo Excel -->
+    <div class="sel" style="position: relative; cursor: pointer;" onclick="toggleDropdownPeriodo(event)">
       <span class="cal" style="width: 44px; height: 44px; border-radius: 12px; background: #fff; display: grid; place-items: center; box-shadow: 0 2px 6px rgba(15,27,61,.08);">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
       </span>
-      <div style="flex:1">
-        <label for="filtroMesTecnico">Periodo / Mes</label>
-        <select id="filtroMesTecnico">
-          <option value="TODOS">📅 Últimos 3 meses vigentes</option>
-        </select>
+      <div style="flex:1; pointer-events: none;">
+        <label>Periodo / Mes</label>
+        <b id="lblPeriodoSeleccionado" style="font-size: 14px; color: #0f172a;">Cargando...</b>
       </div>
       <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1B3D" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+
+      <!-- Dropdown Flotante Multiselección -->
+      <div id="dropdownPeriodoContent" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); margin-top: 6px; padding: 12px; z-index: 9999; cursor: default;" onclick="event.stopPropagation()">
+        <input type="text" id="inputBuscarPeriodo" placeholder="Buscar..." oninput="filtrarListaPeriodos(this.value)" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 8px; box-sizing: border-box;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 700;">
+          <span style="color: #dc2626; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="borrarFiltroPeriodos()">❌ Borrar filtro</span>
+          <span style="color: #2563eb; cursor: pointer;" onclick="seleccionarTodoPeriodos(true)">Seleccionar todo</span>
+        </div>
+
+        <div id="listaCheckPeriodos" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
+          <!-- Se inyecta dinámicamente desde JS -->
+        </div>
+      </div>
     </div>
   </section>
 
@@ -100,7 +112,7 @@
         <path d="M 0 25 Q 70 5 140 22 T 280 15 L 280 40 L 0 40 Z" fill="url(#gradBlue)" />
         <path d="M 0 25 Q 70 5 140 22 T 280 15" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round" />
       </svg>
-      <div class="note b">Meta mensual asignada para este periodo</div>
+      <div class="note b">Meta asignada para este periodo</div>
     </article>
 
     <article class="card kpi green">
@@ -156,7 +168,7 @@
         <div id="progressFillBarra" style="position: absolute; left: 0; top: 0; bottom: 0; width: 0%; border-radius: 99px; background: linear-gradient(90deg, #E0334C 0%, #E08A00 50%, #12A15F 100%); transition: width 0.4s ease;"></div>
         <div id="progressPinBarra" class="pin" title="Progreso" style="position: absolute; left: 0%; top: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid #E0334C; box-shadow: 0 2px 8px rgba(0,0,0,.2); transform: translateX(-50%); transition: left 0.4s ease;"></div>
       </div>
-      <div class="legend"><span id="legendStart">0%</span><span id="legendMetaTexto">Meta mensual: $0</span></div>
+      <div class="legend"><span id="legendStart">0%</span><span id="legendMetaTexto">Meta total: $0</span></div>
     </div>
   </section>
 
