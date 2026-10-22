@@ -6,8 +6,9 @@ const META_BASE_MENSUAL_TECNICO = 9500000;
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosTecnicosDesdeAPI();
+    iniciarRelojTiempoReal();
     
-    // Asegurar que el dropdown inicie cerrado al cargar
+    // Forzar que el dropdown inicie completamente cerrado al cargar o refrescar
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
@@ -18,6 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+function iniciarRelojTiempoReal() {
+    const relojElem = document.getElementById('liveDateTime');
+    if (!relojElem) return;
+
+    function actualizar() {
+        const ahora = new Date();
+        const opcionesFecha = { year: 'numeric', month: 'short', day: 'numeric' };
+        const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const fechaFormateada = ahora.toLocaleDateString('es-CO', opcionesFecha);
+        const horaFormateada = ahora.toLocaleTimeString('es-CO', opcionesHora);
+        relojElem.innerHTML = `📅 ${fechaFormateada} &nbsp;|&nbsp; ⏰ ${horaFormateada}`;
+    }
+    actualizar();
+    setInterval(actualizar, 1000);
+}
 
 async function cargarDatosTecnicosDesdeAPI() {
     try {
@@ -79,6 +96,10 @@ function poblarSelectoresYFiltros(rows) {
     }
 
     actualizarLabelBotonPeriodos();
+
+    // Asegurar que el menú inicie cerrado al poblar
+    const drop = document.getElementById('dropdownPeriodoContent');
+    if (drop) drop.style.display = 'none';
 
     // Render inicial
     if (selectTec && selectTec.options.length > 0) {
