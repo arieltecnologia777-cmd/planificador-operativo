@@ -6,6 +6,14 @@ const META_BASE_MENSUAL_TECNICO = 9500000;
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosTecnicosDesdeAPI();
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        const drop = document.getElementById('dropdownPeriodoContent');
+        if (drop && !drop.contains(e.target) && !e.target.closest('.sel')) {
+            drop.style.display = 'none';
+        }
+    });
 });
 
 async function cargarDatosTecnicosDesdeAPI() {
@@ -46,78 +54,120 @@ function poblarSelectoresYFiltros(rows) {
             htmlTec += `<option value="${tec}">${tec}</option>`;
         });
         selectTec.innerHTML = htmlTec;
+        selectTec.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // 2. Extraer los últimos 3 meses vigentes ordenados
+    // 2. Extraer los meses y marcar los últimos 3 vigentes por defecto
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
 
-    const selectMes = document.getElementById('filtroMesTecnico');
-    if (selectMes) {
-        let htmlMes = `<option value="TODOS">📅 Últimos 3 meses vigentes (${ultimosTresMeses.length} meses)</option>`;
-        ultimosTresMeses.forEach(mes => {
-            htmlMes += `<option value="${mes}">${mes}</option>`;
+    const containerMeses = document.getElementById('listaCheckPeriodos');
+    if (containerMeses) {
+        let htmlCheck = '';
+        mesesOrdenados.forEach(mes => {
+            // Por defecto marcamos los últimos 3 vigentes
+            const isChecked = ultimosTresMeses.includes(mes) ? 'checked' : '';
+            htmlCheck += `
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" ${isChecked} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    ${mes}
+                </label>
+            `;
         });
-        selectMes.innerHTML = htmlMes;
+        containerMeses.innerHTML = htmlCheck;
     }
 
-    // Eventos de cambio en los filtros
-    if (selectTec) {
-        selectTec.onchange = () => ejecutarFiltroYRenderizado();
-    }
-    if (selectMes) {
-        selectMes.onchange = () => ejecutarFiltroYRenderizado();
-    }
+    actualizarLabelBotonPeriodos();
 
-    // Render inicial con el primer técnico y los periodos vigentes
+    // Render inicial
     if (selectTec && selectTec.options.length > 0) {
         selectTec.selectedIndex = 0;
         ejecutarFiltroYRenderizado();
     }
 }
 
-function ejecutarFiltroYRenderizado() {
-    const selectTec = document.getElementById('tec');
-    const selectMes = document.getElementById('filtroMesTecnico');
-    
-    const tecnicoSeleccionado = selectTec ? selectTec.value : "";
-    const mesSeleccionado = selectMes ? selectMes.value : "TODOS";
-
-    procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesSeleccionado);
+function toggleDropdownPeriodo(e) {
+    const drop = document.getElementById('dropdownPeriodoContent');
+    if (drop) {
+        drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+    }
 }
 
-function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
+function seleccionarTodoPeriodos(marcar) {
+    const checkboxes = document.querySelectorAll('input[name="filtroPeriodoCheckbox"]');
+    checkboxes.forEach(cb => {
+        const lbl = cb.closest('label');
+        if (!lbl || lbl.style.display !== 'none') {
+            cb.checked = marcar;
+        }
+    });
+    actualizarLabelBotonPeriodos();
+    ejecutarFiltroYRenderizado();
+}
+
+function borrarFiltroPeriodos() {
+    const checkboxes = document.querySelectorAll('input[name="filtroPeriodoCheckbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    actualizarLabelBotonPeriodos();
+    ejecutarFiltroYRenderizado();
+}
+
+function filtrarListaPeriodos(texto) {
+    const query = texto.toLowerCase().trim();
+    const labels = document.querySelectorAll('#listaCheckPeriodos label');
+    labels.forEach(lbl => {
+        const txt = lbl.innerText.toLowerCase();
+        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
+    });
+}
+
+function obtenerMesesSeleccionados() {
+    const checkboxes = document.querySelectorAll('input[name="filtroPeriodoCheckbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function actualizarLabelBotonPeriodos() {
+    const seleccionados = obtenerMesesSeleccionados();
+    const total = document.querySelectorAll('input[name="filtroPeriodoCheckbox"]').length;
+    const lbl = document.getElementById('lblPeriodoSeleccionado');
+    if (!lbl) return;
+
+    if (seleccionados.length === 0) {
+        lbl.innerText = "Ningún periodo";
+    } else if (seleccionados.length === total) {
+        lbl.innerText = "Todos los periodos";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = `${seleccionados.length} seleccionados`;
+    }
+}
+
+function ejecutarFiltroYRenderizado() {
+    actualizarLabelBotonPeriodos();
+    const selectTec = document.getElementById('tec');
+    const tecnicoSeleccionado = selectTec ? selectTec.value : "";
+    const mesesSeleccionados = obtenerMesesSeleccionados();
+
+    procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesesSeleccionados);
+}
+
+function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
     
-    const selectMes = document.getElementById('filtroMesTecnico');
-    let mesesPermitidos = [];
-    if (selectMes) {
-        for (let i = 1; i < selectMes.options.length; i++) {
-            mesesPermitidos.push(selectMes.options[i].value);
-        }
-    }
-
-    // Filtramos los registros que correspondan al técnico y al mes (o a los 3 meses si está en "TODOS")
     const misRegistros = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim();
 
         const matchTecnico = perfil === tecnicoBuscado;
-        const matchMes = (mesFiltro === "TODOS" ? mesesPermitidos.includes(mesReg) : mesReg === mesFiltro);
+        const matchMes = mesesSeleccionados.includes(mesReg);
 
         return matchTecnico && matchMes;
     });
 
-    // Determinamos de forma exacta cuántos meses únicos están involucrados en estos registros filtrados
-    let mesesUnicosFiltrados = new Set();
-    misRegistros.forEach(r => {
-        const m = String(r.mes || r.MES || "").trim();
-        if (m) mesesUnicosFiltrados.add(m);
-    });
-    
-    // Si es "TODOS", toma la cantidad de los meses permitidos (3), o los que tenga el técnico. Si es un mes específico, es 1.
-    const cantidadMeses = mesFiltro === "TODOS" ? mesesPermitidos.length : 1;
+    // Cantidad de meses seleccionados para calcular la meta total
+    const cantidadMeses = Math.max(1, mesesSeleccionados.length);
     const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
 
     let montoAprobadoTotal = 0;
@@ -139,19 +189,24 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
         montoSubsanadoTotal += Number(r.trasiego_esp ?? 0);
     });
 
-    // Actualizar KPIs en interfaz con los valores multiplicados y filtrados correctamente
+    // 1. Actualizar KPIs en interfaz
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(montoAprobadoTotal);
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
     document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoSubsanadoTotal);
 
+    // Texto dinámico de la tarjeta de meta (sin decir estrictamente "mes", adaptado al filtro)
+    const textoNotaMeta = cantidadMeses === 1 ? "Meta asignada para este periodo" : `Meta asignada para los ${cantidadMeses} periodos seleccionados`;
+    const notaMetaElem = document.querySelector('.card.kpi.blue .note.b');
+    if (notaMetaElem) notaMetaElem.innerText = textoNotaMeta;
+
     let porcentajeCumplimiento = metaAsignadaTotal > 0 ? Math.round((montoAprobadoTotal / metaAsignadaTotal) * 100) : 0;
     document.getElementById('txtPorcentajeCumplimientoNota').innerText = `${porcentajeCumplimiento}% de cumplimiento de tu meta`;
 
-    // Actualizar barra de estado general
+    // 2. Actualizar barra de estado general
     actualizarBarraEstadoGeneralPeriodo(montoAprobadoTotal, metaAsignadaTotal, porcentajeCumplimiento, cantidadMeses);
 
-    // Renderizar tabla de órdenes
+    // 3. Renderizar tabla de órdenes
     renderizarTablaOrdenesTecnico(misRegistros);
 }
 
@@ -165,7 +220,7 @@ function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) 
     const legendMeta = document.getElementById('legendMetaTexto');
 
     if (legendMeta) {
-        legendMeta.textContent = `Meta mensual (${meses} ${meses === 1 ? 'mes' : 'meses'}): $${meta.toLocaleString('es-CO')}`;
+        legendMeta.textContent = `Meta total (${meses} ${meses === 1 ? 'periodo' : 'periodos'}): $${meta.toLocaleString('es-CO')}`;
     }
 
     if (fill) fill.style.width = `${porcentajeVisual}%`;
