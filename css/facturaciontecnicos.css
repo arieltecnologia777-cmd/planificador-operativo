@@ -25,7 +25,17 @@ button{font:inherit;color:inherit;cursor:pointer}
     z-index: 1000;
     transition: transform 0.3s ease;
 }
-.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
+.brand{
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribuye espacio de forma uniforme */
+    gap: 8px; /* Los acerca más entre sí */
+    padding: 6px 12px 26px 12px; /* Centrado uniforme respecto a los márgenes del sidebar */
+    color: #0F1B3D;
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1.1;
+}
 
 /* Estilo para la mascota ubicada en el header del sidebar junto al logo */
 .sidebar-mascot-img {
@@ -186,7 +196,7 @@ tbody tr:hover td{background:#F8FAFE}
     transform: translateX(0) !important;
   }
   
-  /* Botón hamburguesa */
+ /* Botón hamburguesa (Se oculta si el sidebar está abierto con la clase .activo) */
   .hamburger-btn {
     display: flex !important;
     position: fixed;
@@ -203,6 +213,14 @@ tbody tr:hover td{background:#F8FAFE}
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     align-items: center;
     justify-content: center;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  
+  /* Ocultar hamburguesa cuando el menú móvil está desplegado */
+  .side.activo ~ .hamburger-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   /* Desenfoque y fondo oscuro en móvil con el menú abierto */
