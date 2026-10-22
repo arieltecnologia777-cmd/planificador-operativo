@@ -48,9 +48,9 @@ function poblarSelectoresYFiltros(rows) {
         selectTec.innerHTML = htmlTec;
     }
 
-    // 2. Filtrar y ordenar para mostrar SOLAMENTE los últimos 3 meses vigentes de D1
+    // 2. Extraer los últimos 3 meses vigentes ordenados
     const mesesOrdenados = Array.from(mesesSet).sort();
-    const ultimosTresMeses = mesesOrdenados.slice(-3); // Toma los últimos 3 meses del listado
+    const ultimosTresMeses = mesesOrdenados.slice(-3);
 
     const selectMes = document.getElementById('filtroMesTecnico');
     if (selectMes) {
@@ -69,7 +69,7 @@ function poblarSelectoresYFiltros(rows) {
         selectMes.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // Render inicial con el primer técnico y todos los periodos filtrados por defecto
+    // Render inicial con el primer técnico y los periodos vigentes
     if (selectTec && selectTec.options.length > 0) {
         selectTec.selectedIndex = 0;
         ejecutarFiltroYRenderizado();
@@ -89,7 +89,6 @@ function ejecutarFiltroYRenderizado() {
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesFiltro) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
     
-    // Si el filtro está en "TODOS", limitamos los registros únicamente a los últimos 3 meses detectados en el selector
     const selectMes = document.getElementById('filtroMesTecnico');
     let mesesPermitidos = [];
     if (selectMes) {
