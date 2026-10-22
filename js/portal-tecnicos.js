@@ -7,9 +7,12 @@ const META_BASE_MENSUAL_TECNICO = 9500000;
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatosTecnicosDesdeAPI();
     
+    // Asegurar que el dropdown inicie cerrado al cargar
+    const drop = document.getElementById('dropdownPeriodoContent');
+    if (drop) drop.style.display = 'none';
+
     // Cerrar dropdown al hacer clic fuera
     document.addEventListener('click', (e) => {
-        const drop = document.getElementById('dropdownPeriodoContent');
         if (drop && !drop.contains(e.target) && !e.target.closest('.sel')) {
             drop.style.display = 'none';
         }
@@ -57,7 +60,7 @@ function poblarSelectoresYFiltros(rows) {
         selectTec.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // 2. Extraer SOLAMENTE los últimos 3 meses vigentes ordenados
+    // 2. Extraer SOLAMENTE los últimos 3 meses ordenados
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
 
@@ -133,7 +136,7 @@ function actualizarLabelBotonPeriodos() {
     if (seleccionados.length === 0) {
         lbl.innerText = "Ningún periodo";
     } else if (seleccionados.length === total) {
-        lbl.innerText = "Últimos 3 meses vigentes";
+        lbl.innerText = "Últimos 3 meses";
     } else if (seleccionados.length === 1) {
         lbl.innerText = seleccionados[0];
     } else {
