@@ -6,7 +6,7 @@
 <title>Portal de Técnicos – Seguimiento facturación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/facturaciontecnicos.css?v=7">
+<link rel="stylesheet" href="../css/facturaciontecnicos.css?v=8">
 </head>
 <body>
 
@@ -87,7 +87,17 @@
         <div class="t"><span>Meta asignada</span><div class="v">$ 9.500.000</div></div>
         <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C20 8 36 8 55 20s38 12 58-2 40-14 60-6 20 2 27-2" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <!-- SVG vectorial con área de relleno ondulada exacta bajo la curva -->
+      <svg class="spark" viewBox="0 0 280 40" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#1D5FE0" stop-opacity="0.4" />
+            <stop offset="100%" stop-color="#1D5FE0" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+        <path d="M 0 25 Q 70 5 140 22 T 280 15 L 280 40 L 0 40 Z" fill="url(#gradBlue)" />
+        <path d="M 0 25 Q 70 5 140 22 T 280 15" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
       <div class="note b">Meta mensual asignada para este periodo</div>
     </article>
 
@@ -97,7 +107,17 @@
         <div class="t"><span>Monto aprobado</span><div class="v">$ 56.373.775</div></div>
         <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28C25 26 35 12 60 16s35 12 60 2 45-10 80-12" fill="none" stroke="#12A15F" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <!-- SVG vectorial con área de relleno ondulada exacta bajo la curva -->
+      <svg class="spark" viewBox="0 0 280 40" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="gradGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#12A15F" stop-opacity="0.4" />
+            <stop offset="100%" stop-color="#12A15F" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+        <path d="M 0 28 Q 70 12 140 25 T 280 8 L 280 40 L 0 40 Z" fill="url(#gradGreen)" />
+        <path d="M 0 28 Q 70 12 140 25 T 280 8" fill="none" stroke="#12A15F" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
       <div class="note g">593% de cumplimiento de tu meta</div>
     </article>
 
