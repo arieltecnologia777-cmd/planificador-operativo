@@ -398,6 +398,11 @@ tbody tr:hover td{background:#F8FAFE}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+/* Asegurar que el filtro inicie completamente cerrado y con display controlado */
+#dropdownPeriodoContent {
+    display: none !important;
+}
+
 /* Sombras de color elegantes para los iconos de los KPIs según su categoría */
 .kpi.blue .ill {
     filter: drop-shadow(0 6px 12px rgba(29, 95, 224, 0.35)) !important;
