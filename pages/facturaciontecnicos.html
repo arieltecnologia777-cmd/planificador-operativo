@@ -51,11 +51,8 @@
     <div id="liveDateTime" class="live-datetime-badge">📅 Cargando fecha... &nbsp;|&nbsp; ⏰ Cargando hora...</div>
   </div>
 
-  <!-- Hero con Seguimiento facturación y Fecha/Hora integradas -->
+  <!-- Hero con Seguimiento facturación -->
   <section class="hero" aria-label="Bienvenida">
-    <!-- Badge de Fecha y Hora en la esquina superior derecha del Hero -->
-    <div id="liveDateTime" class="live-datetime-badge">📅 Cargando fecha... &nbsp;|&nbsp; ⏰ Cargando hora...</div>
-
     <div class="txt">
       <div class="eyebrow">PORTAL DE TÉCNICOS</div>
       <h1>Seguimiento facturación</h1>
@@ -142,18 +139,38 @@
     <article class="card kpi red">
       <div class="head">
         <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 6h28l10 10v42H14z" fill="#fff" stroke="#C9D0E2" stroke-width="2"/><path d="M42 6v10h10" fill="#E6EAF4"/><path d="M22 26h20M22 34h20M22 42h12" stroke="#C9D0E2" stroke-width="3" stroke-linecap="round"/><path d="M34 40h22l-5 7 5 7H34z" fill="#E0334C"/></svg>
-        <div class="t"><span>Rechazado <em>(VER)</em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="v" id="kpiMontoRechazado">$ 0</div></div>
+        <div class="t">
+          <span>Rechazado</span>
+          <div class="v" id="kpiMontoRechazado">$ 0</div>
+        </div>
         <button class="go" aria-label="Ver rechazados"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <div class="note r"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Requiere revisión en campo</div>
+
+      <!-- Botón pastilla de detalle integrado -->
+      <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: #fee2e2; color: #dc2626; font-size: 11.5px; font-weight: 700; padding: 6px 10px; border-radius: 8px; text-decoration: none; margin-top: -2px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        Ver detalle de rechazos
+      </a>
+
+      <div class="note r"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Requiere gestión</div>
     </article>
 
     <article class="card kpi amber">
       <div class="head">
         <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/><path d="M8 44c6-18 22-24 36-20" fill="none" stroke="#6FA0FF" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
-        <div class="t"><span>Monto subsanado</span><div class="v" id="kpiMontoSubsanado">$ 0</div></div>
+        <div class="t">
+          <span>Monto subsanado</span>
+          <div class="v" id="kpiMontoSubsanado">$ 0</div>
+        </div>
         <button class="go" aria-label="Ver monto subsanado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
+
+      <!-- Botón pastilla de detalle integrado en tono ámbar -->
+      <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: #fef3c7; color: #b45309; font-size: 11.5px; font-weight: 700; padding: 6px 10px; border-radius: 8px; text-decoration: none; margin-top: -2px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Ver detalle subsanados
+      </a>
+
       <div class="note a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E08A00" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>En proceso de rescate</div>
     </article>
   </section>
