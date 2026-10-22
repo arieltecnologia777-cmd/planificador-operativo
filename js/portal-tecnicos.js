@@ -5,31 +5,28 @@ let registrosCrudosTecnicos = [];
 const META_BASE_MENSUAL_TECNICO = 9500000;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Forzar cierre estricto al cargar o refrescar
+    // Forzar cierre absoluto al abrir en local
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
     cargarDatosTecnicosDesdeAPI();
     iniciarRelojTiempoReal();
     
-    // Cerrar dropdown al hacer clic fuera
     document.addEventListener('click', (e) => {
         if (drop && !drop.contains(e.target) && !e.target.closest('.sel')) {
             drop.style.display = 'none';
         }
     });
 });
+
 function iniciarRelojTiempoReal() {
     const relojElem = document.getElementById('liveDateTime');
     if (!relojElem) return;
-
     function actualizar() {
         const ahora = new Date();
         const opcionesFecha = { year: 'numeric', month: 'short', day: 'numeric' };
         const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        const fechaFormateada = ahora.toLocaleDateString('es-CO', opcionesFecha);
-        const horaFormateada = ahora.toLocaleTimeString('es-CO', opcionesHora);
-        relojElem.innerHTML = `📅 ${fechaFormateada} &nbsp;|&nbsp; ⏰ ${horaFormateada}`;
+        relojElem.innerHTML = `📅 ${ahora.toLocaleDateString('es-CO', opcionesFecha)} &nbsp;|&nbsp; ⏰ ${ahora.toLocaleTimeString('es-CO', opcionesHora)}`;
     }
     actualizar();
     setInterval(actualizar, 1000);
@@ -65,7 +62,6 @@ function poblarSelectoresYFiltros(rows) {
         if (mesVal) mesesSet.add(mesVal);
     });
 
-    // 1. Poblar select de técnicos
     const selectTec = document.getElementById('tec');
     if (selectTec) {
         let htmlTec = '';
@@ -76,7 +72,6 @@ function poblarSelectoresYFiltros(rows) {
         selectTec.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // 2. Extraer SOLAMENTE los últimos 3 meses ordenados
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
 
@@ -96,11 +91,9 @@ function poblarSelectoresYFiltros(rows) {
 
     actualizarLabelBotonPeriodos();
 
-    // Asegurar que el menú inicie cerrado al poblar
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
-    // Render inicial
     if (selectTec && selectTec.options.length > 0) {
         selectTec.selectedIndex = 0;
         ejecutarFiltroYRenderizado();
@@ -111,11 +104,7 @@ function toggleDropdownPeriodo(e) {
     if (e) e.stopPropagation();
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) {
-        if (drop.style.display === 'block' || drop.style.display === '') {
-            drop.style.display = 'none';
-        } else {
-            drop.style.display = 'block';
-        }
+        drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
     }
 }
 
@@ -185,19 +174,13 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim();
-
-        const matchTecnico = perfil === tecnicoBuscado;
-        const matchMes = mesesSeleccionados.includes(mesReg);
-
-        return matchTecnico && matchMes;
+        return perfil === tecnicoBuscado && mesesSeleccionados.includes(mesReg);
     });
 
     const cantidadMeses = Math.max(1, mesesSeleccionados.length);
     const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
 
-    let montoAprobadoTotal = 0;
-    let montoRechazadoTotal = 0;
-    let montoSubsanadoTotal = 0;
+    let montoAprobadoTotal = 0, montoRechazadoTotal = 0, montoSubsanadoTotal = 0;
 
     misRegistros.forEach(r => {
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
@@ -205,73 +188,40 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
         const estRechazar = aprobReg.includes("RECHAZADO");
         const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
         
-        if (estAceptar) {
-            montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-        }
-        if (estRechazar) {
-            montoRechazadoTotal += montoBase;
-        }
+        if (estAceptar) montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        if (estRechazar) montoRechazadoTotal += montoBase;
         montoSubsanadoTotal += Number(r.trasiego_esp ?? 0);
     });
 
-    // 1. Actualizar KPIs en interfaz
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(montoAprobadoTotal);
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
     document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoSubsanadoTotal);
 
-    // Texto dinámico de la tarjeta de meta
-    const textoNotaMeta = cantidadMeses === 1 ? "Meta asignada para este periodo" : `Meta asignada para los ${cantidadMeses} periodos seleccionados`;
-    const notaMetaElem = document.querySelector('.card.kpi.blue .note.b');
-    if (notaMetaElem) notaMetaElem.innerText = textoNotaMeta;
-
     let porcentajeCumplimiento = metaAsignadaTotal > 0 ? Math.round((montoAprobadoTotal / metaAsignadaTotal) * 100) : 0;
     document.getElementById('txtPorcentajeCumplimientoNota').innerText = `${porcentajeCumplimiento}% de cumplimiento de tu meta`;
 
-    // 2. Actualizar barra de estado general
     actualizarBarraEstadoGeneralPeriodo(montoAprobadoTotal, metaAsignadaTotal, porcentajeCumplimiento, cantidadMeses);
-
-    // 3. Renderizar tabla de órdenes
     renderizarTablaOrdenesTecnico(misRegistros);
 }
 
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
     const porcentajeVisual = Math.min(100, porcentaje);
-    
     const fill = document.getElementById('progressFillBarra');
     const pin = document.getElementById('progressPinBarra');
     const badge = document.getElementById('stateBadgeEstado');
-    const iconContainer = document.getElementById('stateIconEstado');
     const legendMeta = document.getElementById('legendMetaTexto');
 
-    if (legendMeta) {
-        legendMeta.textContent = `Meta total (${meses} ${meses === 1 ? 'periodo' : 'periodos'}): $${meta.toLocaleString('es-CO')}`;
-    }
-
+    if (legendMeta) legendMeta.textContent = `Meta total (${meses} ${meses === 1 ? 'periodo' : 'periodos'}): $${meta.toLocaleString('es-CO')}`;
     if (fill) fill.style.width = `${porcentajeVisual}%`;
-    if (pin) {
-        pin.style.left = `${porcentajeVisual}%`;
-        pin.title = `Progreso: ${porcentaje}% ($${aprobado.toLocaleString('es-CO')} de $${meta.toLocaleString('es-CO')})`;
-    }
+    if (pin) pin.style.left = `${porcentajeVisual}%`;
 
     if (porcentaje >= 100) {
         if (fill) fill.style.background = '#12A15F';
-        if (pin) pin.style.borderColor = '#12A15F';
-        if (iconContainer) iconContainer.style.background = '#12A15F';
-        if (badge) {
-            badge.style.background = 'var(--green-soft)';
-            badge.style.color = 'var(--green)';
-            badge.innerHTML = `🏆 ¡Meta cumplida! ${porcentaje}%`;
-        }
+        if (badge) { badge.style.background = 'var(--green-soft)'; badge.style.color = 'var(--green)'; badge.innerHTML = `🏆 ¡Meta cumplida! ${porcentaje}%`; }
     } else {
         if (fill) fill.style.background = 'linear-gradient(90deg, #E0334C 0%, #E08A00 100%)';
-        if (pin) pin.style.borderColor = '#E08A00';
-        if (iconContainer) iconContainer.style.background = '#E08A00';
-        if (badge) {
-            badge.style.background = 'var(--amber-soft)';
-            badge.style.color = 'var(--amber)';
-            badge.innerHTML = `💪 ¡Ánimo! Vas al ${porcentaje}%. ¡Sigue adelante para lograr la meta!`;
-        }
+        if (badge) { badge.style.background = 'var(--amber-soft)'; badge.style.color = 'var(--amber)'; badge.innerHTML = `💪 ¡Ánimo! Vas al ${porcentaje}%.`; }
     }
 }
 
@@ -288,36 +238,16 @@ function renderizarTablaOrdenesTecnico(rows) {
 
     if (emptyMsg) emptyMsg.hidden = true;
     let html = '';
-
     rows.forEach(r => {
-        const idOt = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
-        const departamento = r.departamento || r.DEPARTAMENTO || r.dep || 'GENERAL';
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "EN TRÁMITE").toUpperCase();
-        const causa = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
-        const estimado = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-        const aprobado = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-
-        let estadoClase = "st pe";
-        let estadoTexto = aprobReg;
-        if (aprobReg.includes("ACEPTADO")) {
-            estadoClase = "st ok";
-            estadoTexto = "Aprobado";
-        } else if (aprobReg.includes("RECHAZADO")) {
-            estadoClase = "st re";
-            estadoTexto = "Rechazado";
-        }
-
         html += `
             <tr>
-                <td><span class="ot">${idOt}</span></td>
-                <td><span class="cause">${departamento}</span></td>
-                <td><span class="${estadoClase}">${estadoTexto}</span></td>
-                <td style="color: #64748b; font-weight: 600;">${causa}</td>
-                <td>${formatMoney(estimado)}</td>
-                <td style="font-weight: 700; color: #0f172a;">${formatMoney(aprobado)}</td>
-                <td style="text-align: center;">
-                    <button type="button" style="background: none; border: none; cursor: pointer; color: #2563eb; font-weight: 700; font-size: 0.82rem;">Ver detalle</button>
-                </td>
+                <td><span class="ot">${r.id_id || r.ID_ID || 'N/A'}</span></td>
+                <td><span class="cause">${r.departamento || r.DEPARTAMENTO || 'GENERAL'}</span></td>
+                <td><span class="st pe">En trámite</span></td>
+                <td>-</td>
+                <td>${formatMoney(r.estimado_a_facturar ?? 0)}</td>
+                <td>${formatMoney(r.total_aprobado ?? 0)}</td>
+                <td style="text-align: center;"><button type="button">Ver</button></td>
             </tr>
         `;
     });
@@ -329,11 +259,8 @@ function renderizarPortalVacio() {
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(0);
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(0);
     document.getElementById('kpiMontoSubsanado').innerText = formatMoney(0);
-    document.getElementById('txtPorcentajeCumplimientoNota').innerText = `0% de cumplimiento de tu meta`;
     const tbody = document.getElementById('rows');
     if (tbody) tbody.innerHTML = '';
-    const emptyMsg = document.getElementById('empty');
-    if (emptyMsg) emptyMsg.hidden = false;
 }
 
 function formatMoney(amount) {
