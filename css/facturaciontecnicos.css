@@ -7,11 +7,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid #7FA6FF;outline-offset:2px}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
-/* Sidebar Traslúcido con Efecto Glassmorphism */
+/* Sidebar Flotante y Traslúcido con Sombra Pronunciada */
 .side{
-    background: rgba(255, 255, 255, 0.75) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     color: #34406A;
     padding: 22px 14px;
     display: flex;
@@ -21,31 +21,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     height: 100vh;
     overflow: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 4px 0 24px rgba(15,27,61,.02);
+    box-shadow: 10px 0 35px rgba(15, 27, 61, 0.08) !important;
     z-index: 1000;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.brand{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 6px 12px 26px 12px;
-    color: #0F1B3D;
-    font-weight: 800;
-    font-size: 17px;
-    line-height: 1.1;
-}
-
-/* Estilo para la mascota ubicada en el header del sidebar junto al logo */
-.sidebar-mascot-img {
-    height: 77px !important;
-    width: auto !important;
-    max-width: none !important;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 6px rgba(0,10,50,.3));
-}
-
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
 .nav{display:flex;flex-direction:column;gap:6px}
 .nav a{display:flex;align-items:center;gap:14px;padding:0 16px;min-height:48px;border-radius:12px;color:#5B6584;text-decoration:none;font-weight:700;font-size:15px;transition:background .15s, color .15s}
 .nav a:hover{background:#F1F4FB;color:#0F1B3D}
@@ -55,26 +35,53 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tag:before{content:"";display:block;width:26px;height:3px;border-radius:2px;background:var(--blue);margin-bottom:12px}
 .wave{position:absolute;left:0;right:0;bottom:0;opacity:.15}
 
-/* Ocultar elementos móviles en escritorio */
-.nav-close-mobile { display: none !important; }
-.hamburger-btn { display: none; }
-.sidebar-overlay { display: none; }
+/* Ocultar botón de cerrar menú en computadoras grandes */
+.nav-close-mobile {
+    display: none;
+}
+
+/* Botón Hamburguesa Flotante */
+.hamburger-btn {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    color: #0f172a;
+    border: 1px solid #cbd5e0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Overlay de fondo traslúcido oscuro al abrir el menú en móviles */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+}
+.sidebar-overlay.activo {
+    display: block;
+}
 
 /* Main */
 .main{padding:20px 28px 40px;display:flex;flex-direction:column;gap:20px;min-width:0}
-.top{display:flex;align-items:center;gap:16px}
-.search{flex:1;max-width:520px;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #B9CCFA;border-radius:14px;padding:0 16px;min-height:48px}
-.search input{border:0;outline:0;background:none;flex:1;font:500 14px inherit;font-family:inherit;color:var(--ink);min-width:0}
-.search:focus-within{box-shadow:0 0 0 3px #CFDDFF}
-.spacer{flex:1}
-.bell{position:relative;width:46px;height:46px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center}
-.bell i{position:absolute;top:8px;right:9px;width:10px;height:10px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
-.user{display:flex;align-items:center;gap:10px;border:0;background:transparent;font-weight:700;font-size:14px;min-height:46px}
-.av{width:38px;height:38px;border-radius:50%;background:#D5E2FF;color:var(--blue);display:grid;place-items:center;font-weight:800;font-size:13px}
 
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Hero con el mismo azul corporativo brillante de los encabezados y tablas del dashboard */
+/* Hero con el azul corporativo brillante de referencia y degradado horizontal */
 .hero {
     position: relative;
     overflow: hidden;
@@ -88,97 +95,111 @@ button{font:inherit;color:inherit;cursor:pointer}
     align-items: center;
     box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
 }
-
-.hero .txt {
+.hero .txt{
     position: relative;
     z-index: 2;
     max-width: 480px;
 }
-
-.eyebrow {
+.eyebrow{
     font-size: 12px;
     font-weight: 700;
     color: #e0f2fe;
     letter-spacing: .08em;
 }
-
-.hero h1 {
+.hero h1{
     margin: 4px 0 8px;
     font-size: 28px;
     line-height: 1.12;
     letter-spacing: -.02em;
     font-weight: 800;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
-.hero p {
+.hero p{
     margin: 0;
     font-size: 13.5px;
     line-height: 1.45;
     color: #f8fafc;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
-/* Profile */
+
+/* Avatar compacto y perfectamente ajustado al hero */
+.mascot-img{
+    position: absolute;
+    right: 36px;
+    bottom: 0;
+    width: 68px;
+    height: auto;
+    object-fit: contain;
+    z-index: 2;
+    opacity: 0.98;
+    filter: drop-shadow(0 6px 12px rgba(0,10,50,0.4));
+}
+
+/* Profile y Selectores estilizados */
 .profile{display:flex;align-items:center;gap:16px;padding:14px 18px;flex-wrap:wrap}
-.sel{flex:1;min-width:280px;display:flex;align-items:center;gap:14px;background:#F3F6FC;border-radius:14px;padding:8px 16px 8px 8px;position:relative}
+.sel {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 8px 16px 8px 12px !important;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(15, 27, 61, 0.04);
+}
 .sel .ic{width:46px;height:46px;border-radius:50%;background:var(--blue);display:grid;place-items:center;flex:none}
-.sel label{display:block;font-size:13px;color:var(--mute);font-weight:500}
-.sel select{appearance:none;-webkit-appearance:none;border:0;background:transparent;font:800 15px 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);width:100%;padding:2px 28px 2px 0;cursor:pointer;min-height:28px}
-.sel .chev{position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none}
-.period{display:flex;align-items:center;gap:14px;background:#F3F6FC;border-radius:14px;padding:8px 16px 8px 10px;min-height:62px}
-.period .cal{width:44px;height:44px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:0 2px 6px rgba(15,27,61,.08)}
-.period small{display:block;font-size:13px;color:var(--mute);font-weight:500}
-.period b{font-size:15px}
+.sel label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.sel select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0 !important;
+    background: transparent !important;
+    font: 700 14px 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    color: #0f172a !important;
+    width: 100%;
+    padding: 4px 28px 4px 0 !important;
+    cursor: pointer;
+    outline: none !important;
+}
+.sel .chev {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #64748b;
+}
 
 /* KPIs */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.kpi{padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border:1px solid transparent;position:relative}
-.kpi.red{background:linear-gradient(180deg,#fff 40%,#FFF1F3);border-color:#FFD6DC;justify-content:space-between;}
+.kpi{padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border:1px solid transparent}
+.kpi.red{background:linear-gradient(180deg,#fff 40%,#FFF1F3);border-color:#FFD6DC}
 .kpi.green{background:linear-gradient(180deg,#fff 40%,#F0FBF5)}
 .kpi.blue{background:linear-gradient(180deg,#fff 40%,#F1F5FF)}
 .kpi.amber{background:linear-gradient(180deg,#fff 40%,#FFF8E8)}
 .kpi .head{display:flex;align-items:center;gap:14px}
 .kpi .ill{width:62px;height:62px;flex:none}
-
-/* Resplandor de color aumentado detrás de los iconos según su KPI */
-.kpi.blue .ill { filter: drop-shadow(0 10px 20px rgba(29, 95, 224, 0.42)); }
-.kpi.green .ill { filter: drop-shadow(0 10px 20px rgba(18, 161, 95, 0.42)); }
-.kpi.red .ill { filter: drop-shadow(0 10px 20px rgba(224, 51, 76, 0.42)); }
-.kpi.amber .ill { filter: drop-shadow(0 10px 20px rgba(224, 138, 0, 0.42)); }
-
 .kpi .t{flex:1;min-width:0}
 .kpi .t span{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
 .kpi .t span em{font-style:normal;color:var(--red)}
 .kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:2px;white-space:nowrap}
 .kpi .go{width:32px;height:32px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;color:var(--mute);margin:-6px -6px 0 0;align-self:flex-start}
 .kpi .go:hover{background:rgba(15,27,61,.06)}
-
-/* Gráfico de tendencia SVG con diseño y relleno ondulado propio desde cero */
-.kpi svg.spark {
-    width: 100%;
-    height: 34px;
-    display: block;
-    overflow: visible;
-}
-
-/* Curva y área nativa azul con ondas orgánicas */
-.kpi.blue svg.spark {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='bgBlue' x1='0%' y1='0%' x2='0%' y2='100%'$%3E%3Cstop offset='0%27 stop-color='%231D5FE0' stop-opacity='0.35'/%3E%3Cstop offset='100%27 stop-color='%231D5FE0' stop-opacity='0.0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0,25 C50,8 100,32 150,18 C200,4 250,28 300,15 L300,40 L0,40 Z' fill='url(%23bgBlue)'/%3E%3Cpath d='M0,25 C50,8 100,32 150,18 C200,4 250,28 300,15' fill='none' stroke='%231D5FE0' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
-/* Curva y área nativa verde con ondas orgánicas */
-.kpi.green svg.spark {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='bgGreen' x1='0%' y1='0%' x2='0%' y2='100%'$%3E%3Cstop offset='0%27 stop-color='%2312A15F' stop-opacity='0.35'/%3E%3Cstop offset='100%27 stop-color='%2312A15F' stop-opacity='0.0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0,28 C60,20 120,30 180,12 C240,0 270,18 300,10 L300,40 L0,40 Z' fill='url(%23bgGreen)'/%3E%3Cpath d='M0,28 C60,20 120,30 180,12 C240,0 270,18 300,10' fill='none' stroke='%2312A15F' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
-
+.kpi svg.spark{width:100%;height:34px;display:block}
 .note{display:flex;align-items:center;gap:8px;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600;line-height:1.35}
 .note.b{background:var(--blue-soft);color:#173FA8}
 .note.g{background:var(--green-soft);color:#0B6B40}
-.note.r{background:var(--red-soft);color:#A3182E;margin-top:auto;}
+.note.r{background:var(--red-soft);color:#A3182E}
 .note.a{background:var(--amber-soft);color:#7A4A00}
 
 /* Estado general */
@@ -189,9 +210,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .state h2{margin:0;font-size:18px;font-weight:800}
 .badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-soft);color:#0B6B40;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px}
 .bar{position:relative;height:14px;border-radius:99px;background:#E7ECF6;overflow:visible}
-.bar .f1{position:absolute;left:0;top:0;bottom:0;width:34%;border-radius:99px 0 0 99px;background:var(--blue)}
-.bar .f2{position:absolute;left:34%;top:0;bottom:0;right:0;border-radius:0 99px 99px 0;background:repeating-linear-gradient(90deg,#14B26B 0 14px,#0F9A5B 14px 18px)}
-.bar .pin{position:absolute;left:66%;top:-4px;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid #0F9A5B;box-shadow:0 2px 8px rgba(0,0,0,.2);transform:translateX(-50%)}
 .legend{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);font-weight:600;margin-top:10px}
 
 /* Tabla */
@@ -223,13 +241,13 @@ tbody tr:hover td{background:#F8FAFE}
 .dots:hover{background:#EEF2FA}
 .empty{padding:26px;text-align:center;color:var(--mute);font-weight:600}
 
-/* Media Queries para comportamiento móvil y hamburguesa */
+/* Media Queries para Adaptabilidad Móvil (2 Columnas en KPIs y Perfil) */
 @media(max-width:1180px){.kpis{grid-template-columns:repeat(2,1fr)}}
 
 @media(max-width:860px){
   .app{grid-template-columns:1fr}
   
-  /* Sidebar flotante oculto en móvil por defecto */
+  /* Sidebar flotante oculto por defecto en móvil */
   .side{
     position:fixed !important;
     top:0 !important;
@@ -238,111 +256,67 @@ tbody tr:hover td{background:#F8FAFE}
     height:100vh !important;
     transform:translateX(-100%);
     box-shadow: 15px 0 30px rgba(0,0,0,0.15);
-    z-index: 1000 !important;
   }
   
-  /* Sidebar visible al activar */
+  /* Sidebar visible cuando se activa */
   .side.activo {
     transform: translateX(0) !important;
   }
   
-  /* Botón hamburguesa */
+  /* Mostrar botón hamburguesa y opción de cerrar menú */
   .hamburger-btn {
-    display: flex !important;
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 1100;
-    background: #ffffff;
-    color: #0f172a;
-    border: 1px solid #cbd5e0;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    display: flex;
   }
-
-  /* Ocultar la hamburguesa cuando el sidebar esté activo en móvil */
-  .side.activo ~ .hamburger-btn,
-  body:has(.side.activo) .hamburger-btn {
-    display: none !important;
-  }
-
-  /* Desenfoque y fondo oscuro en móvil con el menú abierto */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(15, 23, 42, 0.35) !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
-    z-index: 999;
-  }
-  .sidebar-overlay.activo {
-    display: block !important;
-  }
-
   .nav-close-mobile {
     display: flex !important;
   }
   
   .main{padding:14px; padding-top: 70px;}
-  .hero{padding:24px}
-  .user span.n{display:none}
+  .hero{padding:20px; height: auto;}
+  .mascot-img{display:none}
+  .hero h1{font-size:24px}
+
+  /* Perfil y periodos en 2 columnas en móviles */
+  .profile {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+  .profile .sel {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  /* KPIs estrictamente en 2 columnas en dispositivos móviles */
+  .kpis {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .kpi {
+    padding: 14px 12px !important;
+    gap: 8px !important;
+  }
+  .kpi .v {
+    font-size: 20px !important;
+  }
+  .kpi .ill {
+    width: 42px !important;
+    height: 42px !important;
+  }
 }
 
-@media(max-width:560px){.kpis{grid-template-columns:1fr}}
+@media(max-width:480px){
+  .profile {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .kpis {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .kpi .v {
+    font-size: 16px !important;
+  }
+}
+
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-
-/* Estilo moderno y estilizado para los selectores (idéntico a la referencia) */
-.sel {
-    flex: 1;
-    min-width: 280px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    padding: 8px 16px 8px 12px !important;
-    position: relative;
-    box-shadow: 0 2px 6px rgba(15, 27, 61, 0.04);
-}
-
-.sel select {
-    appearance: none;
-    -webkit-appearance: none;
-    border: 0 !important;
-    background: transparent !important;
-    font: 700 14px 'Plus Jakarta Sans', system-ui, sans-serif !important;
-    color: #0f172a !important;
-    width: 100%;
-    padding: 4px 28px 4px 0 !important;
-    cursor: pointer;
-    outline: none !important;
-}
-
-.sel label {
-    display: block;
-    font-size: 11px;
-    color: #64748b;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.sel .chev {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: #64748b;
-}
