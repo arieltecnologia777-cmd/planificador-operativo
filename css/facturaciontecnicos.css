@@ -29,7 +29,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* Estilo para la mascota ubicada en el header del sidebar junto al logo */
 .sidebar-mascot-img {
-    height: 60px !important;
+    height: 77px !important;
     width: auto !important;
     max-width: none !important;
     object-fit: contain;
