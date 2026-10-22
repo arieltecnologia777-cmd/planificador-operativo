@@ -1,548 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facturación y Metas de Técnicos</title>
-    
-    <!-- Hojas de estilos -->
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/facturacion.css">
-
-    <!-- Librerías Chart.js y SheetJS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-    <style>
-        @keyframes reboteNotif {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(252, 211, 77, 0.9)); }
-        }
-        .notif-activa-sidebar { animation: reboteNotif 1.2s infinite ease-in-out; }
-        @keyframes avatarFlotar {
-            0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
-            50% { transform: translateY(-6px) scale(1.03); filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
-        }
-        .avatar-animado { animation: avatarFlotar 3s ease-in-out infinite; }
-
-        /* Estilos para el Dropdown flotante idéntico a Excel */
-        .dropdown-filtro-container { position: relative; width: 100%; }
-        .dropdown-filtro-btn {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            padding: 7px 10px;
-            text-align: left;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1e293b;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .dropdown-filtro-btn:hover { border-color: #2563eb; }
-        .dropdown-filtro-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 240px;
-            background: #ffffff;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            z-index: 99999;
-            padding: 12px;
-            margin-top: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-        .dropdown-filtro-menu.activo { display: block; }
-        .excel-input-buscar {
-            width: 100%;
-            padding: 7px 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            outline: none;
-            box-sizing: border-box;
-            margin-bottom: 8px;
-        }
-        .excel-input-buscar:focus { border-color: #2563eb; }
-        .excel-borrar-filtro {
-            color: #dc2626;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: block;
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .excel-borrar-filtro:hover { text-decoration: underline; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal de Técnicos – Mi Rendimiento Financiero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/facturaciontecnicos.css?v=6">
 </head>
 <body>
 
-<div class="layout">
-    <aside class="sidebar">
-        <div>
-            <div class="logo-box" style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 10px 0 15px 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;">
-                <img src="../assets/dominion_logo.png" class="logo-img" alt="Dominion" style="width: 100% !important; max-width: 110px !important; height: auto !important; object-fit: contain !important; transform: scaleX(0.88) !important; border: none !important; background: transparent !important; padding: 0 !important; box-shadow: none !important; margin-left: -12px !important; display: block !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));">
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="facturacion.html" class="active"><span class="nav-icon">💰</span> Facturación</a>
+<!-- Botón Hamburguesa Flotante para Móviles -->
+<button type="button" id="btnAbrirSidebar" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
 
-                <div class="nav-accordion-group">
-                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuPlaneacion', 'accordionArrowPlaneacion')">
-                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">📅</span> Planeación</span>
-                        <span id="accordionArrowPlaneacion" style="font-size: 0.75rem; transition: transform 0.2s ease;">▼</span>
-                    </button>
-                    <div id="accordionSubmenuPlaneacion" class="nav-submenu">
-                        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
-                        <a href="planeacion.html"><span class="nav-icon">📅</span> Planeación</a>
-                        <a href="historico.html"><span class="nav-icon">📋</span> Histórico OTs</a>
-                        <a href="kpis.html"><span class="nav-icon">📈</span> KPIs</a>
-                    </div>
-                </div>
+<!-- Overlay de fondo oscuro para móvil -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-                <div style="padding: 10px 14px; margin-top: 6px;">
-                    <button type="button" onclick="abrirModalNotificaciones()" id="btnCampanaNotif" style="width: 100%; background: #2563eb; border: none; padding: 8px 12px; border-radius: 6px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; font-size: 0.82rem;">
-                        🔔 Notificaciones
-                        <span id="badgeNotifCount" style="display: none; background: #dc2626; color: #fff; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: 900;">0</span>
-                    </button>
-                </div>
+<div class="app">
 
-                <!-- Filtros Estilo Excel -->
-                <div class="nav-accordion-group" style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px;">
-                    <div style="padding: 0 14px 8px 14px;">
-                        <button type="button" onclick="resetFiltros()" style="width: 100%; background: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold;">
-                            ✖ Limpiar filtros
-                        </button>
-                    </div>
+<aside class="side" id="appSidebar">
+  <div class="brand">
+    <img src="../assets/dominion_logo.png" alt="Dominion" style="width: 120px; height: auto; object-fit: contain;">
+  </div>
+  <nav class="nav" aria-label="Principal">
+    <a href="facturacion.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Facturación</a>
+    <a class="on" href="portal-tecnicos.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg>Mi Rendimiento</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Órdenes de Trabajo</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V10M12 21V4M19 21v-7"/></svg>Reportes</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configuración</a>
+    
+    <!-- Opción de Cerrar Menú al final de las opciones de navegación -->
+    <a href="#" onclick="toggleSidebar(); return false;" class="nav-close-mobile" style="color: #E0334C;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>Cerrar menú</a>
+  </nav>
+  
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
+    <div class="tag">Tu trabajo<br>hace que todo<br>funcione</div>
+    <a href="facturacion.html" style="text-decoration: none;">
+      <button type="button" style="width: 100%; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        ⬅ Volver a Admin
+      </button>
+    </a>
+  </div>
+  <svg class="wave" viewBox="0 0 240 90" preserveAspectRatio="none" height="90" aria-hidden="true"><path d="M0 90V62C30 40 55 28 85 34s50 24 80 8 50-22 75-14v62z" fill="#1D5FE0" opacity=".15"/><path d="M0 90V74c30-16 60-22 90-12s60 6 150-10z" fill="#2F7BFF" opacity=".25"/></svg>
+</aside>
 
-                    <!-- Acordeón principal de filtros (Cerrado por defecto) -->
-                    <button type="button" class="nav-accordion-toggle" onclick="toggleAcordeon('accordionSubmenuFiltros', 'accordionArrowFiltros')">
-                        <span style="display: flex; align-items: center; gap: 8px;"><span class="nav-icon">🔍</span> Filtros</span>
-                        <span id="accordionArrowFiltros" style="font-size: 0.75rem; transition: transform 0.2s ease; transform: rotate(0deg);">▼</span>
-                    </button>
-                    <div id="accordionSubmenuFiltros" class="nav-submenu" style="padding: 10px 14px; gap: 10px; display: none; flex-direction: column;">
-                        
-                        <!-- 1. Departamento -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Departamento</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownDepartamento', event)">
-                                    <span id="lblDepartamento">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownDepartamento" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Departamento', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Departamento', true)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoDepartamento" onchange="seleccionarTodoGeneral('Departamento', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckDepartamento" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<main class="main">
+  <header class="top">
+    <label class="search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6584" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="q" type="search" placeholder="Buscar órdenes, técnicos o códigos…" aria-label="Buscar órdenes, técnicos o códigos"></label>
+    <div class="spacer"></div>
+    <button class="bell" aria-label="Notificaciones, 1 nueva"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0F1B3D" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9a6 6 0 0112 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 004 0"/></svg><i></i></button>
+    <button class="user"><span class="av">AR</span><span class="n">Ariel Marquez Rada</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+  </header>
 
-                        <!-- 2. Mes -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Mes</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownMes', event)">
-                                    <span id="lblMes">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownMes" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Mes', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Mes', true)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoMes" onchange="seleccionarTodoGeneral('Mes', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckMes" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 3. Aprobación Regional -->
-                        <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <label style="font-size: 0.72rem; font-weight: 800; color: #475569;">Aprobación Regional</label>
-                            <div class="dropdown-filtro-container">
-                                <button type="button" class="dropdown-filtro-btn" onclick="toggleDropdownFiltro('dropdownAprobacion', event)">
-                                    <span id="lblAprobacion">Todos</span> <span>▼</span>
-                                </button>
-                                <div id="dropdownAprobacion" class="dropdown-filtro-menu" onclick="event.stopPropagation()">
-                                    <input type="text" class="excel-input-buscar" placeholder="Buscar..." onkeyup="filtrarListaCheck('Aprobacion', this.value)">
-                                    <span class="excel-borrar-filtro" onclick="marcarTodosDropdown('Aprobacion', true)">❌ Borrar filtro</span>
-                                    <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
-                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: #1e293b; cursor: pointer; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9;" onclick="event.stopPropagation()">
-                                            <input type="checkbox" id="chkTodoAprobacion" onchange="seleccionarTodoGeneral('Aprobacion', this.checked)" style="cursor: pointer;" checked>
-                                            (Seleccionar todo)
-                                        </label>
-                                        <div id="listaCheckAprobacion" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </nav>
-        </div>
-
-        <div style="border-top: 1px solid #e2e8f0; padding: 10px 12px; width: 100%; box-sizing: border-box;">
-            <button type="button" id="btnAbrirConfig" onclick="abrirModalPassword()" style="width: 100%; background: #4a5568; color: white; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                ⚙️ Herramientas Avanzadas
-            </button>
-        </div>
-    </aside>
-
-    <main class="main-content">
-        <div class="fact-container">
-            <header class="hero" style="display: flex; justify-content: space-between; align-items: center; padding: 22px 30px; margin-bottom: 0; border-radius: 18px;">
-                <div class="hero-content">
-                    <div class="hero-badge"><span></span> FINANCIERO</div>
-                    <h1 style="font-size: 1.65rem; margin-bottom: 4px;">Módulo de Facturación y Seguimiento</h1>
-                    <p style="font-size: 0.9rem; margin: 0;">Panel general de control financiero, metas y cumplimiento por técnico y regional.</p>
-                </div>
-            </header>
-
-            <div class="fact-kpi-grid" style="grid-template-columns: repeat(6, 1fr);">
-                <!-- 1. Meta -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #0062ff;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#ffffff"/><path d="M17 7l4-4"/><path d="M17 3h4v4"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Meta</div>
-                            <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiMeta">$ 0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Ejecutado -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #0ea5e9;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Ejecutado</div>
-                            <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiEjecutado">$ 0</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden;"><div id="barEjecutado" style="background: #0ea5e9; width: 0%; height: 100%;"></div></div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #f0f9ff; color: #0ea5e9; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 6px;" id="txtPorcEjecutado">0%</span></div>
-                    </div>
-                </div>
-
-                <!-- 3. Aprobado -->
-                <div class="fact-kpi-card">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #00b087;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="18" height="12" rx="2"/><path d="M6 11h2"/><path d="M14 11h2"/><circle cx="11" cy="11" r="2.5"/><path d="M20 9h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Aprobado</div>
-                            <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiAprobado">$ 0</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden;"><div id="barAprobado" style="background: #00b087; width: 0%; height: 100%;"></div></div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #f0fdf4; color: #00b087; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 6px;" id="txtPorcAprobado">0%</span></div>
-                    </div>
-                </div>
-
-                <!-- 4. Rechazado -->
-                <div class="fact-kpi-card" onclick="abrirModalRechazados()" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #dc2626;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">Rechazado <span style="font-size: 0.72rem; font-weight: 700;">(ver🔍)</span></div>
-                            <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiRechazado">$ 0</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden;"><div id="barRechazado" style="background: #dc2626; width: 0%; height: 100%;"></div></div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #fef2f2; color: #dc2626; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 6px;" id="txtPorcRechazado">0%</span></div>
-                    </div>
-                </div>
-
-                <!-- 5. En Trámite -->
-                <div class="fact-kpi-card" onclick="abrirModalEnTramite()" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                    <div class="fact-kpi-top">
-                        <div class="fact-kpi-icon-container" style="background: #f59e0b;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.68rem; color: #64748b; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">En Trámite <span style="font-size: 0.72rem; font-weight: 700;">(ver🔍)</span></div>
-                            <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; margin-top: 3px;" id="kpiEnTramite">$ 0</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="background: #e2e8f0; height: 6px; border-radius: 4px; overflow: hidden;"><div id="barEnTramite" style="background: #f59e0b; width: 0%; height: 100%;"></div></div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 3px;"><span style="background: #fef3c7; color: #d97706; font-size: 0.65rem; font-weight: 800; padding: 1px 5px; border-radius: 6px;" id="txtPorcEnTramite">0%</span></div>
-                    </div>
-                </div>
-
-                <!-- 6. % Aprobación -->
-                <div class="fact-kpi-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 10px; box-sizing: border-box; gap: 10px;">
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-left: -12px;">
-                        <div class="fact-kpi-icon-container" style="background: #16a34a; min-width: 36px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 5px rgba(22, 163, 74, 0.25);">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                        </div>
-                        <div style="font-size: 0.72rem; color: #1e293b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">% Aprobación</div>
-                    </div>
-                    <div style="width: 58px; height: 58px; position: relative;">
-                        <canvas id="gaugeEfectividad"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="fact-top-row">
-                <div class="fact-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Tendencia de facturación</h3>
-                    </div>
-                    <div style="position: relative; height: 230px;">
-                        <canvas id="tendenciaChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="fact-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                        <h3 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0f172a;">Estado regional</h3>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px;" id="estadoRegionalContainer"></div>
-                </div>
-
-                <div class="fact-banner-avatar" style="position: relative; padding: 12px;">
-                    <div style="width: 100px; height: 100px; min-width: 100px; display: flex; align-items: center; justify-content: center;">
-                        <img src="../assets/assistant_casco.png" alt="Assistant Casco" class="avatar-animado" style="width: 100%; height: 100%; object-fit: contain;">
-                    </div>
-                    <div style="position: absolute; top: 16px; left: 125px; right: 12px; display: flex; flex-direction: column; gap: 2px;">
-                        <div style="font-weight: 900; font-size: 0.9rem; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">¡Hola, soy Dominic!</div>
-                        <div style="font-weight: 600; font-size: 0.72rem; color: rgba(255, 255, 255, 0.95); line-height: 1.2;">Te mantendré informado</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="fact-main-grid" style="display: block; margin-top: 16px;">
-                <div class="fact-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">👥 Detalle por técnico</h3>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Buscar técnico..." onkeyup="aplicarFiltrosGlobales()" style="padding: 6px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.82rem; width: 210px; outline: none;">
-                            <button type="button" onclick="exportExcel()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.82rem;">📥 Exportar</button>
-                        </div>
-                    </div>
-                    <div class="table-wrapper-fact">
-                        <table class="fact-table">
-                            <thead>
-                                <tr>
-                                    <th>Técnico</th>
-                                    <th>Meta</th>
-                                    <th>Aprobado</th>
-                                    <th>Rechazado</th>
-                                    <th>Subsanado</th>
-                                    <th>Efectividad</th>
-                                    <th>Estado</th>
-                                    <th style="text-align: center;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<!-- Modales -->
-<div id="modalPassword" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">🔐 Seguridad de Administrador</h3>
-            <button type="button" onclick="cerrarModalPassword()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
-        </div>
-        <div class="modal-body">
-            <p style="margin: 0; font-size: 0.85rem; color: #475569;">Ingresa la contraseña de administrador:</p>
-            <input type="password" id="inputPasswordAdmin" placeholder="Contraseña..." style="padding: 10px 14px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 0.9rem; outline: none; width: 100%; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') verificarPassword();">
-            <div id="errorPasswordMsg" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;">Contraseña incorrecta.</div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" onclick="cerrarModalPassword()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button>
-            <button type="button" onclick="verificarPassword()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Ingresar</button>
-        </div>
+  <!-- Hero con banner.jpg de fondo y el avatar visible siempre -->
+  <section class="hero" aria-label="Bienvenida">
+    <div class="txt">
+      <div class="eyebrow">PORTAL DE TÉCNICOS</div>
+      <h1>Seguimiento facturación</h1>
+      <p>Consulta tu meta personal, montos aprobados, rechazos y estados en tiempo real.</p>
     </div>
-</div>
+    <img src="../assets/assistant_casco.png" alt="Dominic, la mascota del portal" class="mascot-img">
+  </section>
 
-<div id="modalHerramientas" class="modal-overlay">
-    <div class="modal-container" style="max-width: 550px;">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">⚙️ Panel de Herramientas Avanzadas</h3>
-            <button type="button" onclick="cerrarModalHerramientas()" style="background: transparent; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">✕</button>
-        </div>
-        <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-weight: 800; color: #0f172a; font-size: 0.95rem;">📊 Cargue base facturación (Excel)</div>
-                    <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;">Sube tu archivo .xlsx para procesar en D1.</div>
-                </div>
-                <label style="background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: inline-block;">
-                    Seleccionar Excel
-                    <input type="file" id="excelFileExcel" accept=".xlsx, .xls" style="display: none;" onchange="procesarYSubirExcel(event)">
-                </label>
-            </div>
-            <div style="background: #fff5f5; border: 1px solid #feb2b2; border-radius: 12px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <div style="font-weight: 800; color: #c53030; font-size: 0.95rem;">🗑️ Vaciar Base de Datos (D1)</div>
-                    <div style="color: #742a2a; font-size: 0.8rem; margin-top: 2px;">Elimina todos los registros.</div>
-                </div>
-                <button type="button" onclick="confirmarBorrarBaseD1()" style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">Borrar Datos</button>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" onclick="cerrarModalHerramientas()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
-        </div>
+  <!-- Perfil -->
+  <section class="card profile" aria-label="Perfil y periodo">
+    <div class="sel">
+      <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+      <div style="flex:1"><label for="tec">Tu perfil técnico</label>
+        <select id="tec"><option>CAMILO ANDRES SALAZAR BARBOSA</option><option>Ariel Marquez Rada</option></select></div>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1B3D" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </div>
-</div>
-
-<div id="modalCargandoExcel" class="modal-overlay" style="background: rgba(15, 23, 42, 0.85);">
-    <div class="modal-container" style="max-width: 420px; text-align: center; padding: 10px;">
-        <div class="modal-body" style="align-items: center; gap: 18px; padding: 30px;">
-            <div style="width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <h3 id="txtEstadoCarga" style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 800;">Procesando archivo...</h3>
-            <div style="width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden;">
-                <div id="barraProgreso" style="width: 0%; height: 100%; background: #2563eb; transition: width 0.3s ease;"></div>
-            </div>
-            <div id="txtPorcentajeCarga" style="font-size: 0.85rem; font-weight: bold; color: #64748b;">0%</div>
-        </div>
+    <div class="period">
+      <span class="cal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+      <div><small>Periodo actual</small><b>Abr 2025 – Jun 2025</b></div>
     </div>
-</div>
+  </section>
 
-<div id="modalDetalleTecnico" class="modal-overlay">
-    <div class="modal-container" style="max-width: 650px;">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">📋 Resumen detallado del técnico</h3>
-            <button type="button" onclick="cerrarModalDetalle()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
-        </div>
-        <div class="modal-body" id="modalBodyContent"></div>
-        <div class="modal-footer">
-            <button type="button" onclick="cerrarModalDetalle()" style="background: #e2e8f0; color: #334155; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
-        </div>
+  <!-- KPIs -->
+  <section class="kpis" aria-label="Indicadores">
+    <article class="card kpi blue">
+      <div class="head">
+        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#DCE6FB" stroke-width="9"/><path d="M32 6a26 26 0 0123 14" fill="none" stroke="#1D5FE0" stroke-width="9" stroke-linecap="round"/><path d="M32 58A26 26 0 016 32" fill="none" stroke="#2F7BFF" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="#1D5FE0"/></svg>
+        <div class="t"><span>Meta asignada</span><div class="v">$ 9.500.000</div></div>
+        <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26C20 8 36 8 55 20s38 12 58-2 40-14 60-6 20 2 27-2" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div class="note b">Meta mensual asignada para este periodo</div>
+    </article>
+
+    <article class="card kpi green">
+      <div class="head">
+        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="50" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="40" width="44" height="10" fill="#F5C13A"/><ellipse cx="32" cy="40" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="32" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="26" width="44" height="6" fill="#F5C13A"/><ellipse cx="32" cy="26" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="18" rx="18" ry="6" fill="#FFE393"/></svg>
+        <div class="t"><span>Monto aprobado</span><div class="v">$ 56.373.775</div></div>
+        <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <svg class="spark" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"><path d="M0 28C25 26 35 12 60 16s35 12 60 2 45-10 80-12" fill="none" stroke="#12A15F" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div class="note g">593% de cumplimiento de tu meta</div>
+    </article>
+
+    <article class="card kpi red">
+      <div class="head">
+        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 6h28l10 10v42H14z" fill="#fff" stroke="#C9D0E2" stroke-width="2"/><path d="M42 6v10h10" fill="#E6EAF4"/><path d="M22 26h20M22 34h20M22 42h12" stroke="#C9D0E2" stroke-width="3" stroke-linecap="round"/><path d="M34 40h22l-5 7 5 7H34z" fill="#E0334C"/></svg>
+        <div class="t"><span>Rechazado <em>(VER)</em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><div class="v">$ 320.029</div></div>
+        <button class="go" aria-label="Ver rechazados"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="note r"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E0334C" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Requiere revisión en campo</div>
+    </article>
+
+    <article class="card kpi amber">
+      <div class="head">
+        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/><path d="M8 44c6-18 22-24 36-20" fill="none" stroke="#6FA0FF" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
+        <div class="t"><span>Monto subsanado</span><div class="v">$ 0</div></div>
+        <button class="go" aria-label="Ver monto subsanado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="note a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E08A00" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>En proceso de rescate</div>
+    </article>
+  </section>
+
+  <!-- Estado general -->
+  <section class="card state" aria-label="Estado general del periodo">
+    <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
+    <div class="mid">
+      <div class="row"><h2>Estado general del periodo</h2>
+        <span class="badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3"/></svg>¡Meta cumplida! 593%</span></div>
+      <div class="bar" role="progressbar" aria-valuenow="593" aria-valuemin="0" aria-valuemax="100" aria-label="Cumplimiento de la meta"><span class="f1"></span><span class="f2"></span><span class="pin"></span></div>
+      <div class="legend"><span>Semanal</span><span>Meta mensual</span></div>
     </div>
-</div>
+  </section>
 
-<div id="modalNotificaciones" class="modal-overlay">
-    <div class="modal-container" style="max-width: 550px;">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #0f172a;">🔔 Historial de Notificaciones</h3>
-            <button type="button" onclick="cerrarModalNotificaciones()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
-        </div>
-        <div class="modal-body" id="modalBodyNotificaciones" style="max-height: 350px; overflow-y: auto;">
-            <div style="color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px;">No hay notificaciones.</div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" onclick="cerrarModalNotificaciones()" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
-        </div>
+  <!-- Tabla -->
+  <section class="card orders" aria-label="Detalle de órdenes de trabajo">
+    <div class="otop">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+      <h2>Detalle de mis órdenes de trabajo</h2>
+      <button class="chip" id="fs" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="fl">Filtrar: todas</span></button>
+      <button class="chip on" id="fg" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v7M8 7l4-4 4 4M5 21h14M9 17h6"/></svg>GRN/BTS/RVST</button>
+      <button class="all">Ver todas<i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></i></button>
     </div>
-</div>
-
-<div id="modalEnTramiteDetalle" class="modal-overlay">
-    <div class="modal-container" style="max-width: 850px !important; width: 90% !important; height: 82vh; display: flex; flex-direction: column;">
-        <div class="modal-header" style="flex-shrink: 0;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">📊 Detalle de Casos en Trámite</h3>
-            <button type="button" onclick="cerrarModalEnTramite()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
-        </div>
-        <div style="flex-shrink: 0; background: #f8fafc; border-bottom: 2px solid #e2e8f0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><thead id="headTablaDinamicaTramite"></thead></table>
-        </div>
-        <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 0 14px; background: #fff;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tbody id="tableBodyEnTramite"></tbody></table>
-        </div>
-        <div style="flex-shrink: 0; background: #f1f5f9; border-top: 2px solid #cbd5e0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tfoot id="footerTablaDinamicaTramite"></tfoot></table>
-        </div>
-        <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-            <span id="txtTotalEnTramiteModal" style="font-size: 0.8rem; color: #64748b; font-weight: bold;">Total general: $ 0</span>
-            <button type="button" onclick="cerrarModalEnTramite()" style="background: #2563eb; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
-        </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>ID / OT</th><th>Departamento</th><th>Estado</th><th>Causa de rechazo</th><th>Estimado</th><th>Aprobado</th><th>Acciones</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>No hay órdenes que coincidan con tu búsqueda.</div>
     </div>
+  </section>
+</main>
 </div>
 
-<div id="modalRechazadosDetalle" class="modal-overlay">
-    <div class="modal-container" style="max-width: 850px !important; width: 90% !important; height: 82vh; display: flex; flex-direction: column;">
-        <div class="modal-header" style="flex-shrink: 0;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a;">❌ Detalle de causas de rechazo</h3>
-            <button type="button" onclick="cerrarModalRechazados()" style="background: transparent; border: none; font-size: 1.25rem; font-weight: bold; color: #64748b; cursor: pointer;">✕</button>
-        </div>
-        <div style="flex-shrink: 0; background: #f8fafc; border-bottom: 2px solid #e2e8f0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><thead id="headTablaDinamicaRechazados"></thead></table>
-        </div>
-        <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 0 14px; background: #fff;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tbody id="tableBodyRechazados"></tbody></table>
-        </div>
-        <div style="flex-shrink: 0; background: #f1f5f9; border-top: 2px solid #cbd5e0; overflow: hidden;">
-            <table class="fact-table" style="white-space: nowrap; width: 100%; margin: 0; border-collapse: collapse;"><tfoot id="footerTablaDinamicaRechazados"></tfoot></table>
-        </div>
-        <div class="modal-footer" style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-            <span id="txtTotalRechazadosModal" style="font-size: 0.8rem; color: #64748b; font-weight: bold;">Total general: $ 0</span>
-            <button type="button" onclick="cerrarModalRechazados()" style="background: #dc2626; color: #fff; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Scripts -->
-<script src="../js/facturacion.js"></script>
-<script src="../js/settings.js"></script>
+<!-- Script para controlar el menú lateral móvil -->
 <script>
-    function toggleAcordeon(submenuId, arrowId) {
-        const submenu = document.getElementById(submenuId);
-        const arrow = document.getElementById(arrowId);
-        if (submenu.style.display === 'flex') {
-            submenu.style.display = 'none';
-            arrow.style.transform = 'rotate(0deg)';
-        } else {
-            submenu.style.display = 'flex';
-            arrow.style.transform = 'rotate(180deg)';
-        }
-    }
-
-    // Despliegue limpio hacia abajo dentro del mismo sidebar
-    function toggleDropdownFiltro(dropdownId, event) {
-        event.stopPropagation();
-        const menu = document.getElementById(dropdownId);
-        const estaActivo = menu.classList.contains('activo');
-        
-        // Cerramos los demás menús para que no se encimen
-        document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
-        
-        if (!estaActivo) {
-            menu.classList.add('activo');
-            const input = menu.querySelector('input[type="text"]');
-            if (input) input.focus();
-        }
-    }
-
-    // Cierra el menú al hacer clic fuera del sidebar
-    window.addEventListener('click', function() {
-        document.querySelectorAll('.dropdown-filtro-menu').forEach(m => m.classList.remove('activo'));
-    });
+function toggleSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('activo');
+  overlay.classList.toggle('activo');
+}
 </script>
+<script src="../js/portal-tecnicos.js"></script>
 </body>
 </html>
