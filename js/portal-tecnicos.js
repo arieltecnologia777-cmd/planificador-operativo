@@ -57,19 +57,17 @@ function poblarSelectoresYFiltros(rows) {
         selectTec.onchange = () => ejecutarFiltroYRenderizado();
     }
 
-    // 2. Extraer los meses y marcar los últimos 3 vigentes por defecto
+    // 2. Extraer SOLAMENTE los últimos 3 meses vigentes ordenados
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
 
     const containerMeses = document.getElementById('listaCheckPeriodos');
     if (containerMeses) {
         let htmlCheck = '';
-        mesesOrdenados.forEach(mes => {
-            // Por defecto marcamos los últimos 3 vigentes
-            const isChecked = ultimosTresMeses.includes(mes) ? 'checked' : '';
+        ultimosTresMeses.forEach(mes => {
             htmlCheck += `
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" ${isChecked} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
                     ${mes}
                 </label>
             `;
@@ -135,7 +133,7 @@ function actualizarLabelBotonPeriodos() {
     if (seleccionados.length === 0) {
         lbl.innerText = "Ningún periodo";
     } else if (seleccionados.length === total) {
-        lbl.innerText = "Todos los periodos";
+        lbl.innerText = "Últimos 3 meses vigentes";
     } else if (seleccionados.length === 1) {
         lbl.innerText = seleccionados[0];
     } else {
@@ -166,7 +164,6 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
         return matchTecnico && matchMes;
     });
 
-    // Cantidad de meses seleccionados para calcular la meta total
     const cantidadMeses = Math.max(1, mesesSeleccionados.length);
     const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
 
@@ -195,7 +192,7 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
     document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoSubsanadoTotal);
 
-    // Texto dinámico de la tarjeta de meta (sin decir estrictamente "mes", adaptado al filtro)
+    // Texto dinámico de la tarjeta de meta
     const textoNotaMeta = cantidadMeses === 1 ? "Meta asignada para este periodo" : `Meta asignada para los ${cantidadMeses} periodos seleccionados`;
     const notaMetaElem = document.querySelector('.card.kpi.blue .note.b');
     if (notaMetaElem) notaMetaElem.innerText = textoNotaMeta;
