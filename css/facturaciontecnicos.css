@@ -350,3 +350,12 @@ tbody tr:hover td{background:#F8FAFE}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Estilos para el dropdown de selección múltiple de periodos */
+#dropdownPeriodoContent::-webkit-scrollbar {
+  width: 6px;
+}
+#dropdownPeriodoContent::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
