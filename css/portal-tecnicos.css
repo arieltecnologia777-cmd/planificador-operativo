@@ -321,3 +321,48 @@ tbody tr:hover td{background:#F8FAFE}
     width: 100%;
   }
 }
+/* Estilo del botón hamburguesa mejorado con el tooltip */
+.hamburger-btn {
+    display: flex;
+    position: fixed;
+    top: 22px;
+    left: 22px;
+    z-index: 1200;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    color: #1d5fe0;
+    border: 1px solid #cbd5e0;
+    height: 44px;
+    padding: 0 14px 0 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    align-items: center;
+    gap: 8px;
+    animation: pulsoParpadeo 2s infinite ease-in-out;
+}
+
+/* Texto tooltip lateral */
+.menu-tooltip {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #1d5fe0;
+}
+
+/* Animación de destello / parpadeo suave para guiar al usuario */
+@keyframes pulsoParpadeo {
+    0% {
+        box-shadow: 0 0 0 0 rgba(29, 95, 224, 0.4);
+        border-color: #cbd5e0;
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(29, 95, 224, 0);
+        border-color: #1d5fe0;
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(29, 95, 224, 0);
+        border-color: #cbd5e0;
+    }
+}
