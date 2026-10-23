@@ -144,7 +144,7 @@
     </article>
   </section>
 
-  <!-- Estado general -->
+ <!-- Estado general -->
   <section class="card state" aria-label="Estado general del periodo">
     <span class="ic" id="stateIconEstado" style="background: var(--blue);">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
@@ -155,10 +155,14 @@
         <span class="badge" id="stateBadgeEstado" style="background: var(--amber-soft); color: var(--amber);">Calculando...</span>
       </div>
       <div class="bar" id="progressBarContainerBarra" style="background: #E7ECF6; height: 14px; border-radius: 99px; position: relative; overflow: visible;">
+        <!-- Línea indicadora del 100% de la meta -->
+        <div style="position: absolute; left: 100%; top: -4px; bottom: -4px; width: 3px; background: #0f172a; z-index: 3; border-radius: 2px;" title="Meta 100%"></div>
+        <span style="position: absolute; left: 100%; top: 18px; transform: translateX(-50%); font-size: 10px; font-weight: 700; color: #64748b;">100% Meta</span>
+
         <div id="progressFillBarra" style="position: absolute; left: 0; top: 0; bottom: 0; width: 0%; border-radius: 99px; background: linear-gradient(90deg, #E0334C 0%, #E08A00 50%, #12A15F 100%); transition: width 0.4s ease;"></div>
-        <div id="progressPinBarra" class="pin" title="Progreso" style="position: absolute; left: 0%; top: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid #E0334C; box-shadow: 0 2px 8px rgba(0,0,0,.2); transform: translateX(-50%); transition: left 0.4s ease;"></div>
+        <div id="progressPinBarra" class="pin" title="Progreso" style="position: absolute; left: 0%; top: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid #E0334C; box-shadow: 0 2px 8px rgba(0,0,0,.2); transform: translateX(-50%); transition: left 0.4s ease; z-index: 4;"></div>
       </div>
-      <div class="legend"><span id="legendStart">0%</span><span id="legendMetaTexto">Meta total: $0</span></div>
+      <div class="legend" style="margin-top: 14px;"><span id="legendStart">0%</span><span id="legendMetaTexto">Meta total: $0</span></div>
     </div>
   </section>
 
@@ -168,20 +172,24 @@
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
       <h2>Detalle de mis órdenes de trabajo</h2>
       <button class="chip" id="fs" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="fl">Filtrar: todas</span></button>
-      <button class="chip on" id="fg" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v7M8 7l4-4 4 4M5 21h14M9 17h6"/></svg>GRN/BTS/RVST</button>
-      <button class="all">Ver todas<i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></i></button>
     </div>
-    <div class="tw">
+
+    <!-- Mensaje para móviles indicando deslizamiento -->
+    <div style="text-align: center; padding: 4px 0 8px; font-size: 11px; font-weight: 600; color: #64748b;" class="mobile-scroll-hint">
+      ↔️ Desliza para ver más datos
+    </div>
+
+    <div class="tw" style="overflow-x: auto;">
       <table>
-       <thead>
-  <tr>
-    <th>ID</th>
-    <th>Estado</th>
-    <th>Causa de rechazo</th>
-    <th>Valor</th>
-    <th style="text-align: center;">Acciones</th>
-  </tr>
-</thead>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Estado</th>
+            <th>Causa de rechazo</th>
+            <th>Valor</th>
+            <th style="text-align: center;">Acciones</th>
+          </tr>
+        </thead>
         <tbody id="rows"></tbody>
       </table>
       <div class="empty" id="empty" hidden>No hay órdenes que coincidan con tu búsqueda.</div>
