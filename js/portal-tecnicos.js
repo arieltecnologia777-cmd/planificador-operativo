@@ -350,13 +350,14 @@ function abrirModalDetalle(index) {
     const aprobRegRaw = registro.aprobacion_regional || registro.APROBACION_REGIONAL || registro['APROBACION REGIONAL'] || 'En trámite';
     const estadoTexto = String(aprobRegRaw).trim().toUpperCase();
 
-    let causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || 'Sin causa registrada';
+    // Extraemos la causa y la observación tal cual vienen de la base de datos
+    let causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || '***';
     let obsVal = registro.detalle_mindy2 || registro.DETALLE_MINDY2 || registro['DETALLE MINDY2'] || registro['detalle mindy2'] || 'Sin observaciones registradas.';
 
-    // SI EL ESTADO ES ACEPTADO O APROBADO: Forzamos N/A en causa y limpiamos con el comentario estándar
+    // SI EL ESTADO ES ACEPTADO O APROBADO: Forzamos el '***' en causa y el comentario estándar en observaciones
     if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-        causaVal = "N/A";
-        obsVal = "Orden aprobada satisfactoriamente.";
+        causaVal = "***";
+        obsVal = "Orden aprobada.";
     }
 
     document.getElementById('modalIdVal').innerText = idVal;
