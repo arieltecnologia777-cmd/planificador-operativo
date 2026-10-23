@@ -7,7 +7,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid #7FA6FF;outline-offset:2px}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
-/* Sidebar */
+/* Sidebar con z-index superior (1500) para que la barra superior no lo tape */
 .side{
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(20px) !important;
@@ -22,7 +22,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     overflow: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 10px 0 35px rgba(15, 27, 61, 0.08) !important;
-    z-index: 1000;
+    z-index: 1500 !important;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
@@ -37,7 +37,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .nav-close-mobile { display: none; }
 
-/* Barra superior exclusiva para móviles (Opción 1) */
+/* Barra superior exclusiva para móviles (z-index menor al sidebar) */
 .mobile-top-bar {
     display: none;
     align-items: center;
@@ -87,6 +87,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     letter-spacing: -0.2px;
 }
 
+/* Overlay con z-index (1400) ubicado debajo del sidebar pero encima del contenido */
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -96,7 +97,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     height: 100vh;
     background: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(4px);
-    z-index: 999;
+    z-index: 1400 !important;
 }
 .sidebar-overlay.activo { display: block; }
 
@@ -205,7 +206,43 @@ button{font:inherit;color:inherit;cursor:pointer}
 .kpi.red .ill { filter: drop-shadow(0 6px 12px rgba(224, 51, 76, 0.45)) !important; }
 .kpi.amber .ill { filter: drop-shadow(0 6px 12px rgba(224, 138, 0, 0.45)) !important; }
 
-/* Media Queries Móvil (Activa la barra superior y oculta la hamburguesa flotante antigua) */
+/* Estado general */
+.state{padding:20px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.state .ic{width:46px;height:46px;border-radius:50%;background:var(--blue);display:grid;place-items:center;flex:none}
+.state .mid{flex:1;min-width:260px}
+.state .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.state h2{margin:0;font-size:18px;font-weight:800}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-soft);color:#0B6B40;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px}
+.bar{position:relative;height:14px;border-radius:99px;background:#E7ECF6;overflow:visible}
+.legend{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);font-weight:600;margin-top:10px}
+
+/* Tabla */
+.orders{padding:22px 22px 8px}
+.otop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.otop .ic{width:40px;height:40px;border-radius:12px;background:var(--blue-soft);display:grid;place-items:center}
+.otop h2{margin:0;font-size:19px;font-weight:800;margin-right:6px}
+.chip{border:0;background:var(--blue-soft);color:#173FA8;font-weight:700;font-size:14px;border-radius:12px;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;gap:8px}
+.chip.on{background:var(--green-soft);color:#0B6B40}
+.all{margin-left:auto;border:0;background:#EEF2FA;border-radius:999px;font-weight:700;font-size:14px;padding:0 8px 0 18px;min-height:44px;display:inline-flex;align-items:center;gap:10px}
+.all i{width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.tw{overflow-x:auto;margin:0 -22px;padding:0 22px}
+table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0;font-size:14px}
+thead th{background:#F1F4FB;color:#34406A;text-align:left;font-weight:700;font-size:13px;padding:14px 12px;white-space:nowrap}
+thead th:first-child{border-radius:12px 0 0 12px}
+thead th:last-child{border-radius:0 12px 12px 0;text-align:center}
+tbody td{padding:13px 12px;border-bottom:1px solid #EDF0F7;vertical-align:middle;white-space:nowrap}
+tbody tr:hover td{background:#F8FAFE}
+.ot{display:inline-block;background:var(--blue-soft);color:#173FA8;font-weight:800;border-radius:10px;padding:5px 13px}
+.st{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;border-radius:999px;padding:6px 12px}
+.st.ok{background:var(--green-soft);color:#0B6B40}
+.st.pe{background:var(--amber-soft);color:#7A4A00}
+.st.re{background:var(--red-soft);color:#A3182E}
+.cause{display:flex;align-items:center;gap:8px;color:#34406A}
+.empty{padding:26px;text-align:center;color:var(--mute);font-weight:600}
+
+/* Media Queries Móvil */
+@media(max-width:1180px){.kpis{grid-template-columns:repeat(2,1fr)}}
+
 @media(max-width:860px){
   .app{grid-template-columns:1fr}
   .side{
