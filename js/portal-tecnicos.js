@@ -97,72 +97,39 @@ function obtenerNombreCorto(nombreCompleto) {
     return `${partes[0]} ${partes[1]}`;
 }
 
-function poblarSelectoresYFiltros(rows) {
-    const mesesSet = new Set();
+function actualizarFiltroEstadosDinamico(registrosFiltrados) {
     const estadosSet = new Set();
-
-    rows.forEach(r => {
-        const mesVal = String(r.mes || r.MES || "").trim();
-        if (mesVal) mesesSet.add(mesVal);
-
+    
+    registrosFiltrados.forEach(r => {
         const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
         const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
-        estadosSet.add(estadoTexto);
+        
+        // Excluimos GRN/BTS/RVST si aplica en tu lógica general
+        if (!estadoTexto.includes("GRN") && !estadoTexto.includes("BTS") && !estadoTexto.includes("RVST")) {
+            estadosSet.add(estadoTexto);
+        }
     });
 
-    const nombreCorto = obtenerNombreCorto(tecnicoLogueado);
-    const perfilContainer = document.querySelector('.sel'); 
-    if (perfilContainer) {
-        perfilContainer.innerHTML = `
-            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
-            <div style="flex:1; min-width: 0;">
-                <label style="font-size: 10px; display: block;">Tu perfil técnico</label>
-                <b style="font-size: 12px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${tecnicoLogueado}">${nombreCorto}</b>
-            </div>
-        `;
-    }
-
-    const mesesOrdenados = Array.from(mesesSet).sort();
-    const ultimosTresMeses = mesesOrdenados.slice(-3);
-
-    const containerMeses = document.getElementById('listaCheckPeriodos');
-    if (containerMeses) {
-        let htmlCheck = '';
-        ultimosTresMeses.forEach(mes => {
-            htmlCheck += `
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
-                    ${mes}
-                </label>
-            `;
-        });
-        containerMeses.innerHTML = htmlCheck;
-    }
-
-    // Poblar filtro de estados
     const containerEstados = document.getElementById('listaCheckEstados');
-    if (containerEstados) {
-        let htmlEstados = '';
-        Array.from(estadosSet).sort().forEach(est => {
-            htmlEstados += `
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroEstadoCheckbox" value="${est}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
-                    ${est}
-                </label>
-            `;
-        });
-        containerEstados.innerHTML = htmlEstados;
-    }
+    if (!containerEstados) return;
 
-    actualizarLabelBotonPeriodos();
+    // Guardamos los estados que ya estaban seleccionados previamente para no desmarcarlos si siguen vigentes
+    const seleccionadosPrevios = obtenerEstadosSeleccionados();
+
+    let htmlEstados = '';
+    Array.from(estadosSet).sort().forEach(est => {
+        // Si antes estaba seleccionado o es la primera vez, lo dejamos marcado por defecto
+        const estaMarcado = seleccionadosPrevios.length === 0 || seleccionadosPrevios.includes(est) ? 'checked' : '';
+        htmlEstados += `
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
+                <input type="checkbox" name="filtroEstadoCheckbox" value="${est}" ${estaMarcado} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                ${est}
+            </label>
+        `;
+    });
+    
+    containerEstados.innerHTML = htmlEstados;
     actualizarLabelBotonEstado();
-
-    const drop = document.getElementById('dropdownPeriodoContent');
-    if (drop) drop.style.display = 'none';
-    const dropEstado = document.getElementById('dropdownEstadoContent');
-    if (dropEstado) dropEstado.style.display = 'none';
-
-    ejecutarFiltroYRenderizado();
 }
 
 function toggleDropdownPeriodo(e) {
