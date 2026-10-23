@@ -201,7 +201,6 @@ function ejecutarFiltroYRenderizado() {
 
     procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesesSeleccionados);
 }
-
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
     const palabrasClave = tecnicoBuscado.split(/\s+/).filter(p => p.length > 2);
@@ -212,6 +211,12 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
         const mesReg = String(r.mes || r.MES || "").trim();
 
         if (!mesesSeleccionados.includes(mesReg)) return false;
+
+        // Validamos el estado regional para excluir completamente 'GRN/BTS/RVST'
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) {
+            return false; // Descartamos este registro por completo
+        }
 
         if (perfil === tecnicoBuscado) return true;
         if (palabrasClave.length > 0 && palabrasClave.every(palabra => perfil.includes(palabra))) return true;
@@ -246,7 +251,6 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
     actualizarBarraEstadoGeneralPeriodo(montoAprobadoTotal, metaAsignadaTotal, porcentajeCumplimiento, cantidadMeses);
     renderizarTablaOrdenesTecnico(misRegistros);
 }
-
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
     const porcentajeVisual = (porcentaje / 200) * 100;
     
