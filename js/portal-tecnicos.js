@@ -165,14 +165,19 @@ function poblarSelectoresYFiltros(rows, tecnicoLogueado) {
 
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
+    
+    // Identificamos el mes más reciente (el último elemento del array de los últimos 3)
+    const mesMasReciente = ultimosTresMeses[ultimosTresMeses.length - 1];
 
     const containerMeses = document.getElementById('listaCheckPeriodos');
     if (containerMeses) {
         let htmlCheck = '';
         ultimosTresMeses.forEach(mes => {
+            // Solo marcamos con 'checked' si coincide con el mes más reciente
+            const estaCheckeado = (mes === mesMasReciente) ? 'checked' : '';
             htmlCheck += `
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" ${estaCheckeado} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
                     ${mes}
                 </label>
             `;
