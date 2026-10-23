@@ -372,40 +372,56 @@ tbody tr:hover td{background:#F8FAFE}
 }
 
 /* ========================================================== */
-/* CORRECCIÓN FINALES PARA LA COLUMNA FIJA DE LA TABLA        */
+/* SOLUCIÓN DEFINITIVA COLUMNA FIJA IZQUIERDA (Sin filtraciones) */
 /* ========================================================== */
 
-/* Asegurar que el contenedor de la tabla oculte cualquier desbordamiento lateral izquierdo */
+/* Contenedor principal de la tabla con fondo blanco sólido y padding izquierdo de seguridad */
 .tw {
     overflow-x: auto !important;
     position: relative !important;
     display: block !important;
     max-width: 100% !important;
-    background-color: #ffffff !important; /* Fondo base para evitar filtraciones visuales */
+    background-color: #ffffff !important;
+    padding-left: 0 !important;
 }
 
-/* Forzar que la primera columna tenga un fondo sólido impecable y cubra perfectamente */
+/* Forzar que la primera columna sea el ancla absoluta izquierda */
 table th:first-child,
 table td:first-child {
     position: sticky !important;
     left: 0 !important;
     z-index: 10 !important;
-    background-clip: padding-box !important;
 }
 
-/* Fondo sólido absoluto para el encabezado fijo */
+/* Encabezado fijo de la primera columna */
 table thead th:first-child {
     background-color: #F1F4FB !important;
     z-index: 20 !important;
 }
 
-/* Fondo sólido absoluto para las celdas de la primera columna con su sombra lateral */
+/* Celdas de la primera columna con fondo blanco sólido opaco y una barra contenedora */
 table tbody tr td:first-child {
     background-color: #ffffff !important;
-    box-shadow: 4px 0 8px rgba(15, 27, 61, 0.06) !important; /* Sombra limpia para la columna */
+    box-shadow: 4px 0 8px rgba(15, 27, 61, 0.08) !important;
+}
+
+/* Truco infalible: Un pseudo-elemento que tapa por completo cualquier dato que intente asomarse a la izquierda de la columna fija */
+table tbody tr td:first-child::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 100% !important;
+    width: 30px !important; /* Cubre cualquier espacio vacío a la izquierda */
+    background-color: #ffffff !important;
+    z-index: 5 !important;
 }
 
 /* Mantener el fondo sólido al hacer hover */
 table tbody tr:hover td:first-child {
+    background-color: #F8FAFE !important;
+}
+
+table tbody tr:hover td:first-child::before {
     background-color: #F8FAFE !important;
 }
