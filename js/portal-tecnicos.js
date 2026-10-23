@@ -1,29 +1,34 @@
 const API_BASE_URL = "https://facturacion.modulo-de-exclusiones.workers.dev/api";
 const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
+const LOGIN_API_URL = `${API_BASE_URL}/login`;
 
 let registrosCrudosTecnicos = [];
 const META_BASE_MENSUAL_TECNICO = 9500000;
-
-// Variable global para almacenar los registros filtrados actuales y consultarlos fácilmente desde el modal
 let registrosFiltradosActuales = [];
 
-// 1. Validar seguridad al cargar la página: Si no hay sesión, redirigir al login
-const tecnicoLogueado = localStorage.getItem('tecnicoLogueado');
-if (!tecnicoLogueado) {
-    window.location.replace('login.html');
-}
-
 document.addEventListener("DOMContentLoaded", () => {
+    // Detectar si estamos en la página de Login o en el Portal principal
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        inicializarLogicaLogin(loginForm);
+        return; // Si estamos en login, detenemos la ejecución de más código del portal
+    }
+
+    // 1. Validar seguridad al cargar el Portal: Si no hay sesión, redirigir al login
+    const tecnicoLogueado = localStorage.getItem('tecnicoLogueado');
+    if (!tecnicoLogueado) {
+        window.location.replace('login.html');
+        return;
+    }
+
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
     const dropEstado = document.getElementById('dropdownEstadoContent');
     if (dropEstado) dropEstado.style.display = 'none';
 
-    // Inyectar el reloj en el Hero para pantallas grandes si no existe
     asegurarRelojEnHero();
-
-    cargarDatosTecnicosDesdeAPI();
+    cargarDatosTecnicosDesdeAPI(tecnicoLogueado);
     iniciarRelojTiempoReal();
     
     document.addEventListener('click', (e) => {
@@ -36,6 +41,47 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+/* ========================================================== */
+/* LÓGICA DE LOGIN                                            */
+/* ========================================================== */
+function inicializarLogicaLogin(form) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const cedula = document.getElementById('cedula').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errorDiv = document.getElementById('errorMsg');
+        if (errorDiv) errorDiv.style.display = 'none';
+
+        try {
+            const resp = await fetch(LOGIN_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cedula, password })
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+                localStorage.setItem('tecnicoLogueado', data.nombre_tecnico);
+                window.location.replace('portal-tecnicos.html');
+            } else {
+                if (errorDiv) {
+                    errorDiv.textContent = data.error || "Credenciales inválidas";
+                    errorDiv.style.display = 'block';
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            if (errorDiv) {
+                errorDiv.textContent = "Error de conexión con el servidor";
+                errorDiv.style.display = 'block';
+            }
+        }
+    });
+}
+
+/* ========================================================== */
+/* LÓGICA DEL PORTAL TÉCNICO                                  */
+/* ========================================================== */
 function asegurarRelojEnHero() {
     const heroCard = document.querySelector('.hero') || document.querySelector('.bg-blue, div[style*="background: linear-gradient"], div[style*="background: #1D5FE0"]') || document.querySelector('main > div:first-child');
     
@@ -71,13 +117,13 @@ function iniciarRelojTiempoReal() {
     setInterval(actualizar, 1000);
 }
 
-async function cargarDatosTecnicosDesdeAPI() {
+async function cargarDatosTecnicosDesdeAPI(tecnicoLogueado) {
     try {
         const response = await fetch(FACTURACION_API_URL);
         if (response.ok) {
             registrosCrudosTecnicos = await response.json();
             if (Array.isArray(registrosCrudosTecnicos) && registrosCrudosTecnicos.length > 0) {
-                poblarSelectoresYFiltros(registrosCrudosTecnicos);
+                poblarSelectoresYFiltros(registrosCrudosTecnicos, tecnicoLogueado);
             } else {
                 renderizarPortalVacio();
             }
@@ -97,7 +143,7 @@ function obtenerNombreCorto(nombreCompleto) {
     return `${partes[0]} ${partes[1]}`;
 }
 
-function poblarSelectoresYFiltros(rows) {
+function poblarSelectoresYFiltros(rows, tecnicoLogueado) {
     const mesesSet = new Set();
 
     rows.forEach(r => {
@@ -204,7 +250,6 @@ function actualizarLabelBotonPeriodos() {
     }
 }
 
-// Funciones de control para el desplegable de Estados
 function toggleDropdownEstado(e) {
     if (e) e.stopPropagation();
     const drop = document.getElementById('dropdownEstadoContent');
@@ -503,7 +548,7 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-// NUEVO: Funciones para el cierre de sesión real y seguro con modal de confirmación
+// Funciones para el cierre de sesión real y seguro con modal de confirmación
 function cerrarSesion() {
     const modal = document.getElementById('modalCerrarSesion');
     if (modal) modal.style.display = 'flex';
