@@ -351,3 +351,101 @@ window.seleccionarTodoPeriodos = seleccionarTodoPeriodos;
 window.borrarFiltroPeriodos = borrarFiltroPeriodos;
 window.filtrarListaPeriodos = filtrarListaPeriodos;
 window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
+
+// Variable global para almacenar los registros filtrados actuales y consultarlos fácilmente desde el modal
+let registrosFiltradosActuales = [];
+
+// Modificamos ligeramente la función de renderizado de la tabla para guardar el array y enlazar el índice al botón
+function renderizarTablaOrdenesTecnico(rows) {
+    registrosFiltradosActuales = rows || [];
+    const tbody = document.getElementById('rows');
+    const emptyMsg = document.getElementById('empty');
+    if (!tbody) return;
+
+    if (!rows || rows.length === 0) {
+        tbody.innerHTML = '';
+        if (emptyMsg) emptyMsg.hidden = false;
+        return;
+    }
+
+    if (emptyMsg) emptyMsg.hidden = true;
+    let html = '';
+
+    rows.forEach((r, index) => {
+        const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        
+        let estadoTexto = 'En trámite';
+        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo
+        let montoFinal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+
+        if (aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADA")) {
+            estadoTexto = aprobReg.includes("ACEPTADO") ? 'APROBADO' : aprobReg;
+            bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
+            montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? montoFinal);
+        } else if (aprobReg.includes("RECHAZADO") || aprobReg.includes("RECHAZADA")) {
+            estadoTexto = 'RECHAZADA';
+            bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
+        } else {
+            const trasiegoVal = Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
+            if (trasiegoVal > 0) {
+                estadoTexto = 'SUBSANADO';
+                bgEstilo = 'background: #FEF9C3; color: #854D0E;';
+                montoFinal = trasiegoVal;
+            }
+        }
+
+        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+
+        html += `
+            <tr>
+                <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
+                <td>
+                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; ${bgEstilo}">
+                        ${estadoTexto}
+                    </span>
+                </td>
+                <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
+                <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
+                <td style="text-align: center;">
+                    <button type="button" onclick="abrirModalDetalle(${index})" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb;">
+                        👁️ Ver detalles
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+// Funciones para controlar el modal
+function abrirModalDetalle(index) {
+    const registro = registrosFiltradosActuales[index];
+    if (!registro) return;
+
+    const idVal = registro.id_id || registro.ID_ID || registro.id || registro.ID || 'N/A';
+    const mesVal = registro.mes || registro.MES || 'N/A';
+    const aprobReg = registro.aprobacion_regional || registro.APROBACION_REGIONAL || registro['APROBACION REGIONAL'] || 'En trámite';
+    const causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || 'Sin causa registrada';
+    
+    // Aquí es donde se toma la columna de observaciones de documentación que solicitaste
+    const obsVal = registro.observacion_documentacion || registro.OBSERVACION_DOCUMENTACION || registro['OBSERVACION DOCUMENTACION'] || 'Sin observaciones registradas para esta orden.';
+
+    document.getElementById('modalIdVal').innerText = idVal;
+    document.getElementById('modalMesVal').innerText = mesVal;
+    document.getElementById('modalEstadoVal').innerText = aprobReg;
+    document.getElementById('modalCausaVal').innerText = causaVal;
+    document.getElementById('modalObsVal').innerText = obsVal;
+
+    const modal = document.getElementById('modalDetalleOrden');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    const modal = document.getElementById('modalDetalleOrden');
+    if (modal) modal.style.display = 'none';
+}
+
+// Exponer las funciones al objeto window para asegurar su disponibilidad en los eventos onclick del DOM
+window.abrirModalDetalle = abrirModalDetalle;
+window.cerrarModalDetalle = cerrarModalDetalle;
