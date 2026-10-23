@@ -279,3 +279,34 @@ tbody tr:hover td{background:#F8FAFE}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Clases oficiales y definitivas para los estados de la tabla */
+.badge-estado-aceptado {
+    background: #D1FAE5 !important;
+    color: #065F46 !important;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.badge-estado-rechazado {
+    background: #FEE2E2 !important;
+    color: #991B1B !important;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.badge-estado-ambar {
+    background: #FEF3C7 !important;
+    color: #D97706 !important;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+}
