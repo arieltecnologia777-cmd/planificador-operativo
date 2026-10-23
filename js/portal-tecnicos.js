@@ -207,12 +207,21 @@ function ejecutarFiltroYRenderizado() {
 
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
+    // Limpiamos el nombre para buscar por palabras clave (ej: primer nombre y apellido)
+    const palabrasClave = tecnicoBuscado.split(/\s+/).filter(p => p.length > 2);
     
     const misRegistros = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim();
-        return perfil === tecnicoBuscado && mesesSeleccionados.includes(mesReg);
+
+        if (!mesesSeleccionados.includes(mesReg)) return false;
+
+        // Coincidencia exacta o si contiene las palabras principales del nombre
+        if (perfil === tecnicoBuscado) return true;
+        if (palabrasClave.length > 0 && palabrasClave.every(palabra => perfil.includes(palabra))) return true;
+
+        return false;
     });
 
     const cantidadMeses = Math.max(1, mesesSeleccionados.length);
@@ -228,7 +237,7 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
         
         if (estAceptar) montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
         if (estRechazar) montoRechazadoTotal += montoBase;
-        montoSubsanadoTotal += Number(r.trasiego_esp ?? 0);
+        montoSubsanadoTotal += Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
     });
 
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
