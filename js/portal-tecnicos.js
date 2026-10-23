@@ -285,22 +285,49 @@ function renderizarTablaOrdenesTecnico(rows) {
 
     if (emptyMsg) emptyMsg.hidden = true;
     let html = '';
+
     rows.forEach(r => {
+        const otVal = r.ot || r.OT || r.id_id || r.ID_ID || 'N/A';
+        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
+        
+        // Determinamos el estilo y color del estado según la aprobación
+        let estadoClase = 'pe'; // por defecto pendiente/trámite
+        let estadoTexto = 'En trámite';
+        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo por defecto
+
+        if (aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADA")) {
+            estadoTexto = aprobReg.includes("ACEPTADO") ? 'APROBADO' : aprobReg;
+            bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
+        } else if (aprobReg.includes("RECHAZADO") || aprobReg.includes("RECHAZADA")) {
+            estadoTexto = 'RECHAZADA';
+            bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
+        } else if (r.estado_gestion) {
+            estadoTexto = r.estado_gestion;
+        }
+
+        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+        const estimadoVal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
+        const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+
         html += `
             <tr>
-                <td><span class="ot">${r.ot || r.OT || r.id_id || r.ID_ID || 'N/A'}</span></td>
-                <td><span class="cause">${r.departamento || r.DEPARTAMENTO || 'GENERAL'}</span></td>
-                <td><span class="st pe">${r.estado_gestion || r.estadoGestion || 'En trámite'}</span></td>
-                <td>${r.mes || r.MES || '-'}</td>
-                <td>${formatMoney(r.estimado_a_facturar ?? 0)}</td>
-                <td>${formatMoney(r.total_aprobado ?? r.real_facturado ?? 0)}</td>
-                <td style="text-align: center;"><button type="button" style="padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Ver</button></td>
+                <td><span class="ot">${otVal}</span></td>
+                <td>
+                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; ${bgEstilo}">
+                        ${estadoTexto}
+                    </span>
+                </td>
+                <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
+                <td>${formatMoney(estimadoVal)}</td>
+                <td>${formatMoney(aprobadoVal)}</td>
+                <td style="text-align: center;">
+                    <button type="button" style="padding: 4px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; font-size: 12px; color: #1e293b;">Ver</button>
+                </td>
             </tr>
         `;
     });
     tbody.innerHTML = html;
 }
-
 function renderizarPortalVacio() {
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(0);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(0);
