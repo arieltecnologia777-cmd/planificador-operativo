@@ -10,7 +10,7 @@ let registrosFiltradosActuales = [];
 // 1. Validar seguridad al cargar la página: Si no hay sesión, redirigir al login
 const tecnicoLogueado = localStorage.getItem('tecnicoLogueado');
 if (!tecnicoLogueado) {
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -503,10 +503,21 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
+// NUEVO: Funciones para el cierre de sesión real y seguro con modal de confirmación
 function cerrarSesion() {
-    localStorage.removeItem('tecnicoLogueado');
+    const modal = document.getElementById('modalCerrarSesion');
+    if (modal) modal.style.display = 'flex';
+}
+
+function cerrarModalLogout() {
+    const modal = document.getElementById('modalCerrarSesion');
+    if (modal) modal.style.display = 'none';
+}
+
+function ejecutarLogoutReal() {
     localStorage.clear();
-    window.location.href = 'login.html';
+    sessionStorage.clear();
+    window.location.replace('login.html');
 }
 
 // Exponer funciones globalmente al objeto window
@@ -522,3 +533,5 @@ window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
 window.abrirModalDetalle = abrirModalDetalle;
 window.cerrarModalDetalle = cerrarModalDetalle;
 window.cerrarSesion = cerrarSesion;
+window.cerrarModalLogout = cerrarModalLogout;
+window.ejecutarLogoutReal = ejecutarLogoutReal;
