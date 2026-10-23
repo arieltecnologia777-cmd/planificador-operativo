@@ -324,7 +324,9 @@ function renderizarTablaOrdenesTecnico(rows) {
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
                 <td style="text-align: center;">
-                    <button type="button" style="padding: 4px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; font-size: 12px; color: #1e293b;">Ver</button>
+                    <button type="button" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb; transition: background 0.2s;">
+                        👁️ Ver detalles
+                    </button>
                 </td>
             </tr>
         `;
