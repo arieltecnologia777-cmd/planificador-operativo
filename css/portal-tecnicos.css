@@ -217,7 +217,7 @@ tbody tr:hover td{background:#F8FAFE}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* ========================================================== */
-/* CORRECCIÓN MÓVIL: Sidebar con Glassmorphism y tamaño completo */
+/* CORRECCIÓN MÓVIL: Sidebar fijo sin salto de altura por scroll */
 /* ========================================================== */
 @media(max-width: 860px){
   .app{grid-template-columns:1fr}
@@ -227,16 +227,15 @@ tbody tr:hover td{background:#F8FAFE}
     top: 0 !important;
     left: 0 !important;
     width: 280px !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    background: rgba(255, 255, 255, 0.85) !important; /* Fondo translúcido para glassmorphism */
+    height: 100% !important; /* Soluciona el corte al ocultarse la barra del navegador */
+    background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
     box-shadow: 15px 0 30px rgba(0,0,0,0.15) !important;
-    transform: translateX(-100%) !important; /* Oculto correctamente a la izquierda */
+    transform: translateX(-100%) !important;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     z-index: 1500 !important;
     overflow-y: auto !important;
@@ -245,7 +244,7 @@ tbody tr:hover td{background:#F8FAFE}
   }
 
   aside.side.activo {
-    transform: translateX(0) !important; /* Sale completo a la vista con efecto glass */
+    transform: translateX(0) !important;
   }
 
   /* Tamaño normal y legible en la navegación móvil */
