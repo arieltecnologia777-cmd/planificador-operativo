@@ -305,8 +305,13 @@ function renderizarTablaOrdenesTecnico(rows) {
             estiloBadge += ' background-color: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar
         }
 
-        // En la tabla dejamos la causa de rechazo tal cual viene de la base de datos (***, etc.)
-        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '***';
+        // --- LA MAGIA ESTÁ AQUÍ ---
+        // Si el estado es ACEPTADO o APROBADO, forzamos que la causa de rechazo en la tabla sea '***'
+        let causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '***';
+        if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
+            causaRechazo = "***";
+        }
+
         const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
@@ -325,7 +330,6 @@ function renderizarTablaOrdenesTecnico(rows) {
     });
     tbody.innerHTML = html;
 }
-
 function renderizarPortalVacio() {
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(0);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(0);
