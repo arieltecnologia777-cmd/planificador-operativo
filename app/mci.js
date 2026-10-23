@@ -1,6 +1,5 @@
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
 
-// Técnico predeterminado ya que se eliminó el login
 window.tecnicoActual = "Técnico General";
 localStorage.setItem("tecnicoActual", "Técnico General");
 
@@ -82,6 +81,10 @@ mciRequest.onupgradeneeded = (event) => {
     if (!mciDB.objectStoreNames.contains("photos")) mciDB.createObjectStore("photos", { keyPath: "id" });
 };
 
+mciRequest.onerror = () => {
+    console.log("❌ Error IndexedDB");
+};
+
 mciRequest.onsuccess = (event) => {
     mciDB = event.target.result;
     dbLoadDraft((draft) => {
@@ -89,7 +92,10 @@ mciRequest.onsuccess = (event) => {
             try {
                 localStorage.setItem("MCI_DRAFT_v1", JSON.stringify(draft));
                 restoreDraft();
-            } catch (e) {}
+                console.log("🔄 Texto restaurado offline desde IndexedDB");
+            } catch (e) {
+                console.log("⚠️ Error restaurando texto:", e);
+            }
         }
     });
     if (typeof conectarInputsDeFoto === "function") {
@@ -98,11 +104,14 @@ mciRequest.onsuccess = (event) => {
 };
 
 function dbSaveDraft(data) {
+    if (!mciDB) return;
     const tx = mciDB.transaction("draft", "readwrite");
     tx.objectStore("draft").put({ id: 1, data });
+    console.log("💾 Borrador guardado en IndexedDB");
 }
 
 function dbLoadDraft(callback) {
+    if (!mciDB) return callback(null);
     const tx = mciDB.transaction("draft", "readonly");
     const req = tx.objectStore("draft").get(1);
     req.onsuccess = () => { callback(req.result ? req.result.data : null); };
@@ -112,10 +121,11 @@ function dbSavePhoto(key, blob) {
     if (!mciDB) return;
     const tx = mciDB.transaction("photos", "readwrite");
     tx.objectStore("photos").put({ id: key, blob });
+    console.log("💾 Foto guardada offline en IndexedDB:", key);
 }
 
 function cargarFotoOffline(id, callback) {
-  if (!mciDB) return;
+  if (!mciDB) return callback(null);
   const tx = mciDB.transaction("photos", "readonly");
   const store = tx.objectStore("photos");
   const req = store.get(id);
@@ -135,6 +145,7 @@ function guardarFotoOffline(id, file) {
     const base64 = e.target.result;
     const tx = mciDB.transaction("photos", "readwrite");
     tx.objectStore("photos").put({ id: id, blob: base64 });
+    console.log("💾 Foto procesada y guardada offline:", id);
   };
   reader.readAsDataURL(file);
 }
@@ -365,7 +376,8 @@ function clearAllPhotos() {
     if (!mciDB) return;
     const tx = mciDB.transaction("photos", "readwrite");
     const store = tx.objectStore("photos");
-    store.clear();
+    const req = store.clear();
+    req.onsuccess = () => { console.log("🗑️ Todas las fotos borradas de IndexedDB"); };
 }
 
 const resetWorkBtn = document.getElementById("resetWorkBtn");
@@ -821,6 +833,7 @@ function conectarInputsDeFoto() {
         img.src = base64;
         const tb = cell.querySelector('.photo-toolbar');
         if (!tb && cell.ensureToolbar) cell.ensureToolbar();
+        console.log("🔄 Foto restaurada offline:", id);
       }
     });
 
@@ -898,6 +911,11 @@ document.querySelectorAll(".view-btn").forEach(btn => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  const mainEl = document.querySelector(".main");
+  if (mainEl) {
+    mainEl.style.display = "flex";
+  }
+
   const misInformesBtn = document.getElementById("misInformesBtn");
   const misInformesModal = document.getElementById("misInformesModal");
   const cerrarMisInformes = document.getElementById("cerrarMisInformes");
@@ -912,11 +930,5 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarMisInformes.addEventListener("click", () => {
       misInformesModal.style.display = "none";
     });
-  }
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const mainEl = document.querySelector(".main");
-  if (mainEl) {
-    mainEl.style.display = "flex";
   }
 });
