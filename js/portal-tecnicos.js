@@ -73,14 +73,17 @@ function poblarSelectoresYFiltros(rows) {
 
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
+    // Si hay menos de 3 meses, usamos todos los disponibles por defecto
+    const mesesPorDefecto = ultimosTresMeses.length > 0 ? ultimosTresMeses : mesesOrdenados;
 
     const containerMeses = document.getElementById('listaCheckPeriodos');
     if (containerMeses) {
         let htmlCheck = '';
-        ultimosTresMeses.forEach(mes => {
+        mesesOrdenados.forEach(mes => {
+            const estaMarcado = mesesPorDefecto.includes(mes) ? 'checked' : '';
             htmlCheck += `
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" ${estaMarcado} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
                     ${mes}
                 </label>
             `;
@@ -149,7 +152,7 @@ function actualizarLabelBotonPeriodos() {
     if (seleccionados.length === 0) {
         lbl.innerText = "Ningún periodo";
     } else if (seleccionados.length === total) {
-        lbl.innerText = "Últimos 3 meses";
+        lbl.innerText = "Todos los periodos";
     } else if (seleccionados.length === 1) {
         lbl.innerText = seleccionados[0];
     } else {
@@ -245,7 +248,7 @@ function renderizarTablaOrdenesTecnico(rows) {
                 <td><span class="st pe">En trámite</span></td>
                 <td>-</td>
                 <td>${formatMoney(r.estimado_a_facturar ?? 0)}</td>
-                <td>${formatMoney(r.total_aprobado ?? 0)}</td>
+                <td>${formatMoney(r.total_apropiado ?? r.total_aprobado ?? 0)}</td>
                 <td style="text-align: center;"><button type="button">Ver</button></td>
             </tr>
         `;
@@ -265,3 +268,10 @@ function renderizarPortalVacio() {
 function formatMoney(amount) {
     return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
+
+// Exponer funciones clave al ámbito global por seguridad en eventos inline
+window.toggleDropdownPeriodo = toggleDropdownPeriodo;
+window.seleccionarTodoPeriodos = seleccionarTodoPeriodos;
+window.borrarFiltroPeriodos = borrarFiltroPeriodos;
+window.filtrarListaPeriodos = filtrarListaPeriodos;
+window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
