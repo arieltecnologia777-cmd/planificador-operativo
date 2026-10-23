@@ -253,9 +253,10 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
 }
 
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
-    // Definimos 150% como el valor máximo de la escala de la barra para que admita sobrecumplimientos sin exagerar
-    const escalaMaxima = 150;
-    const porcentajeVisual = Math.min(100, (porcentaje / escalaMaxima) * 100);
+    // Si la meta (100%) cae exactamente en el 50% de la barra física:
+    // Dividimos el porcentaje real entre 2 para que un 100% ocupe el 50% del ancho,
+    // y un 137% ocupe el 68.5% del ancho total.
+    const porcentajeVisual = (porcentaje / 200) * 100;
     
     const fill = document.getElementById('progressFillBarra');
     const pin = document.getElementById('progressPinBarra');
