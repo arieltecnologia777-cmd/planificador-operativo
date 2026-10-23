@@ -294,3 +294,30 @@ tbody tr:hover td{background:#F8FAFE}
     font-size: 11.5px !important;
   }
 }
+@media(max-width:860px){
+  /* 1. Reducimos drásticamente el espacio blanco superior de la página */
+  .main {
+    padding: 12px !important;
+    padding-top: 14px !important; 
+  }
+
+  /* 2. Ubicamos el botón de hamburguesa flotando de manera fija */
+  .hamburger-btn {
+    top: 22px !important;
+    left: 22px !important;
+    z-index: 1200;
+  }
+
+  /* 3. Adaptamos el Hero para que el botón flote sobre su fondo azul sin tapar los textos */
+  .hero {
+    position: relative !important;
+    padding: 20px 16px !important;
+    padding-top: 52px !important; /* Deja espacio arriba dentro de la tarjeta azul para que la hamburguesa flote en zona libre */
+    height: auto !important;
+  }
+
+  /* 4. Aseguramos que los textos del hero respeten ese respiro */
+  .hero .txt {
+    width: 100%;
+  }
+}
