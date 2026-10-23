@@ -914,3 +914,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const mainEl = document.querySelector(".main");
+  if (mainEl) {
+    mainEl.style.display = "flex";
+  }
+});
