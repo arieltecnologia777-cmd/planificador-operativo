@@ -253,13 +253,17 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
 }
 
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
+    // Limitamos la barra visualmente al 100% máximo, aunque el porcentaje real sea superior (ej. 137%)
     const porcentajeVisual = Math.min(100, porcentaje);
+    
     const fill = document.getElementById('progressFillBarra');
     const pin = document.getElementById('progressPinBarra');
     const badge = document.getElementById('stateBadgeEstado');
     const legendMeta = document.getElementById('legendMetaTexto');
 
     if (legendMeta) legendMeta.textContent = `Meta total (${meses} ${meses === 1 ? 'periodo' : 'periodos'}): $${meta.toLocaleString('es-CO')}`;
+    
+    // La barra y el pin se detienen exactamente en el 100% visual
     if (fill) fill.style.width = `${porcentajeVisual}%`;
     if (pin) pin.style.left = `${porcentajeVisual}%`;
 
