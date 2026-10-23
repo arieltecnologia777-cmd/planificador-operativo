@@ -111,24 +111,16 @@ button[type="submit"]:active {
     display: none; 
 }
 
-/* Logotipo Dominion inferior */
+/* Logotipo Dominion inferior (del mismo tamaño que el avatar) */
 .footer-brand {
-    margin-top: 32px;
+    margin-top: 28px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 6px;
 }
 
 .footer-brand img {
-    width: 44px;
-    height: auto;
+    width: 76px;
+    height: 76px;
     object-fit: contain;
-}
-
-.footer-brand span {
-    font-weight: 800;
-    font-size: 16px;
-    letter-spacing: 0.12em;
-    color: #0A1F5C;
 }
