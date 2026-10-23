@@ -295,7 +295,6 @@ function renderizarTablaOrdenesTecnico(rows) {
         const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "";
         const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
         
-        // Estilos inidividuales estrictos en línea mediante !important para garantizar el color correcto
         let estiloBadge = 'padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;';
         
         if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
@@ -303,10 +302,11 @@ function renderizarTablaOrdenesTecnico(rows) {
         } else if (estadoTexto.includes("RECHAZADO")) {
             estiloBadge += ' background-color: #FEE2E2 !important; color: #991B1B !important;'; // Rojo
         } else {
-            estiloBadge += ' background-color: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar puro para el resto (GRN/BTS/RVST, enviado, etc.)
+            estiloBadge += ' background-color: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar
         }
 
-        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+        // En la tabla dejamos la causa de rechazo tal cual viene de la base de datos (***, etc.)
+        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '***';
         const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
@@ -356,7 +356,7 @@ function abrirModalDetalle(index) {
 
     // SI EL ESTADO ES ACEPTADO O APROBADO: Forzamos el '***' en causa y el comentario estándar en observaciones
     if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-        causaVal = "***";
+        causaVal = "N/A";
         obsVal = "Orden aprobada.";
     }
 
