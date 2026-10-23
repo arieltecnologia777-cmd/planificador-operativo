@@ -1,1 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>
+  if (!window.location.search.includes("v=")) {
+    window.location.replace(window.location.pathname + "?v=" + Date.now());
+  }
+</script>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#136BFF">
+<meta charset="utf-8" />
+  <title>MTIC-F40 · Formato MCI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="../generadoresCSS/mci.css">
+  <meta name="color-scheme" content="light" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-pro">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="avatar"><img src="assistant_casco.png" alt="IA Asistente"></div>
+      <div class="brand">
+        <span class="title">¡Hola, soy Dominic!</span>
+        <span class="subtitle">Gestiona de manera digital tu formato MCI</span>
+        <span id="appVersion" style="font-size:11px; color:white; opacity:.9;">Versión</span>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#" class="active" data-target="sec-acta">ACTA ACTIVIDADES</a>
+      <a href="#" data-target="sec-pruebas">REG FOTOG PRUEBAS NECESARIAS</a>
+      <a href="#" data-target="sec-antes">REGISTRO FOTOGRÁFICO ANTES</a>
+      <a href="#" data-target="sec-despues">REGISTRO FOTOGRÁFICO DESPUÉS</a>
+      <a href="#" data-target="sec-etiqueta" style="display:none !important;">ETIQUETA RE FOTOGRÁFICO</a>      
+    </nav>
+    <div class="sidebar-actions">
+      <button class="btn secondary" id="collapseBtn">Cerrar menú</button>
+      <button class="btn" id="exportBtn">📤 Cargar informe</button>
+      <button class="btn secondary" id="subsanarBtn">🔄🔧 Corregir</button>
+      <button class="btn" id="misInformesBtn">🔎 Ver mis informes</button>
+      <button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
+      <button class="btn secondary" id="logoutBtn">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div>
+        <div class="header-title">MTIC-F40 · Formato Notificación de Mantenimiento Correctivo</div>
+        <div class="header-sub">Digitalización con registro fotográfico y carga desde galería</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- ========================= ACTA ACTIVIDADES ========================== -->
+      <section id="sec-acta" class="section active">
+        <div class="card">
+          <h3>1. Datos generales</h3>
+          <div class="grid">
+            <div class="col-3 field"><label for="inp-numero-caso">N° de caso</label><input id="inp-numero-caso" type="text" placeholder="Escribe acá tu IM"></div>
+            <div class="col-3 field"><label for="inp-fecha">Fecha</label><input id="inp-fecha" type="date"></div>
+            <div class="col-3 field"><label>Contrato No.</label><input type="text" placeholder="1042 de 2020"></div>
+            <div class="col-3 field"><label>Contratista</label><input type="text" placeholder="COMCEL SA"></div>
+            <div class="col-4 field"><label>Departamento</label><input id="inp-departamento" type="text"></div>
+            <div class="col-4 field"><label>Municipio</label><input id="inp-municipio" type="text"></div>
+            <div class="col-4 field"><label>Centro poblado</label><input id="inp-centro-poblado" type="text"></div>
+            <div class="col-6 field"><label>Sede institución educativa o caso especial</label><input id="inp-sede" type="text"></div>
+            <div class="col-3 field"><label>ID beneficiario</label><input id="inp-idben" type="text"></div>
+            <div class="col-3 field"><label>Correo electrónico</label><input id="inp-correo" type="text"></div>
+            <div class="col-6 field"><label>Nombre del responsable (IE/Autoridad competente)</label><input id="inp-responsable" type="text"></div>
+            <div class="col-3 field"><label>Número de cédula</label><input id="inp-cedula" type="text" inputmode="text"></div>
+            <div class="col-3 field"><label>Número de contacto</label><input id="inp-contacto" type="text" inputmode="text"></div>
+          </div>
+          <div class="status" id="status"></div>
+        </div>
+
+        <div class="card">
+          <h3>2. Equipos instalados/retirados</h3>
+          <datalist id="sap-list">
+            <option value="4059967 · ACCES-POINT PL-E410X00A-RW INDOOR CBNW"></option>
+            <option value="4059968 · ACCES-POINT PL-E510X00A-RW OUTDOOR CBNW"></option>
+            <option value="4061093 · ANTENA 1.2M BANDA SATELITAL KA"></option>
+            <option value="4061094 · ANTENA 1.8M KA T181 CLASS-III-SPEC SKWR"></option>
+            <option value="4061099 · ANTENA 1.8M RXTX CLASS-II T182 KU SKWR"></option>
+            <option value="1052446 · ANTENA 3FT 5GHZ 32DBI 4.9-5.9GHZ CBNW"></option>
+            <option value="4061854 · ANTENA ANT2035 1.2M BD KA/KU SB-11 NWTC"></option>
+            <option value="4060053 · ANTENA C050900D021 EPMP 5GHZ 90/120 CBNW"></option>
+            <option value="4060389 · ANTENA C050910D301A 4X4MU-MIMO"></option>
+            <option value="1052445 · ANTENA HG4958DP-30D 2FT 4.9-5.8GHZ CNBW"></option>
+            <option value="1052449 · ANTENA N000900L030A EPMP EXT GPS CBNW"></option>
+            <option value="4059961 · BATERIA 020-48025LF LITIO 25AH48V TAFL"></option>
+            <option value="1053943 · BATERIA 12V 26AH VRLA"></option>
+            <option value="4059952 · BATERIA 48NPFC50 ION LITIO 48V 50AH NRDA"></option>
+            <option value="4059964 · BATERIA CF4850T1EC LITIO 48V-50A DPC"></option>
+            <option value="4059980 · BATERIA FB101 EXTERNA LITIO 48V100AH ZTE"></option>
+            <option value="4060273 · BATERIA LFP48V30AH LITIO LIFEPO4 UPSN"></option>
+            <option value="4060281 · BATERIA LIT50-48C 50AH 48VDC LITIO ULTC"></option>
+            <option value="4060278 · BATERIA PINO ILFP-2560 LITIO 100AH INTI"></option>
+            <option value="4060388 · BATERIA WL48-25FT LIFEPO4 48VDC WLNG"></option>
+            <option value="4060271 · BATERIA YDC9602S-RT LITIO LIFEPO4 KSTR"></option>
+            <option value="1029783 · CABLE COAXIAL RG-6 (x carrete de 1000m)"></option>
+            <option value="1052444 · CABLE N000900L040A AC 1.2M C13 CBNW"></option>
+            <option value="1022453 · CONECTORES PARA CABLE COAXIAL RG-6 (kit x 2 conectores)"></option>
+            <option value="4060277 · CONTROLADOR CARGA CECRO ICC-4024150 INTI"></option>
+            <option value="4060280 · CONTROLADOR CG BLUESOLAR MPPT150/35 VCTR"></option>
+            <option value="4059956 · CONTROLADOR REXTRA3415N-XDS2 SOLAR EPVR"></option>
+            <option value="4060293 · CONTROLADOR TRACER5420AN EPVR"></option>
+            <option value="4048063 · DEMARCADOR RAX711-L-4GC-AC_DC EDD RACM"></option>
+            <option value="4060070 · FUENTE 100-240 48V 1.4_1.5A PWR PLUG"></option>
+            <option value="1052443 · FUENTE MXCRPSDC600A0 DC600W 37V-60V CBNW CRPS"></option>
+            <option value="1053481 · FUENTE POE DC 15W 30V ENERGY LVL6 CBNW"></option>
+            <option value="1052665 · GABINETE 1GB-SUNCO LAMIN GALV CAL18"></option>
+            <option value="1052372 · GABINETE EIA-310D IP20 10UR 600X600X478"></option>
+            <option value="1052374 · GABINETE EIA-310D IP50 9UR 600X400X492"></option>
+            <option value="1052668 · GABINETE LAM COLD ROLLED1.20 SIS ANTVAND"></option>
+            <option value="1052376 · GABINETE LAMINA 3DIV VENT/SIST ANTIVAND"></option>
+            <option value="4062821 · IDU C050900A131A EPMP 2000 5GHZ ROW CBNW"></option>
+            <option value="4060279 · INVERSOR PHOENIX 250VA NEMA 5-15R VCTR"></option>
+            <option value="4059965 · INVERSOR PST-600-48 MODULO SOLAR SAMLX"></option>
+            <option value="4059955 · INVERSOR REIP2000-41-PLUS SOLAR EPVR"></option>
+            <option value="4060276 · INVERSOR TECA LITIO IIP-241000BFL INTI"></option>
+            <option value="4060056 · INVERSOR VOLTJE -48 VDC 120V AC 15W CBNW"></option>
+            <option value="1052447 · JUMPER EPMP-JUMPER 15&quot; RG58 CBNW"></option>
+            <option value="1052666 · KIT CABLE CONECT PROTECC MULTICONTACT"></option>
+            <option value="1052378 · KIT CABLE CONECT PROTECC SOLUCION SOLAR"></option>
+            <option value="1052442 · KIT MONTAJE MX-EXTXHALFA-0 19&quot; CBNW"></option>
+            <option value="1052377 · KIT PANEL SOLARX4 FOTOVOLTAICO 380W SRPH"></option>
+            <option value="1052664 · MASTIL 2MT-SUNCO TUBO 4&quot; PANEL SOLAR"></option>
+            <option value="1052667 · MASTIL 3MT NACIONAL"></option>
+            <option value="4061856 · MODEM MDM2510 IP SAT KA STARONE NWTC"></option>
+            <option value="4061096 · MODEM SATELITAL HT2010 BANDA KA HUGH"></option>
+            <option value="4061097 · MODEM SATELITAL HT2300 BANDA KU HUGH"></option>
+            <option value="4059960 · MODULO 060-81110M MONIT STACK SNMP UNPW"></option>
+            <option value="4020624 · MODULO 3HE00868CBAA01 SFP BX10-D ALCA OPTICO"></option>
+            <option value="4059957 · MODULO MONIT MODBUS TCP IP CONTROL SOLAR"></option>
+            <option value="4059958 · MODULO PSC3-5/1000PV-2 DPST1+2 1000W CPT"></option>
+            <option value="4060282 · MODULO VENUS GX MONITOR CONTROL VCTR"></option>
+            <option value="4060055 · ODU 050910C121A FORCE 300-CSM CBNW"></option>
+            <option value="4061095 · ODU BUC JUPITER-HB220 BANDA KA HUGH"></option>
+            <option value="4060354 · ODU C050900C161A 200AR5-25 ROW CBNW"></option>
+            <option value="4060054 · ODU C050900C905A FORCE 300-19R CBNW"></option>
+            <option value="4060351 · ODU C050910A101A EPMP 3000 5GHZ ROW CNBW"></option>
+            <option value="4060052 · ODU C050910A121A EPMP 3000L CBNW"></option>
+            <option value="4061098 · ODU NJT8306 BUC 6W OUTDOOR UNIT BAND KU"></option>
+            <option value="4060274 · PANEL SOLAR CHEETAH KIT HC 72M 405W JNKO"></option>
+            <option value="4059954 · PANEL SOLAR JKM405M-72H FOTOVOL400W JINK"></option>
+            <option value="4060275 · PANEL SOLAR Q.PEAK KIT DUO 425W QCEL"></option>
+            <option value="4060270 · PANEL SOLAR ZXM6-NH144 440WP ZNSH"></option>
+            <option value="1020234 · PATCHCORD SIMPLEX MONO LC/PC-SC/PC 10M"></option>
+            <option value="4059962 · PDU 160-170TVS SUP TRANSIENTE UC=175V GP"></option>
+            <option value="4060283 · PDU DPS FSP-D40 MINI BREAK MDW-C16 FEEO"></option>
+            <option value="4059953 · PDU PSC3-5/1000PV T2+3 IR CPT"></option>
+            <option value="1055527 · PEDESTAL SB-11 ANT KA/KU 1.0-1.2M NWTC"></option>
+            <option value="1052373 · POSTE 3MTS SOPORTE PANEL SOLAR 400W"></option>
+            <option value="1052448 · PROTECT C000000L065A SURGE GIGA 30V CBNW"></option>
+            <option value="1052375 · RACK METALICO 9U UPS BATERIAS 3RU"></option>
+            <option value="4059966 · ROUTER RB960PGS 800MHZ CPU128MB RAM MKTK"></option>
+            <option value="1053085 · SEÑALETICA EXTERNA 10K PEDESTAL 50X50CM"></option>
+            <option value="1053086 · SEÑALETICA INTERNA 10K PLACA 50X70CM"></option>
+            <option value="3038193 · SERV COSTOS IND PROGRAM SISTEMAS SOLAR"></option>
+            <option value="4055782 · SFP - GIGE BASE-T RJ45 R6/6 DDM -40/85C"></option>
+            <option value="4060051 · SWITCH MX-EX1010XXA-0 EMPRESARIAL CBNW"></option>
+            <option value="4060057 · SWITCH MXTX2020GXPA10 ETH POE CBNW"></option>
+            <option value="4061855 · TRANSCEIVER TRX012X BUC3WKA STARONE NWTC"></option>
+            <option value="4022383 · TRANSCEIVER USFP-GB/SS134-D-L RACM OPTICO DEMARCADOR"></option>
+            <option value="4019957 · TRANSFDOR AISLAMIENTO IO P/UPS PRESTIGE"></option>
+            <option value="4059959 · UPS 010-150120 ONLINE 360VA/360W UNPW"></option>
+            <option value="4059979 · UPS 9PX1500RT 1500VA/1350W 120VAC EATON"></option>
+            <option value="4060387 · UPS GTX5-1500 ON-LINE 2KVA 150W VRTV"></option>
+            <option value="4060272 · UPS RS2KL-LI 2KVA 150W DC=48VDC UPSN"></option>
+            <option value="4059951 · UPS YDC9602S-RT 2000VA/1800W K-STAR"></option>
+            <option value="1064941 · SEÑALETICA EXT 7K PED 50X50CM CERO MARC"></option>
+            <option value="4065595 · MODEM 616000 SKYEDGE II-C GEM I S2X GLAT"></option>
+            <option value="1065252 · SEÑALETICA INT 7K PLACA50X70CM CERO MARC"></option>
+          </datalist>
+
+          <div class="table card">
+            <table aria-label="Equipos instalados o retirados">
+              <thead>
+                <tr>
+                  <th style="width:36%">SAP · Descripción</th>
+                  <th style="width:18%; text-align:center; padding-left:85px;">Instalado / Retirado</th>
+                  <th style="width:26%; text-align:center; padding-left:90px;">Serial (obligatorio)</th>
+                  <th style="width:10%"></th>
+                </tr>
+              </thead>
+              <tbody id="tbody-equipos"></tbody>
+              <tfoot>
+                <tr><td colspan="5"><button class="btn secondary" id="addRowBtn" style="padding:6px 14px; font-size:12px; border-radius:6px;">Agregar fila</button></td></tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="badge warn">Tip: escribe el código SAP y se sugerirá la descripción automáticamente</div>
+        </div>
+
+        <div class="card">
+          <h3>3. Descripción de la falla / hallazgos</h3>
+          <div class="field"><textarea id="inp-descripcion" placeholder="Describe los hallazgos, síntomas, pruebas, etc."></textarea></div>
+        </div>
+
+        <div class="card">
+          <h3>4. Declaración</h3>
+          <div class="grid">
+            <div class="col-6">
+              <div class="card" style="padding:12px">
+                <div class="field"><label>Datos de quien acompaña en el Centro Digital</label></div>
+                <div class="grid">
+                  <div class="col-12 field"><label>Nombres y apellidos</label><input id="inp-acomp-nombre" type="text"></div>
+                  <div class="col-6 field"><label>Cargo</label><input id="inp-acomp-cargo" type="text"></div>
+                  <div class="col-6 field"><label>Número de cédula</label><input id="inp-acomp-cedula" type="text" inputmode="numeric"></div>
+                  <div class="col-6 field"><label>Teléfono / Celular 1</label><input id="inp-acomp-tel1" type="text" inputmode="tel"></div>
+                  <div class="col-6 field"><label>Teléfono / Celular 2</label><input id="inp-acomp-tel2" type="text" inputmode="tel"></div>
+                  <div class="col-12 field"><label>Correo electrónico</label><input id="inp-acomp-correo" type="email"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="card" style="padding:12px">
+                <div class="field"><label>Datos de quien repara el servicio</label></div>
+                <div class="grid">
+                  <div class="col-12 field"><label>Nombres y apellidos</label><input id="inp-tec-nombre" type="text"></div>
+                  <div class="col-6 field"><label>Cargo</label><input id="inp-tec-cargo" type="text"></div>
+                  <div class="col-6 field"><label>Número de cédula</label><input id="inp-tec-cedula" type="text" inputmode="numeric"></div>
+                  <div class="col-6 field"><label>Teléfono / Celular</label><input id="inp-tec-tel" type="text" inputmode="tel"></div>
+                  <div class="col-6 field"><label>Correo electrónico</label><input id="inp-tec-correo" type="email"></div>
+                  <div class="col-12 field"><label>Firma (imagen)</label>
+                    <div class="photo-grid">
+                      <div class="photo-cell" data-title="Firma técnico">
+                        <input id="img-firma-tec" type="file" accept="image/*">
+                        <div class="placeholder">
+                          <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 16v3a1 1 0 0 0 1 1h3M16 4h3a1 1 0 0 1 1 1v3M4 8V5a1 1 0 0 1 1-1h3M16 20h3a1 1 0 0 0 1-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                          </svg>
+                          <div>Subir firma</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>  
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================= REG FOTOG PRUEBAS ========================== -->
+      <section id="sec-pruebas" class="section">
+        <div class="card">
+          <h3>5. Registro fotográfico · Pruebas necesarias</h3>
+          <div class="geo-bar">
+            <div class="geo-bar__inputs">
+              <input id="inp-lon" type="number" step="0.000001" inputmode="decimal" placeholder="Longitud">
+              <input id="inp-lat" type="number" step="0.000001" inputmode="decimal" placeholder="Latitud">
+            </div>
+          </div>
+
+          <div class="pruebas-2col">
+            <div class="p-item p-geo">
+              <div class="geo-head"></div>
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="Coordenadas GPS (Excel)">
+                  <input id="img-gps-geo" type="file" accept="image/*">
+                  <div class="placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 2v3m0 14v3m9-9h-3M6 12H3m11 0a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <div>Captura de las coordenadas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="AP Interior">
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="AP Interior">
+                  <input id="img-ap-int" type="file" accept="image/*">
+                  <div class="placeholder"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/></svg><div>Subir foto AP Interior</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="AP Exterior 1">
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="AP Exterior 1">
+                  <input id="img-ap-ext1" type="file" accept="image/*">
+                  <div class="placeholder"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/></svg><div>Subir foto AP Exterior 1</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="AP Exterior 2">
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="AP Exterior 2">
+                  <input id="img-ap-ext2" type="file" accept="image/*">
+                  <div class="placeholder"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/></svg><div>Subir foto AP Exterior 2</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="PC conectados - Interior">
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="PC conectados - Interior">
+                  <input id="img-pc-int" type="file" accept="image/*">
+                  <div class="placeholder"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" stroke="currentColor" stroke-width="2"/></svg><div>Subir evidencia navegación</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="Dispositivo móvil conectado al AP exterior">
+              <div class="photo-grid">
+                <div class="photo-cell" data-title="Dispositivo móvil conectado al AP exterior">
+                  <input id="img-movil-ext" type="file" accept="image/*">
+                  <div class="placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <div>Subir captura</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="Señalética exterior">
+              <div class="photo-grid"><div class="photo-cell" data-title="Señalética exterior"><input id="img-senal-ext" type="file" accept="image/*"><div class="placeholder"><div>Subir foto</div></div></div></div>
+            </div>
+
+            <div class="p-item" data-title="Señalética interior">
+              <div class="photo-grid"><div class="photo-cell" data-title="Señalética interior"><input id="img-senal-int" type="file" accept="image/*"><div class="placeholder"><div>Subir foto</div></div></div></div>
+            </div>
+
+            <div class="p-item" data-title="Solución respaldo">
+              <div class="photo-grid"><div class="photo-cell" data-title="Solución respaldo"><input id="img-respaldo" type="file" accept="image/*"><div class="placeholder"><div>Subir foto</div></div></div></div>
+            </div>
+
+            <div class="p-item" data-title="Print servidor TRIARA UPS">
+              <div class="photo-grid"><div class="photo-cell" data-title="Print servidor TRIARA UPS"><input id="img-print-ups" type="file" accept="image/*"><div class="placeholder"><div>Subir print</div></div></div></div>
+            </div>
+
+            <div class="p-item" data-title="Medición eléctrica 1">
+              <div class="indoor-header">Medición eléctrica 1</div>
+              <div class="indoor-wrapper">
+                <div class="indoor-row">
+                  <div class="indoor-box" style="height:100%;">
+                    <div class="photo-cell indoor-mini">
+                      <input id="img-med1-0" type="file" accept="image/*">
+                      <div class="placeholder"><div>Medición #1</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                  <div class="indoor-box" style="height:100%;">
+                    <div class="photo-cell indoor-mini" style="height:100%; max-height:none;">
+                      <input id="img-med1-1" type="file" accept="image/*">
+                      <div class="placeholder"><div>Medición #2</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="Medición eléctrica 2">
+              <div class="photo-grid"><div class="photo-cell" data-title="Medición eléctrica 2"><input id="img-med2" type="file" accept="image/*"><div class="placeholder"><div>Subir foto</div></div></div></div>
+            </div>
+
+            <div class="p-item" data-title="Navegación Indoor">
+              <div class="indoor-header">Navegación Indoor</div>
+              <div class="indoor-wrapper">
+                <div class="indoor-row">
+                  <div class="indoor-box">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-indoor-0" type="file" accept="image/*" data-key="navIndoor[0]">
+                      <div class="placeholder"><div>Hora legal</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                  <div class="indoor-box">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-indoor-1" type="file" accept="image/*" data-key="navIndoor[1]">
+                      <div class="placeholder"><div>¿Cuál es mi IP?</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="indoor-row">
+                  <div class="indoor-box wide">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-indoor-2" type="file" accept="image/*" data-key="navIndoor[2]">
+                      <div class="placeholder"><div>Pruebas de ping</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-item" data-title="Navegación Outdoor">
+              <div class="indoor-header">Navegación Outdoor</div>
+              <div class="indoor-wrapper">
+                <div class="indoor-row">
+                  <div class="indoor-box">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-outdoor-0" type="file" accept="image/*" data-key="navOutdoor[0]">
+                      <div class="placeholder"><div>Hora legal</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                  <div class="indoor-box">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-outdoor-1" type="file" accept="image/*" data-key="navOutdoor[1]">
+                      <div class="placeholder"><div>¿Cuál es mi IP?</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="indoor-row">
+                  <div class="indoor-box wide">
+                    <div class="photo-cell indoor-mini" data-title="">
+                      <input id="img-nav-outdoor-2" type="file" accept="image/*" data-key="navOutdoor[2]">
+                      <div class="placeholder"><div>Pruebas de ping</div></div>
+                      <div class="indoor-toolbar"><button class="mini-btn view-btn" title="Ver">👁</button><button class="mini-btn change-btn" title="Cambiar">✏️</button><button class="mini-btn remove-btn" title="Quitar">🗑️</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="p-item" data-title="Speedtest"><div class="photo-grid"><div class="photo-cell" data-title="Speedtest"><input id="img-speedtest" type="file" accept="image/*"><div class="placeholder"><div>Subir pruebas de velocidad</div></div></div></div></div>
+            <div class="p-item" data-title="Portal cautivo"><div class="photo-grid"><div class="photo-cell" data-title="Portal cautivo"><input id="img-portal" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia</div></div></div></div></div>
+            <div class="p-item" data-title="Bloqueo páginas #1"><div class="photo-grid"><div class="photo-cell" data-title="Bloqueo páginas #1"><input id="img-block1" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia</div></div></div></div></div>
+            <div class="p-item" data-title="Bloqueo páginas #2"><div class="photo-grid"><div class="photo-cell" data-title="Bloqueo páginas #2"><input id="img-block2" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia</div></div></div></div></div>
+          </div>
+          
+          <h3>6. Observaciones</h3>
+          <div class="field"><textarea id="inp-pruebas-obs" placeholder="Observaciones adicionales (texto y números)"></textarea></div>
+        </div>
+      </section>
+
+      <!-- ========================= ANTES ========================== -->
+      <section id="sec-antes" class="section">
+        <div class="card">
+          <h3>7. Serial de repuestos a retirar (Fotos) + COD. SAP</h3>
+          <div class="photo-grid" style="margin-top:8px">
+            <div class="sap-card" data-title="Repuesto #1 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-1" list="sap-list" placeholder="4059967" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #1"><input id="img-antes-serial-1" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #1</div></div></div></div>
+            </div>
+            <div class="sap-card" data-title="Repuesto #2 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-2" list="sap-list" placeholder="4060070" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #2"><input id="img-antes-serial-2" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #2</div></div></div></div>
+            </div>
+            <div class="sap-card" data-title="Repuesto #3 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-3" list="sap-list" placeholder="4059979" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #3"><input id="img-antes-serial-3" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #3</div></div></div></div>
+            </div>
+            <div class="sap-card" data-title="Repuesto #4 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-4" list="sap-list" placeholder="4060054" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #4"><input id="img-antes-serial-4" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #4</div></div></div></div>
+            </div>
+            <div class="sap-card" data-title="Repuesto #5 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-5" list="sap-list" placeholder="4059966" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #5"><input id="img-antes-serial-5" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #5</div></div></div></div>
+            </div>
+            <div class="sap-card" data-title="Repuesto #6 · COD. SAP">
+              <div class="sap-head"></div>
+              <div class="sap-sub"><input id="inp-sap-antes-6" list="sap-list" placeholder="4059980" class="sap-input"></div>
+              <div class="photo-body"><div class="photo-cell" data-title="Serial a retirar #6"><input id="img-antes-serial-6" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #6</div></div></div></div>
+            </div>
+          </div>
+        </div>       
+
+        <div class="card">
+          <h3>8. Registro fotográfico · Diagnóstico (antes de intervención)</h3>
+          <div class="photo-grid">
+            <div class="photo-cell" data-title="Diagnóstico #1"><input id="img-antes-diag-1" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #1</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #2"><input id="img-antes-diag-2" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #2</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #3"><input id="img-antes-diag-3" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #3</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #4"><input id="img-antes-diag-4" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #4</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #5"><input id="img-antes-diag-5" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #5</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #6"><input id="img-antes-diag-6" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #6</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #7"><input id="img-antes-diag-7" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #7</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #8"><input id="img-antes-diag-8" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #8</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #9"><input id="img-antes-diag-9" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #9</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #10"><input id="img-antes-diag-10" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #10</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #11"><input id="img-antes-diag-11" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #11</div></div></div>
+            <div class="photo-cell" data-title="Diagnóstico #12"><input id="img-antes-diag-12" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #12</div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>9. Observaciones</h3>
+          <div class="field"><textarea id="inp-antes-obs" placeholder="Observaciones antes de la intervención"></textarea></div>
+        </div>
+      </section>
+
+      <!-- ========================= DESPUÉS ========================== -->
+      <section id="sec-despues" class="section">
+        <div class="card">
+          <h3>10. Serial de repuestos instalados (Fotos)</h3>
+          <div class="photo-grid">
+            <div class="photo-cell" data-title="Serial instalado #1"><input id="img-despues-serial-1" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #1</div></div></div>
+            <div class="photo-cell" data-title="Serial instalado #2"><input id="img-despues-serial-2" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #2</div></div></div>
+            <div class="photo-cell" data-title="Serial instalado #3"><input id="img-despues-serial-3" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #3</div></div></div>
+            <div class="photo-cell" data-title="Serial instalado #4"><input id="img-despues-serial-4" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #4</div></div></div>
+            <div class="photo-cell" data-title="Serial instalado #5"><input id="img-despues-serial-5" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #5</div></div></div>
+            <div class="photo-cell" data-title="Serial instalado #6"><input id="img-despues-serial-6" type="file" accept="image/*"><div class="placeholder"><div>Subir foto serial #6</div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>11. Registro fotográfico · Resultado (después de intervención)</h3>
+          <div class="photo-grid">
+            <div class="photo-cell" data-title="Resultado #1"><input id="img-despues-res-1" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #1</div></div></div>
+            <div class="photo-cell" data-title="Resultado #2"><input id="img-despues-res-2" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #2</div></div></div>
+            <div class="photo-cell" data-title="Resultado #3"><input id="img-despues-res-3" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #3</div></div></div>
+            <div class="photo-cell" data-title="Resultado #4"><input id="img-despues-res-4" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #4</div></div></div>
+            <div class="photo-cell" data-title="Resultado #5"><input id="img-despues-res-5" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #5</div></div></div>
+            <div class="photo-cell" data-title="Resultado #6"><input id="img-despues-res-6" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #6</div></div></div>
+            <div class="photo-cell" data-title="Resultado #7"><input id="img-despues-res-7" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #7</div></div></div>
+            <div class="photo-cell" data-title="Resultado #8"><input id="img-despues-res-8" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #8</div></div></div>
+            <div class="photo-cell" data-title="Resultado #9"><input id="img-despues-res-9" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #9</div></div></div>
+            <div class="photo-cell" data-title="Resultado #10"><input id="img-despues-res-10" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #10</div></div></div>
+            <div class="photo-cell" data-title="Resultado #11"><input id="img-despues-res-11" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #11</div></div></div>
+            <div class="photo-cell" data-title="Resultado #12"><input id="img-despues-res-12" type="file" accept="image/*"><div class="placeholder"><div>Subir evidencia #12</div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>12. Observaciones</h3>
+          <div class="field"><textarea id="inp-despues-obs" placeholder="Observaciones después de la intervención"></textarea></div>
+        </div>
+      </section>
+
+      <!-- ========================= ETIQUETA ========================== -->
+      <section id="sec-etiqueta" class="section">
+        <div class="card">
+          <h3>Etiqueta para fotos</h3>
+          <div class="grid">
+            <div class="col-3 field"><label>ID Beneficiario</label><input id="etq-idben" type="text"></div>
+            <div class="col-6 field"><label>Sede educativa o caso especial</label><input id="etq-sede" type="text"></div>
+            <div class="col-3 field"><label>Fecha</label><input id="etq-fecha" type="date"></div>
+            <div class="col-6 field"><label>Coordenadas · Latitud</label><input id="etq-lat" type="number" step="0.000001"></div>
+            <div class="col-6 field"><label>Coordenadas · Longitud</label><input id="etq-lon" type="number" step="0.000001"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================= CAMBIOS ========================== -->
+      <section id="sec-cambios" class="section">
+        <div class="card">
+          <h3>Control de cambios</h3>
+          <div class="grid">
+            <div class="col-3 field"><label>Versión</label><input type="text" placeholder="0"></div>
+            <div class="col-3 field"><label>Fecha del cambio</label><input type="date"></div>
+            <div class="col-6 field"><label>Cambio realizado</label><input type="text" placeholder="Versión inicial"></div>
+            <div class="col-6 field"><label>Revisado por</label><input type="text" placeholder="Gerente Operación centros digitales"></div>
+            <div class="col-6 field"><label>Aprobado por</label><input type="text" placeholder="Gerente Operación centros digitales"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ========================= MODAL · MIS INFORMES ========================= -->
+  <div id="misInformesModal" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 5000;">
+    <div style="background: white; border-radius: 14px; width: min(920px, 92%); max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.35);">
+      <div style="padding: 14px 18px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+        <h3 style="margin:0; color:#0b2e59;">Mis informes</h3>
+        <div>
+          <button id="refreshMisInformes" class="btn secondary" style="margin-right:8px;">🔄 Actualizar</button>
+          <button id="cerrarMisInformes" class="btn secondary" style="padding:6px 12px; font-size:13px;">Volver</button>
+        </div>
+      </div>
+      <div style="padding: 16px; overflow: auto; flex: 1;">
+        <table id="tablaInformesModal" class="table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>IM/OT</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="./version.js"></script>
+  <script src="script.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("✅ SW registrado"))
+        .catch(err => console.log("❌ Error SW:", err));
+    }
+  </script>
+  <script src="../app/mci.js"></script>
+</body>
+</html>
 
