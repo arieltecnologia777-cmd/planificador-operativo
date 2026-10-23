@@ -55,6 +55,9 @@ function poblarSelectsFiltros(rows) {
     const aprobaciones = new Set();
 
     rows.forEach(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return;
+
         const depto = r.departamento || r.DEPARTAMENTO || r.dep;
         const mes = r.mes || r.MES;
         const aprob = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'];
@@ -224,13 +227,18 @@ function aplicarFiltrosGlobales() {
     const aprobCheck = obtenerValoresSeleccionados('Aprobacion');
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
-    const registrosParaMeta = registrosCrudos.filter(r => {
+    const registrosLimpios = registrosCrudos.filter(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        return !aprobRegRaw.includes("GRN") && !aprobRegRaw.includes("BTS") && !aprobRegRaw.includes("RVST");
+    });
+
+    const registrosParaMeta = registrosLimpios.filter(r => {
         const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         return depCheck.includes(depto) && mesCheck.includes(mes);
     });
 
-    const filtradosCompletos = registrosCrudos.filter(r => {
+    const filtradosCompletos = registrosLimpios.filter(r => {
         const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
@@ -250,11 +258,8 @@ function aplicarFiltrosGlobales() {
     const primerMesFiltro = mesCheck.length === 1 ? mesCheck[0] : "TODOS";
     actualizarKPIsGenerales(filtradosCompletos, registrosParaMeta, depCheck, primerMesFiltro, mesCheck.length);
     
-    // Actualizamos el estado zona pasando los departamentos seleccionados actuales
-    renderizarEstadoZona(registrosCrudos, depCheck, mesCheck);
-    
-    // Pasamos el filtro de departamento actual al gráfico de tendencia
-    initChartsDinamicos(registrosCrudos, depCheck);
+    renderizarEstadoZona(registrosLimpios, depCheck, mesCheck);
+    initChartsDinamicos(registrosLimpios, depCheck);
 }
 
 function procesarDatosParaVista(rows, cantidadMeses = 1) {
@@ -263,6 +268,9 @@ function procesarDatosParaVista(rows, cantidadMeses = 1) {
     const metaDinamicaTecnico = META_FIJA_TECNICO * mesesMultiplicador;
 
     rows.forEach(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return;
+
         const rawTecnico = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "SIN PROGRAMACION";
         const nombreTecnico = String(rawTecnico).replace(/["']/g, "").trim();
         const regional = r.region || r.REGION || r.departamento || r.DEPARTAMENTO || r['REGIONAL2'] || r[' REGIONAL2 '] || "GENERAL";
@@ -418,7 +426,6 @@ function actualizarKPIsGenerales(rowsCompletos, rowsMeta, deptosSel, fMes, total
     }
 }
 
-// Gráfico de tendencia vinculado dinámicamente al departamento seleccionado
 function initChartsDinamicos(records, deptosSeleccionados = []) {
     const ctxTendencia = document.getElementById('tendenciaChart');
     if (!ctxTendencia) return;
@@ -426,15 +433,16 @@ function initChartsDinamicos(records, deptosSeleccionados = []) {
     const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const acumuladoMeses = new Array(12).fill(0);
 
-    // Calculamos la meta mensual según los departamentos seleccionados
     let metaMensualBase = META_GLOBAL_TOTAL_MENSUAL;
     if (deptosSeleccionados.length === 1 && METAS_DEPARTAMENTOS[deptosSeleccionados[0]]) {
         metaMensualBase = METAS_DEPARTAMENTOS[deptosSeleccionados[0]];
     }
 
     records.forEach(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return;
+
         const deptoR = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
-        // Si hay departamentos seleccionados, filtramos el acumulado por esos departamentos
         if (deptosSeleccionados.length > 0 && !deptosSeleccionados.includes(deptoR)) {
             return;
         }
@@ -560,12 +568,10 @@ function initChartsDinamicos(records, deptosSeleccionados = []) {
     });
 }
 
-// Panel lateral cambiado de Estado Regional a Estado Zona (listando Departamentos)
 function renderizarEstadoZona(rows, deptosSeleccionados = [], mesesSeleccionados = []) {
     const container = document.getElementById('estadoRegionalContainer');
     if (!container) return;
 
-    // Actualizamos el encabezado del panel cambiando el título a "Estado Zona" y la etiqueta a "Departamento"
     const panelHeader = container.closest('.fact-panel')?.querySelector('h3');
     if (panelHeader) panelHeader.innerText = "Estado zona";
 
@@ -574,10 +580,12 @@ function renderizarEstadoZona(rows, deptosSeleccionados = [], mesesSeleccionados
     const esTodosLosMeses = mesesSeleccionados.length === 0 || mesesSeleccionados.length === totalMesesDisponibles;
 
     rows.forEach(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return;
+
         const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "GENERAL").trim().toUpperCase();
         const mesR = String(r.mes || r.MES || "").trim().toUpperCase();
 
-        // Filtro dinámico por Departamento y Mes
         if (deptosSeleccionados.length > 0 && !deptosSeleccionados.includes(depto)) {
             return;
         }
@@ -601,7 +609,6 @@ function renderizarEstadoZona(rows, deptosSeleccionados = [], mesesSeleccionados
             </div>
     `;
 
-    // Multiplicador de la meta según la cantidad de meses seleccionados para que la efectividad sea real
     const cantidadMesesActivos = esTodosLosMeses ? 1 : mesesSeleccionados.length;
 
     const deptosArray = Object.entries(mapaDepartamentos).map(([depto, val]) => {
@@ -703,6 +710,9 @@ function abrirModalEnTramite() {
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const registrosEnTramite = registrosCrudos.filter(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return false;
+
         const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim().toUpperCase();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
@@ -808,6 +818,9 @@ function abrirModalRechazados() {
     const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || "";
 
     const registrosRechazados = registrosCrudos.filter(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return false;
+
         const depto = String(r.departamento || r.DEPARTAMENTO || "").trim().toUpperCase();
         const mes = String(r.mes || r.MES || "").trim();
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
@@ -1133,6 +1146,9 @@ function verDetalleRechazosIdTecnico(nombreTecnico) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
 
     const itemsRechazados = registrosCrudos.filter(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return false;
+
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfilReg = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
@@ -1212,7 +1228,6 @@ function exportExcel() {
     XLSX.writeFile(wb, "Detalle_Tecnicos_Facturacion.xlsx");
 }
 
-// 5. Cascada limpia y segura que respeta cuando el usuario desmarca todo para buscar a voluntad
 function actualizarSelectsEnCascada() {
     const deptosSel = obtenerValoresSeleccionados('Departamento');
     const mesesSel = obtenerValoresSeleccionados('Mes');
@@ -1224,6 +1239,9 @@ function actualizarSelectsEnCascada() {
 
     const filtrarExcluyendo = (campoExcluir) => {
         return registrosCrudos.filter(r => {
+            const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+            if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) return false;
+
             const depto = String(r.departamento || r.DEPARTAMENTO || r.dep || "").trim().toUpperCase();
             const mes = String(r.mes || r.MES || "").trim().toUpperCase();
             const aprob = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
