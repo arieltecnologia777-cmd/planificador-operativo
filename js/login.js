@@ -17,7 +17,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         if (data.ok) {
             localStorage.setItem('tecnicoLogueado', data.nombre_tecnico);
-            window.location.href = 'portal-tecnicos.html';
+            window.location.replace('portal-tecnicos.html');
         } else {
             errorDiv.textContent = data.error || "Credenciales inválidas";
             errorDiv.style.display = 'block';
