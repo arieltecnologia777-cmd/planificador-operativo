@@ -339,7 +339,6 @@ function formatMoney(amount) {
     return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
-// Funciones para controlar el modal
 function abrirModalDetalle(index) {
     const registro = registrosFiltradosActuales[index];
     if (!registro) return;
@@ -348,13 +347,19 @@ function abrirModalDetalle(index) {
     const mesVal = registro.mes || registro.MES || 'N/A';
     const aprobReg = registro.aprobacion_regional || registro.APROBACION_REGIONAL || registro['APROBACION REGIONAL'] || 'En trámite';
     const causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || 'Sin causa registrada';
-    const obsVal = registro.observacion_documentacion || registro.OBSERVACION_DOCUMENTACION || registro['OBSERVACION DOCUMENTACION'] || 'Sin observaciones registradas para esta orden.';
+    
+    // Tomamos la información directamente de la columna DETALLE MINDY2 de la base de datos
+    const obsVal = registro.detalle_mindy2 || registro.DETALLE_MINDY2 || registro['DETALLE MINDY2'] || registro['detalle mindy2'] || 'Sin observaciones registradas.';
 
     document.getElementById('modalIdVal').innerText = idVal;
     document.getElementById('modalMesVal').innerText = mesVal;
     document.getElementById('modalEstadoVal').innerText = aprobReg;
     document.getElementById('modalCausaVal').innerText = causaVal;
     document.getElementById('modalObsVal').innerText = obsVal;
+
+    // Si en el HTML tienes el label de la observación, asegúrate de que diga exactamente "Observaciones:"
+    const labelObs = document.getElementById('labelObservacionModal'); // O el selector que uses para el título
+    if (labelObs) labelObs.innerText = "Observaciones:";
 
     const modal = document.getElementById('modalDetalleOrden');
     if (modal) modal.style.display = 'flex';
