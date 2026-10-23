@@ -370,3 +370,45 @@ tbody tr:hover td{background:#F8FAFE}
     text-align: center !important; 
   }
 }
+
+/* ========================================================== */
+/* ESTILOS DE TABLA: Primera columna fija y fuentes más compactas */
+/* ========================================================== */
+
+/* Reducir tamaño de fuentes, números y padding general de la tabla */
+table {
+    font-size: 12.5px !important;
+}
+
+thead th {
+    font-size: 12px !important;
+    padding: 10px 10px !important;
+}
+
+tbody td {
+    padding: 10px 10px !important;
+    font-size: 12.5px !important;
+}
+
+/* Fijar la primera columna (ID) en la tabla para scroll horizontal tipo Excel */
+table th:first-child,
+table td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 10 !important;
+    background-color: #F1F4FB !important; /* Fondo idéntico al encabezado para las celdas de la 1ra columna */
+}
+
+/* Asegurar que el cuerpo de la celda de la 1ra columna mantenga fondo sólido al hacer hover o scroll */
+table tbody tr td:first-child {
+    background-color: #ffffff !important;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.04); /* Sutil sombra lateral para separar visualmente la columna fija */
+}
+
+table tbody tr:hover td:first-child {
+    background-color: #F8FAFE !important; /* Mantiene el tono de hover sin volverse transparente */
+}
+
+table thead th:first-child {
+    z-index: 20 !important; /* El encabezado de la ID queda por encima de todo */
+}
