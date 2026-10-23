@@ -310,3 +310,49 @@ tbody tr:hover td{background:#F8FAFE}
     font-weight: 700;
     display: inline-block;
 }
+/* Asegurar que el sidebar en móviles se ajuste estrictamente al alto de la pantalla */
+@media (max-width: 768px) {
+  aside.side {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Oculto por defecto a la izquierda */
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    height: 100dvh; /* Altura dinámica adaptada a móviles */
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye los elementos sin desbordar */
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+    transition: left 0.3s ease-in-out;
+    z-index: 10000;
+    overflow-y: auto; /* Evita desbordamiento si el contenido es denso */
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* Cuando el sidebar esté activo */
+  aside.side.activo {
+    left: 0;
+  }
+
+  /* Compactar los elementos de navegación para que quepan holgadamente */
+  aside.side .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  aside.side .nav a {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  /* Bloque inferior fijo dentro del sidebar para que no baje de más */
+  aside.side > div:last-of-type {
+    margin-top: auto;
+    padding-bottom: 10px;
+  }
+}
