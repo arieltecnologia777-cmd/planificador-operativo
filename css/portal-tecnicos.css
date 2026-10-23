@@ -7,7 +7,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid #7FA6FF;outline-offset:2px}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
-/* Sidebar con z-index superior (1500) */
+/* Sidebar Escritorio */
 .side{
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(20px) !important;
@@ -25,19 +25,19 @@ button{font:inherit;color:inherit;cursor:pointer}
     z-index: 1500 !important;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
-.nav{display:flex;flex-direction:column;gap:6px}
-.nav a{display:flex;align-items:center;gap:14px;padding:0 16px;min-height:48px;border-radius:12px;color:#5B6584;text-decoration:none;font-weight:700;font-size:15px;transition:background .15s, color .15s}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 16px;color:#0F1B3D;font-weight:800;font-size:17px;line-height:1.1}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:0 14px;min-height:42px;border-radius:10px;color:#5B6584;text-decoration:none;font-weight:700;font-size:14px;transition:background .15s, color .15s}
 .nav a:hover{background:#F1F4FB;color:#0F1B3D}
 .nav a.on{background:var(--blue);color:#fff;box-shadow:0 8px 20px -8px rgba(29,95,224,.8)}
 .nav svg{flex:none}
-.tag{margin-top:auto;padding:0 10px 18px;font-size:14px;line-height:1.45;color:#5B6584;position:relative;z-index:1;font-weight:600}
-.tag:before{content:"";display:block;width:26px;height:3px;border-radius:2px;background:var(--blue);margin-bottom:12px}
-.wave{position:absolute;left:0;right:0;bottom:0;opacity:.15}
+.tag{padding:0 10px 10px;font-size:13px;line-height:1.4;color:#5B6584;position:relative;z-index:1;font-weight:600}
+.tag:before{content:"";display:block;width:24px;height:3px;border-radius:2px;background:var(--blue);margin-bottom:8px}
+.wave{position:absolute;left:0;right:0;bottom:0;opacity:.15; pointer-events: none;}
 
 .nav-close-mobile { display: none; }
 
-/* Barra superior móvil con Sombra sutil no invasiva y fondo traslúcido */
+/* Barra superior móvil */
 .mobile-top-bar {
     display: none;
     align-items: center;
@@ -49,10 +49,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     position: sticky;
     top: 0;
     z-index: 1100;
-    box-shadow: 0 4px 16px rgba(15, 27, 61, 0.07); /* Sombra sutil para separarla visualmente */
+    box-shadow: 0 4px 16px rgba(15, 27, 61, 0.07);
 }
 
-/* Botón de hamburguesa compacto con el texto "Menú" al lado */
 .hamburger-btn {
     display: inline-flex;
     background: #ffffff;
@@ -65,23 +64,12 @@ button{font:inherit;color:inherit;cursor:pointer}
     box-shadow: 0 2px 6px rgba(15, 27, 61, 0.04);
     align-items: center;
     gap: 7px;
-    transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.hamburger-btn:hover {
-    background: #f8fafc;
-    border-color: #94a3b8;
-}
-
-.hamburger-btn:active {
-    transform: scale(0.96);
 }
 
 .menu-text {
     font-size: 13px;
     font-weight: 700;
     color: #1d5fe0;
-    letter-spacing: -0.2px;
 }
 
 /* Overlay */
@@ -101,7 +89,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .main{padding:8px 28px 40px;display:flex;flex-direction:column;gap:16px;min-width:0}
 .card{background:var(--card);border-radius:20px;box-shadow:0 1px 2px rgba(15,27,61,.04),0 14px 30px -18px rgba(15,27,61,.2)}
 
-/* Badge de Fecha y Hora adaptado para la barra superior en móvil */
 .live-datetime-badge {
     background: #ffffff;
     border: 1px solid #cbd5e1;
@@ -159,7 +146,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 }
 .sel .chev { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #64748b; }
 
-/* Corrección: Quitamos el !important para que JavaScript pueda abrir y cerrar el dropdown libremente */
 .dropdown-periodo-box {
     display: none;
     position: absolute;
@@ -215,10 +201,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .otop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .otop .ic{width:40px;height:40px;border-radius:12px;background:var(--blue-soft);display:grid;place-items:center}
 .otop h2{margin:0;font-size:19px;font-weight:800;margin-right:6px}
-.chip{border:0;background:var(--blue-soft);color:#173FA8;font-weight:700;font-size:14px;border-radius:12px;padding:0 14px;min-height:44px;display:inline-flex;align-items:center;gap:8px}
-.chip.on{background:var(--green-soft);color:#0B6B40}
-.all{margin-left:auto;border:0;background:#EEF2FA;border-radius:999px;font-weight:700;font-size:14px;padding:0 8px 0 18px;min-height:44px;display:inline-flex;align-items:center;gap:10px}
-.all i{width:32px;height:32px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .tw{overflow-x:auto;margin:0 -22px;padding:0 22px}
 table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0;font-size:14px}
 thead th{background:#F1F4FB;color:#34406A;text-align:left;font-weight:700;font-size:13px;padding:14px 12px;white-space:nowrap}
@@ -227,40 +209,77 @@ thead th:last-child{border-radius:0 12px 12px 0;text-align:center}
 tbody td{padding:13px 12px;border-bottom:1px solid #EDF0F7;vertical-align:middle;white-space:nowrap}
 tbody tr:hover td{background:#F8FAFE}
 .ot{display:inline-block;background:var(--blue-soft);color:#173FA8;font-weight:800;border-radius:10px;padding:5px 13px}
-.st{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;border-radius:999px;padding:6px 12px}
-.st.ok{background:var(--green-soft);color:#0B6B40}
-.st.pe{background:var(--amber-soft);color:#7A4A00}
-.st.re{background:var(--red-soft);color:#A3182E}
 .cause{display:flex;align-items:center;gap:8px;color:#34406A}
 .empty{padding:26px;text-align:center;color:var(--mute);font-weight:600}
 
-/* Media Queries Móvil */
 @media(max-width:1180px){.kpis{grid-template-columns:repeat(2,1fr)}}
 
-@media(max-width:860px){
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ========================================================== */
+/* CORRECCIÓN DEFINITIVA PARA MÓVILES (Sidebar fijo y sin scroll) */
+/* ========================================================== */
+@media(max-width: 860px){
   .app{grid-template-columns:1fr}
-  .side{
-    position:fixed !important; top:0 !important; left:0 !important; width:280px !important; height:100vh !important;
-    transform:translateX(-100%); box-shadow: 15px 0 30px rgba(0,0,0,0.15);
-  }
-  .side.activo { transform: translateX(0) !important; }
   
-  /* Habilitamos la barra superior */
+  aside.side{
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 270px !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    background: #ffffff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important; /* Evita que estire elementos a la fuerza */
+    box-shadow: 15px 0 30px rgba(0,0,0,0.15) !important;
+    transform: translateX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1500 !important;
+    overflow: hidden !important; /* BLOQUEA EL SCROLL COMPLETAMENTE */
+    padding: 14px 12px !important;
+  }
+
+  aside.side.activo {
+    transform: translateX(100%) !important; /* Desplaza el menú hacia la pantalla de forma fluida */
+  }
+
+  /* Compactar navegación para móviles */
+  .brand { padding: 0 4px 12px !important; }
+  .brand img { max-height: 28px !important; }
+  .side .brand > div:last-child { width: 42px !important; height: 42px !important; }
+
+  .nav { gap: 3px !important; }
+  .nav a { 
+    min-height: 38px !important; 
+    padding: 0 10px !important; 
+    font-size: 13px !important; 
+    gap: 10px !important;
+  }
+  .nav svg { width: 18px !important; height: 18px !important; }
+
+  /* Ocultar elementos decorativos inferiores que causaban desbordamiento */
+  .side .tag, .side .wave { display: none !important; }
+
+  /* Botón cerrar sesión ajustado al pie del menú */
+  aside.side button[onclick="cerrarSesion()"] {
+    margin-top: auto !important;
+    padding: 10px 14px !important;
+    font-size: 12.5px !important;
+  }
+  
   .mobile-top-bar { display: flex; }
   .nav-close-mobile { display: flex !important; }
   
   .main{ padding: 8px 12px 30px !important; overflow-x: hidden !important; }
   
-  .hero {
-    padding: 20px 16px !important;
-    height: auto !important;
-  }
+  .hero { padding: 20px 16px !important; height: auto !important; }
 
   .profile { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; padding: 12px !important; width: 100% !important; }
   .sel { min-width: 0 !important; width: 100% !important; padding: 8px 28px 8px 8px !important; gap: 6px !important; display: flex !important; align-items: center !important; }
   
   .dropdown-periodo-box {
-    display: none; /* Sin !important para que JS mande sobre él */
     position: absolute !important;
     top: 100% !important;
     left: 0 !important;
@@ -276,83 +295,4 @@ tbody tr:hover td{background:#F8FAFE}
   .kpi .v { font-size: 15.5px !important; letter-spacing: -0.03em !important; white-space: nowrap; }
   .kpi .t span { font-size: 12.5px !important; }
   .kpi .ill { width: 32px !important; height: 32px !important; }
-}
-
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-
-/* Clases oficiales y definitivas para los estados de la tabla */
-.badge-estado-aceptado {
-    background: #D1FAE5 !important;
-    color: #065F46 !important;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    display: inline-block;
-}
-
-.badge-estado-rechazado {
-    background: #FEE2E2 !important;
-    color: #991B1B !important;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    display: inline-block;
-}
-
-.badge-estado-ambar {
-    background: #FEF3C7 !important;
-    color: #D97706 !important;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    display: inline-block;
-}
-/* Asegurar que el sidebar en móviles se ajuste estrictamente al alto de la pantalla */
-@media (max-width: 768px) {
-  aside.side {
-    position: fixed;
-    top: 0;
-    left: -100%; /* Oculto por defecto a la izquierda */
-    width: 80%;
-    max-width: 300px;
-    height: 100vh;
-    height: 100dvh; /* Altura dinámica adaptada a móviles */
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Distribuye los elementos sin desbordar */
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
-    transition: left 0.3s ease-in-out;
-    z-index: 10000;
-    overflow-y: auto; /* Evita desbordamiento si el contenido es denso */
-    padding: 16px;
-    box-sizing: border-box;
-  }
-
-  /* Cuando el sidebar esté activo */
-  aside.side.activo {
-    left: 0;
-  }
-
-  /* Compactar los elementos de navegación para que quepan holgadamente */
-  aside.side .nav {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 10px;
-  }
-
-  aside.side .nav a {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-
-  /* Bloque inferior fijo dentro del sidebar para que no baje de más */
-  aside.side > div:last-of-type {
-    margin-top: auto;
-    padding-bottom: 10px;
-  }
 }
