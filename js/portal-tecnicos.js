@@ -4,6 +4,12 @@ const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
 let registrosCrudosTecnicos = [];
 const META_BASE_MENSUAL_TECNICO = 9500000;
 
+// 1. Validar seguridad al cargar la página: Si no hay sesión, redirigir al login
+const tecnicoLogueado = localStorage.getItem('tecnicoLogueado');
+if (!tecnicoLogueado) {
+    window.location.href = 'login.html';
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
@@ -49,26 +55,23 @@ async function cargarDatosTecnicosDesdeAPI() {
 }
 
 function poblarSelectoresYFiltros(rows) {
-    const tecnicosSet = new Set();
     const mesesSet = new Set();
 
     rows.forEach(r => {
-        const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
-        const perfil = String(rawPerfil).replace(/["']/g, "").trim();
-        if (perfil && perfil !== "SIN PROGRAMACION") tecnicosSet.add(perfil);
-
         const mesVal = String(r.mes || r.MES || "").trim();
         if (mesVal) mesesSet.add(mesVal);
     });
 
-    const selectTec = document.getElementById('tec');
-    if (selectTec) {
-        let htmlTec = '';
-        Array.from(tecnicosSet).sort().forEach(tec => {
-            htmlTec += `<option value="${tec}">${tec}</option>`;
-        });
-        selectTec.innerHTML = htmlTec;
-        selectTec.onchange = () => ejecutarFiltroYRenderizado();
+    // Mostramos el nombre fijo del técnico logueado en lugar del select desplegable
+    const perfilContainer = document.querySelector('.sel'); 
+    if (perfilContainer) {
+        perfilContainer.innerHTML = `
+            <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <div style="flex:1">
+                <label>Tu perfil técnico</label>
+                <b style="font-size: 14px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${tecnicoLogueado}</b>
+            </div>
+        `;
     }
 
     const mesesOrdenados = Array.from(mesesSet).sort();
@@ -93,10 +96,8 @@ function poblarSelectoresYFiltros(rows) {
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
-    if (selectTec && selectTec.options.length > 0) {
-        selectTec.selectedIndex = 0;
-        ejecutarFiltroYRenderizado();
-    }
+    // Ejecutamos el filtro usando directamente el nombre logueado
+    ejecutarFiltroYRenderizado();
 }
 
 function toggleDropdownPeriodo(e) {
@@ -159,8 +160,7 @@ function actualizarLabelBotonPeriodos() {
 
 function ejecutarFiltroYRenderizado() {
     actualizarLabelBotonPeriodos();
-    const selectTec = document.getElementById('tec');
-    const tecnicoSeleccionado = selectTec ? selectTec.value : "";
+    const tecnicoSeleccionado = localStorage.getItem('tecnicoLogueado') || "";
     const mesesSeleccionados = obtenerMesesSeleccionados();
 
     procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesesSeleccionados);
