@@ -20,25 +20,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- ✅ Único enlace al archivo CSS externo en su carpeta correcta -->
+  <!-- Ruta corregida para el CSS (ajusta la carpeta si tu css está en 'css' o 'generadoresCSS') -->
   <link rel="stylesheet" href="../generadoresCSS/mci.css">
 </head>
 <body class="theme-pro">
-
-  <!-- =========================
-   LOGIN TÉCNICOS
-  ========================= -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <img src="../assets/assistant_casco.png" alt="Asistente Técnico" class="login-logo logo-bot">
-      <h2>Bienvenido al Generador MCI</h2>
-      <input id="loginUser" type="text" placeholder="Usuario">
-      <input id="loginPass" type="password" placeholder="Contraseña">
-      <button id="loginBtn" class="btn">Ingresar</button>
-      <p id="loginError" style="color:red; margin-top:10px; display:none;">Usuario o contraseña incorrectos.</p>
-      <img src="../assets/dominion_logo.png" alt="Dominion" class="login-logo logo-dominion">
-    </div>
-  </div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
@@ -63,7 +48,6 @@
       <button class="btn secondary" id="subsanarBtn">🔄🔧 Corregir</button>
       <button class="btn" id="misInformesBtn">🔎 Ver mis informes</button>
       <button class="btn secondary" id="resetWorkBtn">Reiniciar trabajo</button>
-      <button class="btn secondary" id="logoutBtn">🚪 Cerrar sesión</button>
     </div>
   </aside>
 
@@ -618,7 +602,7 @@
     </div>
   </div>
 
-  <!-- Scripts apuntando a la carpeta ../app/ -->
+  <!-- Scripts principales apuntando correctamente a la carpeta ../app/ -->
   <script src="../app/version.js"></script>
   <script src="../app/mci.js"></script>
   
