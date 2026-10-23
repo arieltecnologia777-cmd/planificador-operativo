@@ -101,45 +101,63 @@
 
  <!-- KPIs -->
   <section class="kpis" aria-label="Indicadores">
-    <!-- Meta asignada (Con onda arriba del subtítulo) -->
     <article class="card kpi blue">
       <div class="head">
         <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#DCE6FB" stroke-width="9"/><path d="M32 6a26 26 0 0123 14" fill="none" stroke="#1D5FE0" stroke-width="9" stroke-linecap="round"/><path d="M32 58A26 26 0 016 32" fill="none" stroke="#2F7BFF" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="#1D5FE0"/></svg>
         <div class="t"><span>Meta asignada</span><div class="v" id="kpiMetaAsignada">$ 0</div></div>
         <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <!-- Onda de tendencia ubicada exactamente arriba del subtítulo -->
-      <svg viewBox="0 0 300 30" preserveAspectRatio="none" style="width: 100%; height: 18px; display: block; margin: 4px 0 2px; pointer-events: none;"><path d="M0,25 C80,5 190,28 300,5" fill="none" stroke="#1D5FE0" stroke-width="2.5" opacity="0.6"/></svg>
+      <svg class="spark" viewBox="0 0 280 35" preserveAspectRatio="none" aria-hidden="true" style="width: 100%; height: 24px; display: block; margin: 4px 0;">
+        <defs>
+          <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#1D5FE0" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#1D5FE0" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+        <path d="M 0 22 Q 70 4 140 18 T 280 12 L 280 35 L 0 35 Z" fill="url(#gradBlue)" />
+        <path d="M 0 22 Q 70 4 140 18 T 280 12" fill="none" stroke="#1D5FE0" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
       <div class="note b">Meta asignada para este periodo</div>
     </article>
 
-    <!-- Aprobado (Con onda arriba del subtítulo) -->
     <article class="card kpi green">
       <div class="head">
         <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="50" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="40" width="44" height="10" fill="#F5C13A"/><ellipse cx="32" cy="40" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="32" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="26" width="44" height="6" fill="#F5C13A"/><ellipse cx="32" cy="26" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="18" rx="18" ry="6" fill="#FFE393"/></svg>
         <div class="t"><span>Aprobado</span><div class="v" id="kpiMontoAprobado">$ 0</div></div>
         <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <!-- Onda de tendencia ubicada exactamente arriba del subtítulo -->
-      <svg viewBox="0 0 300 30" preserveAspectRatio="none" style="width: 100%; height: 18px; display: block; margin: 4px 0 2px; pointer-events: none;"><path d="M0,22 C90,2 190,25 300,8" fill="none" stroke="#10B981" stroke-width="2.5" opacity="0.6"/></svg>
+      <svg class="spark" viewBox="0 0 280 35" preserveAspectRatio="none" aria-hidden="true" style="width: 100%; height: 24px; display: block; margin: 4px 0;">
+        <defs>
+          <linearGradient id="gradGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#12A15F" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#12A15F" stop-opacity="0.0" />
+          </linearGradient>
+        </defs>
+        <path d="M 0 25 Q 70 10 140 22 T 280 8 L 280 35 L 0 35 Z" fill="url(#gradGreen)" />
+        <path d="M 0 25 Q 70 10 140 22 T 280 8" fill="none" stroke="#12A15F" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
       <div class="note g" id="txtPorcentajeCumplimientoNota">0% de cumplimiento de tu meta</div>
     </article>
 
-    <!-- Rechazado (Sin onda, limpio) -->
     <article class="card kpi red">
       <div class="head">
         <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 6h28l10 10v42H14z" fill="#fff" stroke="#C9D0E2" stroke-width="2"/><path d="M42 6v10h10" fill="#E6EAF4"/><path d="M22 26h20M22 34h20M22 42h12" stroke="#C9D0E2" stroke-width="3" stroke-linecap="round"/><path d="M34 40h22l-5 7 5 7H34z" fill="#E0334C"/></svg>
-        <div class="t"><span>Rechazado</span><div class="v" id="kpiMontoRechazado">$ 0</div></div>
+        <div class="t">
+          <span>Rechazado</span>
+          <div class="v" id="kpiMontoRechazado">$ 0</div>
+        </div>
         <button class="go" aria-label="Ver rechazados"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
       <div class="note r">Requiere gestión</div>
     </article>
 
-    <!-- Subsanado (Sin onda, limpio) -->
     <article class="card kpi amber">
       <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/></svg>
-        <div class="t"><span>Subsanado</span><div class="v" id="kpiMontoSubsanado">$ 0</div></div>
+        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/><path d="M8 44c6-18 22-24 36-20" fill="none" stroke="#6FA0FF" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
+        <div class="t">
+          <span>Subsanado</span>
+          <div class="v" id="kpiMontoSubsanado">$ 0</div>
+        </div>
         <button class="go" aria-label="Ver monto subsanado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
       <div class="note a">En revisión</div>
