@@ -1,34 +1,7 @@
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
 
-function cerrarSesion(automatico = false) {
-  localStorage.removeItem("tecnicoSesion");
-  window.tecnicoActual = null;
-  if (automatico) {
-    alert("Tu sesión expiró por seguridad. Inicia sesión nuevamente.");
-  }
-  document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("sidebar").style.display = "none";
-  document.querySelector(".main").style.display = "none";
-}
-
-function verificarSesion() {
-  const raw = localStorage.getItem("tecnicoSesion");
-  if (!raw) return false;
-  try {
-    const sesion = JSON.parse(raw);
-    const ahora = Date.now();
-    if (!sesion.loginTime || (ahora - sesion.loginTime) > SESSION_DURATION_MS) {
-      cerrarSesion(true);
-      return false;
-    }
-    window.tecnicoActual = sesion.usuario;
-    localStorage.setItem("tecnicoActual", sesion.usuario);
-    return true;
-  } catch (e) {
-    cerrarSesion(true);
-    return false;
-  }
-}
+// Técnico predeterminado ya que no hay pantalla de login
+window.tecnicoActual = "Técnico General";
 
 const FLOW_DESCARGAR_MCI = "https://defaulte4e1bc33e2834312bb3789010224b7.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bd9e2227be594ecdb47c0da4a898d474/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j3SlbYcxilxwhnHJfL95lpTA-Y2RzAtiNrmug_D01eQ";
 
@@ -586,10 +559,6 @@ async function getFoto(id) {
 }
 
 async function exportarMCI(){
-  if (!tecnicoActual) {
-    alert("Debes iniciar sesión para poder exportar el MCI.");
-    return;
-  }
   const firma = await getFoto("img-firma-tec");
   if (!firma) {
     alert("Debes subir la firma antes de continuar");
@@ -771,8 +740,8 @@ async function exportarMCI(){
         await fetch(`https://cloudflare-index.modulo-de-exclusiones.workers.dev/subsanar/${numeroCaso}`, { method: "PUT" });
       }
       
-      setStatus("✅ Informe enviado para revisión del auditor", "ok");
-      alert("El informe fue enviado correctamente. El auditor lo revisará y aprobará.");
+      setStatus("✅ Informe enviado exitosamente", "ok");
+      alert("El informe fue enviado correctamente.");
   }catch(err){
       console.error(err);
       if (err.message && err.message.toLowerCase().includes("failed to fetch")) {
@@ -790,11 +759,6 @@ async function exportarMCI(){
 
 document.getElementById("exportBtn").addEventListener("click", () => {
   currentFlowUrl = FLOW_URL;
-  exportarMCI();
-});
-
-document.getElementById("subsanarBtn").addEventListener("click", () => {
-  currentFlowUrl = FLOW_SUBSANAR_URL;
   exportarMCI();
 });
 
@@ -924,168 +888,25 @@ document.querySelectorAll(".view-btn").forEach(btn => {
   });
 });
 
-const subsanarBtn = document.getElementById("subsanarBtn");
-if (subsanarBtn) {
-  subsanarBtn.disabled = true;
-  subsanarBtn.style.opacity = "0.5";
-  subsanarBtn.style.cursor = "not-allowed";
-}
-
-import { TECNICOS, PASSWORD_GLOBAL } from "./tecnicos.js";
-
-window.tecnicoActual = localStorage.getItem("tecnicoActual") || null;
-
-document.getElementById("loginBtn").onclick = () => {
-  const cedula = document.getElementById("loginUser").value.trim();
-  const password = document.getElementById("loginPass").value.trim();
-
-  const nombreTecnico = TECNICOS[cedula];
-  if (!nombreTecnico) {
-    alert("Técnico no registrado, por favor contactar a un admin para tu registro y admición");
-    return;
-  }
-
-  if (password !== PASSWORD_GLOBAL) {
-    alert("Contraseña incorrecta");
-    return;
-  }
-
-  localStorage.setItem("tecnicoActual", nombreTecnico);
-  window.tecnicoActual = nombreTecnico;
-
-  localStorage.setItem("tecnicoSesion", JSON.stringify({
-    usuario: nombreTecnico,
-    loginTime: Date.now()
-  }));
-
-  mostrarApp();
-  mostrarMisInformes();
-  cargarInformesEnTabla();
-};
-
-function mostrarMisInformes() {
-  const seccion = document.getElementById("misInformes");
-  if (seccion) seccion.style.display = "block";
-}
-
-async function cargarInformesEnTabla() {
-  const tecnico = localStorage.getItem("tecnicoActual");
-  if (!tecnico) return;
-
-  const resp = await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar");
-  const informes = await resp.json();
-  const propios = informes.filter(i => i.tecnico === tecnico);
-
-  const tbodyModal = document.querySelector("#tablaInformesModal tbody");
-  if (!tbodyModal) return;
-  tbodyModal.innerHTML = "";
-
-  propios.sort((a, b) => new Date(b.fechaGenerado) - new Date(a.fechaGenerado));
-
-  for (const inf of propios) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td style="padding:8px;">${new Date(inf.fechaGenerado).toLocaleDateString()}</td>
-      <td style="padding:8px;">${inf.mciId}</td>
-      <td style="padding:8px;">${inf.estado === "aprobado" ? "✅ Aprobado" : inf.estado === "rechazado" ? "❌ Rechazado" : "⏳ En validación"}</td>
-      <td style="padding:8px;">
-        ${
-          inf.estado === "aprobado"
-          ? `<button class="btn btnDescargar" data-mciid="${inf.mciId}">📥 Descargar</button>`
-          : inf.estado === "rechazado"
-          ? `<button class="btn btnSubsanar" data-mciid="${inf.mciId}">✏️ Corregir</button>`
-          : `<button class="btn btnValidacion" disabled>⏳ En validación</button>`
-        }
-      </td>
-    `;
-    tbodyModal.appendChild(tr);
-
-    tr.querySelector(".btnSubsanar")?.addEventListener("click", () => {
-      const mciId = tr.querySelector(".btnSubsanar").dataset.mciid;
-      localStorage.setItem("modoSubsanar", "true");
-      localStorage.setItem("mciSubsanar", mciId);
-      document.getElementById("misInformesModal").style.display = "none";
-      
-      const subBtn = document.getElementById("subsanarBtn");
-      subBtn.disabled = false;
-      subBtn.style.opacity = "1";
-      subsanarBtn.style.cursor = "pointer";
-
-      const expBtn = document.getElementById("exportBtn");
-      expBtn.disabled = true;
-      expBtn.style.opacity = "0.5";
-      expBtn.style.cursor = "not-allowed";
-    });
-  }
-}
-
-function mostrarApp() {
-  document.getElementById("loginScreen").style.display = "none";
+document.addEventListener("DOMContentLoaded", () => {
+  // Asegurar visibilidad total sin pantallas de login
   document.getElementById("sidebar").style.display = "flex";
   document.querySelector(".main").style.display = "flex";
   document.body.classList.add("logged-in");
-}
-
-function ocultarApp() {
-  document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("sidebar").style.display = "none";
-  document.querySelector(".main").style.display = "none";
-  document.body.classList.remove("logged-in");
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const haySesion = verificarSesion();
-  if (haySesion) {
-    mostrarApp();
-  } else {
-    ocultarApp();
-  }
 
   const misInformesBtn = document.getElementById("misInformesBtn");
   const misInformesModal = document.getElementById("misInformesModal");
   const cerrarMisInformes = document.getElementById("cerrarMisInformes");
-  const refreshBtn = document.getElementById("refreshMisInformes");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   if (misInformesBtn && misInformesModal) {
     misInformesBtn.addEventListener("click", () => {
       misInformesModal.style.display = "flex";
-      cargarInformesEnTabla();
-    });
-  }
-
-  if (refreshBtn) {
-    refreshBtn.addEventListener("click", async () => {
-      refreshBtn.innerHTML = "⏳ Actualizando...";
-      refreshBtn.disabled = true;
-      try {
-        await cargarInformesEnTabla();
-      } finally {
-        refreshBtn.innerHTML = "🔄 Actualizar";
-        refreshBtn.disabled = false;
-      }
-    });
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      if (confirm("¿Deseas cerrar la sesión?")) {
-        cerrarSesion(false);
-      }
     });
   }
 
   if (cerrarMisInformes && misInformesModal) {
     cerrarMisInformes.addEventListener("click", () => {
       misInformesModal.style.display = "none";
-    });
-  }
-
-  if (misInformesModal) {
-    misInformesModal.addEventListener("click", (e) => {
-      if (e.target === misInformesModal) {
-        misInformesModal.style.display = "none";
-      }
     });
   }
 });
