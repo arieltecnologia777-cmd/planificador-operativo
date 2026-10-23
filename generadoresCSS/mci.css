@@ -1,6 +1,4 @@
- <style>
-    
-    :root{
+:root{
   /* Paleta base */
   --primary-900:#0b2e59; --primary-800:#103a70; --primary-700:#1e3a8a;
   --accent-500:#3b82f6; --bg-50:#e9f2ff; --surface:#ffffff;
@@ -4474,4 +4472,3 @@ body:not(.logged-in) .main{
     .photo-cell:not(.has-image) .photo-toolbar{
     display:none !important;
 }
-  </style>
