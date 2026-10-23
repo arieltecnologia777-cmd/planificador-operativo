@@ -37,40 +37,30 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .nav-close-mobile { display: none; }
 
-/* Botón de hamburguesa compacto con el texto "Menú" al lado (Visible en móvil) */
+/* Botón de hamburguesa compacto con el texto "Menú" al lado (Oculto en escritorio) */
 .hamburger-btn {
     display: none;
     position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 1200;
-    background: #ffffff;
+    top: 12px;
+    left: 12px;
+    z-index: 1100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
     color: #1d5fe0;
     border: 1px solid #cbd5e1;
-    height: 40px;
-    padding: 0 12px 0 10px;
-    border-radius: 10px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(15, 27, 61, 0.08);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     align-items: center;
-    gap: 7px;
-    transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.hamburger-btn:hover {
-    background: #f8fafc;
-    border-color: #94a3b8;
-}
-
-.hamburger-btn:active {
-    transform: scale(0.96);
+    gap: 6px;
 }
 
 .menu-text {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: #1d5fe0;
-    letter-spacing: -0.2px;
 }
 
 .side.activo ~ .hamburger-btn,
@@ -250,10 +240,19 @@ tbody tr:hover td{background:#F8FAFE}
   .nav-close-mobile { display: flex !important; }
   .main{ padding: 12px !important; padding-top: 14px !important; overflow-x: hidden !important; }
   
+  /* Hero adaptado con padding superior para alojar el botón absoluto de Menú */
   .hero {
     position: relative !important;
     padding: 20px 16px !important;
+    padding-top: 50px !important;
     height: auto !important;
+  }
+  
+  /* Botón de menú posicionado de forma absoluta dentro del hero (sube con el scroll y no tapa abajo) */
+  .hamburger-btn {
+    position: absolute !important;
+    top: 10px !important;
+    left: 12px !important;
   }
   
   .live-datetime-badge {
