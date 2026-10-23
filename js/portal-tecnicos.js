@@ -264,15 +264,40 @@ function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) 
     if (fill) fill.style.width = `${porcentajeVisual}%`;
     if (pin) pin.style.left = `${porcentajeVisual}%`;
 
+    // Parametrización con tus mensajes seleccionados
     if (porcentaje >= 100) {
         if (fill) fill.style.background = '#12A15F';
-        if (badge) { badge.style.background = 'var(--green-soft)'; badge.style.color = 'var(--green)'; badge.innerHTML = `🏆 ¡Meta cumplida! ${porcentaje}%`; }
+        if (badge) { 
+            badge.style.background = 'var(--green-soft)'; 
+            badge.style.color = 'var(--green)'; 
+            badge.innerHTML = `🏆 ¡Meta cumplida! ${porcentaje}%`; 
+        }
+    } else if (porcentaje >= 85) {
+        // Rango Alto / Zona Caliente (85% a 99%)
+        if (fill) fill.style.background = 'linear-gradient(90deg, #E08A00 0%, #12A15F 100%)';
+        if (badge) { 
+            badge.style.background = 'var(--amber-soft)'; 
+            badge.style.color = 'var(--amber)'; 
+            badge.innerHTML = `🚀 ¡A poco para llegar a la meta! Vas al ${porcentaje}%.`; 
+        }
+    } else if (porcentaje >= 50) {
+        // Rango Medio (50% a 84%)
+        if (fill) fill.style.background = 'linear-gradient(90deg, #E08A00 0%, #E08A00 100%)';
+        if (badge) { 
+            badge.style.background = 'var(--amber-soft)'; 
+            badge.style.color = 'var(--amber)'; 
+            badge.innerHTML = `⚠️ ¡Aún estás lejos! Vas al ${porcentaje}%.`; 
+        }
     } else {
+        // Rango Crítico (< 50%)
         if (fill) fill.style.background = 'linear-gradient(90deg, #E0334C 0%, #E08A00 100%)';
-        if (badge) { badge.style.background = 'var(--amber-soft)'; badge.style.color = 'var(--amber)'; badge.innerHTML = `💪 ¡Ánimo! Vas al ${porcentaje}%.`; }
+        if (badge) { 
+            badge.style.background = 'var(--red-soft)'; 
+            badge.style.color = 'var(--red)'; 
+            badge.innerHTML = `🚨 ¡Acción requerida! Vas al ${porcentaje}%.`; 
+        }
     }
 }
-
 // Única función unificada para renderizar la tabla con colores blindados en línea
 function renderizarTablaOrdenesTecnico(rows) {
     registrosFiltradosActuales = rows || [];
