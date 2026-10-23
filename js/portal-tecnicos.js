@@ -350,19 +350,11 @@ function abrirModalDetalle(index) {
     const idVal = registro.id_id || registro.ID_ID || registro.id || registro.ID || 'N/A';
     const mesVal = registro.mes || registro.MES || 'N/A';
     
-    // Obtenemos el estado regional real
     const aprobRegRaw = registro.aprobacion_regional || registro.APROBACION_REGIONAL || registro['APROBACION REGIONAL'] || 'En trámite';
-    const estadoTexto = String(aprobRegRaw).trim().toUpperCase();
-
-    // Extraemos la causa y la observación tal cual vienen de la base de datos
-    let causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || '***';
-    let obsVal = registro.detalle_mindy2 || registro.DETALLE_MINDY2 || registro['DETALLE MINDY2'] || registro['detalle mindy2'] || 'Sin observaciones registradas.';
-
-    // SI EL ESTADO ES ACEPTADO O APROBADO: Forzamos el '***' en causa y el comentario estándar en observaciones
-    if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-        causaVal = "N/A";
-        obsVal = "Orden aprobada.";
-    }
+    
+    // Dejamos que la causa y la observación vengan exactamente como están en la BD
+    const causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || '***';
+    const obsVal = registro.detalle_mindy2 || registro.DETALLE_MINDY2 || registro['DETALLE MINDY2'] || registro['detalle mindy2'] || 'Sin observaciones registradas.';
 
     document.getElementById('modalIdVal').innerText = idVal;
     document.getElementById('modalMesVal').innerText = mesVal;
@@ -373,7 +365,6 @@ function abrirModalDetalle(index) {
     const modal = document.getElementById('modalDetalleOrden');
     if (modal) modal.style.display = 'flex';
 }
-
 function cerrarModalDetalle() {
     const modal = document.getElementById('modalDetalleOrden');
     if (modal) modal.style.display = 'none';
