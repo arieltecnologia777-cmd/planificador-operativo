@@ -277,6 +277,7 @@ function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) 
     }
 }
 function renderizarTablaOrdenesTecnico(rows) {
+    registrosFiltradosActuales = rows || [];
     const tbody = document.getElementById('rows');
     const emptyMsg = document.getElementById('empty');
     if (!tbody) return;
@@ -290,32 +291,25 @@ function renderizarTablaOrdenesTecnico(rows) {
     if (emptyMsg) emptyMsg.hidden = true;
     let html = '';
 
-    rows.forEach(r => {
+    rows.forEach((r, index) => {
         const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
-        let estadoTexto = 'En trámite';
-        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo por defecto
-        let montoFinal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-
-        if (aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADA")) {
-            estadoTexto = aprobReg.includes("ACEPTADO") ? 'APROBADO' : aprobReg;
+        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
+        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
+        
+        // Regla estricta de colores solicitada:
+        // Verde: Solo Aprobado / Aceptado
+        // Rojo: Solo Rechazado
+        // Ámbar: Todos los demás (GRN/BTS/RVST, etc.)
+        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Ámbar por defecto para el resto
+        if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
             bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
-            montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? montoFinal);
-        } else if (aprobReg.includes("RECHAZADO") || aprobReg.includes("RECHAZADA")) {
-            estadoTexto = 'RECHAZADA';
+        } else if (estadoTexto.includes("RECHAZADO")) {
             bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
-            // Mantiene el estimado/rechazado
-        } else {
-            const trasiegoVal = Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
-            if (trasiegoVal > 0) {
-                estadoTexto = 'SUBSANADO';
-                bgEstilo = 'background: #FEF9C3; color: #854D0E;';
-                montoFinal = trasiegoVal;
-            }
         }
 
         const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+        const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
             <tr>
@@ -328,7 +322,7 @@ function renderizarTablaOrdenesTecnico(rows) {
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
                 <td style="text-align: center;">
-                    <button type="button" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb; transition: background 0.2s;">
+                    <button type="button" onclick="abrirModalDetalle(${index})" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb;">
                         👁️ Ver detalles
                     </button>
                 </td>
