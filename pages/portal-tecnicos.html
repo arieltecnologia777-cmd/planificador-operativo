@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- Barra Superior Móvil Fija (Header de navegación exclusivo para móviles) -->
+<!-- Barra Superior Móvil Fija -->
 <header class="mobile-top-bar">
   <button type="button" id="btnAbrirSidebar" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
@@ -140,6 +140,42 @@
       </a>
       <div class="note a">En revisión</div>
     </article>
+  </section>
+
+  <!-- Estado general -->
+  <section class="card state" aria-label="Estado general del periodo">
+    <span class="ic" id="stateIconEstado" style="background: var(--blue);">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+    </span>
+    <div class="mid">
+      <div class="row">
+        <h2>Estado general del periodo</h2>
+        <span class="badge" id="stateBadgeEstado" style="background: var(--amber-soft); color: var(--amber);">Calculando...</span>
+      </div>
+      <div class="bar" id="progressBarContainerBarra" style="background: #E7ECF6; height: 14px; border-radius: 99px; position: relative; overflow: visible;">
+        <div id="progressFillBarra" style="position: absolute; left: 0; top: 0; bottom: 0; width: 0%; border-radius: 99px; background: linear-gradient(90deg, #E0334C 0%, #E08A00 50%, #12A15F 100%); transition: width 0.4s ease;"></div>
+        <div id="progressPinBarra" class="pin" title="Progreso" style="position: absolute; left: 0%; top: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 4px solid #E0334C; box-shadow: 0 2px 8px rgba(0,0,0,.2); transform: translateX(-50%); transition: left 0.4s ease;"></div>
+      </div>
+      <div class="legend"><span id="legendStart">0%</span><span id="legendMetaTexto">Meta total: $0</span></div>
+    </div>
+  </section>
+
+  <!-- Tabla -->
+  <section class="card orders" aria-label="Detalle de órdenes de trabajo">
+    <div class="otop">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
+      <h2>Detalle de mis órdenes de trabajo</h2>
+      <button class="chip" id="fs" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="fl">Filtrar: todas</span></button>
+      <button class="chip on" id="fg" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v7M8 7l4-4 4 4M5 21h14M9 17h6"/></svg>GRN/BTS/RVST</button>
+      <button class="all">Ver todas<i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></i></button>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>ID / OT</th><th>Departamento</th><th>Estado</th><th>Causa de rechazo</th><th>Estimado</th><th>Aprobado</th><th>Acciones</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>No hay órdenes que coincidan con tu búsqueda.</div>
+    </div>
   </section>
 </main>
 </div>
