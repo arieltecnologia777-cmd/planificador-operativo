@@ -97,39 +97,51 @@ function obtenerNombreCorto(nombreCompleto) {
     return `${partes[0]} ${partes[1]}`;
 }
 
-function actualizarFiltroEstadosDinamico(registrosFiltrados) {
-    const estadosSet = new Set();
-    
-    registrosFiltrados.forEach(r => {
-        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
-        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
-        
-        // Excluimos GRN/BTS/RVST si aplica en tu lógica general
-        if (!estadoTexto.includes("GRN") && !estadoTexto.includes("BTS") && !estadoTexto.includes("RVST")) {
-            estadosSet.add(estadoTexto);
-        }
+function poblarSelectoresYFiltros(rows) {
+    const mesesSet = new Set();
+
+    rows.forEach(r => {
+        const mesVal = String(r.mes || r.MES || "").trim();
+        if (mesVal) mesesSet.add(mesVal);
     });
 
-    const containerEstados = document.getElementById('listaCheckEstados');
-    if (!containerEstados) return;
-
-    // Guardamos los estados que ya estaban seleccionados previamente para no desmarcarlos si siguen vigentes
-    const seleccionadosPrevios = obtenerEstadosSeleccionados();
-
-    let htmlEstados = '';
-    Array.from(estadosSet).sort().forEach(est => {
-        // Si antes estaba seleccionado o es la primera vez, lo dejamos marcado por defecto
-        const estaMarcado = seleccionadosPrevios.length === 0 || seleccionadosPrevios.includes(est) ? 'checked' : '';
-        htmlEstados += `
-            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                <input type="checkbox" name="filtroEstadoCheckbox" value="${est}" ${estaMarcado} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
-                ${est}
-            </label>
+    const nombreCorto = obtenerNombreCorto(tecnicoLogueado);
+    const perfilContainer = document.querySelector('.sel'); 
+    if (perfilContainer) {
+        perfilContainer.innerHTML = `
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <div style="flex:1; min-width: 0;">
+                <label style="font-size: 10px; display: block;">Tu perfil técnico</label>
+                <b style="font-size: 12px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${tecnicoLogueado}">${nombreCorto}</b>
+            </div>
         `;
-    });
-    
-    containerEstados.innerHTML = htmlEstados;
-    actualizarLabelBotonEstado();
+    }
+
+    const mesesOrdenados = Array.from(mesesSet).sort();
+    const ultimosTresMeses = mesesOrdenados.slice(-3);
+
+    const containerMeses = document.getElementById('listaCheckPeriodos');
+    if (containerMeses) {
+        let htmlCheck = '';
+        ultimosTresMeses.forEach(mes => {
+            htmlCheck += `
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    ${mes}
+                </label>
+            `;
+        });
+        containerMeses.innerHTML = htmlCheck;
+    }
+
+    actualizarLabelBotonPeriodos();
+
+    const drop = document.getElementById('dropdownPeriodoContent');
+    if (drop) drop.style.display = 'none';
+    const dropEstado = document.getElementById('dropdownEstadoContent');
+    if (dropEstado) dropEstado.style.display = 'none';
+
+    ejecutarFiltroYRenderizado();
 }
 
 function toggleDropdownPeriodo(e) {
@@ -253,40 +265,76 @@ function actualizarLabelBotonEstado() {
     }
 }
 
+function actualizarFiltroEstadosDinamico(registrosFiltrados) {
+    const estadosSet = new Set();
+    
+    registrosFiltrados.forEach(r => {
+        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
+        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
+        
+        if (!estadoTexto.includes("GRN") && !estadoTexto.includes("BTS") && !estadoTexto.includes("RVST")) {
+            estadosSet.add(estadoTexto);
+        }
+    });
+
+    const containerEstados = document.getElementById('listaCheckEstados');
+    if (!containerEstados) return;
+
+    const seleccionadosPrevios = obtenerEstadosSeleccionados();
+
+    let htmlEstados = '';
+    Array.from(estadosSet).sort().forEach(est => {
+        const estaMarcado = seleccionadosPrevios.length === 0 || seleccionadosPrevios.includes(est) ? 'checked' : '';
+        htmlEstados += `
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
+                <input type="checkbox" name="filtroEstadoCheckbox" value="${est}" ${estaMarcado} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                ${est}
+            </label>
+        `;
+    });
+    
+    containerEstados.innerHTML = htmlEstados;
+    actualizarLabelBotonEstado();
+}
+
 function ejecutarFiltroYRenderizado() {
     actualizarLabelBotonPeriodos();
     actualizarLabelBotonEstado();
     const tecnicoSeleccionado = localStorage.getItem('tecnicoLogueado') || "";
     const mesesSeleccionados = obtenerMesesSeleccionados();
-    const estadosSeleccionados = obtenerEstadosSeleccionados();
 
-    procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesesSeleccionados, estadosSeleccionados);
+    procesarYRenderizarPortalTecnicoFiltrado(tecnicoSeleccionado, mesesSeleccionados);
 }
 
-function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados, estadosSeleccionados) {
+function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
     const palabrasClave = tecnicoBuscado.split(/\s+/).filter(p => p.length > 2);
     
-    const misRegistros = registrosCrudosTecnicos.filter(r => {
+    const misRegistrosBase = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
         const perfil = String(rawPerfil).replace(/["']/g, "").trim().toUpperCase();
         const mesReg = String(r.mes || r.MES || "").trim();
 
         if (!mesesSeleccionados.includes(mesReg)) return false;
 
-        // Validamos el estado regional para excluir completamente 'GRN/BTS/RVST'
         const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "").trim().toUpperCase();
         if (aprobRegRaw.includes("GRN") || aprobRegRaw.includes("BTS") || aprobRegRaw.includes("RVST")) {
             return false; 
         }
 
-        const estadoTexto = aprobRegRaw !== "" ? aprobRegRaw : "PENDIENTE";
-        if (!estadosSeleccionados.includes(estadoTexto)) return false;
-
         if (perfil === tecnicoBuscado) return true;
         if (palabrasClave.length > 0 && palabrasClave.every(palabra => perfil.includes(palabra))) return true;
 
         return false;
+    });
+
+    actualizarFiltroEstadosDinamico(misRegistrosBase);
+    const estadosSeleccionados = obtenerEstadosSeleccionados();
+
+    const misRegistros = misRegistrosBase.filter(r => {
+        const aprobRegRaw = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").trim().toUpperCase();
+        const estadoTexto = aprobRegRaw !== "" ? aprobRegRaw : "PENDIENTE";
+        return estadosSeleccionados.includes(estadoTexto);
     });
 
     const cantidadMeses = Math.max(1, mesesSeleccionados.length);
