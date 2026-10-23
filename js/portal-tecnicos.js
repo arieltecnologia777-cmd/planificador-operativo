@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
+    // Inyectar el reloj en el Hero para pantallas grandes si no existe
+    asegurarRelojEnHero();
+
     cargarDatosTecnicosDesdeAPI();
     iniciarRelojTiempoReal();
     
@@ -24,14 +27,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function asegurarRelojEnHero() {
+    const hero = document.querySelector('.hero, header, .portal-hero, [style*="background"]'); // Busca el contenedor azul principal
+    // Buscamos un contenedor adecuado dentro del hero o lo creamos en la esquina superior derecha
+    const heroCard = document.querySelector('.hero') || document.querySelector('.bg-blue, div[style*="background: linear-gradient"], div[style*="background: #1D5FE0"]') || document.querySelector('main > div:first-child');
+    
+    if (heroCard && !document.getElementById('liveDateTimeHero')) {
+        heroCard.style.position = 'relative';
+        const relojDiv = document.createElement('div');
+        relojDiv.id = 'liveDateTimeHero';
+        relojDiv.style.cssText = 'position: absolute; top: 20px; right: 24px; color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur: 4px; display: none;';
+        
+        // Media query por CSS inyectado para mostrarlo solo en escritorio
+        const styleMedia = document.createElement('style');
+        styleMedia.innerHTML = `@media(min-width: 768px) { #liveDateTimeHero { display: block !important; } }`;
+        document.head.appendChild(styleMedia);
+        
+        heroCard.appendChild(relojDiv);
+    }
+}
+
 function iniciarRelojTiempoReal() {
-    const relojElem = document.getElementById('liveDateTime');
+    const relojElem = document.getElementById('liveDateTime') || document.getElementById('liveDateTimeHero');
     if (!relojElem) return;
     function actualizar() {
         const ahora = new Date();
         const opcionesFecha = { year: 'numeric', month: 'short', day: 'numeric' };
         const opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        relojElem.innerHTML = `📅 ${ahora.toLocaleDateString('es-CO', opcionesFecha)} &nbsp;|&nbsp; ⏰ ${ahora.toLocaleTimeString('es-CO', opcionesHora)}`;
+        const textoReloj = `📅 ${ahora.toLocaleDateString('es-CO', opcionesFecha)} &nbsp;|&nbsp; ⏰ ${ahora.toLocaleTimeString('es-CO', opcionesHora)}`;
+        
+        const elMovil = document.getElementById('liveDateTime');
+        const elHero = document.getElementById('liveDateTimeHero');
+        if (elMovil) elMovil.innerHTML = textoReloj;
+        if (elHero) elHero.innerHTML = textoReloj;
     }
     actualizar();
     setInterval(actualizar, 1000);
@@ -47,11 +75,21 @@ async function cargarDatosTecnicosDesdeAPI() {
             } else {
                 renderizarPortalVacio();
             }
+        } else {
+            renderizarPortalVacio();
         }
     } catch (err) {
         console.error("Error al conectar con la API de facturación:", err);
         renderizarPortalVacio();
     }
+}
+
+function obtenerNombreCorto(nombreCompleto) {
+    const partes = String(nombreCompleto || "").trim().split(/\s+/);
+    if (partes.length === 0) return "Técnico";
+    if (partes.length === 1) return partes[0];
+    // Primer nombre y primer apellido (asumiendo formato estándar Nombres Apellidos)
+    return `${partes[0]} ${partes[1]}`;
 }
 
 function poblarSelectoresYFiltros(rows) {
@@ -62,14 +100,15 @@ function poblarSelectoresYFiltros(rows) {
         if (mesVal) mesesSet.add(mesVal);
     });
 
-    // Mostramos el nombre fijo del técnico logueado en lugar del select desplegable
+    // Formatear nombre a solo primer nombre y primer apellido con fuente más pequeña para evitar desbordes
+    const nombreCorto = obtenerNombreCorto(tecnicoLogueado);
     const perfilContainer = document.querySelector('.sel'); 
     if (perfilContainer) {
         perfilContainer.innerHTML = `
-            <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
-            <div style="flex:1">
-                <label>Tu perfil técnico</label>
-                <b style="font-size: 14px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${tecnicoLogueado}</b>
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <div style="flex:1; min-width: 0;">
+                <label style="font-size: 10px; display: block;">Tu perfil técnico</label>
+                <b style="font-size: 12px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${tecnicoLogueado}">${nombreCorto}</b>
             </div>
         `;
     }
@@ -240,13 +279,13 @@ function renderizarTablaOrdenesTecnico(rows) {
     rows.forEach(r => {
         html += `
             <tr>
-                <td><span class="ot">${r.id_id || r.ID_ID || 'N/A'}</span></td>
+                <td><span class="ot">${r.ot || r.OT || r.id_id || r.ID_ID || 'N/A'}</span></td>
                 <td><span class="cause">${r.departamento || r.DEPARTAMENTO || 'GENERAL'}</span></td>
-                <td><span class="st pe">En trámite</span></td>
-                <td>-</td>
+                <td><span class="st pe">${r.estado_gestion || r.estadoGestion || 'En trámite'}</span></td>
+                <td>${r.mes || r.MES || '-'}</td>
                 <td>${formatMoney(r.estimado_a_facturar ?? 0)}</td>
-                <td>${formatMoney(r.total_aprobado ?? 0)}</td>
-                <td style="text-align: center;"><button type="button">Ver</button></td>
+                <td>${formatMoney(r.total_aprobado ?? r.real_facturado ?? 0)}</td>
+                <td style="text-align: center;"><button type="button" style="padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600;">Ver</button></td>
             </tr>
         `;
     });
