@@ -77,11 +77,10 @@ function poblarSelectoresYFiltros(rows) {
     const containerMeses = document.getElementById('listaCheckPeriodos');
     if (containerMeses) {
         let htmlCheck = '';
-        mesesOrdenados.forEach(mes => {
-            const estaCheck = ultimosTresMeses.includes(mes) ? 'checked' : '';
+        ultimosTresMeses.forEach(mes => {
             htmlCheck += `
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
-                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" ${estaCheck} onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                    <input type="checkbox" name="filtroPeriodoCheckbox" value="${mes}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
                     ${mes}
                 </label>
             `;
@@ -150,7 +149,7 @@ function actualizarLabelBotonPeriodos() {
     if (seleccionados.length === 0) {
         lbl.innerText = "Ningún periodo";
     } else if (seleccionados.length === total) {
-        lbl.innerText = "Todos los periodos";
+        lbl.innerText = "Últimos 3 meses";
     } else if (seleccionados.length === 1) {
         lbl.innerText = seleccionados[0];
     } else {
