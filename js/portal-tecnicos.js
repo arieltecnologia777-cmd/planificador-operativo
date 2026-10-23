@@ -297,15 +297,18 @@ function renderizarTablaOrdenesTecnico(rows) {
         const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
         const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
         
-        // Lógica estricta de colores por estado individual:
+        // Regla de colores estricta solicitada:
+        // 1. Aceptado/Aprobado -> Verde
+        // 2. Rechazado -> Rojo
+        // 3. El resto -> Ámbar (Amarillo)
         let estiloBadge = 'padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;';
         
-        if (estadoTexto.includes("APROBADO") || estadoTexto.includes("ACEPTADO")) {
-            estiloBadge += ' background: #D1FAE5; color: #065F46;'; // Verde exclusivo para aprobado/aceptado
+        if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
+            estiloBadge += ' background: #D1FAE5 !important; color: #065F46 !important;'; // Verde
         } else if (estadoTexto.includes("RECHAZADO")) {
-            estiloBadge += ' background: #FEE2E2; color: #991B1B;'; // Rojo exclusivo para rechazado
+            estiloBadge += ' background: #FEE2E2 !important; color: #991B1B !important;'; // Rojo
         } else {
-            estiloBadge += ' background: #FEF3C7; color: #D97706;'; // Ámbar para GRN/BTS/RVST o cualquier otro estado
+            estiloBadge += ' background: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar para el resto (Enviado, GRN, etc.)
         }
 
         const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
