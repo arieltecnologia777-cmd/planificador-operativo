@@ -417,3 +417,76 @@ tbody tr:hover td{background:#F8FAFE}
     right: -4px !important;
     margin: 0 !important;
   }
+
+
+@media(max-width: 860px){
+  /* Ocultamos por completo las flechitas en las tarjetas KPI móviles */
+  .kpi .go {
+    display: none !important;
+  }
+
+  /* Reorganizamos la tarjeta en formato vertical para que el texto y las cifras tengan espacio de sobra */
+  .kpis { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; width: 100% !important; }
+  
+  .kpi {
+    padding: 14px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .kpi .head {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+
+  /* Mantenemos tus iconos con su tamaño original intacto */
+  .kpi .head img { 
+      width: 48px !important; 
+      height: 48px !important; 
+      object-fit: contain !important;
+      flex: none !important;
+  }
+  
+  .kpi.blue .head img { 
+      width: 56px !important; 
+      height: 56px !important; 
+  }
+
+  /* El texto y los valores se ubican al lado o debajo con total libertad de espacio */
+  .kpi .t { 
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .kpi .t span { 
+    font-size: 11px !important; 
+    font-weight: 700 !important;
+    display: block !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Valores grandes con escala perfecta para que nunca se corten */
+  .kpi .v { 
+    font-size: 13px !important; 
+    letter-spacing: -0.04em !important; 
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Estado General y Badge adaptados */
+  .state { padding: 14px 16px !important; gap: 12px !important; }
+  .state .row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+  .state h2 { font-size: 15px !important; }
+  .badge { 
+    font-size: 12px !important; 
+    padding: 6px 10px !important; 
+    width: 100% !important; 
+    justify-content: center !important; 
+    text-align: center !important; 
+  }
+}
