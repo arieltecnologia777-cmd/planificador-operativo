@@ -35,7 +35,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tag:before{content:"";display:block;width:24px;height:3px;border-radius:2px;background:var(--blue);margin-bottom:8px}
 .wave{position:absolute;left:0;right:0;bottom:0;opacity:.15; pointer-events: none;}
 
-.nav-close-mobile { display: none; }
+/* Oculto por defecto en pantallas grandes (escritorio) */
+.nav-close-mobile { 
+    display: none !important; 
+}
 
 /* Barra superior móvil */
 .mobile-top-bar {
