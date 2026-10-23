@@ -297,15 +297,14 @@ function renderizarTablaOrdenesTecnico(rows) {
         const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
         const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
         
-        // Regla estricta de colores solicitada:
-        // Verde: Solo Aprobado / Aceptado
-        // Rojo: Solo Rechazado
-        // Ámbar: Todos los demás (GRN/BTS/RVST, etc.)
-        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Ámbar por defecto para el resto
+        // Estilos específicos inyectados directamente para prevenir herencias de color no deseadas
+        let estiloBadge = 'padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;';
         if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-            bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
+            estiloBadge += ' background: #D1FAE5; color: #065F46;'; // Verde
         } else if (estadoTexto.includes("RECHAZADO")) {
-            bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
+            estiloBadge += ' background: #FEE2E2; color: #991B1B;'; // Rojo
+        } else {
+            estiloBadge += ' background: #FEF3C7; color: #D97706;'; // Ámbar / Amarillo para el resto
         }
 
         const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
@@ -314,11 +313,7 @@ function renderizarTablaOrdenesTecnico(rows) {
         html += `
             <tr>
                 <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
-                <td>
-                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; ${bgEstilo}">
-                        ${estadoTexto}
-                    </span>
-                </td>
+                <td><span style="${estiloBadge}">${estadoTexto}</span></td>
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
                 <td style="text-align: center;">
