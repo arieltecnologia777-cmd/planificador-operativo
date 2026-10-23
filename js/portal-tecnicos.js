@@ -405,3 +405,90 @@ window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
 window.abrirModalDetalle = abrirModalDetalle;
 window.cerrarModalDetalle = cerrarModalDetalle;
 window.cerrarSesion = cerrarSesion;
+
+// 1. Abrir / Cerrar el desplegable de Estados
+function toggleDropdownEstado(e) {
+    if (e) e.stopPropagation();
+    const drop = document.getElementById('dropdownEstadoContent');
+    const dropPeriodo = document.getElementById('dropdownPeriodoContent');
+    if (dropPeriodo) dropPeriodo.style.display = 'none'; // Cierra el otro si está abierto
+    if (drop) {
+        drop.style.display = (drop.style.display === 'block') ? 'none' : 'block';
+    }
+}
+
+// 2. Extraer y poblar los estados reales de los registros
+function poblarFiltroEstados(rows) {
+    const estadosSet = new Set();
+    rows.forEach(r => {
+        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
+        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
+        estadosSet.add(estadoTexto);
+    });
+
+    const container = document.getElementById('listaCheckEstados');
+    if (!container) return;
+
+    let htmlCheck = '';
+    Array.from(estadosSet).sort().forEach(est => {
+        htmlCheck += `
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; padding: 3px 0;">
+                <input type="checkbox" name="filtroEstadoCheckbox" value="${est}" checked onchange="ejecutarFiltroYRenderizado()" style="cursor: pointer;">
+                ${est}
+            </label>
+        `;
+    });
+    container.innerHTML = htmlCheck;
+    actualizarLabelBotonEstado();
+}
+
+// 3. Funciones de control (Seleccionar todo, borrar, buscar)
+function seleccionarTodoEstados(marcar) {
+    const checkboxes = document.querySelectorAll('input[name="filtroEstadoCheckbox"]');
+    checkboxes.forEach(cb => {
+        const lbl = cb.closest('label');
+        if (!lbl || lbl.style.display !== 'none') {
+            cb.checked = marcar;
+        }
+    });
+    actualizarLabelBotonEstado();
+    ejecutarFiltroYRenderizado();
+}
+
+function borrarFiltroEstados() {
+    const checkboxes = document.querySelectorAll('input[name="filtroEstadoCheckbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    actualizarLabelBotonEstado();
+    ejecutarFiltroYRenderizado();
+}
+
+function filtrarListaEstados(texto) {
+    const query = texto.toLowerCase().trim();
+    const labels = document.querySelectorAll('#listaCheckEstados label');
+    labels.forEach(lbl => {
+        const txt = lbl.innerText.toLowerCase();
+        lbl.style.display = txt.includes(query) ? 'flex' : 'none';
+    });
+}
+
+function obtenerEstadosSeleccionados() {
+    const checkboxes = document.querySelectorAll('input[name="filtroEstadoCheckbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function actualizarLabelBotonEstado() {
+    const seleccionados = obtenerEstadosSeleccionados();
+    const total = document.querySelectorAll('input[name="filtroEstadoCheckbox"]').length;
+    const lbl = document.getElementById('lblEstadoSeleccionado');
+    if (!lbl) return;
+
+    if (seleccionados.length === 0) {
+        lbl.innerText = "Ningún estado";
+    } else if (seleccionados.length === total) {
+        lbl.innerText = "Todos los estados";
+    } else if (seleccionados.length === 1) {
+        lbl.innerText = seleccionados[0];
+    } else {
+        lbl.innerText = `${seleccionados.length} estados`;
+    }
+}
