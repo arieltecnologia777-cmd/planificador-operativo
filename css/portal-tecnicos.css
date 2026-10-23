@@ -307,8 +307,8 @@ tbody tr:hover td{background:#F8FAFE}
 
 /* Hacemos un poco más grande el icono de meta específicamente */
 .kpi.blue .head img {
-    width: 62px !important;
-    height: 62px !important;
+    width: 70px !important;
+    height: 70px !important;
 }
 
 /* Sombras más intensas y notorias para darles profundidad 3D */
