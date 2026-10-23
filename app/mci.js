@@ -783,6 +783,67 @@ if (subsanarBtn) {
   });
 }
 
+// 🔄 LÓGICA DE CARGAR INFORMES EN MODAL Y ACTIVACIÓN DE BOTÓN CORREGIR
+async function cargarInformesEnTabla() {
+  const tecnico = localStorage.getItem("tecnicoActual");
+  if (!tecnico) return;
+
+  try {
+    const resp = await fetch("https://cloudflare-index.modulo-de-exclusiones.workers.dev/consultar");
+    const informes = await resp.json();
+    const propios = informes.filter(i => i.tecnico === tecnico);
+
+    const tbody = document.querySelector("#tablaInformesModal tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    propios.sort((a, b) => new Date(b.fechaGenerado) - new Date(a.fechaGenerado));
+
+    for (const inf of propios) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="padding:8px;">${new Date(inf.fechaGenerado).toLocaleDateString()}</td>
+        <td style="padding:8px;">${inf.mciId}</td>
+        <td style="padding:8px;">${inf.estado === "aprobado" ? "✅ Aprobado" : inf.estado === "rechazado" ? "❌ Rechazado" : "⏳ En validación"}</td>
+        <td style="padding:8px;">
+          ${
+            inf.estado === "aprobado"
+              ? `<button class="btn btnDescargar" data-mciid="${inf.mciId}">📥 Descargar</button>`
+              : inf.estado === "rechazado"
+              ? `<button class="btn btnSubsanar" data-mciid="${inf.mciId}">✏️ Corregir</button>`
+              : `<button class="btn btnValidacion" disabled>⏳ En validación</button>`
+          }
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      // 🔥 Evento para activar la corrección cuando el informe está rechazado
+      tr.querySelector(".btnSubsanar")?.addEventListener("click", () => {
+        const mciId = tr.querySelector(".btnSubsanar").dataset.mciid;
+        localStorage.setItem("modoSubsanar", "true");
+        localStorage.setItem("mciSubsanar", mciId);
+
+        document.getElementById("misInformesModal").style.display = "none";
+
+        // Habilitar botón Corregir y deshabilitar Cargar informe
+        if (subsanarBtn) {
+          subsanarBtn.disabled = false;
+          subsanarBtn.style.opacity = "1";
+          subsanarBtn.style.cursor = "pointer";
+        }
+        if (exportBtn) {
+          exportBtn.disabled = true;
+          exportBtn.style.opacity = "0.5";
+          exportBtn.style.cursor = "not-allowed";
+        }
+        alert(`Modo corrección activado para el caso: ${mciId}`);
+      });
+    }
+  } catch (e) {
+    console.error("❌ Error cargando informes en tabla:", e);
+  }
+}
+
 document.addEventListener("change", async function(e) {
     if (e.target.matches('.photo-cell.indoor-mini input[type="file"]')) {
         const cell = e.target.closest('.photo-cell.indoor-mini');
@@ -916,13 +977,28 @@ document.addEventListener("DOMContentLoaded", () => {
     mainEl.style.display = "flex";
   }
 
+  // Estado inicial del botón Corregir (deshabilitado hasta que haya un informe rechazado seleccionado)
+  if (subsanarBtn) {
+    subsanarBtn.disabled = true;
+    subsanarBtn.style.opacity = "0.5";
+    subsanarBtn.style.cursor = "not-allowed";
+  }
+
   const misInformesBtn = document.getElementById("misInformesBtn");
   const misInformesModal = document.getElementById("misInformesModal");
   const cerrarMisInformes = document.getElementById("cerrarMisInformes");
+  const refreshMisInformes = document.getElementById("refreshMisInformes");
 
   if (misInformesBtn && misInformesModal) {
     misInformesBtn.addEventListener("click", () => {
       misInformesModal.style.display = "flex";
+      cargarInformesEnTabla();
+    });
+  }
+
+  if (refreshMisInformes) {
+    refreshMisInformes.addEventListener("click", () => {
+      cargarInformesEnTabla();
     });
   }
 
