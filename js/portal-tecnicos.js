@@ -4,6 +4,9 @@ const FACTURACION_API_URL = `${API_BASE_URL}/facturacion`;
 let registrosCrudosTecnicos = [];
 const META_BASE_MENSUAL_TECNICO = 9500000;
 
+// Variable global para almacenar los registros filtrados actuales y consultarlos fácilmente desde el modal
+let registrosFiltradosActuales = [];
+
 // 1. Validar seguridad al cargar la página: Si no hay sesión, redirigir al login
 const tecnicoLogueado = localStorage.getItem('tecnicoLogueado');
 if (!tecnicoLogueado) {
@@ -28,17 +31,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function asegurarRelojEnHero() {
-    const hero = document.querySelector('.hero, header, .portal-hero, [style*="background"]'); // Busca el contenedor azul principal
-    // Buscamos un contenedor adecuado dentro del hero o lo creamos en la esquina superior derecha
     const heroCard = document.querySelector('.hero') || document.querySelector('.bg-blue, div[style*="background: linear-gradient"], div[style*="background: #1D5FE0"]') || document.querySelector('main > div:first-child');
     
     if (heroCard && !document.getElementById('liveDateTimeHero')) {
         heroCard.style.position = 'relative';
         const relojDiv = document.createElement('div');
         relojDiv.id = 'liveDateTimeHero';
-        relojDiv.style.cssText = 'position: absolute; top: 20px; right: 24px; color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur: 4px; display: none;';
+        relojDiv.style.cssText = 'position: absolute; top: 20px; right: 24px; color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur(4px); display: none;';
         
-        // Media query por CSS inyectado para mostrarlo solo en escritorio
         const styleMedia = document.createElement('style');
         styleMedia.innerHTML = `@media(min-width: 768px) { #liveDateTimeHero { display: block !important; } }`;
         document.head.appendChild(styleMedia);
@@ -88,7 +88,6 @@ function obtenerNombreCorto(nombreCompleto) {
     const partes = String(nombreCompleto || "").trim().split(/\s+/);
     if (partes.length === 0) return "Técnico";
     if (partes.length === 1) return partes[0];
-    // Primer nombre y primer apellido (asumiendo formato estándar Nombres Apellidos)
     return `${partes[0]} ${partes[1]}`;
 }
 
@@ -100,7 +99,6 @@ function poblarSelectoresYFiltros(rows) {
         if (mesVal) mesesSet.add(mesVal);
     });
 
-    // Formatear nombre a solo primer nombre y primer apellido con fuente más pequeña para evitar desbordes
     const nombreCorto = obtenerNombreCorto(tecnicoLogueado);
     const perfilContainer = document.querySelector('.sel'); 
     if (perfilContainer) {
@@ -135,7 +133,6 @@ function poblarSelectoresYFiltros(rows) {
     const drop = document.getElementById('dropdownPeriodoContent');
     if (drop) drop.style.display = 'none';
 
-    // Ejecutamos el filtro usando directamente el nombre logueado
     ejecutarFiltroYRenderizado();
 }
 
@@ -207,7 +204,6 @@ function ejecutarFiltroYRenderizado() {
 
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
-    // Limpiamos el nombre para buscar por palabras clave (ej: primer nombre y apellido)
     const palabrasClave = tecnicoBuscado.split(/\s+/).filter(p => p.length > 2);
     
     const misRegistros = registrosCrudosTecnicos.filter(r => {
@@ -217,7 +213,6 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
 
         if (!mesesSeleccionados.includes(mesReg)) return false;
 
-        // Coincidencia exacta o si contiene las palabras principales del nombre
         if (perfil === tecnicoBuscado) return true;
         if (palabrasClave.length > 0 && palabrasClave.every(palabra => perfil.includes(palabra))) return true;
 
@@ -231,7 +226,7 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
 
     misRegistros.forEach(r => {
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
-        const estAceptar = aprobReg.includes("ACEPTADO");
+        const estAceptar = aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADO");
         const estRechazar = aprobReg.includes("RECHAZADO");
         const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
         
@@ -253,9 +248,6 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
 }
 
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
-    // Si la meta (100%) cae exactamente en el 50% de la barra física:
-    // Dividimos el porcentaje real entre 2 para que un 100% ocupe el 50% del ancho,
-    // y un 137% ocupe el 68.5% del ancho total.
     const porcentajeVisual = (porcentaje / 200) * 100;
     
     const fill = document.getElementById('progressFillBarra');
@@ -276,6 +268,8 @@ function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) 
         if (badge) { badge.style.background = 'var(--amber-soft)'; badge.style.color = 'var(--amber)'; badge.innerHTML = `💪 ¡Ánimo! Vas al ${porcentaje}%.`; }
     }
 }
+
+// Única función unificada para renderizar la tabla con colores blindados en línea
 function renderizarTablaOrdenesTecnico(rows) {
     registrosFiltradosActuales = rows || [];
     const tbody = document.getElementById('rows');
@@ -294,27 +288,27 @@ function renderizarTablaOrdenesTecnico(rows) {
     rows.forEach((r, index) => {
         const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
         
-        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "";
+        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "";
         const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
         
-        // Regla de colores estricta solicitada:
-        // 1. Aceptado/Aprobado -> Verde
-        // 2. Rechazado -> Rojo
-        // 3. El resto -> Ámbar (Amarillo)
+        // Estilos inidividuales estrictos en línea mediante !important para garantizar el color correcto
         let estiloBadge = 'padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;';
-       // Asignamos la clase CSS exacta según el estado
-        let claseBadge = 'badge-estado-ambar'; // Por defecto para el resto (GRN/BTS/RVST, enviado, etc.)
         
         if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-            claseBadge = 'badge-estado-aceptado'; // Verde
+            estiloBadge += ' background-color: #D1FAE5 !important; color: #065F46 !important;'; // Verde
         } else if (estadoTexto.includes("RECHAZADO")) {
-            claseBadge = 'badge-estado-rechazado'; // Rojo
+            estiloBadge += ' background-color: #FEE2E2 !important; color: #991B1B !important;'; // Rojo
+        } else {
+            estiloBadge += ' background-color: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar puro para el resto (GRN/BTS/RVST, enviado, etc.)
         }
+
+        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+        const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
             <tr>
                 <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
-                <td><span class="${claseBadge}">${estadoTexto}</span></td>
+                <td><span style="${estiloBadge}">${estadoTexto}</span></td>
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
                 <td style="text-align: center;">
@@ -327,6 +321,7 @@ function renderizarTablaOrdenesTecnico(rows) {
     });
     tbody.innerHTML = html;
 }
+
 function renderizarPortalVacio() {
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(0);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(0);
@@ -340,73 +335,6 @@ function formatMoney(amount) {
     return '$ ' + Number(amount || 0).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
-window.toggleDropdownPeriodo = toggleDropdownPeriodo;
-window.seleccionarTodoPeriodos = seleccionarTodoPeriodos;
-window.borrarFiltroPeriodos = borrarFiltroPeriodos;
-window.filtrarListaPeriodos = filtrarListaPeriodos;
-window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
-
-// Variable global para almacenar los registros filtrados actuales y consultarlos fácilmente desde el modal
-let registrosFiltradosActuales = [];
-
-function renderizarTablaOrdenesTecnico(rows) {
-    registrosFiltradosActuales = rows || [];
-    const tbody = document.getElementById('rows');
-    const emptyMsg = document.getElementById('empty');
-    if (!tbody) return;
-
-    if (!rows || rows.length === 0) {
-        tbody.innerHTML = '';
-        if (emptyMsg) emptyMsg.hidden = false;
-        return;
-    }
-
-    if (emptyMsg) emptyMsg.hidden = true;
-    let html = '';
-
-    rows.forEach((r, index) => {
-        const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
-        
-        // Obtenemos el estado real directamente de la columna Aprobación Regional de la data
-        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "";
-        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
-        
-        // Estilos de colores dinámicos según el estado real de la base de datos
-        let bgEstilo = 'background: #F1F5F9; color: #475569;'; // Gris por defecto
-        if (estadoTexto.includes("APROB") || estadoTexto.includes("ACEPTADO") || estadoTexto.includes("GRN") || estadoTexto.includes("RVST")) {
-            bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
-        } else if (estadoTexto.includes("RECHAZ") || estadoTexto.includes("DEVUELTO")) {
-            bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
-        } else if (estadoTexto.includes("SUBSAN") || estadoTexto.includes("PENDIENT") || estadoTexto.includes("TRÁMITE")) {
-            bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo / Ámbar
-        }
-
-        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
-        
-        // Definimos el valor global a mostrar (aprobado o estimado según aplique)
-        const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
-
-        html += `
-            <tr>
-                <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
-                <td>
-                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; ${bgEstilo}">
-                        ${estadoTexto}
-                    </span>
-                </td>
-                <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
-                <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
-                <td style="text-align: center;">
-                    <button type="button" onclick="abrirModalDetalle(${index})" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb;">
-                        👁️ Ver detalles
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-    tbody.innerHTML = html;
-}
-
 // Funciones para controlar el modal
 function abrirModalDetalle(index) {
     const registro = registrosFiltradosActuales[index];
@@ -416,8 +344,6 @@ function abrirModalDetalle(index) {
     const mesVal = registro.mes || registro.MES || 'N/A';
     const aprobReg = registro.aprobacion_regional || registro.APROBACION_REGIONAL || registro['APROBACION REGIONAL'] || 'En trámite';
     const causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || 'Sin causa registrada';
-    
-    // Aquí es donde se toma la columna de observaciones de documentación que solicitaste
     const obsVal = registro.observacion_documentacion || registro.OBSERVACION_DOCUMENTACION || registro['OBSERVACION DOCUMENTACION'] || 'Sin observaciones registradas para esta orden.';
 
     document.getElementById('modalIdVal').innerText = idVal;
@@ -435,18 +361,18 @@ function cerrarModalDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-// Exponer las funciones al objeto window para asegurar su disponibilidad en los eventos onclick del DOM
-window.abrirModalDetalle = abrirModalDetalle;
-window.cerrarModalDetalle = cerrarModalDetalle;
-
 function cerrarSesion() {
-    // Limpiamos los datos de sesión almacenados
     localStorage.removeItem('tecnicoLogueado');
-    localStorage.clear(); // Opcional: limpia todo el localStorage local por seguridad
-    
-    // Redirigimos de inmediato al login
+    localStorage.clear();
     window.location.href = 'login.html';
 }
 
-// Exponer la función globalmente
+// Exponer funciones globalmente al objeto window
+window.toggleDropdownPeriodo = toggleDropdownPeriodo;
+window.seleccionarTodoPeriodos = seleccionarTodoPeriodos;
+window.borrarFiltroPeriodos = borrarFiltroPeriodos;
+window.filtrarListaPeriodos = filtrarListaPeriodos;
+window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
+window.abrirModalDetalle = abrirModalDetalle;
+window.cerrarModalDetalle = cerrarModalDetalle;
 window.cerrarSesion = cerrarSesion;
