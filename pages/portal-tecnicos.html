@@ -40,9 +40,8 @@
     <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Órdenes de Trabajo</a>
     <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V10M12 21V4M19 21v-7"/></svg>Reportes</a>
     <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0112 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 004 0"/></svg>Notificaciones</a>
-    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1 z"/></svg>Configuración</a>
+    <a href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l-.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configuración</a>
     
-    <!-- Este enlace usa nav-close-mobile para ocultarse automáticamente en pantallas grandes -->
     <a href="#" onclick="toggleSidebar(); return false;" class="nav-close-mobile" style="color: #E0334C;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       Cerrar menú
@@ -51,7 +50,6 @@
   
   <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
     <div class="tag">Tu trabajo<br>hace que todo<br>funcione</div>
-    <!-- Botón de Cerrar Sesión con azul corporativo #1D5FE0 -->
     <button type="button" onclick="cerrarSesion()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 10px; border: none; background: #1D5FE0; color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s;">
         🚪 Cerrar sesión
     </button>
@@ -105,7 +103,7 @@
   <section class="kpis" aria-label="Indicadores">
     <article class="card kpi blue">
       <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#DCE6FB" stroke-width="9"/><path d="M32 6a26 26 0 0123 14" fill="none" stroke="#1D5FE0" stroke-width="9" stroke-linecap="round"/><path d="M32 58A26 26 0 016 32" fill="none" stroke="#2F7BFF" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="#1D5FE0"/></svg>
+        <img src="../assets/meta.png" alt="Meta asignada" style="width: 52px; height: 52px; object-fit: contain; flex: none;">
         <div class="t"><span>Meta asignada</span><div class="v" id="kpiMetaAsignada">$ 0</div></div>
         <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
@@ -124,7 +122,7 @@
 
     <article class="card kpi green">
       <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="50" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="40" width="44" height="10" fill="#F5C13A"/><ellipse cx="32" cy="40" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="32" rx="22" ry="7" fill="#E0A21B"/><rect x="10" y="26" width="44" height="6" fill="#F5C13A"/><ellipse cx="32" cy="26" rx="22" ry="7" fill="#FFD766"/><ellipse cx="32" cy="18" rx="18" ry="6" fill="#FFE393"/></svg>
+        <img src="../assets/aprobado.png" alt="Aprobado" style="width: 52px; height: 52px; object-fit: contain; flex: none;">
         <div class="t"><span>Aprobado</span><div class="v" id="kpiMontoAprobado">$ 0</div></div>
         <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
@@ -143,7 +141,7 @@
 
     <article class="card kpi red">
       <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 6h28l10 10v42H14z" fill="#fff" stroke="#C9D0E2" stroke-width="2"/><path d="M42 6v10h10" fill="#E6EAF4"/><path d="M22 26h20M22 34h20M22 42h12" stroke="#C9D0E2" stroke-width="3" stroke-linecap="round"/><path d="M34 40h22l-5 7 5 7H34z" fill="#E0334C"/></svg>
+        <img src="../assets/rechazado.png" alt="Rechazado" style="width: 52px; height: 52px; object-fit: contain; flex: none;">
         <div class="t">
           <span>Rechazado</span>
           <div class="v" id="kpiMontoRechazado">$ 0</div>
@@ -155,7 +153,7 @@
 
     <article class="card kpi amber">
       <div class="head">
-        <svg class="ill" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 44c4-22 24-30 42-24l-4-10 16 14-18 10-3-10C30 20 18 28 14 46z" fill="#1D5FE0"/><path d="M8 44c6-18 22-24 36-20" fill="none" stroke="#6FA0FF" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>
+        <img src="../assets/subsanado.png" alt="Subsanado" style="width: 52px; height: 52px; object-fit: contain; flex: none;">
         <div class="t">
           <span>Subsanado</span>
           <div class="v" id="kpiMontoSubsanado">$ 0</div>
@@ -193,7 +191,7 @@
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
       <h2>Detalle de mis actividades</h2>
       
-      <!-- Filtro de Estados Estilo Excel (Idéntico al de arriba) -->
+      <!-- Filtro de Estados Estilo Excel -->
       <div style="position: relative; display: inline-block;" id="dropdownEstadoContainer">
         <button type="button" onclick="toggleDropdownEstado(event)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
