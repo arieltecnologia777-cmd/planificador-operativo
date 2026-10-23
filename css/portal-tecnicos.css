@@ -295,3 +295,18 @@ tbody tr:hover td{background:#F8FAFE}
   .kpi .t span { font-size: 12.5px !important; }
   .kpi .ill { width: 32px !important; height: 32px !important; }
 }
+
+
+/* Ajuste exacto para las imágenes 3D de las KPIs en lugar de los SVG */
+.kpi .head img {
+    width: 52px !important;
+    height: 52px !important;
+    object-fit: contain !important;
+    flex: none !important;
+}
+
+/* Sutil sombra corporativa opcional para darles profundidad 3D en las tarjetas */
+.kpi.blue img { filter: drop-shadow(0 6px 12px rgba(29, 95, 224, 0.3)); }
+.kpi.green img { filter: drop-shadow(0 6px 12px rgba(18, 161, 95, 0.3)); }
+.kpi.red img { filter: drop-shadow(0 6px 12px rgba(224, 51, 76, 0.3)); }
+.kpi.amber img { filter: drop-shadow(0 6px 12px rgba(224, 138, 0, 0.3)); }
