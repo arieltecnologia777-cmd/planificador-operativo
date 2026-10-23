@@ -484,10 +484,13 @@ function abrirModalDetalle(index) {
     
     const causaVal = registro.causa_rechazo || registro.CAUSA_RECHAZO || registro['Causa Rechazo'] || '***';
     const obsVal = registro.detalle_mindy2 || registro.DETALLE_MINDY2 || registro['DETALLE MINDY2'] || registro['detalle mindy2'] || 'Sin observaciones registradas.';
+    
+    const montoFinal = Number(registro.total_aprobado ?? registro.REAL_FACTURADO ?? registro['Total  Aprobado'] ?? registro.estimado_a_facturar ?? registro.facturacion ?? 0);
 
     document.getElementById('modalIdVal').innerText = idVal;
     document.getElementById('modalMesVal').innerText = mesVal;
     document.getElementById('modalEstadoVal').innerText = aprobRegRaw;
+    document.getElementById('modalValorVal').innerText = formatMoney(montoFinal);
     document.getElementById('modalCausaVal').innerText = causaVal;
     document.getElementById('modalObsVal').innerText = obsVal;
 
