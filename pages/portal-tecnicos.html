@@ -16,7 +16,6 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     <span class="menu-text">Menú</span>
   </button>
-  <!-- Fecha y hora reubicada dinámicamente aquí en móvil -->
   <div id="liveDateTimeMobileContainer">
     <div id="liveDateTime" class="live-datetime-badge">📅 Cargando...</div>
   </div>
@@ -48,16 +47,14 @@
   
   <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
     <div class="tag">Tu trabajo<br>hace que todo<br>funcione</div>
-    <!-- Botón real de Cerrar Sesión en la parte inferior del menú -->
-<button type="button" onclick="cerrarSesion()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 10px; border: none; background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s;">
-    🚪 Cerrar sesión
-</button>
+    <button type="button" onclick="cerrarSesion()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 10px; border: none; background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s;">
+        🚪 Cerrar sesión
+    </button>
   </div>
   <svg class="wave" viewBox="0 0 240 90" preserveAspectRatio="none" height="90" aria-hidden="true"><path d="M0 90V62C30 40 55 28 85 34s50 24 80 8 50-22 75-14v62z" fill="#1D5FE0" opacity=".15"/><path d="M0 90V74c30-16 60-22 90-12s60 6 150-10z" fill="#2F7BFF" opacity=".25"/></svg>
 </aside>
 
 <main class="main">
-  <!-- Hero limpio sin la fecha flotando dentro -->
   <section class="hero" aria-label="Bienvenida">
     <div class="txt">
       <div class="eyebrow">PORTAL TÉCNICO</div>
@@ -99,7 +96,7 @@
     </div>
   </section>
 
-<!-- KPIs -->
+  <!-- KPIs -->
   <section class="kpis" aria-label="Indicadores">
     <article class="card kpi blue">
       <div class="head">
@@ -107,7 +104,6 @@
         <div class="t"><span>Meta asignada</span><div class="v" id="kpiMetaAsignada">$ 0</div></div>
         <button class="go" aria-label="Ver meta asignada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <!-- Onda con relleno con mayor opacidad -->
       <svg class="spark" viewBox="0 0 280 38" preserveAspectRatio="none" aria-hidden="true" style="width: 100%; height: 26px; display: block; margin: 4px 0;">
         <defs>
           <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -127,7 +123,6 @@
         <div class="t"><span>Aprobado</span><div class="v" id="kpiMontoAprobado">$ 0</div></div>
         <button class="go" aria-label="Ver monto aprobado"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <!-- Onda con relleno con mayor opacidad -->
       <svg class="spark" viewBox="0 0 280 38" preserveAspectRatio="none" aria-hidden="true" style="width: 100%; height: 26px; display: block; margin: 4px 0;">
         <defs>
           <linearGradient id="gradGreen" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -165,6 +160,7 @@
       <div class="note a">En revisión</div>
     </article>
   </section>
+
   <!-- Estado general -->
   <section class="card state" aria-label="Estado general del periodo">
     <span class="ic" id="stateIconEstado" style="background: var(--blue);">
@@ -175,8 +171,7 @@
         <h2>Estado general del periodo</h2>
         <span class="badge" id="stateBadgeEstado" style="background: var(--amber-soft); color: var(--amber);">Calculando...</span>
       </div>
-    <div class="bar" id="progressBarContainerBarra" style="background: #E7ECF6; height: 14px; border-radius: 99px; position: relative; overflow: visible;">
-        <!-- Línea indicadora fija del 100% de la meta ubicada exactamente a la mitad (50%) -->
+      <div class="bar" id="progressBarContainerBarra" style="background: #E7ECF6; height: 14px; border-radius: 99px; position: relative; overflow: visible;">
         <div style="position: absolute; left: 50%; top: -4px; bottom: -4px; width: 3px; background: #0f172a; z-index: 3; border-radius: 2px;" title="Meta 100%"></div>
         <span style="position: absolute; left: 50%; top: 18px; transform: translateX(-50%); font-size: 10px; font-weight: 700; color: #1e293b;">100% Meta</span>
 
@@ -192,10 +187,29 @@
     <div class="otop">
       <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D5FE0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
       <h2>Detalle de mis actividades</h2>
-      <button class="chip" id="fs" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg><span id="fl">Filtrar: todas</span></button>
+      
+      <!-- Filtro de Estados Estilo Excel (Idéntico al de arriba) -->
+      <div style="position: relative; display: inline-block;" id="dropdownEstadoContainer">
+        <button type="button" onclick="toggleDropdownEstado(event)" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; border: 1px solid #bfdbfe; background: #eff6ff; cursor: pointer; font-weight: 700; font-size: 12px; color: #2563eb;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span id="lblEstadoSeleccionado">Todos los estados</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+
+        <div id="dropdownEstadoContent" class="dropdown-periodo-box" style="display: none; position: absolute; left: 0; top: 100%; margin-top: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; z-index: 100; padding: 10px;" onclick="event.stopPropagation()">
+            <input type="text" id="inputBuscarEstado" placeholder="Buscar estado..." oninput="filtrarListaEstados(this.value)" style="width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; outline: none; margin-bottom: 8px; box-sizing: border-box;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 700;">
+              <span style="color: #dc2626; cursor: pointer;" onclick="borrarFiltroEstados()">❌ Borrar filtro</span>
+              <span style="color: #2563eb; cursor: pointer;" onclick="seleccionarTodoEstados(true)">Seleccionar todo</span>
+            </div>
+
+            <div id="listaCheckEstados" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid #f1f5f9; padding-top: 6px;"></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Mensaje para móviles indicando deslizamiento -->
     <div style="text-align: center; padding: 4px 0 8px; font-size: 11px; font-weight: 600; color: #64748b;" class="mobile-scroll-hint">
       ↔️ Desliza para ver más datos
     </div>
@@ -228,15 +242,14 @@ function toggleSidebar() {
 }
 </script>
 <script src="../js/portal-tecnicos.js"></script>
+
   <!-- MODAL DE DETALLES DE ORDEN -->
 <div id="modalDetalleOrden" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
     <div style="background: #fff; width: 100%; max-width: 550px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; animation: fadeInModal 0.2s ease-out;">
-        <!-- Cabecera del Modal -->
         <div style="background: #1D5FE0; color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
             <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Detalle</h3>
             <button type="button" onclick="cerrarModalDetalle()" style="background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; font-weight: bold;">&times;</button>
         </div>
-        <!-- Cuerpo del Modal -->
         <div style="padding: 24px; max-height: 70vh; overflow-y: auto; font-size: 14px; color: #334155; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
                 <span style="font-weight: 600; color: #64748b;">ID</span>
@@ -251,15 +264,14 @@ function toggleSidebar() {
                 <span id="modalEstadoVal" style="font-weight: 700;">-</span>
             </div>
             <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                <span style="font-weight: 600; color: #64748b;">Causa de Rechazo / Historial:</span>
+                <span style="font-weight: 600; color: #64748b;">Causa de rechazo / Historial:</span>
                 <span id="modalCausaVal" style="color: #e11d48; font-weight: 600;">-</span>
             </div>
             <div>
-                <span style="font-weight: 600; color: #64748b; display: block; margin-bottom: 6px;">Observación de Documentación:</span>
+                <span style="font-weight: 600; color: #64748b; display: block; margin-bottom: 6px;">Observaciones:</span>
                 <div id="modalObsVal" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-size: 13px; color: #1e293b; line-height: 1.5; white-space: pre-wrap;">-</div>
             </div>
         </div>
-        <!-- Pie del Modal -->
         <div style="background: #f8fafc; padding: 14px 24px; display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0;">
             <button type="button" onclick="cerrarModalDetalle()" style="padding: 8px 18px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; cursor: pointer; color: #334155;">Cerrar</button>
         </div>
