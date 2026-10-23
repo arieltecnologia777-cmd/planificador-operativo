@@ -49,9 +49,10 @@
   
   <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2;">
     <div class="tag">Tu trabajo<br>hace que todo<br>funcione</div>
-    <button type="button" style="width: 100%; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;">
-      ⬅ Volver a Admin
-    </button>
+    <!-- Botón real de Cerrar Sesión en la parte inferior del menú -->
+<button type="button" onclick="cerrarSesion()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 10px; border: none; background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s;">
+    🚪 Cerrar sesión
+</button>
   </div>
   <svg class="wave" viewBox="0 0 240 90" preserveAspectRatio="none" height="90" aria-hidden="true"><path d="M0 90V62C30 40 55 28 85 34s50 24 80 8 50-22 75-14v62z" fill="#1D5FE0" opacity=".15"/><path d="M0 90V74c30-16 60-22 90-12s60 6 150-10z" fill="#2F7BFF" opacity=".25"/></svg>
 </aside>
