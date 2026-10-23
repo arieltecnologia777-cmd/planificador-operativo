@@ -1727,7 +1727,7 @@ if ("serviceWorker" in navigator) {
     .then(() => console.log("✅ SW registrado"))
     .catch(err => console.log("❌ Error SW:", err));
 }
-</script>
+
 
 <script type="module">
 import { TECNICOS, PASSWORD_GLOBAL } from "./tecnicos.js";
