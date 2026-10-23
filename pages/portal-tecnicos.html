@@ -10,13 +10,16 @@
 </head>
 <body>
 
-<!-- Barra Superior Móvil Fija -->
+<!-- Barra Superior Móvil Fija con el Botón de Menú y la Fecha/Hora arriba -->
 <header class="mobile-top-bar">
   <button type="button" id="btnAbrirSidebar" class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     <span class="menu-text">Menú</span>
   </button>
-  <span class="mobile-top-title">Portal Técnicos</span>
+  <!-- Fecha y hora reubicada dinámicamente aquí en móvil -->
+  <div id="liveDateTimeMobileContainer">
+    <div id="liveDateTime" class="live-datetime-badge">📅 Cargando...</div>
+  </div>
 </header>
 
 <!-- Overlay de fondo oscuro para móvil -->
@@ -54,9 +57,8 @@
 </aside>
 
 <main class="main">
-  <!-- Hero -->
+  <!-- Hero limpio sin la fecha flotando dentro -->
   <section class="hero" aria-label="Bienvenida">
-    <div id="liveDateTime" class="live-datetime-badge">📅 Cargando fecha... &nbsp;|&nbsp; ⏰ Cargando hora...</div>
     <div class="txt">
       <div class="eyebrow">PORTAL TÉCNICO</div>
       <h1>Seguimiento facturación</h1>
