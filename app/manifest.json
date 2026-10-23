@@ -1,7 +1,7 @@
 {
   "name": "Gestor MCI",
   "short_name": "Gestor MCI",
-  "start_url": "https://arieltecnologia777-cmd.github.io/Sistema-Integral-OyM-DOMINION-MinTIC/digitalizaci%C3%B3n_MCI.html",
+  "start_url": "../generadores/MCI.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#136BFF",
