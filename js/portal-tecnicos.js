@@ -287,11 +287,11 @@ function renderizarTablaOrdenesTecnico(rows) {
     let html = '';
 
     rows.forEach(r => {
-        const otVal = r.ot || r.OT || r.id_id || r.ID_ID || 'N/A';
+        // Mostramos estrictamente el ID (id_id) en lugar de la OT
+        const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
-        // Determinamos el estilo y color del estado según la aprobación
-        let estadoClase = 'pe'; // por defecto pendiente/trámite
+        // Determinamos el estilo y color del estado
         let estadoTexto = 'En trámite';
         let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo por defecto
 
@@ -307,11 +307,11 @@ function renderizarTablaOrdenesTecnico(rows) {
 
         const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
         const estimadoVal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-        const aprobadoVal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        const trasiegoVal = Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
 
         html += `
             <tr>
-                <td><span class="ot">${otVal}</span></td>
+                <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
                 <td>
                     <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; ${bgEstilo}">
                         ${estadoTexto}
@@ -319,7 +319,7 @@ function renderizarTablaOrdenesTecnico(rows) {
                 </td>
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td>${formatMoney(estimadoVal)}</td>
-                <td>${formatMoney(aprobadoVal)}</td>
+                <td>${trasiegoVal > 0 ? formatMoney(trasiegoVal) : '<span style="color: #94a3b8;">-</span>'}</td>
                 <td style="text-align: center;">
                     <button type="button" style="padding: 4px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-weight: 600; font-size: 12px; color: #1e293b;">Ver</button>
                 </td>
