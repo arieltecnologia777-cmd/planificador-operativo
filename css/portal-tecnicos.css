@@ -7,7 +7,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid #7FA6FF;outline-offset:2px}
 .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
 
-/* Sidebar Escritorio */
+/* Sidebar Escritorio con Glassmorphism */
 .side{
     background: rgba(255, 255, 255, 0.65) !important;
     backdrop-filter: blur(20px) !important;
@@ -217,7 +217,7 @@ tbody tr:hover td{background:#F8FAFE}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* ========================================================== */
-/* CORRECCIÓN DEFINITIVA PARA MÓVILES (Sidebar deslizable completo y tamaño normal) */
+/* CORRECCIÓN MÓVIL: Sidebar con Glassmorphism y tamaño completo */
 /* ========================================================== */
 @media(max-width: 860px){
   .app{grid-template-columns:1fr}
@@ -229,7 +229,9 @@ tbody tr:hover td{background:#F8FAFE}
     width: 280px !important;
     height: 100vh !important;
     height: 100dvh !important;
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.85) !important; /* Fondo translúcido para glassmorphism */
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
@@ -237,15 +239,16 @@ tbody tr:hover td{background:#F8FAFE}
     transform: translateX(-100%) !important; /* Oculto correctamente a la izquierda */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     z-index: 1500 !important;
-    overflow-y: auto !important; /* Permite scroll limpio si la pantalla es muy pequeña */
+    overflow-y: auto !important;
     padding: 20px 16px !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.6) !important;
   }
 
   aside.side.activo {
-    transform: translateX(0) !important; /* Sale completo a la vista de manera perfecta */
+    transform: translateX(0) !important; /* Sale completo a la vista con efecto glass */
   }
 
-  /* Mantener tamaño cómodo y legible en la navegación móvil */
+  /* Tamaño normal y legible en la navegación móvil */
   .brand { padding: 4px 8px 16px !important; }
   .nav { gap: 6px !important; }
   .nav a { 
