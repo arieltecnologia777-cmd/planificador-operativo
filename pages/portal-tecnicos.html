@@ -284,5 +284,21 @@ function toggleSidebar() {
         </div>
     </div>
 </div>
+
+  <!-- MODAL DE CONFIRMACIÓN DE CIERRE DE SESIÓN -->
+<div id="modalCerrarSesion" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 10000; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #fff; width: 100%; max-width: 400px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; animation: fadeInModal 0.2s ease-out; text-align: center; padding: 28px 24px;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: #FFE3E7; color: #E0334C; display: grid; place-items: center; margin: 0 auto 16px; font-size: 24px;">
+            🚪
+        </div>
+        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 800; color: #0F1B3D;">¿Estás seguro que deseas cerrar sesión?</h3>
+        <p style="margin: 0 0 24px 0; font-size: 13.5px; color: #64748b; line-height: 1.4;">Tendrás que ingresar tus credenciales nuevamente para acceder al portal.</p>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="button" onclick="cerrarModalLogout()" style="flex: 1; padding: 11px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-weight: 700; cursor: pointer; color: #334155; font-size: 13.5px;">Cancelar</button>
+            <button type="button" onclick="ejecutarLogoutReal()" style="flex: 1; padding: 11px; border-radius: 12px; border: none; background: #E0334C; font-weight: 700; cursor: pointer; color: #ffffff; font-size: 13.5px; box-shadow: 0 4px 12px rgba(224, 51, 76, 0.3);">Sí, cerrar sesión</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
