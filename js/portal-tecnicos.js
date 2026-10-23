@@ -359,7 +359,6 @@ window.ejecutarFiltroYRenderizado = ejecutarFiltroYRenderizado;
 // Variable global para almacenar los registros filtrados actuales y consultarlos fácilmente desde el modal
 let registrosFiltradosActuales = [];
 
-// Modificamos ligeramente la función de renderizado de la tabla para guardar el array y enlazar el índice al botón
 function renderizarTablaOrdenesTecnico(rows) {
     registrosFiltradosActuales = rows || [];
     const tbody = document.getElementById('rows');
@@ -377,29 +376,25 @@ function renderizarTablaOrdenesTecnico(rows) {
 
     rows.forEach((r, index) => {
         const idVal = r.id_id || r.ID_ID || r.id || r.ID || 'N/A';
-        const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         
-        let estadoTexto = 'En trámite';
-        let bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo
-        let montoFinal = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
-
-        if (aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADA")) {
-            estadoTexto = aprobReg.includes("ACEPTADO") ? 'APROBADO' : aprobReg;
+        // Obtenemos el estado real directamente de la columna Aprobación Regional de la data
+        const aprobRegRaw = r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || r['aprobación regional'] || "";
+        const estadoTexto = String(aprobRegRaw).trim() !== "" ? String(aprobRegRaw).trim().toUpperCase() : "PENDIENTE";
+        
+        // Estilos de colores dinámicos según el estado real de la base de datos
+        let bgEstilo = 'background: #F1F5F9; color: #475569;'; // Gris por defecto
+        if (estadoTexto.includes("APROB") || estadoTexto.includes("ACEPTADO") || estadoTexto.includes("GRN") || estadoTexto.includes("RVST")) {
             bgEstilo = 'background: #D1FAE5; color: #065F46;'; // Verde
-            montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? montoFinal);
-        } else if (aprobReg.includes("RECHAZADO") || aprobReg.includes("RECHAZADA")) {
-            estadoTexto = 'RECHAZADA';
+        } else if (estadoTexto.includes("RECHAZ") || estadoTexto.includes("DEVUELTO")) {
             bgEstilo = 'background: #FEE2E2; color: #991B1B;'; // Rojo
-        } else {
-            const trasiegoVal = Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
-            if (trasiegoVal > 0) {
-                estadoTexto = 'SUBSANADO';
-                bgEstilo = 'background: #FEF9C3; color: #854D0E;';
-                montoFinal = trasiegoVal;
-            }
+        } else if (estadoTexto.includes("SUBSAN") || estadoTexto.includes("PENDIENT") || estadoTexto.includes("TRÁMITE")) {
+            bgEstilo = 'background: #FEF3C7; color: #D97706;'; // Amarillo / Ámbar
         }
 
         const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
+        
+        // Definimos el valor global a mostrar (aprobado o estimado según aplique)
+        const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
             <tr>
