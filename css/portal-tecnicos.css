@@ -257,3 +257,38 @@ tbody tr:hover td{background:#F8FAFE}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+@media(max-width:860px){
+  /* Ajustar el contenedor del Hero para que crezca según su contenido y no se apretuje */
+  .hero {
+    padding: 18px 16px !important;
+    height: auto !important;
+    min-height: 150px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 8px;
+  }
+
+  /* Hacer que la fecha/hora sea un elemento estático arriba dentro del hero o con un margen seguro */
+  .live-datetime-badge {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin-bottom: 4px;
+    font-size: 10.5px !important;
+    padding: 3px 8px !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero h1 {
+    font-size: 22px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .hero p {
+    font-size: 12px !important;
+  }
+}
