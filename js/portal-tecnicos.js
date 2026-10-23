@@ -449,3 +449,15 @@ function cerrarModalDetalle() {
 // Exponer las funciones al objeto window para asegurar su disponibilidad en los eventos onclick del DOM
 window.abrirModalDetalle = abrirModalDetalle;
 window.cerrarModalDetalle = cerrarModalDetalle;
+
+function cerrarSesion() {
+    // Limpiamos los datos de sesión almacenados
+    localStorage.removeItem('tecnicoLogueado');
+    localStorage.clear(); // Opcional: limpia todo el localStorage local por seguridad
+    
+    // Redirigimos de inmediato al login
+    window.location.href = 'login.html';
+}
+
+// Exponer la función globalmente
+window.cerrarSesion = cerrarSesion;
