@@ -302,22 +302,19 @@ function renderizarTablaOrdenesTecnico(rows) {
         // 2. Rechazado -> Rojo
         // 3. El resto -> Ámbar (Amarillo)
         let estiloBadge = 'padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;';
+       // Asignamos la clase CSS exacta según el estado
+        let claseBadge = 'badge-estado-ambar'; // Por defecto para el resto (GRN/BTS/RVST, enviado, etc.)
         
         if (estadoTexto.includes("ACEPTADO") || estadoTexto.includes("APROBADO")) {
-            estiloBadge += ' background: #D1FAE5 !important; color: #065F46 !important;'; // Verde
+            claseBadge = 'badge-estado-aceptado'; // Verde
         } else if (estadoTexto.includes("RECHAZADO")) {
-            estiloBadge += ' background: #FEE2E2 !important; color: #991B1B !important;'; // Rojo
-        } else {
-            estiloBadge += ' background: #FEF3C7 !important; color: #D97706 !important;'; // Ámbar para el resto (Enviado, GRN, etc.)
+            claseBadge = 'badge-estado-rechazado'; // Rojo
         }
-
-        const causaRechazo = r.causa_rechazo || r.CAUSA_RECHAZO || r['Causa Rechazo'] || '-';
-        const montoFinal = Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? r.estimado_a_facturar ?? r.facturacion ?? 0);
 
         html += `
             <tr>
                 <td><span class="ot" style="font-weight: 700; color: #1D5FE0;">${idVal}</span></td>
-                <td><span style="${estiloBadge}">${estadoTexto}</span></td>
+                <td><span class="${claseBadge}">${estadoTexto}</span></td>
                 <td><span class="cause" style="color: #475569; font-size: 12px;">${causaRechazo}</span></td>
                 <td><strong style="color: #0f172a;">${formatMoney(montoFinal)}</strong></td>
                 <td style="text-align: center;">
