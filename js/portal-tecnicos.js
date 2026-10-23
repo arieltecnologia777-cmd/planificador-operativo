@@ -358,8 +358,6 @@ function ejecutarFiltroYRenderizado() {
 
 function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSeleccionados) {
     const tecnicoBuscado = String(nombreTecnico || "").trim().toUpperCase();
-    // Extraemos todas las palabras del nombre del técnico que tengan más de 2 letras
-    const palabrasTecnico = tecnicoBuscado.split(/\s+/).filter(p => p.length > 2);
     
     const misRegistrosBase = registrosCrudosTecnicos.filter(r => {
         const rawPerfil = r.tecnico_programado || r.TECNICO_PROGRAMADO || r['TECNICO PROGRAMADO'] || r['Técnico Programado'] || "";
@@ -373,19 +371,8 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
             return false; 
         }
 
-        // Validación flexible: si el perfil de la API contiene la mayoría de las palabras del técnico logueado
-        if (perfil === tecnicoBuscado) return true;
-        
-        if (palabrasTecnico.length > 0) {
-            // Contamos cuántas palabras del nombre coinciden con el registro
-            const coincidencias = palabrasTecnico.filter(palabra => perfil.includes(palabra));
-            // Si coinciden al menos 2 palabras (ej: nombre y primer apellido), lo damos por válido
-            if (coincidencias.length >= Math.min(2, palabrasTecnico.length)) {
-                return true;
-            }
-        }
-
-        return false;
+        // Validación estricta por nombre completo exacto para evitar cruces entre tocayos
+        return perfil === tecnicoBuscado;
     });
 
     actualizarFiltroEstadosDinamico(misRegistrosBase);
@@ -424,7 +411,6 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
     actualizarBarraEstadoGeneralPeriodo(montoAprobadoTotal, metaAsignadaTotal, porcentajeCumplimiento, cantidadMeses);
     renderizarTablaOrdenesTecnico(misRegistros);
 }
-
 function actualizarBarraEstadoGeneralPeriodo(aprobado, meta, porcentaje, meses) {
     const porcentajeVisual = (porcentaje / 200) * 100;
     
