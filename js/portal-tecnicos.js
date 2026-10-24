@@ -151,21 +151,17 @@ function poblarSelectoresYFiltros(rows, tecnicoLogueado) {
         if (mesVal) mesesSet.add(mesVal);
     });
 
-    // Obtener el nombre del técnico directamente desde la sesión autenticada de D1/Portal
-const tecnicoActual = localStorage.getItem('tecnicoLogueado') || "Técnico No Identificado";
-const partesNombre = tecnicoActual.trim().split(/\s+/);
-const nombreCorto = partesNombre.length > 1 ? `${partesNombre[0]} ${partesNombre[1]}` : partesNombre[0];
-
-const perfilContainer = document.querySelector('.sel'); 
-if (perfilContainer) {
-    perfilContainer.innerHTML = `
-        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
-        <div style="flex:1; min-width: 0;">
-            <label style="font-size: 10px; display: block;">Tu perfil técnico</label>
-            <b style="font-size: 12px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${tecnicoActual}">${nombreCorto}</b>
-        </div>
-    `;
-}
+    const nombreCorto = obtenerNombreCorto(tecnicoLogueado);
+    const perfilContainer = document.querySelector('.sel'); 
+    if (perfilContainer) {
+        perfilContainer.innerHTML = `
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <div style="flex:1; min-width: 0;">
+                <label style="font-size: 10px; display: block;">Tu perfil técnico</label>
+                <b style="font-size: 12px; color: #0f172a; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${tecnicoLogueado}">${nombreCorto}</b>
+            </div>
+        `;
+    }
 
     const mesesOrdenados = Array.from(mesesSet).sort();
     const ultimosTresMeses = mesesOrdenados.slice(-3);
