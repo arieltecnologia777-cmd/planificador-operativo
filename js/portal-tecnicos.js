@@ -603,3 +603,10 @@ window.cerrarModalDetalle = cerrarModalDetalle;
 window.cerrarSesion = cerrarSesion;
 window.cerrarModalLogout = cerrarModalLogout;
 window.ejecutarLogoutReal = ejecutarLogoutReal;
+
+function safeSetText(id, valor) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = valor;
+    }
+}
