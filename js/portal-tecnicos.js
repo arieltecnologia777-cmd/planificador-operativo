@@ -400,23 +400,32 @@ function procesarYRenderizarPortalTecnicoFiltrado(nombreTecnico, mesesSelecciona
     const cantidadMeses = Math.max(1, mesesSeleccionados.length);
     const metaAsignadaTotal = META_BASE_MENSUAL_TECNICO * cantidadMeses;
 
-    let montoAprobadoTotal = 0, montoRechazadoTotal = 0, montoSubsanadoTotal = 0;
+    let montoAprobadoTotal = 0, montoRechazadoTotal = 0, montoEnTramiteTotal = 0;
 
     misRegistros.forEach(r => {
         const aprobReg = String(r.aprobacion_regional || r.APROBACION_REGIONAL || r['APROBACION REGIONAL'] || "").toUpperCase();
         const estAceptar = aprobReg.includes("ACEPTADO") || aprobReg.includes("APROBADO");
         const estRechazar = aprobReg.includes("RECHAZADO");
+        
+        // Comprobamos si es GRN, BTS o RVST para excluirlos del trámite
+        const esExcluido = aprobReg.includes("GRN") || aprobReg.includes("BTS") || aprobReg.includes("RVST");
+        
         const montoBase = Number(r.estimado_a_facturar ?? r.facturacion ?? r.Facturacion ?? 0);
         
-        if (estAceptar) montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
-        if (estRechazar) montoRechazadoTotal += montoBase;
-        montoSubsanadoTotal += Number(r.trasiego_esp ?? r['TRASIEGO ESP.'] ?? 0);
+        if (estAceptar) {
+            montoAprobadoTotal += Number(r.total_aprobado ?? r.REAL_FACTURADO ?? r['Total  Aprobado'] ?? 0);
+        } else if (estRechazar) {
+            montoRechazadoTotal += montoBase;
+        } else if (!esExcluido) {
+            // Todo lo que NO sea Aceptado, Rechazado, GRN, BTS o RVST entra en En Trámite
+            montoEnTramiteTotal += montoBase;
+        }
     });
 
     document.getElementById('kpiMetaAsignada').innerText = formatMoney(metaAsignadaTotal);
     document.getElementById('kpiMontoAprobado').innerText = formatMoney(montoAprobadoTotal);
     document.getElementById('kpiMontoRechazado').innerText = formatMoney(montoRechazadoTotal);
-    document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoSubsanadoTotal);
+    document.getElementById('kpiMontoSubsanado').innerText = formatMoney(montoEnTramiteTotal); // Actualiza el valor en pantalla
 
     let porcentajeCumplimiento = metaAsignadaTotal > 0 ? Math.round((montoAprobadoTotal / metaAsignadaTotal) * 100) : 0;
     document.getElementById('txtPorcentajeCumplimientoNota').innerText = `${porcentajeCumplimiento}% de cumplimiento de tu meta`;
